@@ -5,8 +5,8 @@ repo_url: https://github.com/
 edit_uri: edit/master/src/docs/
 nav:
     - Home: index.md
-    - Install: install.md
-    - Data: format.md
+    - Usage: usage.md
+    - Format: format.md
 plugins:
   - search
 markdown_extensions:
