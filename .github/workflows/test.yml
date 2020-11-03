@@ -1,0 +1,9 @@
+name: Tests
+on: push
+jobs:
+  test:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v1
+    - name: Run unit tests
+      run: julia --project=@. -e 'using Pkg; Pkg.test("UnitCommitment")'

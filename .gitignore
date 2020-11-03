@@ -1,0 +1,16 @@
+*.bak
+*.gz
+*.lastrun
+*.so
+*.mps
+.ipy*
+benchmark/results
+benchmark/runs
+benchmark/tables
+build
+instances/**/*.json
+instances/_source
+local
+docs
+notebooks
+TODO.md

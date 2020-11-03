@@ -1,0 +1,33 @@
+name: Benchmark
+on:
+  push:
+    paths-ignore:
+      - '**.csv'
+      - '**.md'
+      - '.git*'
+      - 'test/**'
+jobs:
+  benchmark:
+    runs-on: [self-hosted, benchmark]
+    timeout-minutes: 10080
+    steps:
+    - uses: actions/checkout@v1
+    - name: Benchmark
+      run: |
+        julia --project=@. -e 'using Pkg; Pkg.instantiate()'
+        make build/sysimage.so
+        make -C benchmark clean
+        make -C benchmark -kj4
+        make -C benchmark tables
+        make -C benchmark clean-mps clean-sol
+    - name: Upload logs
+      uses: actions/upload-artifact@v2
+      with:
+        name: logs
+        path: benchmark/results/*
+    - name: Upload tables & charts
+      uses: actions/upload-artifact@v2
+      with:
+        name: tables
+        path: benchmark/tables/*
+
