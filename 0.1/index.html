@@ -75,13 +75,13 @@
                 
                 
                     <li >
-                        <a href="install/">Install</a>
+                        <a href="usage/">Usage</a>
                     </li>
                 
                 
                 
                     <li >
-                        <a href="format/">Data</a>
+                        <a href="format/">Format</a>
                     </li>
                 
                 
@@ -99,7 +99,7 @@
                         </a>
                     </li>
                     <li >
-                        <a rel="next" href="install/">
+                        <a rel="next" href="usage/">
                             Next <i class="fas fa-arrow-right"></i>
                         </a>
                     </li>
@@ -119,40 +119,48 @@
         <li class="first-level active"><a href="#unitcommitmentjl">UnitCommitment.jl</a></li>
             <li class="second-level"><a href="#package-components">Package Components</a></li>
                 
-            <li class="second-level"><a href="#contents">Contents</a></li>
+            <li class="second-level"><a href="#documentation">Documentation</a></li>
                 
             <li class="second-level"><a href="#authors">Authors</a></li>
                 
-            <li class="second-level"><a href="#collaborators">Collaborators</a></li>
+            <li class="second-level"><a href="#acknowledgments">Acknowledgments</a></li>
+                
+            <li class="second-level"><a href="#license">License</a></li>
                 
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
 <h1 id="unitcommitmentjl">UnitCommitment.jl</h1>
-<p><strong>UnitCommitment.jl</strong> is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems which is used, for example, to clear the day-ahead electricity markets. The problem asks for the most cost-effective power generation schedule under a number of physical, operational and economic constraints.</p>
+<p><strong>UnitCommitment.jl</strong> (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and JuMP implementations of state-of-the-art mixed-integer programming formulations.</p>
 <h3 id="package-components">Package Components</h3>
 <ul>
-<li><strong>Data Format:</strong> The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem.</li>
-<li><strong>Benchmark Instances:</strong> The package provides a diverse collection of large-scale benchmark instances collected from the literature and extended to make them more challenging and realistic, based on publicly available data from ISOs.</li>
+<li><strong>Data Format:</strong> The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports all the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.</li>
+<li><strong>Benchmark Instances:</strong> The package provides a diverse collection of large-scale benchmark instances collected from the literature and extended to make them more challenging and realistic.</li>
 <li><strong>Model Implementation</strong>: The package provides a Julia/JuMP implementation of state-of-the-art formulations and solution methods for SCUC. Our goal is to keep this implementation up-to-date, as new methods are proposed in the literature.</li>
 <li><strong>Benchmark Tools:</strong> The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.</li>
 </ul>
-<h3 id="contents">Contents</h3>
+<h3 id="documentation">Documentation</h3>
 <ul>
-<li><a href="install/">Installation Guide</a></li>
-<li><a href="format/">Data Format Specification</a></li>
+<li><a href="usage/">Usage</a></li>
+<li><a href="format/">Data Format</a></li>
 </ul>
 <h3 id="authors">Authors</h3>
 <ul>
-<li><strong>Alinson Santos Xavier,</strong> Argonne National Laboratory</li>
-<li><strong>Feng Qiu,</strong> Argonne National Laboratory</li>
+<li><strong>Alinson Santos Xavier</strong> (Argonne National Laboratory)</li>
+<li><strong>Feng Qiu</strong> (Argonne National Laboratory)</li>
 </ul>
-<h3 id="collaborators">Collaborators</h3>
+<h3 id="acknowledgments">Acknowledgments</h3>
 <ul>
-<li><strong>Yonghong Chen,</strong> Midcontinent Independent System Operator</li>
-<li><strong>Feng Pan,</strong> Pacific Northwest National Laboratory</li>
-</ul></div>
+<li>
+<p>We would like to thank <strong>Aleksandr M. Kazachkov</strong> (University of Florida), <strong>Yonghong Chen</strong> (Midcontinent Independent System Operator), <strong>Feng Pan</strong> (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.</p>
+</li>
+<li>
+<p>Based upon work supported by <strong>Laboratory Directed Research and Development</strong> (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357.</p>
+</li>
+</ul>
+<h3 id="license">License</h3>
+<p>Released under the modified BSD license. See <code>LICENSE.md</code> for more details.</p></div>
         
         
     </div>
@@ -257,5 +265,5 @@
 
 <!--
 MkDocs version : 1.1.2
-Build Date UTC : 2020-11-03 21:29:52.416195+00:00
+Build Date UTC : 2020-11-03 23:23:18.605231+00:00
 -->
