@@ -1,8 +1,8 @@
 site_name: UnitCommitment.jl
 theme: cinder
 copyright: "Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved."
-repo_url: https://github.com/
-edit_uri: edit/master/src/docs/
+repo_url: https://github.com/ANL-CEEESA/unitcommitment.jl
+edit_uri: edit/dev/src/docs/
 nav:
     - Home: index.md
     - Usage: usage.md

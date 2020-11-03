@@ -11,6 +11,5 @@ build
 instances/**/*.json
 instances/_source
 local
-docs
 notebooks
 TODO.md

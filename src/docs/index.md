@@ -14,6 +14,10 @@
 * [Usage](usage.md)
 * [Data Format](format.md)
 
+### Source code
+
+* [https://github.com/ANL-CEEESA/unitcommitment.jl](https://github.com/ANL-CEEESA/unitcommitment.jl)
+
 ### Authors
 * **Alinson Santos Xavier** (Argonne National Laboratory)
 * **Feng Qiu** (Argonne National Laboratory)
