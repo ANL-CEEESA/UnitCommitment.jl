@@ -5,22 +5,17 @@
 using PackageCompiler
 
 using DataStructures
-using Documenter
-using GLPK
 using JSON
 using JuMP
 using MathOptInterface
 using SparseArrays
-using TimerOutputs
 
 pkg = [:DataStructures,
-       :Documenter,
-       :GLPK,
        :JSON,
        :JuMP,
        :MathOptInterface,
        :SparseArrays,
-       :TimerOutputs]
+       ]
 
 @info "Building system image..."
 create_sysimage(pkg, sysimage_path="build/sysimage.so")
