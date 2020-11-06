@@ -1,6 +1,6 @@
 # UnitCommitment.jl
 
-**UnitCommitment.jl** (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and JuMP implementations of state-of-the-art mixed-integer programming formulations.
+**UnitCommitment.jl** (UC.jl) is a Julia optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and Julia/JuMP implementations of state-of-the-art mixed-integer programming formulations.
 
 ### Package Components
 

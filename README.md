@@ -14,8 +14,8 @@
 
 ### Documentation
 
-* [Usage](https://axavier.org/projects/UnitCommitment.jl/usage/)
-* [Data Format](https://axavier.org/projects/UnitCommitment.jl/format/)
+* [Usage](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/usage/)
+* [Data Format](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/format/)
 
 ### Authors
 * **Alinson Santos Xavier** (Argonne National Laboratory)

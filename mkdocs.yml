@@ -1,5 +1,8 @@
 site_name: UnitCommitment.jl
-theme: cinder
+theme:
+  name: cinder
+  hljs_languages:
+    - julia
 copyright: "Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved."
 repo_url: https://github.com/ANL-CEEESA/unitcommitment.jl
 edit_uri: edit/dev/src/docs/
@@ -12,6 +15,7 @@ plugins:
 markdown_extensions:
   - admonition  
   - mdx_math  
+  - fenced_code
 extra_javascript: 
     - https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML
     - js/mathjax.js
