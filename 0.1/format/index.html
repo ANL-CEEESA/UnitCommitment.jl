@@ -117,37 +117,24 @@
         <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
     <ul class="nav bs-sidenav">
         <li class="first-level active"><a href="#data-format">Data Format</a></li>
-            <li class="second-level"><a href="#parameters">Parameters</a></li>
+            <li class="second-level"><a href="#1-input-data-format">1. Input Data Format</a></li>
                 
-                <li class="third-level"><a href="#example">Example</a></li>
-            <li class="second-level"><a href="#buses">Buses</a></li>
+                <li class="third-level"><a href="#11-parameters">1.1 Parameters</a></li>
+                <li class="third-level"><a href="#12-buses">1.2 Buses</a></li>
+                <li class="third-level"><a href="#13-generators">1.3 Generators</a></li>
+                <li class="third-level"><a href="#14-price-sensitive-loads">1.4 Price-sensitive loads</a></li>
+                <li class="third-level"><a href="#15-transmission-lines">1.5 Transmission Lines</a></li>
+                <li class="third-level"><a href="#16-reserves">1.6 Reserves</a></li>
+                <li class="third-level"><a href="#17-contingencies">1.7 Contingencies</a></li>
+                <li class="third-level"><a href="#18-additional-remarks">1.8 Additional remarks</a></li>
+            <li class="second-level"><a href="#2-output-data-format">2. Output Data Format</a></li>
                 
-                <li class="third-level"><a href="#example_1">Example</a></li>
-            <li class="second-level"><a href="#generators">Generators</a></li>
-                
-                <li class="third-level"><a href="#production-costs-and-limits">Production costs and limits</a></li>
-                <li class="third-level"><a href="#example_2">Example</a></li>
-            <li class="second-level"><a href="#price-sensitive-loads">Price-sensitive loads</a></li>
-                
-                <li class="third-level"><a href="#example_3">Example</a></li>
-            <li class="second-level"><a href="#transmission-lines">Transmission Lines</a></li>
-                
-                <li class="third-level"><a href="#example_4">Example</a></li>
-            <li class="second-level"><a href="#reserves">Reserves</a></li>
-                
-                <li class="third-level"><a href="#example_5">Example</a></li>
-            <li class="second-level"><a href="#contingencies">Contingencies</a></li>
-                
-                <li class="third-level"><a href="#example_6">Example</a></li>
-            <li class="second-level"><a href="#additional-remarks">Additional remarks</a></li>
-                
-                <li class="third-level"><a href="#time-series-parameters">Time series parameters</a></li>
-                <li class="third-level"><a href="#current-limitations">Current limitations</a></li>
     </ul>
 </div></div>
         <div class="col-md-9" role="main">
 
 <h1 id="data-format">Data Format</h1>
+<h2 id="1-input-data-format">1. Input Data Format</h2>
 <p>Instances are specified by JSON files containing the following main sections:</p>
 <ul>
 <li><a href="#parameters">Parameters</a></li>
@@ -159,7 +146,7 @@
 <li><a href="#contingencies">Contingencies</a></li>
 </ul>
 <p>Each section is described in detail below. For a complete example, see <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/instances/matpower-24h/case14.json">case14.json</a>.</p>
-<h2 id="parameters">Parameters</h2>
+<h3 id="11-parameters">1.1 Parameters</h3>
 <p>This section describes system-wide parameters, such as power balance penalties, and optimization parameters, such as the length of the planning horizon.</p>
 <table>
 <thead>
@@ -185,7 +172,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="example">Example</h3>
+<h4 id="example">Example</h4>
 <pre><code class="json">{
     &quot;Parameters&quot;: {
         &quot;Time (h)&quot;: 4,
@@ -194,7 +181,7 @@
 }
 </code></pre>
 
-<h2 id="buses">Buses</h2>
+<h3 id="12-buses">1.2 Buses</h3>
 <p>This section describes the characteristics of each bus in the system. </p>
 <table>
 <thead>
@@ -214,7 +201,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="example_1">Example</h3>
+<h4 id="example_1">Example</h4>
 <pre><code class="json">{
     &quot;Buses&quot;: {
         &quot;b1&quot;: {
@@ -232,7 +219,7 @@
 }
 </code></pre>
 
-<h2 id="generators">Generators</h2>
+<h3 id="13-generators">1.3 Generators</h3>
 <p>This section describes all generators in the system, including thermal units, renewable units and virtual units.</p>
 <table>
 <thead>
@@ -324,7 +311,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="production-costs-and-limits">Production costs and limits</h3>
+<h4 id="production-costs-and-limits">Production costs and limits</h4>
 <p>Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs 1400, 1600, 2200 and 2400 dollars to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, <code>Production cost curve (MW)</code> should be set to <code>[100, 110, 130, 135]</code>, and <code>Production cost curve ($)</code>  should be set to <code>[1400, 1600, 2200, 2400]</code>.
 Note that this curve also specifies the production limits. Specifically, the first point identifies the minimum power output when the unit is operational, while the last point identifies the maximum power output.</p>
 <p><center>
@@ -332,14 +319,14 @@ Note that this curve also specifies the production limits. Specifically, the fir
     <div><b>Figure 1.</b> Piecewise-linear production cost curve.</div>
     <br/>
 </center></p>
-<p><strong>Additional remarks:</strong></p>
+<h4 id="additional-remarks">Additional remarks:</h4>
 <ul>
 <li>For time-dependent production limits or time-dependent production costs, the usage of nested arrays is allowed. For example,  if <code>Production cost curve (MW)</code> is set to <code>[5.0, [10.0, 12.0, 15.0, 20.0]]</code>, then the unit may generate at most 10, 12, 15 and 20 MW of power during time periods 1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed to at 5 MW.</li>
 <li>There is no limit to the number of piecewise-linear segments, and different generators may have a different number of segments.</li>
 <li>If <code>Production cost curve (MW)</code> and <code>Production cost curve ($)</code> both contain a single element, then the generator must produce exactly that amount of power when operational. To specify that the generator may produce any amount of power up to a certain limit <code>P</code>, the parameter <code>Production cost curve (MW)</code> should be set to <code>[0, P]</code>. </li>
 <li>Production cost curves must be convex.</li>
 </ul>
-<h3 id="example_2">Example</h3>
+<h4 id="example_2">Example</h4>
 <pre><code class="json">{
     &quot;Generators&quot;: {
         &quot;gen1&quot;: {
@@ -368,7 +355,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 </code></pre>
 
-<h2 id="price-sensitive-loads">Price-sensitive loads</h2>
+<h3 id="14-price-sensitive-loads">1.4 Price-sensitive loads</h3>
 <p>This section describes components in the system which may increase or reduce their energy consumption according to the energy prices. Fixed loads (as described in the <code>buses</code> section) are always served, regardless of the price, unless there is significant congestion in the system or insufficient production capacity. Price-sensitive loads, on the other hand, are only served if it is economical to do so. </p>
 <table>
 <thead>
@@ -400,7 +387,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tr>
 </tbody>
 </table>
-<h3 id="example_3">Example</h3>
+<h4 id="example_3">Example</h4>
 <pre><code class="json">{
     &quot;Price-sensitive loads&quot;: {
         &quot;p1&quot;: {
@@ -412,7 +399,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 </code></pre>
 
-<h2 id="transmission-lines">Transmission Lines</h2>
+<h3 id="15-transmission-lines">1.5 Transmission Lines</h3>
 <p>This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.</p>
 <table>
 <thead>
@@ -468,7 +455,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tr>
 </tbody>
 </table>
-<h3 id="example_4">Example</h3>
+<h4 id="example_4">Example</h4>
 <pre><code class="json">{
     &quot;Transmission lines&quot;: {
         &quot;l1&quot;: {
@@ -484,7 +471,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 </code></pre>
 
-<h2 id="reserves">Reserves</h2>
+<h3 id="16-reserves">1.6 Reserves</h3>
 <p>This section describes the hourly amount of operating reserves required.</p>
 <table>
 <thead>
@@ -504,7 +491,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tr>
 </tbody>
 </table>
-<h3 id="example_5">Example</h3>
+<h4 id="example_5">Example</h4>
 <pre><code class="json">{
     &quot;Reserves&quot;: {
         &quot;Spinning (MW)&quot;: [
@@ -517,7 +504,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 </code></pre>
 
-<h2 id="contingencies">Contingencies</h2>
+<h3 id="17-contingencies">1.7 Contingencies</h3>
 <p>This section describes credible contingency scenarios in the optimization, such as the loss of a transmission line or generator.</p>
 <table>
 <thead>
@@ -540,7 +527,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tr>
 </tbody>
 </table>
-<h3 id="example_6">Example</h3>
+<h4 id="example_6">Example</h4>
 <pre><code class="json">{
     &quot;Contingencies&quot;: {
         &quot;c1&quot;: {
@@ -554,8 +541,8 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 </code></pre>
 
-<h2 id="additional-remarks">Additional remarks</h2>
-<h3 id="time-series-parameters">Time series parameters</h3>
+<h3 id="18-additional-remarks">1.8 Additional remarks</h3>
+<h4 id="time-series-parameters">Time series parameters</h4>
 <p>Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly <code>T</code> elements, where <code>T</code> is the length of the planning horizon, if they are time-dependent. For example, both formats below are valid when <code>T=3</code>:</p>
 <pre><code class="json">{
     &quot;Load (MW)&quot;: 800.0,
@@ -563,12 +550,15 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 </code></pre>
 
-<h3 id="current-limitations">Current limitations</h3>
+<h4 id="current-limitations">Current limitations</h4>
 <ul>
 <li>All reserves are system-wide (no zonal reserves)</li>
 <li>Network topology remains the same for all time periods</li>
 <li>Only N-1 transmission contingencies are supported. Generator contingencies are not supported.</li>
-</ul></div>
+<li>Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.</li>
+</ul>
+<h2 id="2-output-data-format">2. Output Data Format</h2>
+<p>The output data format is also JSON-based, but it is not currently documented since we expect it to change significantly in a future version of the package.</p></div>
         
         
     </div>
@@ -590,6 +580,8 @@ Note that this curve also specifies the production limits. Specifically, the fir
 
     
     <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        
+                <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/languages/julia.min.js"></script>
         
     <script>hljs.initHighlightingOnLoad();</script>
     
