@@ -33,3 +33,21 @@
 ### License
 
 Released under the modified BSD license. See `LICENSE.md` for more details.
+
+### Citing
+
+If you find UC.jl useful in your research, we would appreciate a citation such as:
+
+```
+@software{ucjl,
+  author       = {Alinson S. Xavier and Feng Qiu},
+  title        = {{UnitCommitment.jl: A Julia/JuMP Optimization Package
+                 for the Security-Constrained Unit Commitment Problem}},
+  month        = nov,
+  year         = 2020,
+  publisher    = {Zenodo},
+  version      = {v0.1.0},
+  doi          = {10.5281/zenodo.4269874},
+  url          = {https://doi.org/10.5281/zenodo.4269874}
+}
+```
