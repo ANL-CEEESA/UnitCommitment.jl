@@ -1,5 +1,8 @@
-<a href="https://github.com/iSoron/UnitCommitment.jl/actions?query=workflow%3ATest+branch%3Adev"><img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Tests/badge.svg"></img></a>
-<a href="https://github.com/iSoron/UnitCommitment.jl/actions?query=workflow%3ABenchmark+branch%3Adev"><img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Benchmark/badge.svg"></img></a>
+<a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/actions?query=workflow%3ATest+branch%3Adev"><img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Tests/badge.svg"></img></a>
+<a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/actions?query=workflow%3ABenchmark+branch%3Adev"><img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Benchmark/badge.svg"></img></a>
+<a href="https://zenodo.org/badge/latestdoi/263667075"><img src="https://zenodo.org/badge/263667075.svg" alt="DOI"></a>
+
+
 
 # UnitCommitment.jl
 
