@@ -59,7 +59,9 @@
 
             <!-- Main title -->
 
-            <a class="navbar-brand" href="..">UnitCommitment.jl</a>
+            
+              <a class="navbar-brand" href="..">UnitCommitment.jl</a>
+            
         </div>
 
         <!-- Expanded navigation -->
@@ -85,6 +87,12 @@
                     </li>
                 
                 
+                
+                    <li >
+                        <a href="../instances/">Instances</a>
+                    </li>
+                
+                
                 </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -98,8 +106,8 @@
                             <i class="fas fa-arrow-left"></i> Previous
                         </a>
                     </li>
-                    <li class="disabled">
-                        <a rel="next" >
+                    <li >
+                        <a rel="next" href="../instances/">
                             Next <i class="fas fa-arrow-right"></i>
                         </a>
                     </li>
@@ -173,14 +181,13 @@
 </tbody>
 </table>
 <h4 id="example">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Parameters&quot;: {
         &quot;Time (h)&quot;: 4,
         &quot;Power balance penalty ($/MW)&quot;: 1000.0
     }
 }
 </code></pre>
-
 <h3 id="12-buses">1.2 Buses</h3>
 <p>This section describes the characteristics of each bus in the system. </p>
 <table>
@@ -202,7 +209,7 @@
 </tbody>
 </table>
 <h4 id="example_1">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Buses&quot;: {
         &quot;b1&quot;: {
             &quot;Load (MW)&quot;: 0.0
@@ -218,7 +225,6 @@
     }
 }
 </code></pre>
-
 <h3 id="13-generators">1.3 Generators</h3>
 <p>This section describes all generators in the system, including thermal units, renewable units and virtual units.</p>
 <table>
@@ -327,7 +333,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 <li>Production cost curves must be convex.</li>
 </ul>
 <h4 id="example_2">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Generators&quot;: {
         &quot;gen1&quot;: {
             &quot;Bus&quot;: &quot;b1&quot;,
@@ -354,7 +360,6 @@ Note that this curve also specifies the production limits. Specifically, the fir
     }
 }
 </code></pre>
-
 <h3 id="14-price-sensitive-loads">1.4 Price-sensitive loads</h3>
 <p>This section describes components in the system which may increase or reduce their energy consumption according to the energy prices. Fixed loads (as described in the <code>buses</code> section) are always served, regardless of the price, unless there is significant congestion in the system or insufficient production capacity. Price-sensitive loads, on the other hand, are only served if it is economical to do so. </p>
 <table>
@@ -388,7 +393,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tbody>
 </table>
 <h4 id="example_3">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Price-sensitive loads&quot;: {
         &quot;p1&quot;: {
             &quot;Bus&quot;: &quot;b3&quot;,
@@ -398,7 +403,6 @@ Note that this curve also specifies the production limits. Specifically, the fir
     }
 }
 </code></pre>
-
 <h3 id="15-transmission-lines">1.5 Transmission Lines</h3>
 <p>This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.</p>
 <table>
@@ -456,7 +460,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tbody>
 </table>
 <h4 id="example_4">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Transmission lines&quot;: {
         &quot;l1&quot;: {
             &quot;Source bus&quot;: &quot;b1&quot;,
@@ -470,7 +474,6 @@ Note that this curve also specifies the production limits. Specifically, the fir
     }
 }
 </code></pre>
-
 <h3 id="16-reserves">1.6 Reserves</h3>
 <p>This section describes the hourly amount of operating reserves required.</p>
 <table>
@@ -492,7 +495,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tbody>
 </table>
 <h4 id="example_5">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Reserves&quot;: {
         &quot;Spinning (MW)&quot;: [
             57.30552,
@@ -503,7 +506,6 @@ Note that this curve also specifies the production limits. Specifically, the fir
     }
 }
 </code></pre>
-
 <h3 id="17-contingencies">1.7 Contingencies</h3>
 <p>This section describes credible contingency scenarios in the optimization, such as the loss of a transmission line or generator.</p>
 <table>
@@ -528,7 +530,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 </tbody>
 </table>
 <h4 id="example_6">Example</h4>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Contingencies&quot;: {
         &quot;c1&quot;: {
             &quot;Affected lines&quot;: [&quot;l1&quot;, &quot;l2&quot;, &quot;l3&quot;],
@@ -540,16 +542,14 @@ Note that this curve also specifies the production limits. Specifically, the fir
     }
 }
 </code></pre>
-
 <h3 id="18-additional-remarks">1.8 Additional remarks</h3>
 <h4 id="time-series-parameters">Time series parameters</h4>
 <p>Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly <code>T</code> elements, where <code>T</code> is the length of the planning horizon, if they are time-dependent. For example, both formats below are valid when <code>T=3</code>:</p>
-<pre><code class="json">{
+<pre><code class="language-json">{
     &quot;Load (MW)&quot;: 800.0,
     &quot;Load (MW)&quot;: [800.0, 850.0, 730.0]
 }
 </code></pre>
-
 <h4 id="current-limitations">Current limitations</h4>
 <ul>
 <li>All reserves are system-wide (no zonal reserves)</li>
@@ -563,18 +563,22 @@ Note that this curve also specifies the production limits. Specifically, the fir
         
     </div>
 
-    <footer class="col-md-12 text-center">
-        
-        <hr>
-        <p>
-        <small>Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.</small><br>
-        
-        <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
-        </p>
+    
+      <footer class="col-md-12 text-center">
+          
+          
+            <hr>
+            <p>
+            <small>Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.</small><br>
+            
+            <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
+            </p>
+          
 
-        
-        
-    </footer>
+          
+          
+      </footer>
+    
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src="../js/bootstrap-3.0.3.min.js"></script>
 
