@@ -19,6 +19,7 @@
 
 * [Usage](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/usage/)
 * [Data Format](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/format/)
+* [Instances](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/instances/)
 
 ### Authors
 * **Alinson Santos Xavier** (Argonne National Laboratory)
@@ -30,24 +31,15 @@
 
 * Based upon work supported by **Laboratory Directed Research and Development** (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357.
 
+### Citing
+
+If you use UnitCommitment.jl in your research, we request that you cite the package as follows:
+
+* Alinson S. Xavier, Feng Qiu, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
+
+If you make use of the provided instances files, we request that you additionally cite the original sources, as described in the [instances page](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/instances/).
+
 ### License
 
 Released under the modified BSD license. See `LICENSE.md` for more details.
 
-### Citing
-
-If you find UC.jl useful in your research, we would appreciate a citation such as:
-
-```
-@software{ucjl,
-  author       = {Alinson S. Xavier and Feng Qiu},
-  title        = {{UnitCommitment.jl: A Julia/JuMP Optimization Package
-                 for the Security-Constrained Unit Commitment Problem}},
-  month        = nov,
-  year         = 2020,
-  publisher    = {Zenodo},
-  version      = {v0.1.0},
-  doi          = {10.5281/zenodo.4269874},
-  url          = {https://doi.org/10.5281/zenodo.4269874}
-}
-```

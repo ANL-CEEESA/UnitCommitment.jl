@@ -46,7 +46,7 @@ end
 
 ### 2.2 Solving benchmark instances
 
-As described in the [instances page](), UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used:
+As described in the [Instances page](instances.md), UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used:
 
 ```julia
 using UnitCommitment

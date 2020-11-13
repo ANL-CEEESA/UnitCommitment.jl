@@ -13,6 +13,7 @@
 
 * [Usage](usage.md)
 * [Data Format](format.md)
+* [Instances](instances.md)
 
 ### Source code
 
@@ -27,6 +28,14 @@
 * We would like to thank **Aleksandr M. Kazachkov** (University of Florida), **Yonghong Chen** (Midcontinent Independent System Operator), **Feng Pan** (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.
 
 * Based upon work supported by **Laboratory Directed Research and Development** (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357.
+
+### Citing
+
+If you use UnitCommitment.jl in your research, we request that you cite the package as follows:
+
+* Alinson S. Xavier, Feng Qiu, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
+
+If you make use of the provided instances files, we request that you additionally cite the original sources, as described in the [instances page](instances.md).
 
 ### License
 
