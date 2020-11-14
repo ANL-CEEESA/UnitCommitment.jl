@@ -17,26 +17,26 @@ Test cases based on publicly available data from the California ISO. For more de
 
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
-| `pglib-uc/ca/2014-09-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-09-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-09-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-09-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-12-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-12-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-12-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2014-12-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-03-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-03-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-03-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-03-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-06-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-06-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-06-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/2015-06-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/Scenario400_reserves_0` | 1 | 611 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/Scenario400_reserves_1` | 1 | 611 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/Scenario400_reserves_3` | 1 | 611 | 0 | 0 | [KnOsWa18], [KrHiOn12]
-| `pglib-uc/ca/Scenario400_reserves_5` | 1 | 611 | 0 | 0 | [KnOsWa18], [KrHiOn12]
+| `pglib-uc/ca/2014-09-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-09-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-09-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-09-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-12-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-12-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-12-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2014-12-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-03-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-03-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-03-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-03-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-06-01_reserves_0` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-06-01_reserves_1` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-06-01_reserves_3` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/2015-06-01_reserves_5` | 1 | 610 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/Scenario400_reserves_0` | 1 | 611 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/Scenario400_reserves_1` | 1 | 611 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/Scenario400_reserves_3` | 1 | 611 | 0 | 0 | [KnOsWa18, KrHiOn12]
+| `pglib-uc/ca/Scenario400_reserves_5` | 1 | 611 | 0 | 0 | [KnOsWa18, KrHiOn12]
 
 
 ### 1.2 PGLIB-UC/FERC
@@ -100,7 +100,7 @@ Because most MATPOWER test cases were originally designed for power flow studies
 
 * **Load profiles** were generated using a similar data-driven approach.
 
-* **Ramp-up, ramp-down, startup and shutdown rates** were set to fixed proportion of the generator's maximum output.
+* **Ramp-up, ramp-down, startup and shutdown rates** were set to a fixed proportion of the generator's maximum output.
 
 * **Minimum reserves** were set to a fixed proportion of the total demand.
 
@@ -110,20 +110,20 @@ For each MATPOWER test case, UC.jl provides two variations (`2017-02-01` and `20
 
 ### 2.1 MATPOWER/UW-PSTCA
 
-A variety of smaller IEEE test cases, [compiled by University of Wisconsin](http://labs.ece.uw.edu/pstca/), corresponding mostly to small portions of the American Electric Power System in the 1960s.
+A variety of smaller IEEE test cases, [compiled by University of Washington](http://labs.ece.uw.edu/pstca/), corresponding mostly to small portions of the American Electric Power System in the 1960s.
 
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
-| `matpower/case14/2017-02-01` | 14 | 5 | 20 | 19 | [ZiMSTh11], [PSTCA]
-| `matpower/case14/2017-08-01` | 14 | 5 | 20 | 19 | [ZiMSTh11], [PSTCA]
-| `matpower/case30/2017-02-01` | 30 | 6 | 41 | 38 | [ZiMSTh11], [PSTCA]
-| `matpower/case30/2017-08-01` | 30 | 6 | 41 | 38 | [ZiMSTh11], [PSTCA]
-| `matpower/case57/2017-02-01` | 57 | 7 | 80 | 79 | [ZiMSTh11], [PSTCA]
-| `matpower/case57/2017-08-01` | 57 | 7 | 80 | 79 | [ZiMSTh11], [PSTCA]
-| `matpower/case118/2017-02-01` | 118 | 54 | 186 | 177 | [ZiMSTh11], [PSTCA]
-| `matpower/case118/2017-08-01` | 118 | 54 | 186 | 177 | [ZiMSTh11], [PSTCA]
-| `matpower/case300/2017-02-01` | 300 | 69 | 411 | 320 | [ZiMSTh11], [PSTCA]
-| `matpower/case300/2017-08-01` | 300 | 69 | 411 | 320 | [ZiMSTh11], [PSTCA]
+| `matpower/case14/2017-02-01` | 14 | 5 | 20 | 19 | [MTPWR, PSTCA]
+| `matpower/case14/2017-08-01` | 14 | 5 | 20 | 19 | [MTPWR, PSTCA]
+| `matpower/case30/2017-02-01` | 30 | 6 | 41 | 38 | [MTPWR, PSTCA]
+| `matpower/case30/2017-08-01` | 30 | 6 | 41 | 38 | [MTPWR, PSTCA]
+| `matpower/case57/2017-02-01` | 57 | 7 | 80 | 79 | [MTPWR, PSTCA]
+| `matpower/case57/2017-08-01` | 57 | 7 | 80 | 79 | [MTPWR, PSTCA]
+| `matpower/case118/2017-02-01` | 118 | 54 | 186 | 177 | [MTPWR, PSTCA]
+| `matpower/case118/2017-08-01` | 118 | 54 | 186 | 177 | [MTPWR, PSTCA]
+| `matpower/case300/2017-02-01` | 300 | 69 | 411 | 320 | [MTPWR, PSTCA]
+| `matpower/case300/2017-08-01` | 300 | 69 | 411 | 320 | [MTPWR, PSTCA]
 
 
 ### 2.2 MATPOWER/Polish
@@ -132,60 +132,82 @@ Test cases based on the Polish 400, 220 and 110 kV networks, originally provided
 
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
-| `matpower/case2383wp/2017-02-01` | 2383 | 323 | 2896 | 2240 | [ZiMSTh11]
-| `matpower/case2383wp/2017-08-01` | 2383 | 323 | 2896 | 2240 | [ZiMSTh11]
-| `matpower/case2736sp/2017-02-01` | 2736 | 289 | 3504 | 3159 | [ZiMSTh11]
-| `matpower/case2736sp/2017-08-01` | 2736 | 289 | 3504 | 3159 | [ZiMSTh11]
-| `matpower/case2737sop/2017-02-01` | 2737 | 267 | 3506 | 3161 | [ZiMSTh11]
-| `matpower/case2737sop/2017-08-01` | 2737 | 267 | 3506 | 3161 | [ZiMSTh11]
-| `matpower/case2746wop/2017-02-01` | 2746 | 443 | 3514 | 3155 | [ZiMSTh11]
-| `matpower/case2746wop/2017-08-01` | 2746 | 443 | 3514 | 3155 | [ZiMSTh11]
-| `matpower/case2746wp/2017-02-01` | 2746 | 457 | 3514 | 3156 | [ZiMSTh11]
-| `matpower/case2746wp/2017-08-01` | 2746 | 457 | 3514 | 3156 | [ZiMSTh11]
-| `matpower/case3012wp/2017-02-01` | 3012 | 496 | 3572 | 2854 | [ZiMSTh11]
-| `matpower/case3012wp/2017-08-01` | 3012 | 496 | 3572 | 2854 | [ZiMSTh11]
-| `matpower/case3120sp/2017-02-01` | 3120 | 483 | 3693 | 2950 | [ZiMSTh11]
-| `matpower/case3120sp/2017-08-01` | 3120 | 483 | 3693 | 2950 | [ZiMSTh11]
-| `matpower/case3375wp/2017-02-01` | 3374 | 590 | 4161 | 3245 | [ZiMSTh11]
-| `matpower/case3375wp/2017-08-01` | 3374 | 590 | 4161 | 3245 | [ZiMSTh11]
+| `matpower/case2383wp/2017-02-01` | 2383 | 323 | 2896 | 2240 | [MTPWR]
+| `matpower/case2383wp/2017-08-01` | 2383 | 323 | 2896 | 2240 | [MTPWR]
+| `matpower/case2736sp/2017-02-01` | 2736 | 289 | 3504 | 3159 | [MTPWR]
+| `matpower/case2736sp/2017-08-01` | 2736 | 289 | 3504 | 3159 | [MTPWR]
+| `matpower/case2737sop/2017-02-01` | 2737 | 267 | 3506 | 3161 | [MTPWR]
+| `matpower/case2737sop/2017-08-01` | 2737 | 267 | 3506 | 3161 | [MTPWR]
+| `matpower/case2746wop/2017-02-01` | 2746 | 443 | 3514 | 3155 | [MTPWR]
+| `matpower/case2746wop/2017-08-01` | 2746 | 443 | 3514 | 3155 | [MTPWR]
+| `matpower/case2746wp/2017-02-01` | 2746 | 457 | 3514 | 3156 | [MTPWR]
+| `matpower/case2746wp/2017-08-01` | 2746 | 457 | 3514 | 3156 | [MTPWR]
+| `matpower/case3012wp/2017-02-01` | 3012 | 496 | 3572 | 2854 | [MTPWR]
+| `matpower/case3012wp/2017-08-01` | 3012 | 496 | 3572 | 2854 | [MTPWR]
+| `matpower/case3120sp/2017-02-01` | 3120 | 483 | 3693 | 2950 | [MTPWR]
+| `matpower/case3120sp/2017-08-01` | 3120 | 483 | 3693 | 2950 | [MTPWR]
+| `matpower/case3375wp/2017-02-01` | 3374 | 590 | 4161 | 3245 | [MTPWR]
+| `matpower/case3375wp/2017-08-01` | 3374 | 590 | 4161 | 3245 | [MTPWR]
 
 ### 2.3 MATPOWER/PEGASE
 
-Test cases from the [Pan European Grid Advanced Simulation and State Estimation (PEGASE) project](https://www.fp7-pegase.com/), describing part of the European high voltage transmission network.
+Test cases from the [Pan European Grid Advanced Simulation and State Estimation (PEGASE) project](https://cordis.europa.eu/project/id/211407), describing part of the European high voltage transmission network.
 
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
-| `matpower/case89pegase/2017-02-01` | 89 | 12 | 210 | 192 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case89pegase/2017-08-01` | 89 | 12 | 210 | 192 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case2869pegase/2017-02-01` | 2869 | 510 | 4582 | 3579 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case2869pegase/2017-08-01` | 2869 | 510 | 4582 | 3579 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case9241pegase/2017-02-01` | 9241 | 1445 | 16049 | 13932 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case9241pegase/2017-08-01` | 9241 | 1445 | 16049 | 13932 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case1354pegase/2017-02-01` | 1354 | 260 | 1991 | 1288 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case1354pegase/2017-08-01` | 1354 | 260 | 1991 | 1288 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case13659pegase/2017-02-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
-| `matpower/case13659pegase/2017-08-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16], [FlPaCa13], [ZiMSTh11]
+| `matpower/case89pegase/2017-02-01` | 89 | 12 | 210 | 192 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case89pegase/2017-08-01` | 89 | 12 | 210 | 192 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case1354pegase/2017-02-01` | 1354 | 260 | 1991 | 1288 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case1354pegase/2017-08-01` | 1354 | 260 | 1991 | 1288 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case2869pegase/2017-02-01` | 2869 | 510 | 4582 | 3579 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case2869pegase/2017-08-01` | 2869 | 510 | 4582 | 3579 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case9241pegase/2017-02-01` | 9241 | 1445 | 16049 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case9241pegase/2017-08-01` | 9241 | 1445 | 16049 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case13659pegase/2017-02-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
+| `matpower/case13659pegase/2017-08-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
+
+### 2.4 MATPOWER/RTE
+
+Test cases from the R&D Division at [Reseau de Transport d'Electricite](https://www.rte-france.com) representing the size and complexity of the French very high voltage transmission network.
+
+| Name | Buses | Generators | Lines | Contingencies | References |
+|------|-------|------------|-------|---------------|--------|
+| `matpower/case1888rte/2017-02-01` | 1888 | 296 | 2531 | 1484 | [MTPWR, JoFlMa16]
+| `matpower/case1888rte/2017-08-01` | 1888 | 296 | 2531 | 1484 | [MTPWR, JoFlMa16]
+| `matpower/case1951rte/2017-02-01` | 1951 | 390 | 2596 | 1497 | [MTPWR, JoFlMa16]
+| `matpower/case1951rte/2017-08-01` | 1951 | 390 | 2596 | 1497 | [MTPWR, JoFlMa16]
+| `matpower/case2848rte/2017-02-01` | 2848 | 544 | 3776 | 2242 | [MTPWR, JoFlMa16]
+| `matpower/case2848rte/2017-08-01` | 2848 | 544 | 3776 | 2242 | [MTPWR, JoFlMa16]
+| `matpower/case2868rte/2017-02-01` | 2868 | 596 | 3808 | 2260 | [MTPWR, JoFlMa16]
+| `matpower/case2868rte/2017-08-01` | 2868 | 596 | 3808 | 2260 | [MTPWR, JoFlMa16]
+| `matpower/case6468rte/2017-02-01` | 6468 | 1262 | 9000 | 6094 | [MTPWR, JoFlMa16]
+| `matpower/case6468rte/2017-08-01` | 6468 | 1262 | 9000 | 6094 | [MTPWR, JoFlMa16]
+| `matpower/case6470rte/2017-02-01` | 6470 | 1306 | 9005 | 6085 | [MTPWR, JoFlMa16]
+| `matpower/case6470rte/2017-08-01` | 6470 | 1306 | 9005 | 6085 | [MTPWR, JoFlMa16]
+| `matpower/case6495rte/2017-02-01` | 6495 | 1352 | 9019 | 6060 | [MTPWR, JoFlMa16]
+| `matpower/case6495rte/2017-08-01` | 6495 | 1352 | 9019 | 6060 | [MTPWR, JoFlMa16]
+| `matpower/case6515rte/2017-02-01` | 6515 | 1368 | 9037 | 6063 | [MTPWR, JoFlMa16]
+| `matpower/case6515rte/2017-08-01` | 6515 | 1368 | 9037 | 6063 | [MTPWR, JoFlMa16]
 
 ## 3. References
 
-* [UCJL] Alinson S. Xavier, Feng Qiu, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
+* [UCJL] **Alinson S. Xavier, Feng Qiu.** "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874)
 
-* [KnOsWa18] Bernard Knueven, James Ostrowski and Jean-Paul Watson. "On mixed integer programming formulations for the unit commitment problem." Pre-print available at http://www.optimization-online.org/DB_HTML/2018/11/6930.pdf (2018).
+* [KnOsWa18] **Bernard Knueven, James Ostrowski and Jean-Paul Watson.** "On Mixed-Integer Programming Formulations for the Unit Commitment Problem". INFORMS Journal on Computing (2020). [DOI: 10.1287/ijoc.2019.0944](https://doi.org/10.1287/ijoc.2019.0944)
 
-* [KrHiOn12] Eric Krall, Michael Higgins and Richard P. O’Neill. "RTO unit commitment test system." Federal Energy Regulatory Commission. Available: http://ferc.gov/legal/staff-reports/rto-COMMITMENT-TEST.pdf (2012).
+* [KrHiOn12] **Eric Krall, Michael Higgins and Richard P. O’Neill.** "RTO unit commitment test system." Federal Energy Regulatory Commission. Available at: <https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1> (Accessed: Nov 14, 2020)
 
-* [BaBlEh19] Clayton Barrows, Aaron Bloom, Ali Ehlen, Jussi Ikaheimo, Jennie Jorgenson, Dheepak Krishnamurthy, Jessica Lau et al. "The IEEE Reliability Test System: A Proposed 2019 Update." IEEE Transactions on Power Systems (2019).
+* [BaBlEh19] **Clayton Barrows, Aaron Bloom, Ali Ehlen, Jussi Ikaheimo, Jennie Jorgenson, Dheepak Krishnamurthy, Jessica Lau et al.** "The IEEE Reliability Test System: A Proposed 2019 Update." IEEE Transactions on Power Systems (2019). [DOI: 10.1109/TPWRS.2019.2925557](https://doi.org/10.1109/TPWRS.2019.2925557)
 
-* [JoFlMa16] C. Josz, S. Fliscounakis, J. Maeght, and P. Panciatici, "AC Power Flow
-Data in MATPOWER and QCQP Format: iTesla, RTE Snapshots, and PEGASE"
-https://arxiv.org/abs/1603.01533
+* [JoFlMa16] **C. Josz, S. Fliscounakis, J. Maeght, and P. Panciatici.** "AC Power Flow
+Data in MATPOWER and QCQP Format: iTesla, RTE Snapshots, and PEGASE". [ArXiv (2016)](https://arxiv.org/abs/1603.01533).
 
-* [FlPaCa13] S. Fliscounakis, P. Panciatici, F. Capitanescu, and L. Wehenkel,
+* [FlPaCa13] **S. Fliscounakis, P. Panciatici, F. Capitanescu, and L. Wehenkel.**
 "Contingency ranking with respect to overloads in very large power
 systems taking into account uncertainty, preventive and corrective
 actions", Power Systems, IEEE Trans. on, (28)4:4909-4917, 2013.
-https://doi.org/10.1109/TPWRS.2013.2251015
+[DOI: 10.1109/TPWRS.2013.2251015](https://doi.org/10.1109/TPWRS.2013.2251015)
 
-* [ZiMSTh11] D. Zimmerman, C. E. Murillo-Sandnchez and R. J. Thomas, "Matpower:  Steady-state  operations,  planning,  and  analysis  tools  forpower systems research and education", IEEE Transactions on PowerSystems, vol. 26, no. 1, pp. 12 –19, Feb. 2011.
+* [MTPWR] **D. Zimmerman, C. E. Murillo-Sandnchez and R. J. Thomas.** "Matpower:  Steady-state  operations,  planning,  and  analysis  tools  forpower systems research and education", IEEE Transactions on PowerSystems, vol. 26, no. 1, pp. 12 –19, Feb. 2011. [DOI: 10.1109/TPWRS.2010.2051168](https://doi.org/10.1109/TPWRS.2010.2051168)
 
-* [PSTCA] University of Washington, Dept. of Electrical Engineering, "Power Systems Test Case Archive", Published online at http://www.ee.washington.edu/research/pstca/, 1999.
+* [PSTCA] **University of Washington, Dept. of Electrical Engineering.** "Power Systems Test Case Archive". Available at: <http://www.ee.washington.edu/research/pstca/> (Accessed: Nov 14, 2020)
