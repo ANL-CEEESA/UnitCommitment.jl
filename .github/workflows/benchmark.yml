@@ -1,14 +1,9 @@
 name: Benchmark
-on:
-  push:
-    paths-ignore:
-      - '**.csv'
-      - '**.md'
-      - '.git*'
-      - 'test/**'
+on: push
 jobs:
   benchmark:
     runs-on: [self-hosted, benchmark]
+    if: "contains(github.event.head_commit.message, '[benchmark]')"
     timeout-minutes: 10080
     steps:
     - uses: actions/checkout@v1
@@ -23,11 +18,11 @@ jobs:
     - name: Upload logs
       uses: actions/upload-artifact@v2
       with:
-        name: logs
+        name: Logs
         path: benchmark/results/*
     - name: Upload tables & charts
       uses: actions/upload-artifact@v2
       with:
-        name: tables
+        name: Tables
         path: benchmark/tables/*
 
