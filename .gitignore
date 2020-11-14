@@ -3,6 +3,7 @@
 *.lastrun
 *.so
 *.mps
+*.ipynb
 .ipy*
 benchmark/results
 benchmark/runs
