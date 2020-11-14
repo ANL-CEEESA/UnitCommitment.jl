@@ -87,17 +87,47 @@ INSTANCES_MATPOWER := \
 	matpower/case6515rte/2017-02-01 \
 	matpower/case6515rte/2017-08-01
 
+INSTANCES_ORLIB := \
+	or-lib/20_0_1_w \
+	or-lib/20_0_5_w \
+	or-lib/50_0_2_w \
+	or-lib/75_0_2_w \
+	or-lib/100_0_1_w \
+	or-lib/100_0_4_w \
+	or-lib/100_0_5_w \
+	or-lib/200_0_3_w \
+	or-lib/200_0_7_w \
+	or-lib/200_0_9_w
+
+INSTANCES_TEJADA19 := \
+	tejada19/UC_24h_290g \
+	tejada19/UC_24h_623g \
+	tejada19/UC_24h_959g \
+	tejada19/UC_24h_1577g \
+	tejada19/UC_24h_1888g \
+	tejada19/UC_168h_72g \
+	tejada19/UC_168h_86g \
+	tejada19/UC_168h_130g \
+	tejada19/UC_168h_131g \
+	tejada19/UC_168h_199g
+
 SAMPLES := 1 2 3
 SOLUTIONS_MATPOWER := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_MATPOWER))))
 SOLUTIONS_PGLIB := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_PGLIB))))
+SOLUTIONS_ORLIB := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_ORLIB))))
+SOLUTIONS_TEJADA19 := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_TEJADA19))))
 
-.PHONY: tables save small large clean-mps matpower pglib
+.PHONY: tables save small large clean-mps matpower pglib orlib
 
-all: matpower pglib
+all: matpower pglib orlib tejada19
 
 matpower: $(SOLUTIONS_MATPOWER)
 
 pglib: $(SOLUTIONS_PGLIB)
+
+orlib: $(SOLUTIONS_ORLIB)
+
+tejada19: $(SOLUTIONS_TEJADA19)
 
 clean:
 	@rm -rf tables/benchmark* tables/compare* results
