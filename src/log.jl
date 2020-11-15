@@ -39,7 +39,7 @@ function handle_message(logger::TimeLogger,
         print(time_string)
         println(message)
     end
-    if logger.file != nothing && level >= logger.io_log_level
+    if logger.file !== nothing && level >= logger.io_log_level
         write(logger.file, time_string)
         write(logger.file, message)
         write(logger.file, "\n")

@@ -11,8 +11,8 @@ using UnitCommitment, Cbc, JuMP
     
     # All units should have unknown initial conditions
     for g in instance.units
-        @test g.initial_power == nothing
-        @test g.initial_status == nothing
+        @test g.initial_power === nothing
+        @test g.initial_status === nothing
     end
     
     # Generate initial conditions
@@ -20,8 +20,8 @@ using UnitCommitment, Cbc, JuMP
     
     # All units should now have known initial conditions
     for g in instance.units
-        @test g.initial_power != nothing
-        @test g.initial_status != nothing
+        @test g.initial_power !== nothing
+        @test g.initial_status !== nothing
     end
     
     # TODO: Check that initial conditions are feasible
