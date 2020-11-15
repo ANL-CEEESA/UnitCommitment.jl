@@ -8,7 +8,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import sys
 
-easy_cutoff = 120
+#easy_cutoff = 120
 
 b1 = pd.read_csv(sys.argv[1], index_col=0)
 b2 = pd.read_csv(sys.argv[2], index_col=0)
@@ -24,10 +24,10 @@ merged["Time diff (s)"] = merged["B Time (s)"] - merged["A Time (s)"]
 merged["Value diff (%)"] = np.round((merged["B Value"] - merged["A Value"]) / merged["A Value"] * 100.0, 5)
 merged.loc[merged.loc[:, "B Time (s)"] <= 0, "Speedup"] = float("nan")
 merged.loc[merged.loc[:, "B Time (s)"] <= 0, "Time diff (s)"] = float("nan")
-merged = merged[(merged["A Time (s)"] >= easy_cutoff) | (merged["B Time (s)"] >= easy_cutoff)]
+#merged = merged[(merged["A Time (s)"] >= easy_cutoff) | (merged["B Time (s)"] >= easy_cutoff)]
 merged.reset_index(inplace=True)
 merged["Name"] = merged["Group"] + "/" + merged["Instance"]
-merged = merged.sort_values(by="Speedup", ascending=False)
+#merged = merged.sort_values(by="Speedup", ascending=False)
 
 
 k = len(merged.groupby("Name"))
