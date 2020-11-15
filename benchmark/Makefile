@@ -133,10 +133,10 @@ clean:
 	@rm -rf tables/benchmark* tables/compare* results
     
 clean-mps:
-	@rm -fv results/*/*/*.mps.gz
+	@rm -fv results/*/*.mps.gz results/*/*/*.mps.gz
 
 clean-sol:
-	@rm -rf results/*/*/*.sol.*
+	@rm -rf results/*/*.sol.* results/*/*/*.sol.*
         
 save:
 	mkdir -p "runs/$(TIMESTAMP)"
@@ -151,4 +151,4 @@ results/%.sol.json: run.jl
 tables:
 	@mkdir -p tables
 	@python scripts/table.py
-	#@python scripts/compare.py tables/reference.csv tables/benchmark.csv
+	@python scripts/compare.py tables/reference.csv tables/benchmark.csv
