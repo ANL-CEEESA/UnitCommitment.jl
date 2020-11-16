@@ -5,7 +5,7 @@
 UnitCommitment.jl was tested and developed with [Julia 1.5](https://julialang.org/). To install Julia, please follow the [installation guide on the official Julia website](https://julialang.org/downloads/platform.html). To install UnitCommitment.jl, run the Julia interpreter, type `]` to open the package manager, then type:
 
 ```text
-pkg> add https://github.com/ANL-CEEESA/UnitCommitment.jl.git
+pkg> add UnitCommitment
 ```
 
 To test that the package has been correctly installed, run:
@@ -50,7 +50,7 @@ As described in the [Instances page](instances.md), UnitCommitment.jl contains a
 
 ```julia
 using UnitCommitment
-instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-01-01")
+instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 ```
 
 ## 3. Advanced usage

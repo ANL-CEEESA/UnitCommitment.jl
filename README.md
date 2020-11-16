@@ -35,7 +35,7 @@
 
 If you use UnitCommitment.jl in your research, we request that you cite the package as follows:
 
-* Alinson S. Xavier, Feng Qiu, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
+* **Alinson S. Xavier, Feng Qiu**. "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
 
 If you make use of the provided instances files, we request that you additionally cite the original sources, as described in the [instances page](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/instances/).
 
