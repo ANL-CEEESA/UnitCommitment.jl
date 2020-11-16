@@ -45,11 +45,11 @@ function build_model(;
                      variable_names::Bool=false,
                     ) :: UnitCommitmentModel
 
-    if (filename == nothing) && (instance == nothing)
+    if (filename === nothing) && (instance === nothing)
         error("Either filename or instance must be specified")
     end
     
-    if filename != nothing
+    if filename !== nothing
         @info "Reading: $(filename)"
         time_read = @elapsed begin
             instance = UnitCommitment.read(filename)
@@ -61,7 +61,7 @@ function build_model(;
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
     else
-        if isf == nothing
+        if isf === nothing
             @info "Computing injection shift factors..."
             time_isf = @elapsed begin
                 isf = UnitCommitment.injection_shift_factors(lines=instance.lines,
@@ -85,8 +85,8 @@ function build_model(;
 
     @info "Building model..."
     time_model = @elapsed begin
-        if model == nothing
-            if optimizer == nothing
+        if model === nothing
+            if optimizer === nothing
                 mip = Model()
             else
                 mip = Model(optimizer)
@@ -193,7 +193,7 @@ function add_unit!(model::UnitCommitmentModel, g::Unit)
         error("Partially must-run units are not currently supported")
     end
     
-    if g.initial_power == nothing || g.initial_status == nothing
+    if g.initial_power === nothing || g.initial_status === nothing
         error("Initial conditions for $(g.name) must be provided")
     end
 
@@ -416,7 +416,7 @@ function enforce_transmission(;
     instance, mip, vars = model.instance, model.mip, model.vars
     limit::Float64 = 0.0
         
-    if violation.outage_line == nothing
+    if violation.outage_line === nothing
         limit = violation.monitored_line.normal_flow_limit[violation.time]
         @info @sprintf("    %8.3f MW overflow in %-5s time %3d (pre-contingency)",
                        violation.amount,
@@ -439,7 +439,7 @@ function enforce_transmission(;
     @constraint(mip, flow  <= limit + overflow)
     @constraint(mip, -flow <= limit + overflow)
     
-    if violation.outage_line == nothing
+    if violation.outage_line === nothing
         @constraint(mip, flow == sum(vars.net_injection[b.name, violation.time] *
                                          isf[violation.monitored_line.offset, b.offset]
                                      for b in instance.buses
