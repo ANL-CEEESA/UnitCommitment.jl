@@ -143,7 +143,7 @@
 <h1 id="usage">Usage</h1>
 <h2 id="1-installation">1. Installation</h2>
 <p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.5</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/platform.html">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p>
-<pre><code class="language-text">pkg&gt; add https://github.com/ANL-CEEESA/UnitCommitment.jl.git
+<pre><code class="language-text">pkg&gt; add UnitCommitment
 </code></pre>
 <p>To test that the package has been correctly installed, run:</p>
 <pre><code class="language-text">pkg&gt; test UnitCommitment
@@ -174,7 +174,7 @@ end
 <h3 id="22-solving-benchmark-instances">2.2 Solving benchmark instances</h3>
 <p>As described in the <a href="../instances/">Instances page</a>, UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function <code>read_benchmark</code> can be used:</p>
 <pre><code class="language-julia">using UnitCommitment
-instance = UnitCommitment.read_benchmark(&quot;matpower/case3375wp/2017-01-01&quot;)
+instance = UnitCommitment.read_benchmark(&quot;matpower/case3375wp/2017-02-01&quot;)
 </code></pre>
 <h2 id="3-advanced-usage">3. Advanced usage</h2>
 <h3 id="31-modifying-the-formulation">3.1 Modifying the formulation</h3>
