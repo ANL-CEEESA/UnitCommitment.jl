@@ -5,15 +5,15 @@ Data Format
 
 Instances are specified by JSON files containing the following main sections:
 
-* [Parameters](#parameters)
-* [Buses](#buses)
-* [Generators](#generators)
-* [Price-sensitive loads](#price-sensitive-loads)
-* [Transmission lines](#transmission-lines)
-* [Reserves](#reserves)
-* [Contingencies](#contingencies)
+* Parameters
+* Buses
+* Generators
+* Price-sensitive loads
+* Transmission lines
+* Reserves
+* Contingencies
 
-Each section is described in detail below. For a complete example, see [case14.json](https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/instances/matpower-24h/case14.json).
+Each section is described in detail below. For a complete example, see [case14](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances/matpower/case14).
 
 ### 1.1 Parameters
 
