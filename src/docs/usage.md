@@ -26,13 +26,15 @@ The first step to use UC.jl is to construct a JSON file describing your unit com
 
 ```julia
 using Cbc
+using JSON
 using UnitCommitment
 
 # Read instance
 instance = UnitCommitment.read("/path/to/input.json")
 
 # Construct optimization model
-model = UnitCommitment.build_model(instance, Cbc.Optimizer)
+model = UnitCommitment.build_model(instance=instance,
+                                   optimizer=Cbc.Optimizer)
 
 # Solve model
 UnitCommitment.optimize!(model)
