@@ -1,5 +1,13 @@
 name: Tests
-on: [push, pull_request]
+on:
+  push:
+    paths:
+      - '**.jl'
+      - '**.toml'
+  pull_request:
+    paths:
+      - '**.jl'
+      - '**.toml'
 jobs:
   test:
     runs-on: ${{ matrix.os }}
