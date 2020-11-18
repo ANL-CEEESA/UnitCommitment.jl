@@ -9,7 +9,9 @@ VERSION := 0.1
 
 build/sysimage.so: src/sysimage.jl Project.toml Manifest.toml
 	mkdir -p build
+	$(JULIA) --trace-compile=precompile.jl benchmark/run.jl test/case14.json.gz
 	$(JULIA) src/sysimage.jl
+	rm precompile.jl
 
 clean:
 	rm -rf build/*
