@@ -26,6 +26,6 @@ install-deps-docs:
 
 test: build/sysimage.so
 	@echo Running tests...
-	cd test; $(JULIA) --sysimage ../build/sysimage.so runtests.jl | tee ../build/test.log
+	$(JULIA) --sysimage build/sysimage.so -e 'using Pkg; Pkg.test("UnitCommitment")' | tee build/test.log
 
 .PHONY: docs docs-push build test
