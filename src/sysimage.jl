@@ -18,4 +18,6 @@ pkg = [:DataStructures,
        ]
 
 @info "Building system image..."
-create_sysimage(pkg, precompile_statements_file=joinpath(@__DIR__, "../precompile.jl"), sysimage_path="build/sysimage.so")
+create_sysimage(pkg,
+                precompile_statements_file="build/precompile.jl",
+                sysimage_path="build/sysimage.so")
