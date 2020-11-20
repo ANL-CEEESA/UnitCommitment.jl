@@ -4,11 +4,12 @@
 
 JULIA := julia --color=yes --project=@.
 MKDOCS := ~/.local/bin/mkdocs
-SRC_FILES := $(wildcard src/*.jl) $(wildcard test/*.jl)
 VERSION := 0.1
 
 build/sysimage.so: src/sysimage.jl Project.toml Manifest.toml
 	mkdir -p build
+	mkdir -p benchmark/results/test
+	cd benchmark; $(JULIA) --trace-compile=../build/precompile.jl run.jl test/case14.1.sol.json
 	$(JULIA) src/sysimage.jl
 
 clean:
@@ -18,14 +19,11 @@ docs:
 	$(MKDOCS) build -d ../docs/$(VERSION)/
 	rm ../docs/$(VERSION)/*.ipynb
 	
-docs-push:
-	rsync -avP docs/ isoron@axavier.org:/www/axavier.org/projects/UnitCommitment.jl/
-
 install-deps-docs:
 	pip install --user mkdocs mkdocs-cinder python-markdown-math
 
 test: build/sysimage.so
 	@echo Running tests...
-	cd test; $(JULIA) --sysimage ../build/sysimage.so runtests.jl | tee ../build/test.log
+	$(JULIA) --sysimage build/sysimage.so -e 'using Pkg; Pkg.test("UnitCommitment")' | tee build/test.log
 
-.PHONY: docs docs-push build test
+.PHONY: docs test

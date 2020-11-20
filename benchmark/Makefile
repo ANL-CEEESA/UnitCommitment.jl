@@ -13,56 +13,15 @@ results_dir := results_$(FORMULATION)
 INSTANCES_PGLIB := \
         pglib-uc/ca/2014-09-01_reserves_0 \
         pglib-uc/ca/2014-09-01_reserves_1 \
-        pglib-uc/ca/2014-09-01_reserves_3 \
-        pglib-uc/ca/2014-09-01_reserves_5 \
-        pglib-uc/ca/2014-12-01_reserves_0 \
-        pglib-uc/ca/2014-12-01_reserves_1 \
-        pglib-uc/ca/2014-12-01_reserves_3 \
-        pglib-uc/ca/2014-12-01_reserves_5 \
         pglib-uc/ca/2015-03-01_reserves_0 \
-        pglib-uc/ca/2015-03-01_reserves_1 \
-        pglib-uc/ca/2015-03-01_reserves_3 \
-        pglib-uc/ca/2015-03-01_reserves_5 \
         pglib-uc/ca/2015-06-01_reserves_0 \
-        pglib-uc/ca/2015-06-01_reserves_1 \
-        pglib-uc/ca/2015-06-01_reserves_3 \
-        pglib-uc/ca/2015-06-01_reserves_5 \
-        pglib-uc/ca/Scenario400_reserves_0 \
         pglib-uc/ca/Scenario400_reserves_1 \
-        pglib-uc/ca/Scenario400_reserves_3 \
-        pglib-uc/ca/Scenario400_reserves_5 \
-        pglib-uc/ferc/2015-01-01_hw \
         pglib-uc/ferc/2015-01-01_lw \
-        pglib-uc/ferc/2015-02-01_hw \
-        pglib-uc/ferc/2015-02-01_lw \
-        pglib-uc/ferc/2015-03-01_hw \
-        pglib-uc/ferc/2015-03-01_lw \
-        pglib-uc/ferc/2015-04-01_hw \
-        pglib-uc/ferc/2015-04-01_lw \
-        pglib-uc/ferc/2015-05-01_hw \
         pglib-uc/ferc/2015-05-01_lw \
-        pglib-uc/ferc/2015-06-01_hw \
-        pglib-uc/ferc/2015-06-01_lw \
         pglib-uc/ferc/2015-07-01_hw \
-        pglib-uc/ferc/2015-07-01_lw \
-        pglib-uc/ferc/2015-08-01_hw \
-        pglib-uc/ferc/2015-08-01_lw \
-        pglib-uc/ferc/2015-09-01_hw \
-        pglib-uc/ferc/2015-09-01_lw \
-        pglib-uc/ferc/2015-10-01_hw \
         pglib-uc/ferc/2015-10-01_lw \
-        pglib-uc/ferc/2015-11-02_hw \
-        pglib-uc/ferc/2015-11-02_lw \
-        pglib-uc/ferc/2015-12-01_hw \
         pglib-uc/ferc/2015-12-01_lw \
-        pglib-uc/rts_gmlc/2020-01-27 \
-        pglib-uc/rts_gmlc/2020-02-09 \
-        pglib-uc/rts_gmlc/2020-03-05 \
         pglib-uc/rts_gmlc/2020-04-03 \
-        pglib-uc/rts_gmlc/2020-05-05 \
-        pglib-uc/rts_gmlc/2020-06-09 \
-        pglib-uc/rts_gmlc/2020-07-06 \
-        pglib-uc/rts_gmlc/2020-08-12 \
         pglib-uc/rts_gmlc/2020-09-20 \
         pglib-uc/rts_gmlc/2020-10-27 \
         pglib-uc/rts_gmlc/2020-11-25 \
@@ -74,20 +33,12 @@ INSTANCES_MATPOWER := \
 	matpower/case300/2017-02-01 \
 	matpower/case300/2017-08-01 \
 	matpower/case1354pegase/2017-02-01 \
-	matpower/case1354pegase/2017-08-01 \
 	matpower/case1888rte/2017-02-01 \
-	matpower/case1888rte/2017-08-01 \
-	matpower/case1951rte/2017-02-01 \
 	matpower/case1951rte/2017-08-01 \
 	matpower/case2848rte/2017-02-01 \
-	matpower/case2848rte/2017-08-01 \
-	matpower/case2868rte/2017-02-01 \
 	matpower/case2868rte/2017-08-01 \
-	matpower/case3375wp/2017-02-01 \
 	matpower/case3375wp/2017-08-01 \
-	matpower/case6468rte/2017-02-01 \
 	matpower/case6468rte/2017-08-01 \
-	matpower/case6515rte/2017-02-01 \
 	matpower/case6515rte/2017-08-01
 
 INSTANCES_INFORMS1 := \
@@ -288,9 +239,36 @@ SOLUTIONS_INFORMS2 := $(foreach s,$(SAMPLES),$(addprefix $(results_dir)/,$(addsu
 SOLUTIONS_INFORMS3 := $(foreach s,$(SAMPLES),$(addprefix $(results_dir)/,$(addsuffix .$(s).sol.json,$(INSTANCES_INFORMS3))))
 SOLUTIONS_TEST := $(foreach s,$(SAMPLES),$(addprefix $(results_dir)/,$(addsuffix .$(s).sol.json,$(INSTANCES_TEST))))
 
-.PHONY: tables save small large clean-mps matpower pglib informs1 informs2 informs3 test
+.PHONY: tables save small large clean-mps matpower pglib informs1 informs2 informs3 test pglib orlib
 
-all: matpower pglib
+INSTANCES_ORLIB := \
+	or-lib/20_0_1_w \
+	or-lib/20_0_5_w \
+	or-lib/50_0_2_w \
+	or-lib/75_0_2_w \
+	or-lib/100_0_1_w \
+	or-lib/100_0_4_w \
+	or-lib/100_0_5_w \
+	or-lib/200_0_3_w \
+	or-lib/200_0_7_w \
+	or-lib/200_0_9_w
+
+INSTANCES_TEJADA19 := \
+	tejada19/UC_24h_290g \
+	tejada19/UC_24h_623g \
+	tejada19/UC_24h_959g \
+	tejada19/UC_24h_1577g \
+	tejada19/UC_24h_1888g \
+	tejada19/UC_168h_72g \
+	tejada19/UC_168h_86g \
+	tejada19/UC_168h_130g \
+	tejada19/UC_168h_131g \
+	tejada19/UC_168h_199g
+
+SOLUTIONS_ORLIB := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_ORLIB))))
+SOLUTIONS_TEJADA19 := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_TEJADA19))))
+
+all: matpower pglib orlib tejada19
 
 matpower: $(SOLUTIONS_MATPOWER)
 
@@ -302,14 +280,18 @@ informs3: $(SOLUTIONS_INFORMS3)
 
 test: $(SOLUTIONS_TEST)
 
+orlib: $(SOLUTIONS_ORLIB)
+
+tejada19: $(SOLUTIONS_TEJADA19)
+
 clean:
 	@rm -rf tables/benchmark* tables/compare* $(results_dir)
     
 clean-mps:
-	@rm -fv $(results_dir)/*/*/*.mps.gz
+	@rm -fv results/*/*.mps.gz results/*/*/*.mps.gz
 
 clean-sol:
-	@rm -rf $(results_dir)/*/*/*.sol.*
+	@rm -rf results/*/*.sol.* results/*/*/*.sol.*
         
 save:
 	mkdir -p "runs/$(TIMESTAMP)"

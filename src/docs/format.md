@@ -1,19 +1,21 @@
 Data Format
 ===========
 
+## 1. Input Data Format
+
 Instances are specified by JSON files containing the following main sections:
 
-* [Parameters](#parameters)
-* [Buses](#buses)
-* [Generators](#generators)
-* [Price-sensitive loads](#price-sensitive-loads)
-* [Transmission lines](#transmission-lines)
-* [Reserves](#reserves)
-* [Contingencies](#contingencies)
+* Parameters
+* Buses
+* Generators
+* Price-sensitive loads
+* Transmission lines
+* Reserves
+* Contingencies
 
-Each section is described in detail below. For a complete example, see [case14.json](https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/instances/matpower-24h/case14.json).
+Each section is described in detail below. For a complete example, see [case14](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances/matpower/case14).
 
-## Parameters
+### 1.1 Parameters
 
 This section describes system-wide parameters, such as power balance penalties, and optimization parameters, such as the length of the planning horizon.
 
@@ -23,7 +25,7 @@ This section describes system-wide parameters, such as power balance penalties, 
 | `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time period. For example, if there is a shortage of 1 MW for three time periods, three times this amount will be charged. | `1000.0` | Y
 
 
-### Example
+#### Example
 ```json
 {
     "Parameters": {
@@ -33,7 +35,7 @@ This section describes system-wide parameters, such as power balance penalties, 
 }
 ```
 
-## Buses
+### 1.2 Buses
 
 This section describes the characteristics of each bus in the system. 
 
@@ -42,7 +44,7 @@ This section describes the characteristics of each bus in the system.
 | `Load (MW)`        | Fixed load connected to the bus (in MW).                      | Required | Y
 
 
-### Example
+#### Example
 ```json
 {
     "Buses": {
@@ -62,7 +64,7 @@ This section describes the characteristics of each bus in the system.
 ```
 
 
-## Generators
+### 1.3 Generators
 
 This section describes all generators in the system, including thermal units, renewable units and virtual units.
 
@@ -82,7 +84,7 @@ This section describes all generators in the system, including thermal units, re
 | `Must run?`               | If `true`, the generator should be committed, even that is not economical (Boolean). | `false` | Y
 | `Provides spinning reserves?`    | If `true`, this generator may provide spinning reserves (Boolean). | `true` | Y
 
-### Production costs and limits
+#### Production costs and limits
 
 Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs 1400, 1600, 2200 and 2400 dollars to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, `Production cost curve (MW)` should be set to `[100, 110, 130, 135]`, and `Production cost curve ($)`  should be set to `[1400, 1600, 2200, 2400]`.
 Note that this curve also specifies the production limits. Specifically, the first point identifies the minimum power output when the unit is operational, while the last point identifies the maximum power output.
@@ -93,14 +95,14 @@ Note that this curve also specifies the production limits. Specifically, the fir
     <br/>
 </center>
 
-**Additional remarks:**
+#### Additional remarks:
 
 * For time-dependent production limits or time-dependent production costs, the usage of nested arrays is allowed. For example,  if `Production cost curve (MW)` is set to `[5.0, [10.0, 12.0, 15.0, 20.0]]`, then the unit may generate at most 10, 12, 15 and 20 MW of power during time periods 1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed to at 5 MW.
 * There is no limit to the number of piecewise-linear segments, and different generators may have a different number of segments.
 * If `Production cost curve (MW)` and `Production cost curve ($)` both contain a single element, then the generator must produce exactly that amount of power when operational. To specify that the generator may produce any amount of power up to a certain limit `P`, the parameter `Production cost curve (MW)` should be set to `[0, P]`. 
 * Production cost curves must be convex.
 
-### Example
+#### Example
 
 ```json
 {
@@ -131,7 +133,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 ```
 
-## Price-sensitive loads
+### 1.4 Price-sensitive loads
 
 This section describes components in the system which may increase or reduce their energy consumption according to the energy prices. Fixed loads (as described in the `buses` section) are always served, regardless of the price, unless there is significant congestion in the system or insufficient production capacity. Price-sensitive loads, on the other hand, are only served if it is economical to do so. 
 
@@ -142,7 +144,7 @@ This section describes components in the system which may increase or reduce the
 | `Demand (MW)`     | Maximum amount of power required by this load. Any amount lower than this may be served. | Required | Y
 
 
-### Example
+#### Example
 ```json
 {
     "Price-sensitive loads": {
@@ -155,7 +157,7 @@ This section describes components in the system which may increase or reduce the
 }
 ```
 
-## Transmission Lines
+### 1.5 Transmission Lines
 
 This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.
 
@@ -169,7 +171,7 @@ This section describes the characteristics of transmission system, such as its t
 | `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). | `+inf` | Y
 | `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time period. For example, if there is a thermal violation of 1 MW for three time periods, three times this amount will be charged. | `5000.0` | Y
 
-### Example
+#### Example
 
 ```json
 {
@@ -188,7 +190,7 @@ This section describes the characteristics of transmission system, such as its t
 ```
 
 
-## Reserves
+### 1.6 Reserves
 
 This section describes the hourly amount of operating reserves required.
 
@@ -197,7 +199,7 @@ This section describes the hourly amount of operating reserves required.
 | :-------------------- | :------------------------------------------------- | --------- |  :----:
 | `Spinning (MW)`       | Minimum amount of system-wide spinning reserves (in MW). Only generators which are online may provide this reserve. | `0.0` | Y
 
-### Example
+#### Example
 
 ```json
 {
@@ -212,7 +214,7 @@ This section describes the hourly amount of operating reserves required.
 }
 ```
 
-## Contingencies
+### 1.7 Contingencies
 
 This section describes credible contingency scenarios in the optimization, such as the loss of a transmission line or generator.
 
@@ -221,7 +223,7 @@ This section describes credible contingency scenarios in the optimization, such 
 | `Affected generators`      | List of generators affected by this contingency. May be omitted if no generators are affected. | `[]`
 | `Affected lines`      | List of transmission lines affected by this contingency. May be omitted if no lines are affected. | `[]`
 
-### Example
+#### Example
 
 ```json
 {
@@ -237,9 +239,9 @@ This section describes credible contingency scenarios in the optimization, such 
 }
 ```
 
-## Additional remarks
+### 1.8 Additional remarks
 
-### Time series parameters
+#### Time series parameters
 
 Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly `T` elements, where `T` is the length of the planning horizon, if they are time-dependent. For example, both formats below are valid when `T=3`:
 
@@ -250,8 +252,13 @@ Many numerical properties in the JSON file can be specified either as a single f
 }
 ```
 
-### Current limitations
+#### Current limitations
 
 * All reserves are system-wide (no zonal reserves)
 * Network topology remains the same for all time periods
 * Only N-1 transmission contingencies are supported. Generator contingencies are not supported.
+* Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
+
+## 2. Output Data Format
+
+The output data format is also JSON-based, but it is not currently documented since we expect it to change significantly in a future version of the package.

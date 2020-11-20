@@ -9,7 +9,8 @@ from tabulate import tabulate
 
 
 def process_all_log_files():
-    pathlist = Path(".").glob('results/*/*/*.log')
+    pathlist = list(Path(".").glob('results/*/*/*.log'))
+    pathlist += list(Path(".").glob('results/*/*.log'))
     rows = []
     for path in pathlist:
         if ".ipy" in str(path):

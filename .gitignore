@@ -3,6 +3,7 @@
 *.lastrun
 *.so
 *.mps
+*.ipynb
 .ipy*
 benchmark/results
 benchmark/runs
@@ -11,6 +12,5 @@ build
 instances/**/*.json
 instances/_source
 local
-docs
 notebooks
 TODO.md

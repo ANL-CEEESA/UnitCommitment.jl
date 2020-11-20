@@ -1,1 +1,6 @@
 * text=auto
+*.bz2 diff=bz2
+*.gz diff=gzip
+*.tar diff=tar
+*.tar.bz2 diff=tar-bz2
+*.zip diff=zip

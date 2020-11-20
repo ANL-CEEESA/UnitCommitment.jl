@@ -143,13 +143,13 @@ function from_json(json; fix=true)
     name_to_unit = Dict{String, Unit}()
     
     function timeseries(x; default=nothing)
-        x != nothing || return default
+        x !== nothing || return default
         x isa Array || return [x for t in 1:T]
         return x
     end
     
     function scalar(x; default=nothing)
-        x != nothing || return default
+        x !== nothing || return default
         x
     end
     
@@ -201,10 +201,10 @@ function from_json(json; fix=true)
         # Read and validate initial conditions
         initial_power = scalar(dict["Initial power (MW)"], default=nothing)
         initial_status = scalar(dict["Initial status (h)"], default=nothing)
-        if initial_power == nothing
-            initial_status == nothing || error("unit $unit_name has initial status but no initial power")
+        if initial_power === nothing
+            initial_status === nothing || error("unit $unit_name has initial status but no initial power")
         else
-            initial_status != nothing || error("unit $unit_name has initial power but no initial status")
+            initial_status !== nothing || error("unit $unit_name has initial power but no initial status")
             initial_status != 0 || error("unit $unit_name has invalid initial status")
             if initial_status < 0 && initial_power > 1e-3
                 error("unit $unit_name has invalid initial power")
