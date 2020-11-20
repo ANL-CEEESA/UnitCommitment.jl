@@ -77,7 +77,7 @@ function add_required_constraints_default(c::UCComponent,
         # TODO check what happens with these variables when exporting the model
         # (can a binary variable have bounds x = 0?)
         #eqs.shutdown_limit[gi, 0] = @constraint(mip, vars.switch_off[gi, 1] <= 0)
-        fix(vars.switch_off[gi, 1], 0.; force = true)
+        fix(model.vars.switch_off[gi, 1], 0.; force = true)
       end
     end # known_initial_conditions
 

@@ -16,9 +16,9 @@ LOG_LEVEL = 1
 
 @testset "Model" begin
     @testset "Run" begin
-        #instance = UnitCommitment.read_benchmark("test/case14")
+        instance = UnitCommitment.read_benchmark("test/case14")
         #instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
-        instance = UnitCommitment.read_benchmark("matpower/case1888rte/2017-02-01")
+        #instance = UnitCommitment.read_benchmark("matpower/case1888rte/2017-02-01")
         for line in instance.lines, t in 1:4
             line.normal_flow_limit[t] = 10.0
         end
@@ -34,7 +34,7 @@ LOG_LEVEL = 1
             model = build_model(instance=instance,
                                 optimizer=optimizer,
                                 variable_names=true,
-                                components=formulation)
+                                formulation=formulation)
 
             JuMP.write_to_file(model.mip, "test.mps")
 

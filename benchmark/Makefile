@@ -265,8 +265,8 @@ INSTANCES_TEJADA19 := \
 	tejada19/UC_168h_131g \
 	tejada19/UC_168h_199g
 
-SOLUTIONS_ORLIB := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_ORLIB))))
-SOLUTIONS_TEJADA19 := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_TEJADA19))))
+SOLUTIONS_ORLIB := $(foreach s,$(SAMPLES),$(addprefix $(results_dir)/,$(addsuffix .$(s).sol.json,$(INSTANCES_ORLIB))))
+SOLUTIONS_TEJADA19 := $(foreach s,$(SAMPLES),$(addprefix $(results_dir)/,$(addsuffix .$(s).sol.json,$(INSTANCES_TEJADA19))))
 
 all: matpower pglib orlib tejada19
 
@@ -288,10 +288,10 @@ clean:
 	@rm -rf tables/benchmark* tables/compare* $(results_dir)
     
 clean-mps:
-	@rm -fv results/*/*.mps.gz results/*/*/*.mps.gz
+	@rm -fv $(results_dir)/*/*.mps.gz results/*/*/*.mps.gz
 
 clean-sol:
-	@rm -rf results/*/*.sol.* results/*/*/*.sol.*
+	@rm -rf $(results_dir)/*/*.sol.* results/*/*/*.sol.*
         
 save:
 	mkdir -p "runs/$(TIMESTAMP)"
