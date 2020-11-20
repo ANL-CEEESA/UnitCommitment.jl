@@ -8,8 +8,11 @@ using DataStructures
 import Base: getindex, time
 import GZip
 
+abstract type UCElement end
 
-mutable struct Bus
+abstract type Time <: UCElement end
+
+mutable struct Bus <: UCElement
     name::String
     offset::Int
     load::Array{Float64}
@@ -18,19 +21,19 @@ mutable struct Bus
 end
 
 
-mutable struct CostSegment
+mutable struct CostSegment <: UCElement
     mw::Array{Float64}
     cost::Array{Float64}
 end
 
 
-mutable struct StartupCategory
+mutable struct StartupCategory <: UCElement
     delay::Int
     cost::Float64
 end
 
 
-mutable struct Unit
+mutable struct Unit <: UCElement
     name::String
     bus::Bus
     max_power::Array{Float64}
@@ -48,10 +51,10 @@ mutable struct Unit
     initial_power::Union{Float64,Nothing}
     provides_spinning_reserves::Array{Bool}
     startup_categories::Array{StartupCategory}
-end
+end # Unit
 
 
-mutable struct TransmissionLine
+mutable struct TransmissionLine <: UCElement
     name::String
     offset::Int
     source::Bus
@@ -64,19 +67,19 @@ mutable struct TransmissionLine
 end
 
 
-mutable struct Reserves
+mutable struct Reserves <: UCElement
     spinning::Array{Float64}
 end
 
 
-mutable struct Contingency
+mutable struct Contingency <: UCElement
     name::String
     lines::Array{TransmissionLine}
     units::Array{Unit}
 end
 
 
-mutable struct PriceSensitiveLoad
+mutable struct PriceSensitiveLoad <: UCElement
     name::String
     bus::Bus
     demand::Array{Float64}
@@ -87,6 +90,8 @@ end
 mutable struct UnitCommitmentInstance
     time::Int
     power_balance_penalty::Array{Float64}
+    "Penalty for failing to meet reserve requirement."
+    shortfall_penalty::Array{Float64}
     units::Array{Unit}
     buses::Array{Bus}
     lines::Array{TransmissionLine}
@@ -151,6 +156,8 @@ function from_json(json; fix=true)
     # Read parameters
     power_balance_penalty = timeseries(json["Parameters"]["Power balance penalty (\$/MW)"],
                                        default=[1000.0 for t in 1:T])
+    shortfall_penalty = timeseries(json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
+                                   default=[0. for t in 1:T])
     
     # Read buses
     for (bus_name, dict) in json["Buses"]
@@ -286,6 +293,7 @@ function from_json(json; fix=true)
     
     instance = UnitCommitmentInstance(T,
                                       power_balance_penalty,
+                                      shortfall_penalty,
                                       units,
                                       buses,
                                       lines,

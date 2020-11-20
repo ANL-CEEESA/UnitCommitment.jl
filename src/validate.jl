@@ -115,6 +115,7 @@ function validate_units(instance, solution; tol=0.01)
         actual_production_cost = solution["Production cost (\$)"][unit.name]
         actual_startup_cost = solution["Startup cost (\$)"][unit.name]
         is_on = bin(solution["Is on"][unit.name])
+        switch_off = bin(solution["Switch off"][unit.name]) # some formulations may not use this
         
         for t in 1:instance.time
             # Auxiliary variables
@@ -127,7 +128,8 @@ function validate_units(instance, solution; tol=0.01)
                 is_starting_up = !is_on[t-1] && is_on[t]
                 is_shutting_down = is_on[t-1] && !is_on[t]
                 ramp_up = max(0, production[t] + reserve[t] - production[t-1])
-                ramp_down = max(0, production[t-1] - production[t])
+                #ramp_down = max(0, production[t-1] - production[t])
+                ramp_down = max(0, production[t-1] + reserve[t-1] - production[t])
             end
             
             # Compute production costs
@@ -193,8 +195,12 @@ function validate_units(instance, solution; tol=0.01)
 
             # Shutdown limit
             if is_shutting_down && (ramp_down > unit.shutdown_limit + tol)
-                @error @sprintf("Unit %s exceeds shutdown limit at time %d (%.2f > %.2f)",
-                                unit.name, t, ramp_down, unit.shutdown_limit)
+              @error @sprintf("Unit %s exceeds shutdown limit at time %d (%.2f > %.2f)\n\tproduction[t-1] = %.2f\n\treserve[t-1] = %.2f\n\tproduction[t] = %.2f\n\treserve[t] = %.2f\n\tis_on[t-1] = %d\n\tis_on[t] = %d",
+                                unit.name, t, ramp_down, unit.shutdown_limit,
+                                (t == 1 ? unit.initial_power : production[t-1]), production[t],
+                                (t == 1 ? 0. : reserve[t-1]), reserve[t],
+                                (t == 1 ? unit.initial_status != nothing && unit.initial_status > 0 : is_on[t-1]), is_on[t]
+                               )
                 err_count += 1
             end
 
@@ -207,8 +213,12 @@ function validate_units(instance, solution; tol=0.01)
 
             # Ramp-down limit
             if !is_starting_up && !is_shutting_down && (ramp_down > unit.ramp_down_limit + tol)
-                @error @sprintf("Unit %s exceeds ramp down limit at time %d (%.2f > %.2f)",
-                                unit.name, t, ramp_down, unit.ramp_down_limit)
+                @error @sprintf("Unit %s exceeds ramp down limit at time %d (%.2f > %.2f)\n\tproduction[t-1] = %.2f\n\treserve[t-1] = %.2f\n\tproduction[t] = %.2f\n\treserve[t] = %.2f\n\tis_on[t-1] = %d\n\tis_on[t] = %d",
+                                unit.name, t, ramp_down, unit.ramp_down_limit,
+                                (t == 1 ? unit.initial_power : production[t-1]), production[t],
+                                (t == 1 ? 0. : reserve[t-1]), reserve[t],
+                                (t == 1 ? unit.initial_status != nothing && unit.initial_status > 0 : is_on[t-1]), is_on[t]
+                               )
                 err_count += 1
             end
             
@@ -218,13 +228,16 @@ function validate_units(instance, solution; tol=0.01)
                 # Calculate how much time the unit has been offline
                 time_down = 0
                 for k in 1:(t-1)
-                    if !is_on[t - k]
+                  if !is_on[t - k]
                         time_down += 1
                     else
                         break
                     end
                 end
-                if t == time_down + 1
+                if t == time_down + 1 && !switch_off[1]
+                    # If unit has always been off, then the correct startup cost depends on how long was it off before t = 1
+                    # Absent known initial conditions, we assume it was off for the minimum downtime
+                    # TODO: verify the formulations are making the same assumption...
                     initial_down = unit.min_downtime
                     if unit.initial_status < 0
                         initial_down = -unit.initial_status
