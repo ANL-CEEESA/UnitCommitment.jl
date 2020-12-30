@@ -3,15 +3,15 @@
   <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/actions?query=workflow%3ATest+branch%3Adev">
     <img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Tests/badge.svg"></img>
   </a>
-  <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/actions?query=workflow%3ABenchmark+branch%3Adev+is%3Asuccess">
-    <img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Benchmark/badge.svg"></img>
-  </a>
   <a href="https://doi.org/10.5281/zenodo.4269874">
     <img src="https://zenodo.org/badge/doi/10.5281/zenodo.4269874.svg" alt="DOI"></img>
   </a>
   <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/releases/">
     <img src="https://img.shields.io/github/v/release/ANL-CEEESA/UnitCommitment.jl?include_prereleases&label=pre-release">
   </a>
+  <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/discussions">
+    <img src="https://img.shields.io/badge/GitHub-Discussions-%23fc4ebc" />
+  </a>  
 </p>
 
 **UnitCommitment.jl** (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and JuMP implementations of state-of-the-art mixed-integer programming formulations.
