@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../img/favicon.ico">
+
+    
+    <title>Usage - UnitCommitment.jl</title>
+    
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.min.css">
+    <link href='//rsms.me/inter/inter.css' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="../css/base.min.css" rel="stylesheet">
+    <link href="../css/cinder.min.css" rel="stylesheet">
+
+    
+        
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/github.min.css">
+        
+    
+    <link href="../css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+        <![endif]-->
+
+    
+
+     
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            
+              <a class="navbar-brand" href="..">UnitCommitment.jl</a>
+            
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li class="active">
+                        <a href="./">Usage</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../format/">Format</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../instances/">Instances</a>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fas fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="..">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="../format/">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/ANL-CEEESA/unitcommitment.jl/edit/dev/src/docs/usage.md"><i class="fab fa-github"></i> Edit on GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#usage">Usage</a></li>
+            <li class="second-level"><a href="#1-installation">1. Installation</a></li>
+                
+            <li class="second-level"><a href="#2-typical-usage">2. Typical Usage</a></li>
+                
+                <li class="third-level"><a href="#21-solving-user-provided-instances">2.1 Solving user-provided instances</a></li>
+                <li class="third-level"><a href="#22-solving-benchmark-instances">2.2 Solving benchmark instances</a></li>
+            <li class="second-level"><a href="#3-advanced-usage">3. Advanced usage</a></li>
+                
+                <li class="third-level"><a href="#31-modifying-the-formulation">3.1 Modifying the formulation</a></li>
+                <li class="third-level"><a href="#32-generating-initial-conditions">3.2 Generating initial conditions</a></li>
+                <li class="third-level"><a href="#33-verifying-solutions">3.3 Verifying solutions</a></li>
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<h1 id="usage">Usage</h1>
+<h2 id="1-installation">1. Installation</h2>
+<p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.5</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/platform.html">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p>
+<pre><code class="language-text">pkg&gt; add UnitCommitment
+</code></pre>
+<p>To test that the package has been correctly installed, run:</p>
+<pre><code class="language-text">pkg&gt; test UnitCommitment
+</code></pre>
+<p>If all tests pass, the package should now be ready to be used by any Julia script on the machine.</p>
+<p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.</p>
+<h2 id="2-typical-usage">2. Typical Usage</h2>
+<h3 id="21-solving-user-provided-instances">2.1 Solving user-provided instances</h3>
+<p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See the <a href="">data format page</a> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to read the instance from file, construct the optimization model, run the optimization and extract the optimal solution.</p>
+<pre><code class="language-julia">using Cbc
+using JSON
+using UnitCommitment
+
+# Read instance
+instance = UnitCommitment.read(&quot;/path/to/input.json&quot;)
+
+# Construct optimization model
+model = UnitCommitment.build_model(instance=instance,
+                                   optimizer=Cbc.Optimizer)
+
+# Solve model
+UnitCommitment.optimize!(model)
+
+# Extract solution and write it to a file
+solution = UnitCommitment.get_solution(model)
+open(&quot;/path/to/output.json&quot;, &quot;w&quot;) do file
+    JSON.print(file, solution, 2)
+end
+</code></pre>
+<h3 id="22-solving-benchmark-instances">2.2 Solving benchmark instances</h3>
+<p>As described in the <a href="../instances/">Instances page</a>, UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function <code>read_benchmark</code> can be used:</p>
+<pre><code class="language-julia">using UnitCommitment
+instance = UnitCommitment.read_benchmark(&quot;matpower/case3375wp/2017-02-01&quot;)
+</code></pre>
+<h2 id="3-advanced-usage">3. Advanced usage</h2>
+<h3 id="31-modifying-the-formulation">3.1 Modifying the formulation</h3>
+<p>For the time being, the recommended way of modifying the MILP formulation used by UC.jl is to create a local copy of our git repository and directly modify the source code of the package. In a future version, it will be possible to switch between multiple formulations, or to simply add/remove constraints after the model has been generated.</p>
+<h3 id="32-generating-initial-conditions">3.2 Generating initial conditions</h3>
+<p>When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.</p>
+<p>To help with this issue, UC.jl provides a utility function which can generate feasible initial conditions by solving a single-period optimization problem, as shown below:</p>
+<pre><code class="language-julia">using Cbc
+using UnitCommitment
+
+# Read original instance
+instance = UnitCommitment.read(&quot;instance.json&quot;)
+
+# Generate initial conditions (in-place)
+UnitCommitment.generate_initial_conditions!(instance, Cbc.Optimizer)
+
+# Construct and solve optimization model
+model = UnitCommitment.build_model(instance, Cbc.Optimizer)
+UnitCommitment.optimize!(model)
+</code></pre>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The function <code>generate_initial_conditions!</code> may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.</p>
+</div>
+<h3 id="33-verifying-solutions">3.3 Verifying solutions</h3>
+<p>When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the <a href="../format/">UC.jl data format</a>.</p>
+<pre><code class="language-julia">using JSON
+using UnitCommitment
+
+# Read instance
+instance = UnitCommitment.read(&quot;instance.json&quot;)
+
+# Read solution (potentially produced by other packages) 
+solution = JSON.parsefile(&quot;solution.json&quot;)
+
+# Validate solution and print validation errors
+UnitCommitment.validate(instance, solution)
+</code></pre></div>
+        
+        
+    </div>
+
+    
+      <footer class="col-md-12 text-center">
+          
+          
+            <hr>
+            <p>
+            <small>Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.</small><br>
+            
+            <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
+            </p>
+          
+
+          
+          
+      </footer>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        
+                <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/languages/julia.min.js"></script>
+        
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    <script>var base_url = ".."</script>
+    
+    <script src="../js/base.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../js/mathjax.js"></script>
+    <script src="../search/main.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+    </body>
+
+</html>

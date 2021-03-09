@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    
+    
+    <link rel="shortcut icon" href="../img/favicon.ico">
+
+    
+    <title>Format - UnitCommitment.jl</title>
+    
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.min.css">
+    <link href='//rsms.me/inter/inter.css' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
+    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
+    <link href="../css/base.min.css" rel="stylesheet">
+    <link href="../css/cinder.min.css" rel="stylesheet">
+
+    
+        
+        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/github.min.css">
+        
+    
+    <link href="../css/custom.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+            <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+        <![endif]-->
+
+    
+
+     
+</head>
+
+<body>
+
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+
+        <!-- Collapsed navigation -->
+        <div class="navbar-header">
+            <!-- Expander button -->
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            
+
+            <!-- Main title -->
+
+            
+              <a class="navbar-brand" href="..">UnitCommitment.jl</a>
+            
+        </div>
+
+        <!-- Expanded navigation -->
+        <div class="navbar-collapse collapse">
+                <!-- Main navigation -->
+                <ul class="nav navbar-nav">
+                
+                
+                    <li >
+                        <a href="..">Home</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../usage/">Usage</a>
+                    </li>
+                
+                
+                
+                    <li class="active">
+                        <a href="./">Format</a>
+                    </li>
+                
+                
+                
+                    <li >
+                        <a href="../instances/">Instances</a>
+                    </li>
+                
+                
+                </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
+                            <i class="fas fa-search"></i> Search
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="prev" href="../usage/">
+                            <i class="fas fa-arrow-left"></i> Previous
+                        </a>
+                    </li>
+                    <li >
+                        <a rel="next" href="../instances/">
+                            Next <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://github.com/ANL-CEEESA/unitcommitment.jl/edit/dev/src/docs/format.md"><i class="fab fa-github"></i> Edit on GitHub</a>
+                    </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+    <div class="container">
+        
+        
+        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
+    <ul class="nav bs-sidenav">
+        <li class="first-level active"><a href="#data-format">Data Format</a></li>
+            <li class="second-level"><a href="#1-input-data-format">1. Input Data Format</a></li>
+                
+                <li class="third-level"><a href="#11-parameters">1.1 Parameters</a></li>
+                <li class="third-level"><a href="#12-buses">1.2 Buses</a></li>
+                <li class="third-level"><a href="#13-generators">1.3 Generators</a></li>
+                <li class="third-level"><a href="#14-price-sensitive-loads">1.4 Price-sensitive loads</a></li>
+                <li class="third-level"><a href="#15-transmission-lines">1.5 Transmission Lines</a></li>
+                <li class="third-level"><a href="#16-reserves">1.6 Reserves</a></li>
+                <li class="third-level"><a href="#17-contingencies">1.7 Contingencies</a></li>
+                <li class="third-level"><a href="#18-additional-remarks">1.8 Additional remarks</a></li>
+            <li class="second-level"><a href="#2-output-data-format">2. Output Data Format</a></li>
+                
+    </ul>
+</div></div>
+        <div class="col-md-9" role="main">
+
+<h1 id="data-format">Data Format</h1>
+<h2 id="1-input-data-format">1. Input Data Format</h2>
+<p>Instances are specified by JSON files containing the following main sections:</p>
+<ul>
+<li>Parameters</li>
+<li>Buses</li>
+<li>Generators</li>
+<li>Price-sensitive loads</li>
+<li>Transmission lines</li>
+<li>Reserves</li>
+<li>Contingencies</li>
+</ul>
+<p>Each section is described in detail below. For a complete example, see <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances/matpower/case14">case14</a>.</p>
+<h3 id="11-parameters">1.1 Parameters</h3>
+<p>This section describes system-wide parameters, such as power balance penalties,  optimization parameters, such as the length of the planning horizon and the time.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th align="center">Default</th>
+<th align="center">Time series?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Time horizon (h)</code></td>
+<td align="left">Length of the planning horizon (in hours).</td>
+<td align="center">Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Time step (min)</code></td>
+<td align="left">Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc).</td>
+<td align="center"><code>60</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Power balance penalty ($/MW)</code></td>
+<td align="left">Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.</td>
+<td align="center"><code>1000.0</code></td>
+<td align="center">Y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example">Example</h4>
+<pre><code class="language-json">{
+    &quot;Parameters&quot;: {
+        &quot;Time horizon (h)&quot;: 4,
+        &quot;Power balance penalty ($/MW)&quot;: 1000.0
+    }
+}
+</code></pre>
+<h3 id="12-buses">1.2 Buses</h3>
+<p>This section describes the characteristics of each bus in the system. </p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th>Default</th>
+<th align="center">Time series?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Load (MW)</code></td>
+<td align="left">Fixed load connected to the bus (in MW).</td>
+<td>Required</td>
+<td align="center">Y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example_1">Example</h4>
+<pre><code class="language-json">{
+    &quot;Buses&quot;: {
+        &quot;b1&quot;: {
+            &quot;Load (MW)&quot;: 0.0
+        },
+        &quot;b2&quot;: {
+            &quot;Load (MW)&quot;: [
+                26.01527,
+                24.46212,
+                23.29725,
+                22.90897
+            ]
+        }
+    }
+}
+</code></pre>
+<h3 id="13-generators">1.3 Generators</h3>
+<p>This section describes all generators in the system, including thermal units, renewable units and virtual units.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th>Default</th>
+<th align="center">Time series?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Bus</code></td>
+<td align="left">Identifier of the bus where this generator is located (string).</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Production cost curve (MW)</code> and <code>Production cost curve ($)</code></td>
+<td align="left">Parameters describing the piecewise-linear production costs. See below for more details.</td>
+<td>Required</td>
+<td align="center">Y</td>
+</tr>
+<tr>
+<td align="left"><code>Startup costs ($)</code> and <code>Startup delays (h)</code></td>
+<td align="left">Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If <code>Startup costs ($)</code> and <code>Startup delays (h)</code> are set to <code>[300.0, 400.0]</code> and <code>[1, 4]</code>, for example, and the generator is shut down at time <code>00:00</code> (h:min), then it costs 300 to start up the generator at any time between <code>01:00</code> and <code>03:59</code>, and 400 to start the generator at time <code>04:00</code> or any time after that.  The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal <code>Minimum downtime (h)</code>.</td>
+<td><code>[0.0]</code> and <code>[1]</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Minimum uptime (h)</code></td>
+<td align="left">Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time <code>00:00</code> (h:min) and <code>Minimum uptime (h)</code> is set to 4, then the generator can only shut down at time <code>04:00</code>.</td>
+<td><code>1</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Minimum downtime (h)</code></td>
+<td align="left">Minimum amount of time the generator must stay offline after shutting down (in hours). For example, if the generator shuts down at time <code>00:00</code> (h:min) and <code>Minimum downtime (h)</code> is set to 4, then the generator can only start producing power again at time <code>04:00</code>.</td>
+<td><code>1</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Ramp up limit (MW)</code></td>
+<td align="left">Maximum increase in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and if this parameter is set to 40 MW, then the generator will produce at most 140 MW at time step 2.</td>
+<td><code>+inf</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Ramp down limit (MW)</code></td>
+<td align="left">Maximum decrease in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and this parameter is set to 40 MW, then the generator will produce at least 60 MW at time step 2.</td>
+<td><code>+inf</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Startup limit (MW)</code></td>
+<td align="left">Maximum amount of power a generator can produce immediately after starting up (in MW). For example, if <code>Startup limit (MW)</code> is set to 100 MW and the unit is off at time step 1, then it may produce at most 100 MW at time step 2.</td>
+<td><code>+inf</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Shutdown limit (MW)</code></td>
+<td align="left">Maximum amount of power a generator can produce immediately before shutting down (in MW). Specifically, the generator can only shut down at time step <code>t+1</code> if its production at time step <code>t</code> is below this limit.</td>
+<td><code>+inf</code></td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Initial status (h)</code></td>
+<td align="left">If set to a positive number, indicates the amount of time (in hours) the generator has been on at the beginning of the simulation, and if set to a negative number, the amount of time the generator has been off. For example, if <code>Initial status (h)</code> is <code>-2</code>, this means that the generator was off since <code>-02:00</code> (h:min). The simulation starts at time <code>00:00</code>. If <code>Initial status (h)</code> is <code>3</code>, this means that the generator was on since <code>-03:00</code>. A value of zero is not acceptable.</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Initial power (MW)</code></td>
+<td align="left">Amount of power the generator at time step <code>-1</code>, immediately before the planning horizon starts.</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Must run?</code></td>
+<td align="left">If <code>true</code>, the generator should be committed, even if that is not economical (Boolean).</td>
+<td><code>false</code></td>
+<td align="center">Y</td>
+</tr>
+<tr>
+<td align="left"><code>Provides spinning reserves?</code></td>
+<td align="left">If <code>true</code>, this generator may provide spinning reserves (Boolean).</td>
+<td><code>true</code></td>
+<td align="center">Y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="production-costs-and-limits">Production costs and limits</h4>
+<p>Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs 1400, 1600, 2200 and 2400 dollars to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, <code>Production cost curve (MW)</code> should be set to <code>[100, 110, 130, 135]</code>, and <code>Production cost curve ($)</code>  should be set to <code>[1400, 1600, 2200, 2400]</code>.
+Note that this curve also specifies the production limits. Specifically, the first point identifies the minimum power output when the unit is operational, while the last point identifies the maximum power output.</p>
+<p><center>
+    <img src="../images/cost_curve.png" style="max-width: 500px"/>
+    <div><b>Figure 1.</b> Piecewise-linear production cost curve.</div>
+    <br/>
+</center></p>
+<h4 id="additional-remarks">Additional remarks:</h4>
+<ul>
+<li>For time-dependent production limits or time-dependent production costs, the usage of nested arrays is allowed. For example,  if <code>Production cost curve (MW)</code> is set to <code>[5.0, [10.0, 12.0, 15.0, 20.0]]</code>, then the unit may generate at most 10, 12, 15 and 20 MW of power during time steps 1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed to at 5 MW.</li>
+<li>There is no limit to the number of piecewise-linear segments, and different generators may have a different number of segments.</li>
+<li>If <code>Production cost curve (MW)</code> and <code>Production cost curve ($)</code> both contain a single element, then the generator must produce exactly that amount of power when operational. To specify that the generator may produce any amount of power up to a certain limit <code>P</code>, the parameter <code>Production cost curve (MW)</code> should be set to <code>[0, P]</code>. </li>
+<li>Production cost curves must be convex.</li>
+</ul>
+<h4 id="example_2">Example</h4>
+<pre><code class="language-json">{
+    &quot;Generators&quot;: {
+        &quot;gen1&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Production cost curve (MW)&quot;: [100.0, 110.0, 130.0, 135.0],
+            &quot;Production cost curve ($)&quot;: [1400.0, 1600.0, 2200.0, 2400.0],
+            &quot;Startup costs ($)&quot;: [300.0, 400.0],
+            &quot;Startup delays (h)&quot;: [1, 4],
+            &quot;Ramp up limit (MW)&quot;: 232.68,
+            &quot;Ramp down limit (MW)&quot;: 232.68,
+            &quot;Startup limit (MW)&quot;: 232.68,
+            &quot;Shutdown limit (MW)&quot;: 232.68,
+            &quot;Minimum downtime (h)&quot;: 4,
+            &quot;Minimum uptime (h)&quot;: 4,
+            &quot;Initial status (h)&quot;: 12,
+            &quot;Must run?&quot;: false,
+            &quot;Provides spinning reserves?&quot;: true,
+        },
+        &quot;gen2&quot;: {
+            &quot;Bus&quot;: &quot;b5&quot;,
+            &quot;Production cost curve (MW)&quot;: [0.0, [10.0, 8.0, 0.0, 3.0]],
+            &quot;Production cost curve ($)&quot;: [0.0, 0.0],
+            &quot;Provides spinning reserves?&quot;: true,
+        }
+    }
+}
+</code></pre>
+<h3 id="14-price-sensitive-loads">1.4 Price-sensitive loads</h3>
+<p>This section describes components in the system which may increase or reduce their energy consumption according to the energy prices. Fixed loads (as described in the <code>buses</code> section) are always served, regardless of the price, unless there is significant congestion in the system or insufficient production capacity. Price-sensitive loads, on the other hand, are only served if it is economical to do so. </p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th align="center">Default</th>
+<th align="center">Time series?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Bus</code></td>
+<td align="left">Bus where the load is located. Multiple price-sensitive loads may be placed at the same bus.</td>
+<td align="center">Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Revenue ($/MW)</code></td>
+<td align="left">Revenue obtained for serving each MW of power to this load.</td>
+<td align="center">Required</td>
+<td align="center">Y</td>
+</tr>
+<tr>
+<td align="left"><code>Demand (MW)</code></td>
+<td align="left">Maximum amount of power required by this load. Any amount lower than this may be served.</td>
+<td align="center">Required</td>
+<td align="center">Y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example_3">Example</h4>
+<pre><code class="language-json">{
+    &quot;Price-sensitive loads&quot;: {
+        &quot;p1&quot;: {
+            &quot;Bus&quot;: &quot;b3&quot;,
+            &quot;Revenue ($/MW)&quot;: 23.0,
+            &quot;Demand (MW)&quot;: 50.0
+        }
+    }
+}
+</code></pre>
+<h3 id="15-transmission-lines">1.5 Transmission Lines</h3>
+<p>This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th>Default</th>
+<th align="center">Time series?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Source bus</code></td>
+<td align="left">Identifier of the bus where the transmission line originates.</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Target bus</code></td>
+<td align="left">Identifier of the bus where the transmission line reaches.</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Reactance (ohms)</code></td>
+<td align="left">Reactance of the transmission line (in ohms).</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Susceptance (S)</code></td>
+<td align="left">Susceptance  of the transmission line (in siemens).</td>
+<td>Required</td>
+<td align="center">N</td>
+</tr>
+<tr>
+<td align="left"><code>Normal flow limit (MW)</code></td>
+<td align="left">Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state.</td>
+<td><code>+inf</code></td>
+<td align="center">Y</td>
+</tr>
+<tr>
+<td align="left"><code>Emergency flow limit (MW)</code></td>
+<td align="left">Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line).</td>
+<td><code>+inf</code></td>
+<td align="center">Y</td>
+</tr>
+<tr>
+<td align="left"><code>Flow limit penalty ($/MW)</code></td>
+<td align="left">Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged.</td>
+<td><code>5000.0</code></td>
+<td align="center">Y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example_4">Example</h4>
+<pre><code class="language-json">{
+    &quot;Transmission lines&quot;: {
+        &quot;l1&quot;: {
+            &quot;Source bus&quot;: &quot;b1&quot;,
+            &quot;Target bus&quot;: &quot;b2&quot;,
+            &quot;Reactance (ohms)&quot;: 0.05917,
+            &quot;Susceptance (S)&quot;: 29.49686,
+            &quot;Normal flow limit (MW)&quot;: 15000.0,
+            &quot;Emergency flow limit (MW)&quot;: 20000.0,
+            &quot;Flow limit penalty ($/MW)&quot;: 5000.0
+        }
+    }
+}
+</code></pre>
+<h3 id="16-reserves">1.6 Reserves</h3>
+<p>This section describes the hourly amount of operating reserves required.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th>Default</th>
+<th align="center">Time series?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Spinning (MW)</code></td>
+<td align="left">Minimum amount of system-wide spinning reserves (in MW). Only generators which are online may provide this reserve.</td>
+<td><code>0.0</code></td>
+<td align="center">Y</td>
+</tr>
+</tbody>
+</table>
+<h4 id="example_5">Example</h4>
+<pre><code class="language-json">{
+    &quot;Reserves&quot;: {
+        &quot;Spinning (MW)&quot;: [
+            57.30552,
+            53.88429,
+            51.31838,
+            50.46307
+        ]
+    }
+}
+</code></pre>
+<h3 id="17-contingencies">1.7 Contingencies</h3>
+<p>This section describes credible contingency scenarios in the optimization, such as the loss of a transmission line or generator.</p>
+<table>
+<thead>
+<tr>
+<th align="left">Key</th>
+<th align="left">Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="left"><code>Affected generators</code></td>
+<td align="left">List of generators affected by this contingency. May be omitted if no generators are affected.</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td align="left"><code>Affected lines</code></td>
+<td align="left">List of transmission lines affected by this contingency. May be omitted if no lines are affected.</td>
+<td><code>[]</code></td>
+</tr>
+</tbody>
+</table>
+<h4 id="example_6">Example</h4>
+<pre><code class="language-json">{
+    &quot;Contingencies&quot;: {
+        &quot;c1&quot;: {
+            &quot;Affected lines&quot;: [&quot;l1&quot;, &quot;l2&quot;, &quot;l3&quot;],
+            &quot;Affected generators&quot;: [&quot;g1&quot;]
+        },
+        &quot;c2&quot;: {
+            &quot;Affected lines&quot;: [&quot;l4&quot;]
+        },
+    }
+}
+</code></pre>
+<h3 id="18-additional-remarks">1.8 Additional remarks</h3>
+<h4 id="time-series-parameters">Time series parameters</h4>
+<p>Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly <code>T</code> elements, if they are time-dependent, where <code>T</code> is the number of time steps in the planning horizon. For example, both formats below are valid when <code>T=3</code>:</p>
+<pre><code class="language-json">{
+    &quot;Load (MW)&quot;: 800.0,
+    &quot;Load (MW)&quot;: [800.0, 850.0, 730.0]
+}
+</code></pre>
+<p>The value <code>T</code> depends on both <code>Time horizon (h)</code> and <code>Time step (min)</code>, as the table below illustrates.</p>
+<table>
+<thead>
+<tr>
+<th>Time horizon (h)</th>
+<th>Time step (min)</th>
+<th>T</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>24</td>
+<td>60</td>
+<td>24</td>
+</tr>
+<tr>
+<td>24</td>
+<td>15</td>
+<td>96</td>
+</tr>
+<tr>
+<td>24</td>
+<td>5</td>
+<td>288</td>
+</tr>
+<tr>
+<td>36</td>
+<td>60</td>
+<td>36</td>
+</tr>
+<tr>
+<td>36</td>
+<td>15</td>
+<td>144</td>
+</tr>
+<tr>
+<td>36</td>
+<td>5</td>
+<td>432</td>
+</tr>
+</tbody>
+</table>
+<h4 id="current-limitations">Current limitations</h4>
+<ul>
+<li>All reserves are system-wide (no zonal reserves)</li>
+<li>Network topology remains the same for all time periods</li>
+<li>Only N-1 transmission contingencies are supported. Generator contingencies are not supported.</li>
+<li>Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.</li>
+</ul>
+<h2 id="2-output-data-format">2. Output Data Format</h2>
+<p>The output data format is also JSON-based, but it is not currently documented since we expect it to change significantly in a future version of the package.</p></div>
+        
+        
+    </div>
+
+    
+      <footer class="col-md-12 text-center">
+          
+          
+            <hr>
+            <p>
+            <small>Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.</small><br>
+            
+            <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
+            </p>
+          
+
+          
+          
+      </footer>
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="../js/bootstrap-3.0.3.min.js"></script>
+
+    
+    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        
+                <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/languages/julia.min.js"></script>
+        
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    <script>var base_url = ".."</script>
+    
+    <script src="../js/base.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script src="../js/mathjax.js"></script>
+    <script src="../search/main.js"></script>
+
+    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true">&times;</span>
+                    <span class="sr-only">Close</span>
+                </button>
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+    </body>
+
+</html>
