@@ -4,7 +4,7 @@
 
 JULIA := julia --color=yes --project=@.
 MKDOCS := ~/.local/bin/mkdocs
-VERSION := 0.1
+VERSION := 0.2
 
 build/sysimage.so: src/sysimage.jl Project.toml Manifest.toml
 	mkdir -p build
