@@ -1,11 +1,19 @@
-# UnitCommitment.jl
+# Changelog
 
-### Version 0.1.1 (Nov 16, 2020)
+## [Unreleased]
+
+### Added
+- Implement sub-hourly unit commitment
+
+### Changed
+- Renamed "Time (h)" parameter to "Time horizon (h)"
+
+## [0.1.1] - 2020-11-16
 
 * Fixes to MATLAB and PGLIB-UC instances
 * Add OR-LIB and Tejada19 instances
 * Improve documentation
 
-### Version 0.1.0 (Nov 6, 2020)
+## [0.1.0] - 2020-11-06
 
 * Initial public release
