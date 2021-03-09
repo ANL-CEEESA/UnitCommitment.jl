@@ -100,6 +100,20 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
         @test load.revenue  == [100. for t in 1:4]
         @test load.demand   == [50.  for t in 1:4]
     end
+
+    @testset "read sub-hourly" begin
+        instance = UnitCommitment.read_benchmark("test/case14-sub-hourly")
+        @test instance.time == 4
+        unit = instance.units[1]
+        @test unit.name == "g1"
+        @test unit.min_uptime == 2
+        @test unit.min_downtime == 2
+        @test length(unit.startup_categories) == 3
+        @test unit.startup_categories[1].delay == 2
+        @test unit.startup_categories[2].delay == 4
+        @test unit.startup_categories[3].delay == 6
+        @test unit.initial_status == -200
+    end
     
     @testset "slice" begin
         instance = UnitCommitment.read_benchmark("test/case14")

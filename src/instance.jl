@@ -97,12 +97,14 @@ end
 
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)
-    print(io, "UnitCommitmentInstance with ")
+    print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.units)) units, ")
     print(io, "$(length(instance.buses)) buses, ")
     print(io, "$(length(instance.lines)) lines, ")
     print(io, "$(length(instance.contingencies)) contingencies, ")
-    print(io, "$(length(instance.price_sensitive_loads)) price sensitive loads")
+    print(io, "$(length(instance.price_sensitive_loads)) price sensitive loads, ")
+    print(io, "$(instance.time) time steps")
+    print(io, ")")
 end
 
 
@@ -131,7 +133,21 @@ function from_json(json; fix=true)
     contingencies = Contingency[]
     lines = TransmissionLine[]
     loads = PriceSensitiveLoad[]
-    T = json["Parameters"]["Time (h)"]
+
+    function scalar(x; default=nothing)
+        x !== nothing || return default
+        x
+    end
+    
+    time_horizon = json["Parameters"]["Time (h)"]
+    if time_horizon === nothing
+        time_horizon = json["Parameters"]["Time horizon (h)"]
+    end
+    time_horizon !== nothing || error("Missing required parameter: Time horizon (h)")
+    time_step = scalar(json["Parameters"]["Time step (min)"], default=60)
+    (60 % time_step == 0) || error("Time step $time_step is not a divisor of 60")
+    time_multiplier = 60 ÷ time_step
+    T = time_horizon * time_multiplier
     
     name_to_bus = Dict{String, Bus}()
     name_to_line = Dict{String, TransmissionLine}()
@@ -141,11 +157,6 @@ function from_json(json; fix=true)
         x !== nothing || return default
         x isa Array || return [x for t in 1:T]
         return x
-    end
-    
-    function scalar(x; default=nothing)
-        x !== nothing || return default
-        x
     end
     
     # Read parameters
@@ -187,8 +198,13 @@ function from_json(json; fix=true)
         startup_costs  = scalar(dict["Startup costs (\$)"], default=[0.])
         startup_categories = StartupCategory[]
         for k in 1:length(startup_delays)
-            push!(startup_categories, StartupCategory(startup_delays[k],
-                                                      startup_costs[k]))
+            push!(
+                startup_categories,
+                StartupCategory(
+                    startup_delays[k] .* time_multiplier,
+                    startup_costs[k],
+                ),
+            )
         end
         
         # Read and validate initial conditions
@@ -202,26 +218,31 @@ function from_json(json; fix=true)
             if initial_status < 0 && initial_power > 1e-3
                 error("unit $unit_name has invalid initial power")
             end
+            initial_status *= time_multiplier
         end
         
-        unit = Unit(unit_name,
-                    bus,
-                    max_power,
-                    min_power,
-                    timeseries(dict["Must run?"], default=[false for t in 1:T]),
-                    min_power_cost,
-                    segments,
-                    scalar(dict["Minimum uptime (h)"], default=1),
-                    scalar(dict["Minimum downtime (h)"], default=1),
-                    scalar(dict["Ramp up limit (MW)"], default=1e6),
-                    scalar(dict["Ramp down limit (MW)"], default=1e6),
-                    scalar(dict["Startup limit (MW)"], default=1e6),
-                    scalar(dict["Shutdown limit (MW)"], default=1e6),
-                    initial_status,
-                    initial_power,
-                    timeseries(dict["Provides spinning reserves?"],
-                               default=[true for t in 1:T]),
-                    startup_categories)
+        unit = Unit(
+            unit_name,
+            bus,
+            max_power,
+            min_power,
+            timeseries(dict["Must run?"], default=[false for t in 1:T]),
+            min_power_cost,
+            segments,
+            scalar(dict["Minimum uptime (h)"], default=1) * time_multiplier,
+            scalar(dict["Minimum downtime (h)"], default=1) * time_multiplier,
+            scalar(dict["Ramp up limit (MW)"], default=1e6),
+            scalar(dict["Ramp down limit (MW)"], default=1e6),
+            scalar(dict["Startup limit (MW)"], default=1e6),
+            scalar(dict["Shutdown limit (MW)"], default=1e6),
+            initial_status,
+            initial_power,
+            timeseries(
+                dict["Provides spinning reserves?"],
+                default=[true for t in 1:T],
+            ),
+            startup_categories,
+        )
         push!(bus.units, unit)
         name_to_unit[unit_name] = unit
         push!(units, unit)
