@@ -17,19 +17,20 @@ Each section is described in detail below. For a complete example, see [case14](
 
 ### 1.1 Parameters
 
-This section describes system-wide parameters, such as power balance penalties, and optimization parameters, such as the length of the planning horizon.
+This section describes system-wide parameters, such as power balance penalties,  optimization parameters, such as the length of the planning horizon and the time.
 
 | Key                            | Description                                       | Default  | Time series?
 | :----------------------------- | :------------------------------------------------ | :------: | :------------:
-| `Time (h)`                     | Length of the planning horizon (in hours) | Required | N
-| `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time period. For example, if there is a shortage of 1 MW for three time periods, three times this amount will be charged. | `1000.0` | Y
+| `Time horizon (h)`                     | Length of the planning horizon (in hours). | Required | N
+| `Time step (min)` | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc). | `60` | N
+| `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged. | `1000.0` | Y
 
 
 #### Example
 ```json
 {
     "Parameters": {
-        "Time (h)": 4,
+        "Time horizon (h)": 4,
         "Power balance penalty ($/MW)": 1000.0
     }
 }
@@ -70,18 +71,18 @@ This section describes all generators in the system, including thermal units, re
 
 | Key                       | Description                                      | Default | Time series?
 | :------------------------ | :------------------------------------------------| ------- | :-----------:
-| `Bus`                     | Identifier of the bus where this generator is located (string) | Required | N
+| `Bus`                     | Identifier of the bus where this generator is located (string). | Required | N
 | `Production cost curve (MW)` and `Production cost curve ($)` | Parameters describing the piecewise-linear production costs. See below for more details. | Required | Y
-| `Startup costs ($)` and `Startup delays (h)` | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `t`, then it costs 300 to start up the generator at times `t+1`, `t+2` or `t+3`, and 400 to start the generator at time `t+4` or any time after that.  The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing. | `[0.0]` and `[1]` | N
-| `Minimum uptime (h)`      | Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time 1 and `Minimum uptime (h)` is set to 4, then the generator can only shut down at time 5. | `1` | N
-| `Minimum downtime (h)`    | Minimum amount of time the generator must stay offline after shutting down (in hours). For example, if the generator shuts down at time 1 and `Minimum downtime (h)` is set to 4, then the generator can only start producing power again at time 5. | `1` | N
-| `Ramp up limit (MW)`      | Maximum increase in production from one time period to the next (in MW). For example, if the generator is producing 100 MW at time 1 and if this parameter is set to 40 MW, then the generator will produce at most 140 MW at time 2. | `+inf` | N
-| `Ramp down limit (MW)`    | Maximum decrease in production from one time period to the next (in MW). For example, if the generator is producing 100 MW at time 1 and this parameter is set to 40 MW, then the generator will produce at least 60 MW at time 2. | `+inf` | N
-| `Startup limit (MW)`   | Maximum amount of power a generator can produce immediately after starting up (in MW). | `+inf` | N
-| `Shutdown limit (MW)`     | Maximum amount of power a generator can produce immediately before shutting down (in MW). Specifically, the generator can only shut down at time `t+1` if its production at time `t` is below this limit.  | `+inf` | N
-| `Initial status (h)`  | If set to a positive number, indicates the amount of time the generator has been on at the beginning of the simulation, and if set to a negative number, the amount of time the generator has been off. For example, if `Initial status (h)` is `-2`, this means that the generator was off at simulation time `-2` and `-1`. The simulation starts at time `0`. | Required | N
-| `Initial power (MW)`  | Amount of power the generator at time period `-1`, immediately before the planning horizon starts. | Required | N
-| `Must run?`               | If `true`, the generator should be committed, even that is not economical (Boolean). | `false` | Y
+| `Startup costs ($)` and `Startup delays (h)` | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `00:00` (h:min), then it costs 300 to start up the generator at any time between `01:00` and `03:59`, and 400 to start the generator at time `04:00` or any time after that.  The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal `Minimum downtime (h)`. | `[0.0]` and `[1]` | N
+| `Minimum uptime (h)`      | Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time `00:00` (h:min) and `Minimum uptime (h)` is set to 4, then the generator can only shut down at time `04:00`. | `1` | N
+| `Minimum downtime (h)`    | Minimum amount of time the generator must stay offline after shutting down (in hours). For example, if the generator shuts down at time `00:00` (h:min) and `Minimum downtime (h)` is set to 4, then the generator can only start producing power again at time `04:00`. | `1` | N
+| `Ramp up limit (MW)`      | Maximum increase in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and if this parameter is set to 40 MW, then the generator will produce at most 140 MW at time step 2. | `+inf` | N
+| `Ramp down limit (MW)`    | Maximum decrease in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and this parameter is set to 40 MW, then the generator will produce at least 60 MW at time step 2. | `+inf` | N
+| `Startup limit (MW)`   | Maximum amount of power a generator can produce immediately after starting up (in MW). For example, if `Startup limit (MW)` is set to 100 MW and the unit is off at time step 1, then it may produce at most 100 MW at time step 2.| `+inf` | N
+| `Shutdown limit (MW)`     | Maximum amount of power a generator can produce immediately before shutting down (in MW). Specifically, the generator can only shut down at time step `t+1` if its production at time step `t` is below this limit.  | `+inf` | N
+| `Initial status (h)`  | If set to a positive number, indicates the amount of time (in hours) the generator has been on at the beginning of the simulation, and if set to a negative number, the amount of time the generator has been off. For example, if `Initial status (h)` is `-2`, this means that the generator was off since `-02:00` (h:min). The simulation starts at time `00:00`. If `Initial status (h)` is `3`, this means that the generator was on since `-03:00`. A value of zero is not acceptable. | Required | N
+| `Initial power (MW)`  | Amount of power the generator at time step `-1`, immediately before the planning horizon starts. | Required | N
+| `Must run?`               | If `true`, the generator should be committed, even if that is not economical (Boolean). | `false` | Y
 | `Provides spinning reserves?`    | If `true`, this generator may provide spinning reserves (Boolean). | `true` | Y
 
 #### Production costs and limits
@@ -97,7 +98,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 
 #### Additional remarks:
 
-* For time-dependent production limits or time-dependent production costs, the usage of nested arrays is allowed. For example,  if `Production cost curve (MW)` is set to `[5.0, [10.0, 12.0, 15.0, 20.0]]`, then the unit may generate at most 10, 12, 15 and 20 MW of power during time periods 1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed to at 5 MW.
+* For time-dependent production limits or time-dependent production costs, the usage of nested arrays is allowed. For example,  if `Production cost curve (MW)` is set to `[5.0, [10.0, 12.0, 15.0, 20.0]]`, then the unit may generate at most 10, 12, 15 and 20 MW of power during time steps 1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed to at 5 MW.
 * There is no limit to the number of piecewise-linear segments, and different generators may have a different number of segments.
 * If `Production cost curve (MW)` and `Production cost curve ($)` both contain a single element, then the generator must produce exactly that amount of power when operational. To specify that the generator may produce any amount of power up to a certain limit `P`, the parameter `Production cost curve (MW)` should be set to `[0, P]`. 
 * Production cost curves must be convex.
@@ -167,9 +168,9 @@ This section describes the characteristics of transmission system, such as its t
 | `Target bus`           | Identifier of the bus where the transmission line reaches. | Required | N
 | `Reactance (ohms)`     | Reactance of the transmission line (in ohms). | Required | N
 | `Susceptance (S)`      | Susceptance  of the transmission line (in siemens). | Required | N
-| `Normal flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state. May be `null` is there is no limit. | `+inf` | Y
+| `Normal flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state. | `+inf` | Y
 | `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). | `+inf` | Y
-| `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time period. For example, if there is a thermal violation of 1 MW for three time periods, three times this amount will be charged. | `5000.0` | Y
+| `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` | Y
 
 #### Example
 
@@ -243,7 +244,7 @@ This section describes credible contingency scenarios in the optimization, such 
 
 #### Time series parameters
 
-Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly `T` elements, where `T` is the length of the planning horizon, if they are time-dependent. For example, both formats below are valid when `T=3`:
+Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly `T` elements, if they are time-dependent, where `T` is the number of time steps in the planning horizon. For example, both formats below are valid when `T=3`:
 
 ```json
 {
@@ -251,6 +252,17 @@ Many numerical properties in the JSON file can be specified either as a single f
     "Load (MW)": [800.0, 850.0, 730.0]
 }
 ```
+
+The value `T` depends on both `Time horizon (h)` and `Time step (min)`, as the table below illustrates.
+
+Time horizon (h) | Time step (min) | T
+-----------------|-----------------|----
+24               | 60              | 24
+24               | 15              | 96
+24               | 5               | 288
+36               | 60              | 36
+36               | 15              | 144
+36               | 5               | 432
 
 #### Current limitations
 
