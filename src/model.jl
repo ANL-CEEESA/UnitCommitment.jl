@@ -27,8 +27,8 @@ mutable struct UnitCommitmentModel
     eqs::DotDict
     exprs::DotDict
     instance::UnitCommitmentInstance
-    isf::Array{Float64, 2}
-    lodf::Array{Float64, 2}
+    isf::Matrix{Float64}
+    lodf::Matrix{Float64}
     obj::AffExpr
 end
 
@@ -410,9 +410,9 @@ end
 function enforce_transmission(;
                               model::UnitCommitmentModel,
                               violation::Violation,
-                              isf::Array{Float64,2},
-                              lodf::Array{Float64,2})::Nothing
-    
+                              isf::Matrix{Float64},
+                              lodf::Matrix{Float64})::Nothing
+
     instance, mip, vars = model.instance, model.mip, model.vars
     limit::Float64 = 0.0
         
