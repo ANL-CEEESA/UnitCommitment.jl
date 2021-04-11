@@ -12,15 +12,15 @@ import GZip
 mutable struct Bus
     name::String
     offset::Int
-    load::Array{Float64}
+    load::Vector{Float64}
     units::Array
     price_sensitive_loads::Array
 end
 
 
 mutable struct CostSegment
-    mw::Array{Float64}
-    cost::Array{Float64}
+    mw::Vector{Float64}
+    cost::Vector{Float64}
 end
 
 
@@ -33,11 +33,11 @@ end
 mutable struct Unit
     name::String
     bus::Bus
-    max_power::Array{Float64}
-    min_power::Array{Float64}
-    must_run::Array{Bool}
-    min_power_cost::Array{Float64}
-    cost_segments::Array{CostSegment}
+    max_power::Vector{Float64}
+    min_power::Vector{Float64}
+    must_run::Vector{Bool}
+    min_power_cost::Vector{Float64}
+    cost_segments::Vector{CostSegment}
     min_uptime::Int
     min_downtime::Int
     ramp_up_limit::Float64
@@ -46,8 +46,8 @@ mutable struct Unit
     shutdown_limit::Float64
     initial_status::Union{Int,Nothing}
     initial_power::Union{Float64,Nothing}
-    provides_spinning_reserves::Array{Bool}
-    startup_categories::Array{StartupCategory}
+    provides_spinning_reserves::Vector{Bool}
+    startup_categories::Vector{StartupCategory}
 end
 
 
@@ -58,41 +58,41 @@ mutable struct TransmissionLine
     target::Bus
     reactance::Float64
     susceptance::Float64
-    normal_flow_limit::Array{Float64}
-    emergency_flow_limit::Array{Float64}
-    flow_limit_penalty::Array{Float64}
+    normal_flow_limit::Vector{Float64}
+    emergency_flow_limit::Vector{Float64}
+    flow_limit_penalty::Vector{Float64}
 end
 
 
 mutable struct Reserves
-    spinning::Array{Float64}
+    spinning::Vector{Float64}
 end
 
 
 mutable struct Contingency
     name::String
-    lines::Array{TransmissionLine}
-    units::Array{Unit}
+    lines::Vector{TransmissionLine}
+    units::Vector{Unit}
 end
 
 
 mutable struct PriceSensitiveLoad
     name::String
     bus::Bus
-    demand::Array{Float64}
-    revenue::Array{Float64}
+    demand::Vector{Float64}
+    revenue::Vector{Float64}
 end
 
 
 mutable struct UnitCommitmentInstance
     time::Int
-    power_balance_penalty::Array{Float64}
-    units::Array{Unit}
-    buses::Array{Bus}
-    lines::Array{TransmissionLine}
+    power_balance_penalty::Vector{Float64}
+    units::Vector{Unit}
+    buses::Vector{Bus}
+    lines::Vector{TransmissionLine}
     reserves::Reserves
-    contingencies::Array{Contingency}
-    price_sensitive_loads::Array{PriceSensitiveLoad}
+    contingencies::Vector{Contingency}
+    price_sensitive_loads::Vector{PriceSensitiveLoad}
 end
 
 
