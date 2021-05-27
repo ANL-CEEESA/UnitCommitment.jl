@@ -1,13 +1,24 @@
-# Instances
+```{sectnum}
+---
+start: 3
+depth: 2
+suffix: .
+---
+```
+
+Instances
+=========
 
 UnitCommitment.jl provides a large collection of benchmark instances collected
 from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. 
-If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources.
+If you use these instances in your research, we request that you cite UnitCommitment.jl [UCJL], as well as the original sources.
 
 Raw instances files are [available at our GitHub repository](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances). Benchmark instances can also be loaded with
 `UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md).
 
-## 1. MATPOWER
+
+MATPOWER
+--------
 
 [MATPOWER](https://github.com/MATPOWER/matpower) is an open-source package for solving power flow problems in MATLAB and Octave. It contains a number of power flow test cases, which have been widely used in the power systems literature.
 
@@ -25,7 +36,7 @@ Because most MATPOWER test cases were originally designed for power flow studies
 
 For each MATPOWER test case, UC.jl provides two variations (`2017-02-01` and `2017-08-01`) corresponding respectively to a winter and to a summer test case.
 
-### 1.1 MATPOWER/UW-PSTCA
+### MATPOWER/UW-PSTCA
 
 A variety of smaller IEEE test cases, [compiled by University of Washington](http://labs.ece.uw.edu/pstca/), corresponding mostly to small portions of the American Electric Power System in the 1960s.
 
@@ -43,7 +54,7 @@ A variety of smaller IEEE test cases, [compiled by University of Washington](htt
 | `matpower/case300/2017-08-01` | 300 | 69 | 411 | 320 | [MTPWR, PSTCA]
 
 
-### 1.2 MATPOWER/Polish
+### MATPOWER/Polish
 
 Test cases based on the Polish 400, 220 and 110 kV networks, originally provided by **Roman Korab** (Politechnika Śląska) and corrected by the MATPOWER team.
 
@@ -66,7 +77,7 @@ Test cases based on the Polish 400, 220 and 110 kV networks, originally provided
 | `matpower/case3375wp/2017-02-01` | 3374 | 590 | 4161 | 3245 | [MTPWR]
 | `matpower/case3375wp/2017-08-01` | 3374 | 590 | 4161 | 3245 | [MTPWR]
 
-### 1.3 MATPOWER/PEGASE
+### MATPOWER/PEGASE
 
 Test cases from the [Pan European Grid Advanced Simulation and State Estimation (PEGASE) project](https://cordis.europa.eu/project/id/211407), describing part of the European high voltage transmission network.
 
@@ -83,7 +94,7 @@ Test cases from the [Pan European Grid Advanced Simulation and State Estimation 
 | `matpower/case13659pegase/2017-02-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
 | `matpower/case13659pegase/2017-08-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
 
-### 1.4 MATPOWER/RTE
+### MATPOWER/RTE
 
 Test cases from the R&D Division at [Reseau de Transport d'Electricite](https://www.rte-france.com) representing the size and complexity of the French very high voltage transmission network.
 
@@ -107,11 +118,12 @@ Test cases from the R&D Division at [Reseau de Transport d'Electricite](https://
 | `matpower/case6515rte/2017-08-01` | 6515 | 1368 | 9037 | 6063 | [MTPWR, JoFlMa16]
 
 
-## 2. PGLIB-UC Instances
+PGLIB-UC Instances
+------------------
 
 [PGLIB-UC](https://github.com/power-grid-lib/pglib-uc) is a benchmark library curated and maintained by the [IEEE PES Task Force on Benchmarks for Validation of Emerging Power System Algorithms](https://power-grid-lib.github.io/). These test cases have been used in [KnOsWa20].
 
-### 2.1 PGLIB-UC/California
+### PGLIB-UC/California
 
 Test cases based on publicly available data from the California ISO. For more details, see [PGLIB-UC case file overview](https://github.com/power-grid-lib/pglib-uc).
 
@@ -139,7 +151,7 @@ Test cases based on publicly available data from the California ISO. For more de
 | `pglib-uc/ca/Scenario400_reserves_5` | 1 | 611 | 0 | 0 | [KnOsWa20]
 
 
-### 2.2 PGLIB-UC/FERC
+### PGLIB-UC/FERC
 
 Test cases based on a publicly available [unit commitment test case produced by the Federal Energy Regulatory Commission](https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1). For more details, see [PGLIB-UC case file overview](https://github.com/power-grid-lib/pglib-uc).
 
@@ -171,7 +183,7 @@ Test cases based on a publicly available [unit commitment test case produced by 
 | `pglib-uc/ferc/2015-12-01_lw` | 1 | 935 | 0 | 0 | [KnOsWa20, KrHiOn12]
 
 
-### 2.3 PGLIB-UC/RTS-GMLC
+### PGLIB-UC/RTS-GMLC
 
 [RTS-GMLC](https://github.com/GridMod/RTS-GMLC) is an updated version of the RTS-96 test system produced by the United States Department of Energy's [Grid Modernization Laboratory Consortium](https://gmlc.doe.gov/). The PGLIB-UC/RTS-GMLC instances are modified versions of the original RTS-GMLC instances, with modified ramp-rates and without a transmission network. For more details, see [PGLIB-UC case file overview](https://github.com/power-grid-lib/pglib-uc).
 
@@ -190,7 +202,9 @@ Test cases based on a publicly available [unit commitment test case produced by 
 | `pglib-uc/rts_gmlc/2020-11-25` | 1 | 154 | 0 | 0 | [BaBlEh19]
 | `pglib-uc/rts_gmlc/2020-12-23` | 1 | 154 | 0 | 0 | [BaBlEh19]
 
-## 3. OR-LIB/UC
+
+OR-LIB/UC
+---------
 
 [OR-LIB](http://people.brunel.ac.uk/~mastjjb/jeb/info.html) is a collection of test data sets for a variety of operations research problems, including unit commitment. The UC instances in OR-LIB are synthetic instances generated by a [random problem generator](http://groups.di.unipi.it/optimize/Data/UC.html) developed by the [Operations Research Group at University of Pisa](http://groups.di.unipi.it/optimize/). These test cases have been used in [FrGe06] and many other publications.
 
@@ -239,7 +253,9 @@ Test cases based on a publicly available [unit commitment test case produced by 
 | `or-lib/200_0_8_w` | 24 | 1 | 200 | 0 | 0 | [ORLIB, FrGe06]
 | `or-lib/200_0_9_w` | 24 | 1 | 200 | 0 | 0 | [ORLIB, FrGe06]
 
-## 4. Tejada19
+
+Tejada19
+--------
 
  Test cases used in [TeLuSa19]. These instances are similar to OR-LIB/UC, in the sense that they use the same random problem generator, but are much larger.
 
@@ -295,7 +311,9 @@ Test cases based on a publicly available [unit commitment test case produced by 
 | `tejada19/UC_168h_192g` | 168 | 1 | 192 | 0 | 0 | [TeLuSa19]
 | `tejada19/UC_168h_199g` | 168 | 1 | 199 | 0 | 0 | [TeLuSa19]
 
-## 5. References
+
+References
+----------
 
 * [UCJL] **Alinson S. Xavier, Feng Qiu.** "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874)
 

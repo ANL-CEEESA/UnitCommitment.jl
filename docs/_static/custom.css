@@ -1,0 +1,49 @@
+h1.site-logo {
+    font-size: 30px !important;
+}
+
+h1.site-logo small {
+    font-size: 20px !important;
+}
+
+h1.site-logo {
+    font-size: 30px !important;
+}
+
+h1.site-logo small {
+    font-size: 20px !important;
+}
+
+tbody, thead, pre {
+    border: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+table td, th {
+    padding: 8px;
+}
+
+table p {
+    margin-bottom: 0;
+}
+
+table td code {
+    white-space: nowrap;
+}
+
+table tr,
+table th {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+table tr:last-child {
+    border-bottom: 0;
+}
+
+pre {
+    box-shadow: inherit !important;
+    background-color: #fff;
+}
+
+.text-align\:center {
+    text-align: center;
+}

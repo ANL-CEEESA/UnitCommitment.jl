@@ -3,7 +3,6 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 JULIA := julia --color=yes --project=@.
-MKDOCS := ~/.local/bin/mkdocs
 VERSION := 0.2
 
 build/sysimage.so: src/sysimage.jl Project.toml Manifest.toml
@@ -16,12 +15,9 @@ clean:
 	rm -rf build/*
 
 docs:
-	$(MKDOCS) build -d ../docs/$(VERSION)/
-	rm ../docs/$(VERSION)/*.ipynb
+	cd docs; make clean; make dirhtml
+	rsync -avP --delete-after docs/_build/dirhtml/ ../docs/$(VERSION)/
 	
-install-deps-docs:
-	pip install --user mkdocs mkdocs-cinder python-markdown-math
-
 test: build/sysimage.so
 	@echo Running tests...
 	$(JULIA) --sysimage build/sysimage.so -e 'using Pkg; Pkg.test("UnitCommitment")' | tee build/test.log

@@ -1,7 +1,18 @@
+```{sectnum}
+---
+start: 2
+depth: 2
+suffix: .
+---
+```
+
+
 Data Format
 ===========
 
-## 1. Input Data Format
+
+Input Data Format
+-----------------
 
 Instances are specified by JSON files containing the following main sections:
 
@@ -15,7 +26,7 @@ Instances are specified by JSON files containing the following main sections:
 
 Each section is described in detail below. For a complete example, see [case14](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances/matpower/case14).
 
-### 1.1 Parameters
+### Parameters
 
 This section describes system-wide parameters, such as power balance penalties,  optimization parameters, such as the length of the planning horizon and the time.
 
@@ -36,7 +47,7 @@ This section describes system-wide parameters, such as power balance penalties, 
 }
 ```
 
-### 1.2 Buses
+### Buses
 
 This section describes the characteristics of each bus in the system. 
 
@@ -65,7 +76,7 @@ This section describes the characteristics of each bus in the system.
 ```
 
 
-### 1.3 Generators
+### Generators
 
 This section describes all generators in the system, including thermal units, renewable units and virtual units.
 
@@ -73,7 +84,7 @@ This section describes all generators in the system, including thermal units, re
 | :------------------------ | :------------------------------------------------| ------- | :-----------:
 | `Bus`                     | Identifier of the bus where this generator is located (string). | Required | N
 | `Production cost curve (MW)` and `Production cost curve ($)` | Parameters describing the piecewise-linear production costs. See below for more details. | Required | Y
-| `Startup costs ($)` and `Startup delays (h)` | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `00:00` (h:min), then it costs 300 to start up the generator at any time between `01:00` and `03:59`, and 400 to start the generator at time `04:00` or any time after that.  The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal `Minimum downtime (h)`. | `[0.0]` and `[1]` | N
+| `Startup costs ($)` and `Startup delays (h)` | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `00:00` (h:min), then it costs \$300 to start up the generator at any time between `01:00` and `03:59`, and \$400 to start the generator at time `04:00` or any time after that.  The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal `Minimum downtime (h)`. | `[0.0]` and `[1]` | N
 | `Minimum uptime (h)`      | Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time `00:00` (h:min) and `Minimum uptime (h)` is set to 4, then the generator can only shut down at time `04:00`. | `1` | N
 | `Minimum downtime (h)`    | Minimum amount of time the generator must stay offline after shutting down (in hours). For example, if the generator shuts down at time `00:00` (h:min) and `Minimum downtime (h)` is set to 4, then the generator can only start producing power again at time `04:00`. | `1` | N
 | `Ramp up limit (MW)`      | Maximum increase in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and if this parameter is set to 40 MW, then the generator will produce at most 140 MW at time step 2. | `+inf` | N
@@ -87,11 +98,11 @@ This section describes all generators in the system, including thermal units, re
 
 #### Production costs and limits
 
-Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs 1400, 1600, 2200 and 2400 dollars to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, `Production cost curve (MW)` should be set to `[100, 110, 130, 135]`, and `Production cost curve ($)`  should be set to `[1400, 1600, 2200, 2400]`.
+Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs \$1400, \$1600, \$2200 and \$2400 to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, `Production cost curve (MW)` should be set to `[100, 110, 130, 135]`, and `Production cost curve ($)`  should be set to `[1400, 1600, 2200, 2400]`.
 Note that this curve also specifies the production limits. Specifically, the first point identifies the minimum power output when the unit is operational, while the last point identifies the maximum power output.
 
 <center>
-    <img src="../images/cost_curve.png" style="max-width: 500px"/>
+    <img src="../_static/cost_curve.png" style="max-width: 500px"/>
     <div><b>Figure 1.</b> Piecewise-linear production cost curve.</div>
     <br/>
 </center>
@@ -134,7 +145,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 }
 ```
 
-### 1.4 Price-sensitive loads
+### Price-sensitive loads
 
 This section describes components in the system which may increase or reduce their energy consumption according to the energy prices. Fixed loads (as described in the `buses` section) are always served, regardless of the price, unless there is significant congestion in the system or insufficient production capacity. Price-sensitive loads, on the other hand, are only served if it is economical to do so. 
 
@@ -158,7 +169,7 @@ This section describes components in the system which may increase or reduce the
 }
 ```
 
-### 1.5 Transmission Lines
+### Transmission Lines
 
 This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.
 
@@ -191,7 +202,7 @@ This section describes the characteristics of transmission system, such as its t
 ```
 
 
-### 1.6 Reserves
+### Reserves
 
 This section describes the hourly amount of operating reserves required.
 
@@ -215,7 +226,7 @@ This section describes the hourly amount of operating reserves required.
 }
 ```
 
-### 1.7 Contingencies
+### Contingencies
 
 This section describes credible contingency scenarios in the optimization, such as the loss of a transmission line or generator.
 
@@ -240,7 +251,7 @@ This section describes credible contingency scenarios in the optimization, such 
 }
 ```
 
-### 1.8 Additional remarks
+### Additional remarks
 
 #### Time series parameters
 
@@ -256,7 +267,7 @@ Many numerical properties in the JSON file can be specified either as a single f
 The value `T` depends on both `Time horizon (h)` and `Time step (min)`, as the table below illustrates.
 
 Time horizon (h) | Time step (min) | T
------------------|-----------------|----
+:---------------:|:---------------:|:----:
 24               | 60              | 24
 24               | 15              | 96
 24               | 5               | 288
@@ -264,13 +275,18 @@ Time horizon (h) | Time step (min) | T
 36               | 15              | 144
 36               | 5               | 432
 
-#### Current limitations
-
-* All reserves are system-wide (no zonal reserves)
-* Network topology remains the same for all time periods
-* Only N-1 transmission contingencies are supported. Generator contingencies are not supported.
-* Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
-
-## 2. Output Data Format
+Output Data Format
+------------------
 
 The output data format is also JSON-based, but it is not currently documented since we expect it to change significantly in a future version of the package.
+
+
+Current limitations
+-------------------
+
+* All reserves are system-wide. Zonal reserves are not currently supported.
+* Network topology remains the same for all time periods
+* Only N-1 transmission contingencies are supported. Generator contingencies are not currently supported.
+* Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
+
+
