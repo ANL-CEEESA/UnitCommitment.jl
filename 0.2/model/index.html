@@ -496,7 +496,7 @@
 <span class="c"># Load benchmark instance</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
 
-<span class="c"># Construct JuMP</span>
+<span class="c"># Construct JuMP model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
     <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
@@ -529,6 +529,7 @@
 </div>
 <div class="section" id="adding-components-to-a-bus">
 <h3>Adding components to a bus<a class="headerlink" href="#adding-components-to-a-bus" title="Permalink to this headline">¶</a></h3>
+<p>One of the most common modifications to a unit commitment model is adding a new customized system component to a bus. The script below shows how to add</p>
 </div>
 </div>
 <div class="section" id="references">
