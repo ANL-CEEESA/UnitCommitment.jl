@@ -127,7 +127,7 @@ function read(file::IO)::UnitCommitmentInstance
     return from_json(JSON.parse(file, dicttype=()->DefaultOrderedDict(nothing)))
 end
     
-function from_json(json; fix=true)
+function from_json(json; repair=true)
     units = Unit[]
     buses = Bus[]
     contingencies = Contingency[]
@@ -313,8 +313,8 @@ function from_json(json; fix=true)
                                       reserves,
                                       contingencies,
                                       loads)
-    if fix
-        UnitCommitment.fix!(instance)
+    if repair
+        UnitCommitment.repair!(instance)
     end
     return instance
 end

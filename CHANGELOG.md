@@ -4,10 +4,12 @@
 
 ### Added
 - Sub-hourly unit commitment
+- Added function `UnitCommitment.write(filename, solution)` to simplify saving the solution to a file
+- Added mathematical formulation to the documentation
 
 ### Changed
 - Renamed "Time (h)" parameter to "Time horizon (h)"
-- `UnitCommitment.build_model` now returns a plain JuMP model. The
+- The function `UnitCommitment.build_model` now returns a plain JuMP model. The
   struct `UnitCommitmentModel` has been completely removed. Accessing model elements can now be accomplished as follows:
     - `model.vars.x[idx]` becomes `model[:x][idx]`
     - `model.eqs.y[idx]` becomes `model[:eq_y][idx]`
@@ -15,7 +17,8 @@
     - `model.obj` becomes `model[:obj]`
     - `model.isf` becomes `model[:isf]`
     - `model.lodf` becomes `model[:lodf]`
-- Function `UnitCommitment.get_solution` has been renamed to `UnitCommitment.solution`
+- The function `UnitCommitment.get_solution` has been renamed to `UnitCommitment.solution`
+- The function `UnitCommitment.fix!(instance)`, which attempts to repair an invalid instance, has been renamed to `UnitCommitment.repair!(instance)`
 
 ## [0.1.1] - 2020-11-16
 

@@ -7,7 +7,7 @@ using Printf
 bin(x) = [xi > 0.5 for xi in x]
 
 """
-    fix!(instance)
+    repair!(instance)
 
 Verifies that the given unit commitment instance is valid and automatically fixes
 some validation errors if possible, issuing a warning for each error found.
@@ -15,7 +15,7 @@ If a validation error cannot be automatically fixed, issues an exception.
 
 Returns the number of validation errors found.
 """
-function fix!(instance::UnitCommitmentInstance)::Int
+function repair!(instance::UnitCommitmentInstance)::Int
     n_errors = 0
     
     for g in instance.units
