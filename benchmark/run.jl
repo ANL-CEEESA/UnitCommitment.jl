@@ -28,11 +28,15 @@ function main()
         @info @sprintf("Read problem in %.2f seconds", time_read)
 
         time_model = @elapsed begin
-            model = build_model(instance=instance,
-                                optimizer=optimizer_with_attributes(Gurobi.Optimizer,
-                                                                    "Threads" => 4,
-                                                                    "Seed" => rand(1:1000),
-                                                                    ))
+            model = build_model(
+                instance=instance,
+                optimizer=optimizer_with_attributes(
+                    Gurobi.Optimizer,
+                    "Threads" => 4,
+                    "Seed" => rand(1:1000),
+                ),
+                variable_names=true,
+            )
         end
 
         @info "Optimizing..."
@@ -43,7 +47,7 @@ function main()
     @info @sprintf("Total time was %.2f seconds", total_time)
 
     @info "Writing: $solution_filename"
-    solution = UnitCommitment.get_solution(model)
+    solution = UnitCommitment.solution(model)
     open(solution_filename, "w") do file
         JSON.print(file, solution, 2)
     end
@@ -51,11 +55,8 @@ function main()
     @info "Verifying solution..."
     UnitCommitment.validate(instance, solution) 
 
-    @info "Setting variable names..."
-    UnitCommitment.set_variable_names!(model)
-
     @info "Exporting model..."
-    JuMP.write_to_file(model.mip, model_filename)
+    JuMP.write_to_file(model, model_filename)
 end
 
 main()

@@ -53,7 +53,7 @@ model = UnitCommitment.build_model(
 UnitCommitment.optimize!(model)
 
 # Extract solution and write it to a file
-solution = UnitCommitment.get_solution(model)
+solution = UnitCommitment.solution(model)
 open("/path/to/output.json", "w") do file
     JSON.print(file, solution, 2)
 end

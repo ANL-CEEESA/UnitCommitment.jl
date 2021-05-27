@@ -4,7 +4,6 @@
 
 module UnitCommitment
     include("log.jl")
-    include("dotdict.jl")
     include("instance.jl")
     include("screening.jl")
     include("model.jl")

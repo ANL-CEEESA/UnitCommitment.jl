@@ -13,8 +13,8 @@ mutable struct Bus
     name::String
     offset::Int
     load::Vector{Float64}
-    units::Array
-    price_sensitive_loads::Array
+    units::Vector
+    price_sensitive_loads::Vector
 end
 
 

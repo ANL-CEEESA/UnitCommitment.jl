@@ -11,15 +11,19 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP
             line.normal_flow_limit[t] = 10.0
         end
         optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
-        model = build_model(instance=instance,
-                            optimizer=optimizer,
-                            variable_names=true)
+        model = build_model(
+            instance=instance,
+            optimizer=optimizer,
+            variable_names=true,
+        )
 
-        JuMP.write_to_file(model.mip, "test.mps")
+        @test name(model[:is_on]["g1", 1]) == "is_on[g1,1]"
+
+        JuMP.write_to_file(model, "test.mps")
 
         # Optimize and retrieve solution
         UnitCommitment.optimize!(model)
-        solution = get_solution(model)
+        solution = UnitCommitment.solution(model)
         
         # Verify solution
         @test UnitCommitment.validate(instance, solution)
