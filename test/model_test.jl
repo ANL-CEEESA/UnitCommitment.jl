@@ -16,14 +16,17 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP
             optimizer=optimizer,
             variable_names=true,
         )
-
         @test name(model[:is_on]["g1", 1]) == "is_on[g1,1]"
-
-        JuMP.write_to_file(model, "test.mps")
 
         # Optimize and retrieve solution
         UnitCommitment.optimize!(model)
         solution = UnitCommitment.solution(model)
+
+        # Write solution to a file
+        filename = tempname()
+        UnitCommitment.write(filename, solution)
+        loaded = JSON.parsefile(filename)
+        @test length(loaded["Is on"]) == 6
         
         # Verify solution
         @test UnitCommitment.validate(instance, solution)

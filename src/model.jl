@@ -578,7 +578,14 @@ function solution(model::JuMP.Model)
 end
 
 
-function fix!(model::JuMP.Model, solution)::Nothing
+function write(filename::AbstractString, solution::AbstractDict)::Nothing
+    open(filename, "w") do file
+        JSON.print(file, solution, 2)
+    end    
+end
+
+
+function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
     instance, T = model[:instance], model[:instance].time
     is_on = model[:is_on]
     prod_above = model[:prod_above]
@@ -600,7 +607,7 @@ function fix!(model::JuMP.Model, solution)::Nothing
 end
 
 
-function set_warm_start!(model::JuMP.Model, solution)::Nothing
+function set_warm_start!(model::JuMP.Model, solution::AbstractDict)::Nothing
     instance, T = model[:instance], model[:instance].time
     is_on = model[:is_on]
     prod_above = model[:prod_above]
