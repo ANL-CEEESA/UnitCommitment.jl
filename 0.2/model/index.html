@@ -1,0 +1,572 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>4. JuMP Model &#8212; UnitCommitment.jl&lt;br/&gt;&lt;small&gt;0.2&lt;/small&gt;</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <script type="text/x-mathjax-config">MathJax.Hub.Config({"tex2jax": {"inlineMath": [["\\(", "\\)"]], "displayMath": [["\\[", "\\]"]], "processRefs": false, "processEnvironments": false}})</script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="prev" title="3. Instances" href="../instances/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../">
+      
+      
+      <h1 class="site-logo" id="site-title">UnitCommitment.jl<br/><small>0.2</small></h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search/" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../usage/">
+   <span class="sectnum">
+    1.
+   </span>
+   Usage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../format/">
+   <span class="sectnum">
+    2.
+   </span>
+   Data Format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../instances/">
+   <span class="sectnum">
+    3.
+   </span>
+   Instances
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   <span class="sectnum">
+    4.
+   </span>
+   JuMP Model
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/model.md.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#decision-variables">
+   <span class="sectnum">
+    4.1.
+   </span>
+   Decision variables
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generators">
+     Generators
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#buses">
+     Buses
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#price-sensitive-loads">
+     Price-sensitive loads
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#transmission-lines">
+     Transmission lines
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#objective-function">
+   <span class="sectnum">
+    4.2.
+   </span>
+   Objective function
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#constraints">
+   <span class="sectnum">
+    4.3.
+   </span>
+   Constraints
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#inspecting-and-modifying-the-model">
+   <span class="sectnum">
+    4.4.
+   </span>
+   Inspecting and modifying the model
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#accessing-decision-variables">
+     Accessing decision variables
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#modifying-the-model">
+     Modifying the model
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-components-to-a-bus">
+     Adding components to a bus
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   <span class="sectnum">
+    4.5.
+   </span>
+   References
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="jump-model">
+<h1><span class="sectnum">4.</span> JuMP Model<a class="headerlink" href="#jump-model" title="Permalink to this headline">¶</a></h1>
+<p>In this page, we describe the JuMP optimization model produced by the function <code class="docutils literal notranslate"><span class="pre">UnitCommitment.build_model</span></code>. A detailed understanding of this model is not necessary if you are just interested in using the package to solve some standard unit commitment cases, but it may be useful, for example, if you need to solve a slightly different problem, with additional variables and constraints. The notation in this page generally follows [KnOsWa20].</p>
+<div class="section" id="decision-variables">
+<h2><span class="sectnum">4.1.</span> Decision variables<a class="headerlink" href="#decision-variables" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="generators">
+<h3>Generators<a class="headerlink" href="#generators" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="text-align:center head"><p>Symbol</p></th>
+<th class="head"><p>Description</p></th>
+<th class="text-align:center head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_on[g,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(u_{g}(t)\)</span></p></td>
+<td><p>True if generator <code class="docutils literal notranslate"><span class="pre">g</span></code> is on at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>Binary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">switch_on[g,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(v_{g}(t)\)</span></p></td>
+<td><p>True is generator <code class="docutils literal notranslate"><span class="pre">g</span></code> switches on at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>Binary</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">switch_off[g,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(w_{g}(t)\)</span></p></td>
+<td><p>True if generator <code class="docutils literal notranslate"><span class="pre">g</span></code> switches off at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>Binary</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">prod_above[g,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(p'_{g}(t)\)</span></p></td>
+<td><p>Amount of power produced by generator <code class="docutils literal notranslate"><span class="pre">g</span></code> above its minimum power output at time <code class="docutils literal notranslate"><span class="pre">t</span></code>. For example, if the minimum power of generator <code class="docutils literal notranslate"><span class="pre">g</span></code> is 100 MW and <code class="docutils literal notranslate"><span class="pre">g</span></code> is producing 115 MW of power at time <code class="docutils literal notranslate"><span class="pre">t</span></code>, then <code class="docutils literal notranslate"><span class="pre">prod_above[g,t]</span></code> equals <code class="docutils literal notranslate"><span class="pre">15.0</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">segprod[g,t,k]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(p^k_g(t)\)</span></p></td>
+<td><p>Amount of power from piecewise linear segment <code class="docutils literal notranslate"><span class="pre">k</span></code> produced by generator <code class="docutils literal notranslate"><span class="pre">g</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code>. For example, if cost curve for generator <code class="docutils literal notranslate"><span class="pre">g</span></code> is defined by the points <code class="docutils literal notranslate"><span class="pre">(100,</span> <span class="pre">1400)</span></code>, <code class="docutils literal notranslate"><span class="pre">(110,</span> <span class="pre">1600)</span></code>, <code class="docutils literal notranslate"><span class="pre">(130,</span> <span class="pre">2200)</span></code> and <code class="docutils literal notranslate"><span class="pre">(135,</span> <span class="pre">2400)</span></code>, and if the generator is producing 115 MW of power at time <code class="docutils literal notranslate"><span class="pre">t</span></code>, then <code class="docutils literal notranslate"><span class="pre">segprod[g,t,:]</span></code> equals <code class="docutils literal notranslate"><span class="pre">[10.0,</span> <span class="pre">5.0,</span> <span class="pre">0.0]</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">reserve[g,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(r_g(t)\)</span></p></td>
+<td><p>Amount of reserves provided by generator <code class="docutils literal notranslate"><span class="pre">g</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">startup[g,t,s]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(\delta^s_g(t)\)</span></p></td>
+<td><p>True if generator <code class="docutils literal notranslate"><span class="pre">g</span></code> switches on at time <code class="docutils literal notranslate"><span class="pre">t</span></code> incurring start-up costs from start-up category <code class="docutils literal notranslate"><span class="pre">s</span></code>.</p></td>
+<td class="text-align:center"><p>Binary</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="buses">
+<h3>Buses<a class="headerlink" href="#buses" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="text-align:center head"><p>Symbol</p></th>
+<th class="head"><p>Description</p></th>
+<th class="text-align:center head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">net_injection[b,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(n_b(t)\)</span></p></td>
+<td><p>Net injection at bus <code class="docutils literal notranslate"><span class="pre">b</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">curtail[b,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(s^+_b(t)\)</span></p></td>
+<td><p>Amount of load curtailed at bus <code class="docutils literal notranslate"><span class="pre">b</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="price-sensitive-loads">
+<h3>Price-sensitive loads<a class="headerlink" href="#price-sensitive-loads" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="text-align:center head"><p>Symbol</p></th>
+<th class="head"><p>Description</p></th>
+<th class="text-align:center head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">loads[s,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(d_{s}(t)\)</span></p></td>
+<td><p>Amount of power served to price-sensitive load <code class="docutils literal notranslate"><span class="pre">s</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="transmission-lines">
+<h3>Transmission lines<a class="headerlink" href="#transmission-lines" title="Permalink to this headline">¶</a></h3>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="text-align:center head"><p>Symbol</p></th>
+<th class="head"><p>Description</p></th>
+<th class="text-align:center head"><p>Unit</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">flow[l,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(f_l(t)\)</span></p></td>
+<td><p>Power flow on line <code class="docutils literal notranslate"><span class="pre">l</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">overflow[l,t]</span></code></p></td>
+<td class="text-align:center"><p><span class="math notranslate nohighlight">\(f^+_l(t)\)</span></p></td>
+<td><p>Amount of flow above the limit for line <code class="docutils literal notranslate"><span class="pre">l</span></code> at time <code class="docutils literal notranslate"><span class="pre">t</span></code>.</p></td>
+<td class="text-align:center"><p>MW</p></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition danger">
+<p class="admonition-title">Danger</p>
+<p>Since transmission and N-1 security constraints are enforced in a lazy way, most of the variables <code class="docutils literal notranslate"><span class="pre">flow[l,t]</span></code> and <code class="docutils literal notranslate"><span class="pre">overflow[l,t]</span></code> are never added to the model. Accessing <code class="docutils literal notranslate"><span class="pre">model[:flow][l,t]</span></code>, for example, without first checking that the variable exists will likely generate an error.</p>
+</div>
+</div>
+</div>
+<div class="section" id="objective-function">
+<h2><span class="sectnum">4.2.</span> Objective function<a class="headerlink" href="#objective-function" title="Permalink to this headline">¶</a></h2>
+<div class="math notranslate nohighlight">
+\[\begin{split}
+\begin{align}
+    \text{minimize} \;\; &amp;
+        \sum_{t \in \mathcal{T}}
+          \sum_{g \in \mathcal{G}}
+          C^\text{min}_g(t) u_g(t) \\
+    &amp;
+        + \sum_{t \in \mathcal{T}}
+          \sum_{g \in \mathcal{G}}
+          \sum_{g \in \mathcal{K}_g}
+          C^k_g(t) p^k_g(t) \\
+    &amp;
+        + \sum_{t \in \mathcal{T}}
+          \sum_{g \in \mathcal{G}}
+          \sum_{s \in \mathcal{S}_g}
+          C^s_{g}(t) \delta^s_g(t) \\
+    &amp;
+        + \sum_{t \in \mathcal{T}}
+          \sum_{l \in \mathcal{L}}
+          C^\text{overflow}_{l}(t) f^+_l(t) \\
+    &amp;
+        + \sum_{t \in \mathcal{T}}
+           \sum_{b \in \mathcal{B}}
+           C^\text{curtail}(t) s^+_b(t) \\
+    &amp;
+        - \sum_{t \in \mathcal{T}}
+           \sum_{s \in \mathcal{PS}}
+           R_{s}(t) d_{s}(t) \\
+          
+\end{align}
+\end{split}\]</div>
+<p>where</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\mathcal{B}\)</span> is the set of buses</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{G}\)</span> is the set of generators</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{L}\)</span> is the set of transmission lines</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{PS}\)</span> is the set of price-sensitive loads</p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{S}_g\)</span> is the set of start-up categories for generator <span class="math notranslate nohighlight">\(g\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mathcal{T}\)</span> is the set of time steps</p></li>
+<li><p><span class="math notranslate nohighlight">\(C^\text{curtail}(t)\)</span> is the curtailment penalty (in $/MW)</p></li>
+<li><p><span class="math notranslate nohighlight">\(C^\text{min}_g(t)\)</span> is the cost of keeping generator <span class="math notranslate nohighlight">\(g\)</span> on and producing at minimum power during time <span class="math notranslate nohighlight">\(t\)</span> (in $)</p></li>
+<li><p><span class="math notranslate nohighlight">\(C^\text{overflow}_{l}(t)\)</span> is the flow limit penalty for line <span class="math notranslate nohighlight">\(l\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> (in $/MW)</p></li>
+<li><p><span class="math notranslate nohighlight">\(C^k_g(t)\)</span> is the cost for generator <span class="math notranslate nohighlight">\(g\)</span> to produce 1 MW of power at time <span class="math notranslate nohighlight">\(t\)</span> under piecewise linear segment <span class="math notranslate nohighlight">\(k\)</span></p></li>
+<li><p><span class="math notranslate nohighlight">\(C^s_{g}(t)\)</span> is the cost of starting up generator <span class="math notranslate nohighlight">\(g\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> under start-up category <span class="math notranslate nohighlight">\(s\)</span> (in $)</p></li>
+<li><p><span class="math notranslate nohighlight">\(R_{s}(t)\)</span> is the revenue obtained from serving price-sensitive load <span class="math notranslate nohighlight">\(s\)</span> at time <span class="math notranslate nohighlight">\(t\)</span> (in $/MW)</p></li>
+</ul>
+</div>
+<div class="section" id="constraints">
+<h2><span class="sectnum">4.3.</span> Constraints<a class="headerlink" href="#constraints" title="Permalink to this headline">¶</a></h2>
+<p>TODO</p>
+</div>
+<div class="section" id="inspecting-and-modifying-the-model">
+<h2><span class="sectnum">4.4.</span> Inspecting and modifying the model<a class="headerlink" href="#inspecting-and-modifying-the-model" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="accessing-decision-variables">
+<h3>Accessing decision variables<a class="headerlink" href="#accessing-decision-variables" title="Permalink to this headline">¶</a></h3>
+<p>After building a model using <code class="docutils literal notranslate"><span class="pre">UnitCommitment.build_model</span></code>, it is possible to obtain a reference to the decision variables by calling <code class="docutils literal notranslate"><span class="pre">model[:varname][index]</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">model[:is_on][&quot;g1&quot;,1]</span></code> returns a direct reference to the JuMP variable indicating whether generator named “g1” is on at time 1. The script below illustrates how to build a model, solve it and display the solution without using the function <code class="docutils literal notranslate"><span class="pre">UnitCommitment.solution</span></code>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
+<span class="k">using</span> <span class="n">Printf</span>
+<span class="k">using</span> <span class="n">JuMP</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
+
+<span class="c"># Load benchmark instance</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
+
+<span class="c"># Build JuMP model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># Solve the model</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c"># Display commitment status</span>
+<span class="k">for</span> <span class="n">g</span> <span class="k">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">units</span>
+    <span class="k">for</span> <span class="n">t</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">instance</span><span class="o">.</span><span class="n">time</span>
+        <span class="nd">@printf</span><span class="p">(</span>
+            <span class="s">&quot;</span><span class="si">%-10s</span><span class="s"> </span><span class="si">%5d</span><span class="s"> </span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%5.1f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
+            <span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">t</span><span class="p">,</span>
+            <span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">]),</span>
+            <span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="ss">:switch_on</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">]),</span>
+            <span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="ss">:switch_off</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">]),</span>
+        <span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="modifying-the-model">
+<h3>Modifying the model<a class="headerlink" href="#modifying-the-model" title="Permalink to this headline">¶</a></h3>
+<p>Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it. The script below shows how can this be accomplished. For more information on modifying an existing model, <a class="reference external" href="https://jump.dev/JuMP.jl/stable/manual/variables/">see the JuMP documentation</a>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
+<span class="k">using</span> <span class="n">JuMP</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
+
+<span class="c"># Load benchmark instance</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
+
+<span class="c"># Construct JuMP</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># Fix a decision variable to 1.0</span>
+<span class="n">JuMP</span><span class="o">.</span><span class="n">fix</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="s">&quot;g1&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+    <span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">force</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># Change the objective function</span>
+<span class="n">JuMP</span><span class="o">.</span><span class="n">set_objective_coefficient</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">[</span><span class="ss">:switch_on</span><span class="p">][</span><span class="s">&quot;g2&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
+    <span class="mf">1000.0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># Create a new constraint</span>
+<span class="nd">@constraint</span><span class="p">(</span>
+    <span class="n">model</span><span class="p">,</span>
+    <span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="s">&quot;g3&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="s">&quot;g4&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># Solve the model</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-components-to-a-bus">
+<h3>Adding components to a bus<a class="headerlink" href="#adding-components-to-a-bus" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+<div class="section" id="references">
+<h2><span class="sectnum">4.5.</span> References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[KnOsWa20] <strong>Bernard Knueven, James Ostrowski and Jean-Paul Watson.</strong> “On Mixed-Integer Programming Formulations for the Unit Commitment Problem”. INFORMS Journal on Computing (2020). <a class="reference external" href="https://doi.org/10.1287/ijoc.2019.0944">DOI: 10.1287/ijoc.2019.0944</a></p></li>
+</ul>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="../instances/" title="previous page"><span class="sectnum">3.</span> Instances</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
