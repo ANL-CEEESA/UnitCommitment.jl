@@ -35,8 +35,17 @@ function handle_message(logger::TimeLogger,
                         kwargs...)
     elapsed_time = time() - logger.initial_time
     time_string = @sprintf("[%12.3f] ", elapsed_time)
+    
+    if level >= Logging.Error
+        color = :light_red
+    elseif level >= Logging.Warn
+        color = :light_yellow
+    else
+        color = :light_green
+    end
+    
     if level >= logger.screen_log_level
-        print(time_string)
+        printstyled(time_string, color=color)
         println(message)
     end
     if logger.file !== nothing && level >= logger.io_log_level
@@ -45,6 +54,11 @@ function handle_message(logger::TimeLogger,
         write(logger.file, "\n")
         flush(logger.file)
     end
+end
+
+function setup_logger()
+    initial_time = time()
+    global_logger(TimeLogger(initial_time=initial_time))
 end
 
 export TimeLogger

@@ -3,6 +3,9 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using Test
+using UnitCommitment
+
+UnitCommitment.setup_logger()
 
 @testset "UnitCommitment" begin
     include("instance_test.jl")
