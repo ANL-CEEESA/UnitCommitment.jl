@@ -8,6 +8,8 @@ on:
     paths:
       - '**.jl'
       - '**.toml'
+  schedule:
+    - cron: '45 10 * * *'
 jobs:
   test:
     runs-on: ${{ matrix.os }}
