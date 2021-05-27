@@ -67,6 +67,6 @@ maxdepth: 2
 usage.md
 format.md
 instances.md
-about.md
+model.md
 ```
 
