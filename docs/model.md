@@ -48,9 +48,9 @@ Name | Symbol | Description | Unit
 `flow[l,t]` | $f_l(t)$ | Power flow on line `l` at time `t`. | MW
 `overflow[l,t]` | $f^+_l(t)$ | Amount of flow above the limit for line `l` at time `t`. | MW
 
-```{danger}
+```{warning}
 
-Since transmission and N-1 security constraints are enforced in a lazy way, most of the variables `flow[l,t]` and `overflow[l,t]` are never added to the model. Accessing `model[:flow][l,t]`, for example, without first checking that the variable exists will likely generate an error.
+Since transmission and N-1 security constraints are enforced in a lazy way, most of the `flow[l,t]` variables are never added to the model. Accessing `model[:flow][l,t]` without first checking that the variable exists will likely generate an error.
 ```
 
 Objective function
