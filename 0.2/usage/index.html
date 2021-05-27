@@ -1,324 +1,369 @@
+
 <!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1. Usage &#8212; UnitCommitment.jl&lt;br/&gt;&lt;small&gt;0.2&lt;/small&gt;</title>
     
-    
-    
-    <link rel="shortcut icon" href="../img/favicon.ico">
-
-    
-    <title>Usage - UnitCommitment.jl</title>
-    
-
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/v4-shims.css">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/hack-font@3.3.0/build/web/hack.min.css">
-    <link href='//rsms.me/inter/inter.css' rel='stylesheet' type='text/css'>
-    <link href='//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,700italic,400,300,600,700&subset=latin-ext,latin' rel='stylesheet' type='text/css'>
-    <link href="../css/bootstrap-custom.min.css" rel="stylesheet">
-    <link href="../css/base.min.css" rel="stylesheet">
-    <link href="../css/cinder.min.css" rel="stylesheet">
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
 
     
-        
-        <link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/styles/github.min.css">
-        
-    
-    <link href="../css/custom.css" rel="stylesheet">
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!--[if lt IE 9]>
-            <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
-        <![endif]-->
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
 
     
+      
 
-     
-</head>
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
 
-<body>
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="2. Data Format" href="../format/" />
+    <link rel="prev" title="UnitCommitment.jl" href="../" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
 
-    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+    
 
-        <!-- Collapsed navigation -->
-        <div class="navbar-header">
-            <!-- Expander button -->
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../">
+      
+      
+      <h1 class="site-logo" id="site-title">UnitCommitment.jl<br/><small>0.2</small></h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search/" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   <span class="sectnum">
+    1.
+   </span>
+   Usage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../format/">
+   <span class="sectnum">
+    2.
+   </span>
+   Data Format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../instances/">
+   <span class="sectnum">
+    3.
+   </span>
+   Instances
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
             </button>
             
-
-            <!-- Main title -->
-
             
-              <a class="navbar-brand" href="..">UnitCommitment.jl</a>
-            
-        </div>
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
 
-        <!-- Expanded navigation -->
-        <div class="navbar-collapse collapse">
-                <!-- Main navigation -->
-                <ul class="nav navbar-nav">
-                
-                
-                    <li >
-                        <a href="..">Home</a>
-                    </li>
-                
-                
-                
-                    <li class="active">
-                        <a href="./">Usage</a>
-                    </li>
-                
-                
-                
-                    <li >
-                        <a href="../format/">Format</a>
-                    </li>
-                
-                
-                
-                    <li >
-                        <a href="../instances/">Instances</a>
-                    </li>
-                
-                
-                </ul>
-
-            <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a href="#" data-toggle="modal" data-target="#mkdocs_search_modal">
-                            <i class="fas fa-search"></i> Search
-                        </a>
-                    </li>
-                    <li >
-                        <a rel="prev" href="..">
-                            <i class="fas fa-arrow-left"></i> Previous
-                        </a>
-                    </li>
-                    <li >
-                        <a rel="next" href="../format/">
-                            Next <i class="fas fa-arrow-right"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="https://github.com/ANL-CEEESA/unitcommitment.jl/edit/dev/src/docs/usage.md"><i class="fab fa-github"></i> Edit on GitHub</a>
-                    </li>
-            </ul>
-        </div>
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/usage.md.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
     </div>
 </div>
 
-    <div class="container">
-        
-        
-        <div class="col-md-3"><div class="bs-sidebar hidden-print affix well" role="complementary">
-    <ul class="nav bs-sidenav">
-        <li class="first-level active"><a href="#usage">Usage</a></li>
-            <li class="second-level"><a href="#1-installation">1. Installation</a></li>
-                
-            <li class="second-level"><a href="#2-typical-usage">2. Typical Usage</a></li>
-                
-                <li class="third-level"><a href="#21-solving-user-provided-instances">2.1 Solving user-provided instances</a></li>
-                <li class="third-level"><a href="#22-solving-benchmark-instances">2.2 Solving benchmark instances</a></li>
-            <li class="second-level"><a href="#3-advanced-usage">3. Advanced usage</a></li>
-                
-                <li class="third-level"><a href="#31-modifying-the-formulation">3.1 Modifying the formulation</a></li>
-                <li class="third-level"><a href="#32-generating-initial-conditions">3.2 Generating initial conditions</a></li>
-                <li class="third-level"><a href="#33-verifying-solutions">3.3 Verifying solutions</a></li>
-    </ul>
-</div></div>
-        <div class="col-md-9" role="main">
+            <!-- Source interaction buttons -->
 
-<h1 id="usage">Usage</h1>
-<h2 id="1-installation">1. Installation</h2>
-<p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.5</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/platform.html">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p>
-<pre><code class="language-text">pkg&gt; add UnitCommitment
-</code></pre>
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#installation">
+   <span class="sectnum">
+    1.1.
+   </span>
+   Installation
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#typical-usage">
+   <span class="sectnum">
+    1.2.
+   </span>
+   Typical Usage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#solving-user-provided-instances">
+     Solving user-provided instances
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#solving-benchmark-instances">
+     Solving benchmark instances
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#advanced-usage">
+   <span class="sectnum">
+    1.3.
+   </span>
+   Advanced usage
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#modifying-the-formulation">
+     Modifying the formulation
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#generating-initial-conditions">
+     Generating initial conditions
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#verifying-solutions">
+     Verifying solutions
+    </a>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="usage">
+<h1><span class="sectnum">1.</span> Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installation">
+<h2><span class="sectnum">1.1.</span> Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>UnitCommitment.jl was tested and developed with <a class="reference external" href="https://julialang.org/">Julia 1.6</a>. To install Julia, please follow the <a class="reference external" href="https://julialang.org/downloads/platform.html">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code class="docutils literal notranslate"><span class="pre">]</span></code> to open the package manager, then type:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pkg&gt; add UnitCommitment@0.2
+</pre></div>
+</div>
 <p>To test that the package has been correctly installed, run:</p>
-<pre><code class="language-text">pkg&gt; test UnitCommitment
-</code></pre>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pkg&gt; test UnitCommitment
+</pre></div>
+</div>
 <p>If all tests pass, the package should now be ready to be used by any Julia script on the machine.</p>
-<p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.</p>
-<h2 id="2-typical-usage">2. Typical Usage</h2>
-<h3 id="21-solving-user-provided-instances">2.1 Solving user-provided instances</h3>
-<p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See the <a href="">data format page</a> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to read the instance from file, construct the optimization model, run the optimization and extract the optimal solution.</p>
-<pre><code class="language-julia">using Cbc
-using JSON
-using UnitCommitment
+<p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a class="reference external" href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a class="reference external" href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a class="reference external" href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.</p>
+</div>
+<div class="section" id="typical-usage">
+<h2><span class="sectnum">1.2.</span> Typical Usage<a class="headerlink" href="#typical-usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="solving-user-provided-instances">
+<h3>Solving user-provided instances<a class="headerlink" href="#solving-user-provided-instances" title="Permalink to this headline">¶</a></h3>
+<p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See the <span class="xref myst">data format page</span> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to read the instance from file, construct the optimization model, run the optimization and extract the optimal solution.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
+<span class="k">using</span> <span class="n">JSON</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
 
-# Read instance
-instance = UnitCommitment.read(&quot;/path/to/input.json&quot;)
+<span class="c"># Read instance</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;/path/to/input.json&quot;</span><span class="p">)</span>
 
-# Construct optimization model
-model = UnitCommitment.build_model(instance=instance,
-                                   optimizer=Cbc.Optimizer)
+<span class="c"># Construct optimization model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+<span class="p">)</span>
 
-# Solve model
-UnitCommitment.optimize!(model)
+<span class="c"># Solve model</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-# Extract solution and write it to a file
-solution = UnitCommitment.get_solution(model)
-open(&quot;/path/to/output.json&quot;, &quot;w&quot;) do file
-    JSON.print(file, solution, 2)
-end
-</code></pre>
-<h3 id="22-solving-benchmark-instances">2.2 Solving benchmark instances</h3>
-<p>As described in the <a href="../instances/">Instances page</a>, UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function <code>read_benchmark</code> can be used:</p>
-<pre><code class="language-julia">using UnitCommitment
-instance = UnitCommitment.read_benchmark(&quot;matpower/case3375wp/2017-02-01&quot;)
-</code></pre>
-<h2 id="3-advanced-usage">3. Advanced usage</h2>
-<h3 id="31-modifying-the-formulation">3.1 Modifying the formulation</h3>
+<span class="c"># Extract solution and write it to a file</span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">get_solution</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="n">open</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="n">file</span>
+    <span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="solving-benchmark-instances">
+<h3>Solving benchmark instances<a class="headerlink" href="#solving-benchmark-instances" title="Permalink to this headline">¶</a></h3>
+<p>As described in the <a class="reference internal" href="../instances/"><span class="doc std std-doc">Instances page</span></a>, UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function <code class="docutils literal notranslate"><span class="pre">read_benchmark</span></code> can be used:</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">UnitCommitment</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case3375wp/2017-02-01&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="advanced-usage">
+<h2><span class="sectnum">1.3.</span> Advanced usage<a class="headerlink" href="#advanced-usage" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="modifying-the-formulation">
+<h3>Modifying the formulation<a class="headerlink" href="#modifying-the-formulation" title="Permalink to this headline">¶</a></h3>
 <p>For the time being, the recommended way of modifying the MILP formulation used by UC.jl is to create a local copy of our git repository and directly modify the source code of the package. In a future version, it will be possible to switch between multiple formulations, or to simply add/remove constraints after the model has been generated.</p>
-<h3 id="32-generating-initial-conditions">3.2 Generating initial conditions</h3>
+</div>
+<div class="section" id="generating-initial-conditions">
+<h3>Generating initial conditions<a class="headerlink" href="#generating-initial-conditions" title="Permalink to this headline">¶</a></h3>
 <p>When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.</p>
 <p>To help with this issue, UC.jl provides a utility function which can generate feasible initial conditions by solving a single-period optimization problem, as shown below:</p>
-<pre><code class="language-julia">using Cbc
-using UnitCommitment
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
 
-# Read original instance
-instance = UnitCommitment.read(&quot;instance.json&quot;)
+<span class="c"># Read original instance</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span>
 
-# Generate initial conditions (in-place)
-UnitCommitment.generate_initial_conditions!(instance, Cbc.Optimizer)
+<span class="c"># Generate initial conditions (in-place)</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">generate_initial_conditions!</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">)</span>
 
-# Construct and solve optimization model
-model = UnitCommitment.build_model(instance, Cbc.Optimizer)
-UnitCommitment.optimize!(model)
-</code></pre>
+<span class="c"># Construct and solve optimization model</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">)</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The function <code>generate_initial_conditions!</code> may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.</p>
+<p>The function <code class="docutils literal notranslate"><span class="pre">generate_initial_conditions!</span></code> may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.</p>
 </div>
-<h3 id="33-verifying-solutions">3.3 Verifying solutions</h3>
-<p>When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the <a href="../format/">UC.jl data format</a>.</p>
-<pre><code class="language-julia">using JSON
-using UnitCommitment
+</div>
+<div class="section" id="verifying-solutions">
+<h3>Verifying solutions<a class="headerlink" href="#verifying-solutions" title="Permalink to this headline">¶</a></h3>
+<p>When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the <a class="reference internal" href="../format/"><span class="doc std std-doc">UC.jl data format</span></a>.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">JSON</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
 
-# Read instance
-instance = UnitCommitment.read(&quot;instance.json&quot;)
+<span class="c"># Read instance</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span>
 
-# Read solution (potentially produced by other packages) 
-solution = JSON.parsefile(&quot;solution.json&quot;)
+<span class="c"># Read solution (potentially produced by other packages) </span>
+<span class="n">solution</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parsefile</span><span class="p">(</span><span class="s">&quot;solution.json&quot;</span><span class="p">)</span>
 
-# Validate solution and print validation errors
-UnitCommitment.validate(instance, solution)
-</code></pre></div>
+<span class="c"># Validate solution and print validation errors</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
         
-        
-    </div>
-
-    
-      <footer class="col-md-12 text-center">
-          
-          
-            <hr>
-            <p>
-            <small>Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.</small><br>
+        <div class='prev-next-bottom'>
             
-            <small>Documentation built with <a href="http://www.mkdocs.org/">MkDocs</a>.</small>
-            </p>
-          
+    <a class='left-prev' id="prev-link" href="../" title="previous page">UnitCommitment.jl</a>
+    <a class='right-next' id="next-link" href="../format/" title="next page"><span class="sectnum">2.</span> Data Format</a>
 
-          
-          
-      </footer>
-    
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="../js/bootstrap-3.0.3.min.js"></script>
-
-    
-    <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/highlight.min.js"></script>
+        </div>
         
-                <script src="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.18.0/build/languages/julia.min.js"></script>
-        
-    <script>hljs.initHighlightingOnLoad();</script>
-    
-
-    <script>var base_url = ".."</script>
-    
-    <script src="../js/base.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <script src="../js/mathjax.js"></script>
-    <script src="../search/main.js"></script>
-
-    <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <span aria-hidden="true">&times;</span>
-                    <span class="sr-only">Close</span>
-                </button>
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-            </div>
-            <div class="modal-body">
-                <p>
-                    From here you can search these documents. Enter
-                    your search terms below.
-                </p>
-                <form>
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
         </div>
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+      </p>
     </div>
-</div>
-    </body>
+  </footer>
+</main>
 
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
 </html>
