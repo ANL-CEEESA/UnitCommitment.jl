@@ -190,12 +190,6 @@ JuMP.set_objective_coefficient(
 UnitCommitment.optimize!(model)
 ```
 
-### Adding components to a bus
-
-
-One of the most common modifications to a unit commitment model is adding a new customized system component to a bus. The script below shows how to add 
-
-
 References
 ----------
 * [KnOsWa20] **Bernard Knueven, James Ostrowski and Jean-Paul Watson.** "On Mixed-Integer Programming Formulations for the Unit Commitment Problem". INFORMS Journal on Computing (2020). [DOI: 10.1287/ijoc.2019.0944](https://doi.org/10.1287/ijoc.2019.0944)
