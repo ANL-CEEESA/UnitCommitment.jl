@@ -11,7 +11,7 @@ Instances
 
 UnitCommitment.jl provides a large collection of benchmark instances collected
 from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. 
-If you use these instances in your research, we request that you cite UnitCommitment.jl [UCJL], as well as the original sources.
+If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources.
 
 Raw instances files are [available at our GitHub repository](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances). Benchmark instances can also be loaded with
 `UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md).

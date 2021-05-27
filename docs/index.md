@@ -23,7 +23,7 @@
 
 ### Citing
 
-If you use UnitCommitment.jl in your research (that is, if you use either the provided instances files, the mathematical models, or the algorithms), we kindly request that you cite the package as follows:
+If you use UnitCommitment.jl in your research (instances, models or algorithms), we kindly request that you cite the package as follows:
 
 * **Alinson S. Xavier, Feng Qiu**, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
 
