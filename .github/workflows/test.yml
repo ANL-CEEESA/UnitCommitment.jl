@@ -1,13 +1,7 @@
 name: Tests
 on:
   push:
-    paths:
-      - '**.jl'
-      - '**.toml'
   pull_request:
-    paths:
-      - '**.jl'
-      - '**.toml'
   schedule:
     - cron: '45 10 * * *'
 jobs:
