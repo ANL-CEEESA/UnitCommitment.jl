@@ -307,26 +307,44 @@ function _validate_reserve_and_demand(instance, solution, tol=0.01)
     for t in 1:instance.time
         load_curtail = 0
         fixed_load = sum(b.load[t] for b in instance.buses)
-        production = sum(solution["Production (MW)"][g.name][t]
-                         for g in instance.units)
+        ps_load = sum(
+            solution["Price-sensitive loads (MW)"][ps.name][t]
+            for ps in instance.price_sensitive_loads
+        )
+        production = sum(
+            solution["Production (MW)"][g.name][t]
+            for g in instance.units
+        )
         if "Load curtail (MW)" in keys(solution)
-            load_curtail = sum(solution["Load curtail (MW)"][b.name][t]
-                               for b in instance.buses)
+            load_curtail = sum(
+                solution["Load curtail (MW)"][b.name][t]
+                for b in instance.buses
+            )
         end
-        balance = fixed_load - load_curtail - production
+        balance = fixed_load - load_curtail - production + ps_load
         
         # Verify that production equals demand
         if abs(balance) > tol
-            @error @sprintf("Non-zero power balance at time %d (%.2f - %.2f - %.2f != 0)",
-                            t, fixed_load, load_curtail, production)
+            @error @sprintf(
+                "Non-zero power balance at time %d (%.2f + %.2f - %.2f - %.2f != 0)",
+                t,
+                fixed_load,
+                ps_load,
+                load_curtail,
+                production,
+            )
             err_count += 1
         end
         
         # Verify spinning reserves
         reserve = sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
         if reserve < instance.reserves.spinning[t] - tol
-            @error @sprintf("Insufficient spinning reserves at time %d (%.2f should be %.2f)",
-                            t, reserve, instance.reserves.spinning[t])
+            @error @sprintf(
+                "Insufficient spinning reserves at time %d (%.2f should be %.2f)",
+                t,
+                reserve,
+                instance.reserves.spinning[t],
+            )
             err_count += 1
         end
     end

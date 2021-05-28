@@ -3,11 +3,13 @@
 ## [0.2.0] - [Unreleased]
 
 ### Added
+
 - Sub-hourly unit commitment
 - Added function `UnitCommitment.write(filename, solution)`
 - Added mathematical formulation to the documentation
 
 ### Changed
+
 - Renamed "Time (h)" parameter to "Time horizon (h)"
 - The function `UnitCommitment.build_model` now returns a plain JuMP model. The
   struct `UnitCommitmentModel` has been completely removed. Accessing model elements can now be accomplished as follows:
@@ -20,6 +22,10 @@
 - The function `UnitCommitment.get_solution` has been renamed to `UnitCommitment.solution`
 - All function that do not appear in the documentation have been renamed to `_something`.
   These functions are not part of the public API and may change without notice.
+
+### Fixed
+
+- Properly validate solutions with price-sensitive loads.
 
 ## [0.1.1] - 2020-11-16
 
