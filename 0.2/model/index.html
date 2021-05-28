@@ -383,9 +383,9 @@
 </tr>
 </tbody>
 </table>
-<div class="admonition danger">
-<p class="admonition-title">Danger</p>
-<p>Since transmission and N-1 security constraints are enforced in a lazy way, most of the variables <code class="docutils literal notranslate"><span class="pre">flow[l,t]</span></code> and <code class="docutils literal notranslate"><span class="pre">overflow[l,t]</span></code> are never added to the model. Accessing <code class="docutils literal notranslate"><span class="pre">model[:flow][l,t]</span></code>, for example, without first checking that the variable exists will likely generate an error.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Since transmission and N-1 security constraints are enforced in a lazy way, most of the <code class="docutils literal notranslate"><span class="pre">flow[l,t]</span></code> variables are never added to the model. Accessing <code class="docutils literal notranslate"><span class="pre">model[:flow][l,t]</span></code> without first checking that the variable exists will likely generate an error.</p>
 </div>
 </div>
 </div>

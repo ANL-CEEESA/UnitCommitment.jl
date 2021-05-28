@@ -277,11 +277,11 @@
 <span class="c"># Solve model</span>
 <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-<span class="c"># Extract solution and write it to a file</span>
+<span class="c"># Extract solution</span>
 <span class="n">solution</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">solution</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">open</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span> <span class="s">&quot;w&quot;</span><span class="p">)</span> <span class="k">do</span> <span class="n">file</span>
-    <span class="n">JSON</span><span class="o">.</span><span class="n">print</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">solution</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="k">end</span>
+
+<span class="c"># Write solution to a file</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

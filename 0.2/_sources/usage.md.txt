@@ -52,11 +52,11 @@ model = UnitCommitment.build_model(
 # Solve model
 UnitCommitment.optimize!(model)
 
-# Extract solution and write it to a file
+# Extract solution
 solution = UnitCommitment.solution(model)
-open("/path/to/output.json", "w") do file
-    JSON.print(file, solution, 2)
-end
+
+# Write solution to a file
+UnitCommitment.write("/path/to/output.json", solution)
 ```
 
 ### Solving benchmark instances
