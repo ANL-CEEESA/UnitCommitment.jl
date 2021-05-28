@@ -26,4 +26,7 @@ test: build/sysimage.so
 format:
 	julia -e 'using JuliaFormatter; format("src"); format("test"); format("benchmark")'
 
-.PHONY: docs test
+install-deps:
+	julia -e 'using Pkg; Pkg.add(PackageSpec(name="JuliaFormatter", version="0.14.4"))'
+
+.PHONY: docs test format install-deps
