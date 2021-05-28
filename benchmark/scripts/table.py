@@ -9,8 +9,8 @@ from tabulate import tabulate
 
 
 def process_all_log_files():
-    pathlist = list(Path(".").glob('results/*/*/*.log'))
-    pathlist += list(Path(".").glob('results/*/*.log'))
+    pathlist = list(Path(".").glob("results/*/*/*.log"))
+    pathlist += list(Path(".").glob("results/*/*.log"))
     rows = []
     for path in pathlist:
         if ".ipy" in str(path):
@@ -22,8 +22,8 @@ def process_all_log_files():
     df.index = range(len(df))
     print("Writing tables/benchmark.csv")
     df.to_csv("tables/benchmark.csv", index_label="Index")
-        
-        
+
+
 def process(filename):
     parts = filename.replace(".log", "").split("/")
     group_name = "/".join(parts[1:-1])
@@ -45,56 +45,74 @@ def process(filename):
     read_time, model_time, isf_time, total_time = None, None, None, None
     cb_calls, cb_time = 0, 0.0
     transmission_count, transmission_time, transmission_calls = 0, 0.0, 0
-    
+
     # m = re.search("case([0-9]*)", instance_name)
     # n_buses = int(m.group(1))
     n_buses = 0
-    
+
     with open(filename) as file:
         for line in file.readlines():
-            m = re.search(r"Explored ([0-9.e+]*) nodes \(([0-9.e+]*) simplex iterations\) in ([0-9.e+]*) seconds", line)
+            m = re.search(
+                r"Explored ([0-9.e+]*) nodes \(([0-9.e+]*) simplex iterations\) in ([0-9.e+]*) seconds",
+                line,
+            )
             if m is not None:
                 nodes += int(m.group(1))
                 simplex_iterations += int(m.group(2))
                 optimize_time += float(m.group(3))
-                
-            m = re.search(r"Best objective ([0-9.e+]*), best bound ([0-9.e+]*), gap ([0-9.e+]*)\%", line)
+
+            m = re.search(
+                r"Best objective ([0-9.e+]*), best bound ([0-9.e+]*), gap ([0-9.e+]*)\%",
+                line,
+            )
             if m is not None:
                 primal_bound = float(m.group(1))
                 dual_bound = float(m.group(2))
                 gap = round(float(m.group(3)), 3)
-                
-            m = re.search(r"Root relaxation: objective ([0-9.e+]*), ([0-9.e+]*) iterations, ([0-9.e+]*) seconds", line)
+
+            m = re.search(
+                r"Root relaxation: objective ([0-9.e+]*), ([0-9.e+]*) iterations, ([0-9.e+]*) seconds",
+                line,
+            )
             if m is not None:
                 root_obj = float(m.group(1))
                 root_iterations += int(m.group(2))
                 root_time += float(m.group(3))
-                
-            m = re.search(r"Presolved: ([0-9.e+]*) rows, ([0-9.e+]*) columns, ([0-9.e+]*) nonzeros", line)
+
+            m = re.search(
+                r"Presolved: ([0-9.e+]*) rows, ([0-9.e+]*) columns, ([0-9.e+]*) nonzeros",
+                line,
+            )
             if m is not None:
                 n_rows_presolved = int(m.group(1))
                 n_cols_presolved = int(m.group(2))
                 n_nz_presolved = int(m.group(3))
-                
-            m = re.search(r"Optimize a model with ([0-9.e+]*) rows, ([0-9.e+]*) columns and ([0-9.e+]*) nonzeros", line)
+
+            m = re.search(
+                r"Optimize a model with ([0-9.e+]*) rows, ([0-9.e+]*) columns and ([0-9.e+]*) nonzeros",
+                line,
+            )
             if m is not None:
                 n_rows_orig = int(m.group(1))
                 n_cols_orig = int(m.group(2))
                 n_nz_orig = int(m.group(3))
-                
-            m = re.search(r"Variable types: ([0-9.e+]*) continuous, ([0-9.e+]*) integer \(([0-9.e+]*) binary\)", line)
+
+            m = re.search(
+                r"Variable types: ([0-9.e+]*) continuous, ([0-9.e+]*) integer \(([0-9.e+]*) binary\)",
+                line,
+            )
             if m is not None:
                 n_cont_vars_presolved = int(m.group(1))
-                n_bin_vars_presolved = int(m.group(3))  
-            
+                n_bin_vars_presolved = int(m.group(3))
+
             m = re.search(r"Read problem in ([0-9.e+]*) seconds", line)
             if m is not None:
                 read_time = float(m.group(1))
-            
+
             m = re.search(r"Computed ISF in ([0-9.e+]*) seconds", line)
             if m is not None:
                 isf_time = float(m.group(1))
-            
+
             m = re.search(r"Built model in ([0-9.e+]*) seconds", line)
             if m is not None:
                 model_time = float(m.group(1))
@@ -103,7 +121,10 @@ def process(filename):
             if m is not None:
                 total_time = float(m.group(1))
 
-            m = re.search(r"User-callback calls ([0-9.e+]*), time in user-callback ([0-9.e+]*) sec", line)
+            m = re.search(
+                r"User-callback calls ([0-9.e+]*), time in user-callback ([0-9.e+]*) sec",
+                line,
+            )
             if m is not None:
                 cb_calls = int(m.group(1))
                 cb_time = float(m.group(2))
@@ -116,7 +137,7 @@ def process(filename):
             m = re.search(r".*MW overflow", line)
             if m is not None:
                 transmission_count += 1
-                
+
     return {
         "Group": group_name,
         "Instance": instance_name,
@@ -150,6 +171,7 @@ def process(filename):
         "Transmission screening calls": transmission_calls,
     }
 
+
 def generate_chart():
     import pandas as pd
     import matplotlib.pyplot as plt
@@ -159,7 +181,9 @@ def generate_chart():
     files = ["tables/benchmark.csv"]
     for f in files:
         table = pd.read_csv(f, index_col=0)
-        table.loc[:, "Instance"] = table.loc[:,"Group"] + "/" + table.loc[:,"Instance"]
+        table.loc[:, "Instance"] = (
+            table.loc[:, "Group"] + "/" + table.loc[:, "Instance"]
+        )
         table.loc[:, "Filename"] = f
         tables += [table]
     benchmark = pd.concat(tables, sort=True)
@@ -168,16 +192,18 @@ def generate_chart():
     plt.figure(figsize=(12, 0.50 * k))
     sns.set_style("whitegrid")
     sns.set_palette("Set1")
-    sns.barplot(y="Instance",
-                x="Total time (s)",
-                color="tab:red",
-                capsize=0.15,
-                errcolor="k",
-                errwidth=1.25,
-                data=benchmark);
+    sns.barplot(
+        y="Instance",
+        x="Total time (s)",
+        color="tab:red",
+        capsize=0.15,
+        errcolor="k",
+        errwidth=1.25,
+        data=benchmark,
+    )
     plt.tight_layout()
     print("Writing tables/benchmark.png")
-    plt.savefig("tables/benchmark.png", dpi=150);
+    plt.savefig("tables/benchmark.png", dpi=150)
 
 
 if __name__ == "__main__":
