@@ -367,10 +367,13 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
     for t in 1:instance.time
         load_curtail = 0
         fixed_load = sum(b.load[t] for b in instance.buses)
-        ps_load = sum(
-            solution["Price-sensitive loads (MW)"][ps.name][t] for
-            ps in instance.price_sensitive_loads
-        )
+        ps_load = 0
+        if length(instance.price_sensitive_loads) > 0
+            ps_load = sum(
+                solution["Price-sensitive loads (MW)"][ps.name][t] for
+                ps in instance.price_sensitive_loads
+            )
+        end
         production =
             sum(solution["Production (MW)"][g.name][t] for g in instance.units)
         if "Load curtail (MW)" in keys(solution)
