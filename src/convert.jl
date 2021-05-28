@@ -4,7 +4,7 @@
 
 using DataStructures, JSON, GZip
 
-function read_json(path::String)::OrderedDict
+function _read_json(path::String)::OrderedDict
     if endswith(path, ".gz")
         file = GZip.gzopen(path)
     else
@@ -13,16 +13,16 @@ function read_json(path::String)::OrderedDict
     return JSON.parse(file, dicttype=()->DefaultOrderedDict(nothing))
 end
 
-function read_egret_solution(path::String)::OrderedDict
-    egret = read_json(path)
+function _read_egret_solution(path::String)::OrderedDict
+    egret = _read_json(path)
     T = length(egret["system"]["time_keys"])
     
-    solution   = OrderedDict()
-    is_on      = solution["Is on"] = OrderedDict()
+    solution = OrderedDict()
+    is_on = solution["Is on"] = OrderedDict()
     production = solution["Production (MW)"] = OrderedDict()
-    reserve    = solution["Reserve (MW)"] = OrderedDict()
+    reserve = solution["Reserve (MW)"] = OrderedDict()
     production_cost = solution["Production cost (\$)"] = OrderedDict()
-    startup_cost    = solution["Startup cost (\$)"] = OrderedDict()
+    startup_cost = solution["Startup cost (\$)"] = OrderedDict()
     
     for (gen_name, gen_dict) in egret["elements"]["generator"]
         if endswith(gen_name, "_T") || endswith(gen_name, "_R")

@@ -6,7 +6,7 @@ using UnitCommitment
 
 @testset "convert" begin
     @testset "EGRET solution" begin
-        solution = UnitCommitment.read_egret_solution("fixtures/egret_output.json.gz")
+        solution = UnitCommitment._read_egret_solution("fixtures/egret_output.json.gz")
         for attr in ["Is on", "Production (MW)", "Production cost (\$)"]
             @test attr in keys(solution)
             @test "115_STEAM_1" in keys(solution[attr])

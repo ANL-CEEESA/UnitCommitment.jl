@@ -5,7 +5,7 @@
 using Test
 using UnitCommitment
 
-UnitCommitment.setup_logger()
+UnitCommitment._setup_logger()
 
 @testset "UnitCommitment" begin
     include("instance_test.jl")

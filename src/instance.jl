@@ -5,8 +5,8 @@
 using Printf
 using JSON
 using DataStructures
+using GZip
 import Base: getindex, time
-import GZip
 
 
 mutable struct Bus
@@ -116,18 +116,19 @@ end
 
 function read(path::AbstractString)::UnitCommitmentInstance
     if endswith(path, ".gz")
-        return read(GZip.gzopen(path))
+        return _read(gzopen(path))
     else
-        return read(open(path))
+        return _read(open(path))
     end
 end
 
 
-function read(file::IO)::UnitCommitmentInstance
-    return from_json(JSON.parse(file, dicttype=()->DefaultOrderedDict(nothing)))
+function _read(file::IO)::UnitCommitmentInstance
+    return _from_json(JSON.parse(file, dicttype=()->DefaultOrderedDict(nothing)))
 end
     
-function from_json(json; repair=true)
+
+function _from_json(json; repair=true)
     units = Unit[]
     buses = Bus[]
     contingencies = Contingency[]
@@ -160,16 +161,20 @@ function from_json(json; repair=true)
     end
     
     # Read parameters
-    power_balance_penalty = timeseries(json["Parameters"]["Power balance penalty (\$/MW)"],
-                                       default=[1000.0 for t in 1:T])
+    power_balance_penalty = timeseries(
+        json["Parameters"]["Power balance penalty (\$/MW)"],
+        default=[1000.0 for t in 1:T],
+    )
     
     # Read buses
     for (bus_name, dict) in json["Buses"]
-        bus = Bus(bus_name,
-                  length(buses),
-                  timeseries(dict["Load (MW)"]),
-                  Unit[],
-                  PriceSensitiveLoad[])
+        bus = Bus(
+            bus_name,
+            length(buses),
+            timeseries(dict["Load (MW)"]),
+            Unit[],
+            PriceSensitiveLoad[],
+        )
         name_to_bus[bus_name] = bus
         push!(buses, bus)
     end
@@ -251,25 +256,35 @@ function from_json(json; repair=true)
     # Read reserves
     reserves = Reserves(zeros(T))
     if "Reserves" in keys(json)
-        reserves.spinning = timeseries(json["Reserves"]["Spinning (MW)"],
-                                       default=zeros(T))
+        reserves.spinning = timeseries(
+            json["Reserves"]["Spinning (MW)"],
+            default=zeros(T),
+        )
     end
     
     # Read transmission lines
     if "Transmission lines" in keys(json)
         for (line_name, dict) in json["Transmission lines"]
-            line = TransmissionLine(line_name,
-                                    length(lines) + 1,
-                                    name_to_bus[dict["Source bus"]],
-                                    name_to_bus[dict["Target bus"]],
-                                    scalar(dict["Reactance (ohms)"]),
-                                    scalar(dict["Susceptance (S)"]),
-                                    timeseries(dict["Normal flow limit (MW)"],
-                                               default=[1e8 for t in 1:T]),
-                                    timeseries(dict["Emergency flow limit (MW)"],
-                                               default=[1e8 for t in 1:T]),
-                                    timeseries(dict["Flow limit penalty (\$/MW)"],
-                                               default=[5000.0 for t in 1:T]))
+            line = TransmissionLine(
+                line_name,
+                length(lines) + 1,
+                name_to_bus[dict["Source bus"]],
+                name_to_bus[dict["Target bus"]],
+                scalar(dict["Reactance (ohms)"]),
+                scalar(dict["Susceptance (S)"]),
+                timeseries(
+                    dict["Normal flow limit (MW)"],
+                    default=[1e8 for t in 1:T],
+                ),
+                timeseries(
+                    dict["Emergency flow limit (MW)"],
+                    default=[1e8 for t in 1:T],
+                ),
+                timeseries(
+                    dict["Flow limit penalty (\$/MW)"],
+                    default=[5000.0 for t in 1:T],
+                ),
+            )
             name_to_line[line_name] = line
             push!(lines, line)
         end
@@ -295,24 +310,27 @@ function from_json(json; repair=true)
     if "Price-sensitive loads" in keys(json)
         for (load_name, dict) in json["Price-sensitive loads"]
             bus = name_to_bus[dict["Bus"]]
-            load = PriceSensitiveLoad(load_name,
-                                      bus,
-                                      timeseries(dict["Demand (MW)"]),
-                                      timeseries(dict["Revenue (\$/MW)"]),
-                                     )
+            load = PriceSensitiveLoad(
+                load_name,
+                bus,
+                timeseries(dict["Demand (MW)"]),
+                timeseries(dict["Revenue (\$/MW)"]),
+            )
             push!(bus.price_sensitive_loads, load)
             push!(loads, load)
         end
     end
     
-    instance = UnitCommitmentInstance(T,
-                                      power_balance_penalty,
-                                      units,
-                                      buses,
-                                      lines,
-                                      reserves,
-                                      contingencies,
-                                      loads)
+    instance = UnitCommitmentInstance(
+        T,
+        power_balance_penalty,
+        units,
+        buses,
+        lines,
+        reserves,
+        contingencies,
+        loads,
+    )
     if repair
         UnitCommitment.repair!(instance)
     end
@@ -335,7 +353,10 @@ Example
     modified = UnitCommitment.slice(instance, 1:2)
 
 """
-function slice(instance::UnitCommitmentInstance, range::UnitRange{Int})::UnitCommitmentInstance
+function slice(
+    instance::UnitCommitmentInstance,
+    range::UnitRange{Int},
+)::UnitCommitmentInstance
     modified = deepcopy(instance)
     modified.time = length(range)
     modified.power_balance_penalty = modified.power_balance_penalty[range]

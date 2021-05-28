@@ -10,6 +10,8 @@ using Logging
 using Printf
 using LinearAlgebra
 
+UnitCommitment._setup_logger()
+
 function main()
     basename, suffix = split(ARGS[1], ".")
     solution_filename = "results/$basename.$suffix.sol.json"
@@ -18,7 +20,6 @@ function main()
     time_limit = 60 * 20
 
     BLAS.set_num_threads(4)
-    global_logger(TimeLogger(initial_time = time()))
 
     total_time = @elapsed begin
         @info "Reading: $basename"

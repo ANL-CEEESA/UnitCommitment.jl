@@ -7,7 +7,7 @@ using UnitCommitment, Test, LinearAlgebra
 @testset "Sensitivity" begin
     @testset "Susceptance matrix" begin
         instance = UnitCommitment.read_benchmark("test/case14")
-        actual = UnitCommitment.susceptance_matrix(instance.lines)
+        actual = UnitCommitment._susceptance_matrix(instance.lines)
         @test size(actual) == (20, 20)
         expected = Diagonal([29.5,  7.83,  8.82, 9.9,  10.04,
                              10.2,  41.45, 8.35, 3.14, 6.93,
@@ -18,8 +18,10 @@ using UnitCommitment, Test, LinearAlgebra
     
     @testset "Reduced incidence matrix" begin
         instance = UnitCommitment.read_benchmark("test/case14")
-        actual = UnitCommitment.reduced_incidence_matrix(lines=instance.lines,
-                                                         buses=instance.buses)
+        actual = UnitCommitment._reduced_incidence_matrix(
+            lines=instance.lines,
+            buses=instance.buses,
+        )
         @test size(actual) == (20, 13)
         @test actual[1,   1]  == -1.0
         @test actual[3,   1]  ==  1.0
@@ -63,8 +65,10 @@ using UnitCommitment, Test, LinearAlgebra
     
     @testset "Injection Shift Factors (ISF)" begin
         instance = UnitCommitment.read_benchmark("test/case14")
-        actual = UnitCommitment.injection_shift_factors(lines=instance.lines,
-                                                        buses=instance.buses)
+        actual = UnitCommitment._injection_shift_factors(
+            lines=instance.lines,
+            buses=instance.buses,
+        )
         @test size(actual) == (20, 13)
         @test round.(actual, digits=2) == [
             -0.84 -0.75 -0.67 -0.61 -0.63 -0.66 -0.66 -0.65 -0.65 -0.64 -0.63 -0.63 -0.64;
@@ -91,17 +95,23 @@ using UnitCommitment, Test, LinearAlgebra
 
     @testset "Line Outage Distribution Factors (LODF)" begin
         instance = UnitCommitment.read_benchmark("test/case14")
-        isf_before = UnitCommitment.injection_shift_factors(lines=instance.lines,
-                                                            buses=instance.buses)
-        lodf = UnitCommitment.line_outage_factors(lines=instance.lines,
-                                                  buses=instance.buses,
-                                                  isf=isf_before)
+        isf_before = UnitCommitment._injection_shift_factors(
+            lines=instance.lines,
+            buses=instance.buses,
+        )
+        lodf = UnitCommitment._line_outage_factors(
+            lines=instance.lines,
+            buses=instance.buses,
+            isf=isf_before,
+        )
         for contingency in instance.contingencies
             for lc in contingency.lines
                 prev_susceptance = lc.susceptance
                 lc.susceptance = 0.0
-                isf_after =  UnitCommitment.injection_shift_factors(lines=instance.lines,
-                                                                    buses=instance.buses)
+                isf_after =  UnitCommitment._injection_shift_factors(
+                    lines=instance.lines,
+                    buses=instance.buses,
+                )
                 lc.susceptance = prev_susceptance
                 for lm in instance.lines
                     expected = isf_after[lm.offset, :]

@@ -9,9 +9,10 @@ bin(x) = [xi > 0.5 for xi in x]
 """
     repair!(instance)
 
-Verifies that the given unit commitment instance is valid and automatically fixes
-some validation errors if possible, issuing a warning for each error found.
-If a validation error cannot be automatically fixed, issues an exception.
+Verifies that the given unit commitment instance is valid and automatically
+fixes some validation errors if possible, issuing a warning for each error
+found. If a validation error cannot be automatically fixed, issues an
+exception.
 
 Returns the number of validation errors found.
 """
@@ -86,16 +87,17 @@ Verifies that the given solution is feasible for the problem. If feasible,
 silently returns true. In infeasible, returns false and prints the validation
 errors to the screen.
 
-This function is implemented independently from the optimization model in `model.jl`, and
-therefore can be used to verify that the model is indeed producing valid solutions. It
-can also be used to verify the solutions produced by other optimization packages.
+This function is implemented independently from the optimization model in
+`model.jl`, and therefore can be used to verify that the model is indeed
+producing valid solutions. It can also be used to verify the solutions produced
+by other optimization packages.
 """
 function validate(instance::UnitCommitmentInstance,
                   solution::Union{Dict,OrderedDict};
                  )::Bool
     err_count = 0
-    err_count += validate_units(instance, solution)
-    err_count += validate_reserve_and_demand(instance, solution)
+    err_count += _validate_units(instance, solution)
+    err_count += _validate_reserve_and_demand(instance, solution)
     
     if err_count > 0
         @error "Found $err_count validation errors"
@@ -106,7 +108,7 @@ function validate(instance::UnitCommitmentInstance,
 end
 
 
-function validate_units(instance, solution; tol=0.01)
+function _validate_units(instance, solution; tol=0.01)
     err_count = 0
     
     for unit in instance.units
@@ -300,7 +302,7 @@ function validate_units(instance, solution; tol=0.01)
 end
 
 
-function validate_reserve_and_demand(instance, solution, tol=0.01)
+function _validate_reserve_and_demand(instance, solution, tol=0.01)
     err_count = 0
     for t in 1:instance.time
         load_curtail = 0

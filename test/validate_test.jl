@@ -14,7 +14,7 @@ parse_case14() = JSON.parse(GZip.gzopen("../instances/test/case14.json.gz"),
             json = parse_case14()
             json["Generators"]["g1"]["Production cost curve (MW)"] = [100, 150, 200]
             json["Generators"]["g1"]["Production cost curve (\$)"] = [10, 25, 30]
-            instance = UnitCommitment.from_json(json, repair=false)
+            instance = UnitCommitment._from_json(json, repair=false)
             @test UnitCommitment.repair!(instance) == 4
         end
         
@@ -23,7 +23,7 @@ parse_case14() = JSON.parse(GZip.gzopen("../instances/test/case14.json.gz"),
             json["Generators"]["g1"]["Production cost curve (MW)"] = [100, 150]
             json["Generators"]["g1"]["Production cost curve (\$)"] = [100, 150]
             json["Generators"]["g1"]["Startup limit (MW)"] = 80
-            instance = UnitCommitment.from_json(json, repair=false)
+            instance = UnitCommitment._from_json(json, repair=false)
             @test UnitCommitment.repair!(instance) == 1
         end
         
@@ -31,7 +31,7 @@ parse_case14() = JSON.parse(GZip.gzopen("../instances/test/case14.json.gz"),
             json = parse_case14()
             json["Generators"]["g1"]["Startup costs (\$)"] = [300, 200, 100]
             json["Generators"]["g1"]["Startup delays (h)"] = [8, 4, 2]
-            instance = UnitCommitment.from_json(json, repair=false)
+            instance = UnitCommitment._from_json(json, repair=false)
             @test UnitCommitment.repair!(instance) == 4
         end
 

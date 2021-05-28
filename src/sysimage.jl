@@ -10,14 +10,17 @@ using JuMP
 using MathOptInterface
 using SparseArrays
 
-pkg = [:DataStructures,
-       :JSON,
-       :JuMP,
-       :MathOptInterface,
-       :SparseArrays,
-       ]
+pkg = [
+    :DataStructures,
+    :JSON,
+    :JuMP,
+    :MathOptInterface,
+    :SparseArrays,
+]
 
 @info "Building system image..."
-create_sysimage(pkg,
-                precompile_statements_file="build/precompile.jl",
-                sysimage_path="build/sysimage.so")
+create_sysimage(
+    pkg,
+    precompile_statements_file="build/precompile.jl",
+    sysimage_path="build/sysimage.so",
+)

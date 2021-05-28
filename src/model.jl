@@ -50,7 +50,7 @@ function build_model(;
         if isf === nothing
             @info "Computing injection shift factors..."
             time_isf = @elapsed begin
-                isf = UnitCommitment.injection_shift_factors(
+                isf = UnitCommitment._injection_shift_factors(
                     lines=instance.lines,
                     buses=instance.buses,
                 )
@@ -59,7 +59,7 @@ function build_model(;
             
             @info "Computing line outage factors..."
             time_lodf = @elapsed begin
-                lodf = UnitCommitment.line_outage_factors(
+                lodf = UnitCommitment._line_outage_factors(
                     lines=instance.lines,
                     buses=instance.buses,
                     isf=isf,
@@ -439,7 +439,7 @@ function _build_reserve_eqs!(model::JuMP.Model)
 end
 
 
-function enforce_transmission(
+function _enforce_transmission(
     ;
     model::JuMP.Model,
     violation::Violation,
@@ -667,7 +667,7 @@ function optimize!(
         
         has_transmission || break
         
-        violations = find_violations(model)
+        violations = _find_violations(model)
         if isempty(violations)
             @info "No violations found" 
             if large_gap
@@ -677,7 +677,7 @@ function optimize!(
                 break
             end
         else
-            enforce_transmission(model, violations)
+            _enforce_transmission(model, violations)
         end
     end
     
@@ -685,7 +685,7 @@ function optimize!(
 end
 
 
-function find_violations(model::JuMP.Model)
+function _find_violations(model::JuMP.Model)
     instance = model[:instance]
     net_injection = model[:net_injection]
     overflow = model[:overflow]
@@ -702,7 +702,7 @@ function find_violations(model::JuMP.Model)
             value(overflow[lm.name, t])
             for lm in instance.lines, t in 1:instance.time
         ]
-        violations = UnitCommitment.find_violations(
+        violations = UnitCommitment._find_violations(
             instance=instance,
             net_injections=net_injection_values,
             overflow=overflow_values,
@@ -715,12 +715,12 @@ function find_violations(model::JuMP.Model)
 end
 
 
-function enforce_transmission(
+function _enforce_transmission(
     model::JuMP.Model,
     violations::Vector{Violation},
 )::Nothing
     for v in violations
-        enforce_transmission(
+        _enforce_transmission(
             model=model,
             violation=v,
             isf=model[:isf],

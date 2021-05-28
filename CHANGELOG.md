@@ -4,7 +4,7 @@
 
 ### Added
 - Sub-hourly unit commitment
-- Added function `UnitCommitment.write(filename, solution)` to simplify saving the solution to a file
+- Added function `UnitCommitment.write(filename, solution)`
 - Added mathematical formulation to the documentation
 
 ### Changed
@@ -18,7 +18,8 @@
     - `model.isf` becomes `model[:isf]`
     - `model.lodf` becomes `model[:lodf]`
 - The function `UnitCommitment.get_solution` has been renamed to `UnitCommitment.solution`
-- The function `UnitCommitment.fix!(instance)`, which attempts to repair an invalid instance, has been renamed to `UnitCommitment.repair!(instance)`
+- All function that do not appear in the documentation have been renamed to `_something`.
+  These functions are not part of the public API and may change without notice.
 
 ## [0.1.1] - 2020-11-16
 

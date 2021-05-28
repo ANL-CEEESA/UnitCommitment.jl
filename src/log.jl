@@ -56,9 +56,7 @@ function handle_message(logger::TimeLogger,
     end
 end
 
-function setup_logger()
+function _setup_logger()
     initial_time = time()
     global_logger(TimeLogger(initial_time=initial_time))
 end
-
-export TimeLogger
