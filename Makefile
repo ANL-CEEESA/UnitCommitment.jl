@@ -22,4 +22,8 @@ test: build/sysimage.so
 	@echo Running tests...
 	$(JULIA) --sysimage build/sysimage.so -e 'using Pkg; Pkg.test("UnitCommitment")' | tee build/test.log
 
+
+format:
+	julia -e 'using JuliaFormatter; format("src"); format("test"); format("benchmark")'
+
 .PHONY: docs test

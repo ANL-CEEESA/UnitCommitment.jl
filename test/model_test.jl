@@ -12,9 +12,9 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP
         end
         optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
         model = build_model(
-            instance=instance,
-            optimizer=optimizer,
-            variable_names=true,
+            instance = instance,
+            optimizer = optimizer,
+            variable_names = true,
         )
         @test name(model[:is_on]["g1", 1]) == "is_on[g1,1]"
 
@@ -27,7 +27,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP
         UnitCommitment.write(filename, solution)
         loaded = JSON.parsefile(filename)
         @test length(loaded["Is on"]) == 6
-        
+
         # Verify solution
         @test UnitCommitment.validate(instance, solution)
 

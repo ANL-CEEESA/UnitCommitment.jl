@@ -19,33 +19,31 @@ function generate_initial_conditions!(
     B = instance.buses
     t = 1
     mip = JuMP.Model(optimizer)
-    
+
     # Decision variables
     @variable(mip, x[G], Bin)
     @variable(mip, p[G] >= 0)
-    
+
     # Constraint: Minimum power
-    @constraint(mip,
-                min_power[g in G],
-                p[g] >= g.min_power[t] * x[g])
-    
+    @constraint(mip, min_power[g in G], p[g] >= g.min_power[t] * x[g])
+
     # Constraint: Maximum power
-    @constraint(mip,
-                max_power[g in G],
-                p[g] <= g.max_power[t] * x[g])
-    
+    @constraint(mip, max_power[g in G], p[g] <= g.max_power[t] * x[g])
+
     # Constraint: Production equals demand
-    @constraint(mip,
-                power_balance,
-                sum(b.load[t] for b in B) == sum(p[g] for g in G))
-    
+    @constraint(
+        mip,
+        power_balance,
+        sum(b.load[t] for b in B) == sum(p[g] for g in G)
+    )
+
     # Constraint: Must run
     for g in G
         if g.must_run[t]
             @constraint(mip, x[g] == 1)
         end
     end
-    
+
     # Objective function
     function cost_slope(g)
         mw = g.min_power[t]
@@ -60,12 +58,10 @@ function generate_initial_conditions!(
             return c / mw
         end
     end
-    @objective(mip,
-               Min,
-               sum(p[g] * cost_slope(g) for g in G))
-    
+    @objective(mip, Min, sum(p[g] * cost_slope(g) for g in G))
+
     JuMP.optimize!(mip)
-    
+
     for g in G
         if JuMP.value(x[g]) > 0
             g.initial_power = JuMP.value(p[g])

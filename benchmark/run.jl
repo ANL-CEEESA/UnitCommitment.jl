@@ -30,34 +30,37 @@ function main()
 
         time_model = @elapsed begin
             model = build_model(
-                instance=instance,
-                optimizer=optimizer_with_attributes(
+                instance = instance,
+                optimizer = optimizer_with_attributes(
                     Gurobi.Optimizer,
                     "Threads" => 4,
                     "Seed" => rand(1:1000),
                 ),
-                variable_names=true,
+                variable_names = true,
             )
         end
 
         @info "Optimizing..."
         BLAS.set_num_threads(1)
-        UnitCommitment.optimize!(model, time_limit=time_limit, gap_limit=1e-3)
-
+        UnitCommitment.optimize!(
+            model,
+            time_limit = time_limit,
+            gap_limit = 1e-3,
+        )
     end
     @info @sprintf("Total time was %.2f seconds", total_time)
 
     @info "Writing: $solution_filename"
     solution = UnitCommitment.solution(model)
     open(solution_filename, "w") do file
-        JSON.print(file, solution, 2)
+        return JSON.print(file, solution, 2)
     end
 
     @info "Verifying solution..."
-    UnitCommitment.validate(instance, solution) 
+    UnitCommitment.validate(instance, solution)
 
     @info "Exporting model..."
-    JuMP.write_to_file(model, model_filename)
+    return JuMP.write_to_file(model, model_filename)
 end
 
 main()

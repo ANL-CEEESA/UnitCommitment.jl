@@ -13,14 +13,16 @@ M[l.offset, b.offset] indicates the amount of power (in MW) that flows through
 transmission line l when 1 MW of power is injected at the slack bus (the bus
 that has offset zero) and withdrawn from b.
 """
-function _injection_shift_factors(; buses::Array{Bus}, lines::Array{TransmissionLine})
+function _injection_shift_factors(;
+    buses::Array{Bus},
+    lines::Array{TransmissionLine},
+)
     susceptance = _susceptance_matrix(lines)
-    incidence = _reduced_incidence_matrix(lines=lines, buses=buses)
+    incidence = _reduced_incidence_matrix(lines = lines, buses = buses)
     laplacian = transpose(incidence) * susceptance * incidence
     isf = susceptance * incidence * inv(Array(laplacian))
     return isf
 end
-
 
 """
     _reduced_incidence_matrix(; buses::Array{Bus}, lines::Array{TransmissionLine})
@@ -31,7 +33,10 @@ is the number of buses and L is the number of lines. For each row, there is a 1
 element and a -1 element, indicating the source and target buses, respectively,
 for that line.
 """
-function _reduced_incidence_matrix(; buses::Array{Bus}, lines::Array{TransmissionLine})
+function _reduced_incidence_matrix(;
+    buses::Array{Bus},
+    lines::Array{TransmissionLine},
+)
     matrix = spzeros(Float64, length(lines), length(buses) - 1)
     for line in lines
         if line.source.offset > 0
@@ -41,7 +46,7 @@ function _reduced_incidence_matrix(; buses::Array{Bus}, lines::Array{Transmissio
             matrix[line.offset, line.target.offset] = -1
         end
     end
-    matrix
+    return matrix
 end
 
 """
@@ -54,7 +59,6 @@ function _susceptance_matrix(lines::Array{TransmissionLine})
     return Diagonal([l.susceptance for l in lines])
 end
 
-
 """
 
     _line_outage_factors(; buses, lines, isf)
@@ -63,19 +67,13 @@ Returns a LxL matrix containing the Line Outage Distribution Factors (LODFs)
 for the given network. This matrix how does the pre-contingency flow change
 when each individual transmission line is removed.
 """
-function _line_outage_factors(
-    ;
-    buses::Array{Bus, 1},
-    lines::Array{TransmissionLine, 1},
+function _line_outage_factors(;
+    buses::Array{Bus,1},
+    lines::Array{TransmissionLine,1},
     isf::Array{Float64,2},
-) :: Array{Float64,2}
+)::Array{Float64,2}
     n_lines, n_buses = size(isf)
-    incidence = Array(
-        _reduced_incidence_matrix(
-            lines=lines,
-            buses=buses,
-        ),
-    )
+    incidence = Array(_reduced_incidence_matrix(lines = lines, buses = buses))
     lodf::Array{Float64,2} = isf * transpose(incidence)
     m, n = size(lodf)
     for i in 1:n
