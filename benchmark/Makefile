@@ -8,21 +8,21 @@ TIMESTAMP := $(shell date "+%Y-%m-%d %H:%M")
 SRC_FILES := $(wildcard ../src/*.jl)
 
 INSTANCES_PGLIB := \
-        pglib-uc/ca/2014-09-01_reserves_0 \
-        pglib-uc/ca/2014-09-01_reserves_1 \
-        pglib-uc/ca/2015-03-01_reserves_0 \
-        pglib-uc/ca/2015-06-01_reserves_0 \
-        pglib-uc/ca/Scenario400_reserves_1 \
-        pglib-uc/ferc/2015-01-01_lw \
-        pglib-uc/ferc/2015-05-01_lw \
-        pglib-uc/ferc/2015-07-01_hw \
-        pglib-uc/ferc/2015-10-01_lw \
-        pglib-uc/ferc/2015-12-01_lw \
-        pglib-uc/rts_gmlc/2020-04-03 \
-        pglib-uc/rts_gmlc/2020-09-20 \
-        pglib-uc/rts_gmlc/2020-10-27 \
-        pglib-uc/rts_gmlc/2020-11-25 \
-        pglib-uc/rts_gmlc/2020-12-23
+	pglib-uc/ca/2014-09-01_reserves_0 \
+	pglib-uc/ca/2014-09-01_reserves_1 \
+	pglib-uc/ca/2015-03-01_reserves_0 \
+	pglib-uc/ca/2015-06-01_reserves_0 \
+	pglib-uc/ca/Scenario400_reserves_1 \
+	pglib-uc/ferc/2015-01-01_lw \
+	pglib-uc/ferc/2015-05-01_lw \
+	pglib-uc/ferc/2015-07-01_hw \
+	pglib-uc/ferc/2015-10-01_lw \
+	pglib-uc/ferc/2015-12-01_lw \
+	pglib-uc/rts_gmlc/2020-04-03 \
+	pglib-uc/rts_gmlc/2020-09-20 \
+	pglib-uc/rts_gmlc/2020-10-27 \
+	pglib-uc/rts_gmlc/2020-11-25 \
+	pglib-uc/rts_gmlc/2020-12-23
 
 INSTANCES_MATPOWER := \
 	matpower/case118/2017-02-01 \
@@ -68,7 +68,7 @@ SOLUTIONS_PGLIB := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s)
 SOLUTIONS_ORLIB := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_ORLIB))))
 SOLUTIONS_TEJADA19 := $(foreach s,$(SAMPLES),$(addprefix results/,$(addsuffix .$(s).sol.json,$(INSTANCES_TEJADA19))))
 
-.PHONY: tables save small large clean-mps matpower pglib orlib
+.PHONY: matpower pglib orlib tejada19 clean clean-mps clean-sol save tables
 
 all: matpower pglib orlib tejada19
 

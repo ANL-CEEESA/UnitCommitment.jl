@@ -10,14 +10,5 @@ advanced methods to accelerate the solution process and to enforce transmission
 and N-1 security constraints.
 """
 function optimize!(model::JuMP.Model)::Nothing
-    return UnitCommitment.optimize!(
-        model,
-        _XaQiWaTh19(
-            time_limit = 3600.0,
-            gap_limit = 1e-4,
-            two_phase_gap = true,
-            max_violations_per_line = 1,
-            max_violations_per_period = 5,
-        ),
-    )
+    return UnitCommitment.optimize!(model, _XaQiWaTh19())
 end

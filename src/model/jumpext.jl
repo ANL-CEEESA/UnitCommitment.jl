@@ -18,3 +18,31 @@ end
 function set_name(x::Float64, n::String)
     # nop
 end
+
+function _get(model::JuMP.Model, key::Symbol)::OrderedDict
+    if !(key in keys(object_dictionary(model)))
+        model[key] = OrderedDict()
+    end
+    return model[key]
+end
+
+function _set_names!(model::JuMP.Model)
+    @info "Setting variable and constraint names..."
+    time_varnames = @elapsed begin
+        _set_names!(object_dictionary(model))
+    end
+    @info @sprintf("Set names in %.2f seconds", time_varnames)
+end
+
+function _set_names!(dict::Dict)
+    for name in keys(dict)
+        dict[name] isa AbstractDict || continue
+        for idx in keys(dict[name])
+            if dict[name][idx] isa AffExpr
+                continue
+            end
+            idx_str = join(map(string, idx), ",")
+            set_name(dict[name][idx], "$name[$idx_str]")
+        end
+    end
+end
