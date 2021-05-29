@@ -5,23 +5,56 @@
 using JuMP, MathOptInterface, DataStructures
 import JuMP: value, fix, set_name
 
-# Extend some JuMP functions so that decision variables can be safely replaced by
-# (constant) floating point numbers.
-function value(x::Float64)
-    return x
-end
+"""
+    function build_model(;
+        instance::UnitCommitmentInstance,
+        isf::Union{Matrix{Float64},Nothing} = nothing,
+        lodf::Union{Matrix{Float64},Nothing} = nothing,
+        isf_cutoff::Float64 = 0.005,
+        lodf_cutoff::Float64 = 0.001,
+        optimizer = nothing,
+        variable_names::Bool = false,
+    )::JuMP.Model
 
-function fix(x::Float64, v::Float64; force)
-    return abs(x - v) < 1e-6 || error("Value mismatch: $x != $v")
-end
+Build the JuMP model corresponding to the given unit commitment instance.
 
-function set_name(x::Float64, n::String)
-    # nop
-end
+Arguments
+=========
+- `instance::UnitCommitmentInstance`:
+    the instance.
+- `isf::Union{Matrix{Float64},Nothing} = nothing`:
+    the injection shift factors matrix. If not provided, it will be computed.
+- `lodf::Union{Matrix{Float64},Nothing} = nothing`: 
+    the line outage distribution factors matrix. If not provided, it will be
+    computed.
+- `isf_cutoff::Float64 = 0.005`: 
+    the cutoff that should be applied to the ISF matrix. Entries with magnitude
+    smaller than this value will be set to zero.
+- `lodf_cutoff::Float64 = 0.001`: 
+    the cutoff that should be applied to the LODF matrix. Entries with magnitude
+    smaller than this value will be set to zero.
+- `optimizer = nothing`:
+    the optimizer factory that should be attached to this model (e.g. Cbc.Optimizer).
+    If not provided, no optimizer will be attached.
+- `variable_names::Bool = false`: 
+    If true, set variable and constraint names. Important if the model is going
+    to be exported to an MPS file. For large models, this can take significant
+    time, so it's disabled by default.
 
+Example
+=======
+```jldoctest
+julia> import Cbc, UnitCommitment
+julia> instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+julia> model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+    variable_names=true,
+)
+```
+"""
 function build_model(;
-    filename::Union{String,Nothing} = nothing,
-    instance::Union{UnitCommitmentInstance,Nothing} = nothing,
+    instance::UnitCommitmentInstance,
     isf::Union{Matrix{Float64},Nothing} = nothing,
     lodf::Union{Matrix{Float64},Nothing} = nothing,
     isf_cutoff::Float64 = 0.005,
@@ -29,18 +62,6 @@ function build_model(;
     optimizer = nothing,
     variable_names::Bool = false,
 )::JuMP.Model
-    if (filename === nothing) && (instance === nothing)
-        error("Either filename or instance must be specified")
-    end
-
-    if filename !== nothing
-        @info "Reading: $(filename)"
-        time_read = @elapsed begin
-            instance = UnitCommitment.read(filename)
-        end
-        @info @sprintf("Read problem in %.2f seconds", time_read)
-    end
-
     if length(instance.buses) == 1
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
@@ -473,71 +494,6 @@ function _build_reserve_eqs!(model::JuMP.Model)
     end
 end
 
-function _enforce_transmission(;
-    model::JuMP.Model,
-    violation::Violation,
-    isf::Matrix{Float64},
-    lodf::Matrix{Float64},
-)::Nothing
-    instance = model[:instance]
-    limit::Float64 = 0.0
-    overflow = model[:overflow]
-    net_injection = model[:net_injection]
-
-    if violation.outage_line === nothing
-        limit = violation.monitored_line.normal_flow_limit[violation.time]
-        @info @sprintf(
-            "    %8.3f MW overflow in %-5s time %3d (pre-contingency)",
-            violation.amount,
-            violation.monitored_line.name,
-            violation.time,
-        )
-    else
-        limit = violation.monitored_line.emergency_flow_limit[violation.time]
-        @info @sprintf(
-            "    %8.3f MW overflow in %-5s time %3d (outage: line %s)",
-            violation.amount,
-            violation.monitored_line.name,
-            violation.time,
-            violation.outage_line.name,
-        )
-    end
-
-    fm = violation.monitored_line.name
-    t = violation.time
-    flow = @variable(model, base_name = "flow[$fm,$t]")
-
-    v = overflow[violation.monitored_line.name, violation.time]
-    @constraint(model, flow <= limit + v)
-    @constraint(model, -flow <= limit + v)
-
-    if violation.outage_line === nothing
-        @constraint(
-            model,
-            flow == sum(
-                net_injection[b.name, violation.time] *
-                isf[violation.monitored_line.offset, b.offset] for
-                b in instance.buses if b.offset > 0
-            )
-        )
-    else
-        @constraint(
-            model,
-            flow == sum(
-                net_injection[b.name, violation.time] * (
-                    isf[violation.monitored_line.offset, b.offset] + (
-                        lodf[
-                            violation.monitored_line.offset,
-                            violation.outage_line.offset,
-                        ] * isf[violation.outage_line.offset, b.offset]
-                    )
-                ) for b in instance.buses if b.offset > 0
-            )
-        )
-    end
-    return nothing
-end
-
 function _set_names!(model::JuMP.Model)
     @info "Setting variable and constraint names..."
     time_varnames = @elapsed begin
@@ -558,230 +514,3 @@ function _set_names!(dict::Dict)
         end
     end
 end
-
-function solution(model::JuMP.Model)
-    instance, T = model[:instance], model[:instance].time
-    function timeseries(vars, collection)
-        return OrderedDict(
-            b.name => [round(value(vars[b.name, t]), digits = 5) for t in 1:T]
-            for b in collection
-        )
-    end
-    function production_cost(g)
-        return [
-            value(model[:is_on][g.name, t]) * g.min_power_cost[t] + sum(
-                Float64[
-                    value(model[:segprod][g.name, t, k]) *
-                    g.cost_segments[k].cost[t] for
-                    k in 1:length(g.cost_segments)
-                ],
-            ) for t in 1:T
-        ]
-    end
-    function production(g)
-        return [
-            value(model[:is_on][g.name, t]) * g.min_power[t] + sum(
-                Float64[
-                    value(model[:segprod][g.name, t, k]) for
-                    k in 1:length(g.cost_segments)
-                ],
-            ) for t in 1:T
-        ]
-    end
-    function startup_cost(g)
-        S = length(g.startup_categories)
-        return [
-            sum(
-                g.startup_categories[s].cost *
-                value(model[:startup][g.name, t, s]) for s in 1:S
-            ) for t in 1:T
-        ]
-    end
-    sol = OrderedDict()
-    sol["Production (MW)"] =
-        OrderedDict(g.name => production(g) for g in instance.units)
-    sol["Production cost (\$)"] =
-        OrderedDict(g.name => production_cost(g) for g in instance.units)
-    sol["Startup cost (\$)"] =
-        OrderedDict(g.name => startup_cost(g) for g in instance.units)
-    sol["Is on"] = timeseries(model[:is_on], instance.units)
-    sol["Switch on"] = timeseries(model[:switch_on], instance.units)
-    sol["Switch off"] = timeseries(model[:switch_off], instance.units)
-    sol["Reserve (MW)"] = timeseries(model[:reserve], instance.units)
-    sol["Net injection (MW)"] =
-        timeseries(model[:net_injection], instance.buses)
-    sol["Load curtail (MW)"] = timeseries(model[:curtail], instance.buses)
-    if !isempty(instance.lines)
-        sol["Line overflow (MW)"] = timeseries(model[:overflow], instance.lines)
-    end
-    if !isempty(instance.price_sensitive_loads)
-        sol["Price-sensitive loads (MW)"] =
-            timeseries(model[:loads], instance.price_sensitive_loads)
-    end
-    return sol
-end
-
-function write(filename::AbstractString, solution::AbstractDict)::Nothing
-    open(filename, "w") do file
-        return JSON.print(file, solution, 2)
-    end
-    return
-end
-
-function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
-    instance, T = model[:instance], model[:instance].time
-    is_on = model[:is_on]
-    prod_above = model[:prod_above]
-    reserve = model[:reserve]
-    for g in instance.units
-        for t in 1:T
-            is_on_value = round(solution["Is on"][g.name][t])
-            production_value =
-                round(solution["Production (MW)"][g.name][t], digits = 5)
-            reserve_value =
-                round(solution["Reserve (MW)"][g.name][t], digits = 5)
-            JuMP.fix(is_on[g.name, t], is_on_value, force = true)
-            JuMP.fix(
-                prod_above[g.name, t],
-                production_value - is_on_value * g.min_power[t],
-                force = true,
-            )
-            JuMP.fix(reserve[g.name, t], reserve_value, force = true)
-        end
-    end
-    return
-end
-
-function set_warm_start!(model::JuMP.Model, solution::AbstractDict)::Nothing
-    instance, T = model[:instance], model[:instance].time
-    is_on = model[:is_on]
-    prod_above = model[:prod_above]
-    reserve = model[:reserve]
-    for g in instance.units
-        for t in 1:T
-            JuMP.set_start_value(is_on[g.name, t], solution["Is on"][g.name][t])
-            JuMP.set_start_value(
-                switch_on[g.name, t],
-                solution["Switch on"][g.name][t],
-            )
-            JuMP.set_start_value(
-                switch_off[g.name, t],
-                solution["Switch off"][g.name][t],
-            )
-        end
-    end
-    return
-end
-
-function optimize!(
-    model::JuMP.Model;
-    time_limit = 3600,
-    gap_limit = 1e-4,
-    two_phase_gap = true,
-)::Nothing
-    function set_gap(gap)
-        try
-            JuMP.set_optimizer_attribute(model, "MIPGap", gap)
-            @info @sprintf("MIP gap tolerance set to %f", gap)
-        catch
-            @warn "Could not change MIP gap tolerance"
-        end
-    end
-
-    instance = model[:instance]
-    initial_time = time()
-
-    large_gap = false
-    has_transmission = (length(model[:isf]) > 0)
-
-    if has_transmission && two_phase_gap
-        set_gap(1e-2)
-        large_gap = true
-    else
-        set_gap(gap_limit)
-    end
-
-    while true
-        time_elapsed = time() - initial_time
-        time_remaining = time_limit - time_elapsed
-        if time_remaining < 0
-            @info "Time limit exceeded"
-            break
-        end
-
-        @info @sprintf(
-            "Setting MILP time limit to %.2f seconds",
-            time_remaining
-        )
-        JuMP.set_time_limit_sec(model, time_remaining)
-
-        @info "Solving MILP..."
-        JuMP.optimize!(model)
-
-        has_transmission || break
-
-        violations = _find_violations(model)
-        if isempty(violations)
-            @info "No violations found"
-            if large_gap
-                large_gap = false
-                set_gap(gap_limit)
-            else
-                break
-            end
-        else
-            _enforce_transmission(model, violations)
-        end
-    end
-
-    return
-end
-
-function _find_violations(model::JuMP.Model)
-    instance = model[:instance]
-    net_injection = model[:net_injection]
-    overflow = model[:overflow]
-    length(instance.buses) > 1 || return []
-    violations = []
-    @info "Verifying transmission limits..."
-    time_screening = @elapsed begin
-        non_slack_buses = [b for b in instance.buses if b.offset > 0]
-        net_injection_values = [
-            value(net_injection[b.name, t]) for b in non_slack_buses,
-            t in 1:instance.time
-        ]
-        overflow_values = [
-            value(overflow[lm.name, t]) for lm in instance.lines,
-            t in 1:instance.time
-        ]
-        violations = UnitCommitment._find_violations(
-            instance = instance,
-            net_injections = net_injection_values,
-            overflow = overflow_values,
-            isf = model[:isf],
-            lodf = model[:lodf],
-        )
-    end
-    @info @sprintf(
-        "Verified transmission limits in %.2f seconds",
-        time_screening
-    )
-    return violations
-end
-
-function _enforce_transmission(
-    model::JuMP.Model,
-    violations::Vector{Violation},
-)::Nothing
-    for v in violations
-        _enforce_transmission(
-            model = model,
-            violation = v,
-            isf = model[:isf],
-            lodf = model[:lodf],
-        )
-    end
-    return
-end
-
-export build_model

@@ -5,11 +5,11 @@
 JULIA := julia --color=yes --project=@.
 VERSION := 0.2
 
-build/sysimage.so: src/sysimage.jl Project.toml Manifest.toml
+build/sysimage.so: src/utils/sysimage.jl Project.toml Manifest.toml
 	mkdir -p build
 	mkdir -p benchmark/results/test
 	cd benchmark; $(JULIA) --trace-compile=../build/precompile.jl run.jl test/case14.1.sol.json
-	$(JULIA) src/sysimage.jl
+	$(JULIA) src/utils/sysimage.jl
 
 clean:
 	rm -rf build/*

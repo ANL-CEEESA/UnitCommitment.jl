@@ -11,7 +11,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP
             line.normal_flow_limit[t] = 10.0
         end
         optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
-        model = build_model(
+        model = UnitCommitment.build_model(
             instance = instance,
             optimizer = optimizer,
             variable_names = true,

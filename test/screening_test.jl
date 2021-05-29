@@ -3,16 +3,17 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using UnitCommitment, Test, LinearAlgebra
-import UnitCommitment: Violation, _offer, _query
+import UnitCommitment: _Violation, _offer, _query
 
 @testset "Screening" begin
-    @testset "Violation filter" begin
+    @testset "_Violation filter" begin
         instance = UnitCommitment.read_benchmark("test/case14")
-        filter = UnitCommitment.ViolationFilter(max_per_line = 1, max_total = 2)
+        filter =
+            UnitCommitment._ViolationFilter(max_per_line = 1, max_total = 2)
 
         _offer(
             filter,
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[1],
                 outage_line = nothing,
@@ -21,7 +22,7 @@ import UnitCommitment: Violation, _offer, _query
         )
         _offer(
             filter,
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[1],
                 outage_line = instance.lines[1],
@@ -30,7 +31,7 @@ import UnitCommitment: Violation, _offer, _query
         )
         _offer(
             filter,
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[1],
                 outage_line = instance.lines[5],
@@ -39,7 +40,7 @@ import UnitCommitment: Violation, _offer, _query
         )
         _offer(
             filter,
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[1],
                 outage_line = instance.lines[4],
@@ -48,7 +49,7 @@ import UnitCommitment: Violation, _offer, _query
         )
         _offer(
             filter,
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[2],
                 outage_line = instance.lines[1],
@@ -57,7 +58,7 @@ import UnitCommitment: Violation, _offer, _query
         )
         _offer(
             filter,
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[2],
                 outage_line = instance.lines[8],
@@ -67,13 +68,13 @@ import UnitCommitment: Violation, _offer, _query
 
         actual = _query(filter)
         expected = [
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[2],
                 outage_line = instance.lines[1],
                 amount = 200.0,
             ),
-            Violation(
+            _Violation(
                 time = 1,
                 monitored_line = instance.lines[1],
                 outage_line = instance.lines[5],
@@ -106,6 +107,8 @@ import UnitCommitment: Violation, _offer, _query
             overflow = overflow,
             isf = isf,
             lodf = lodf,
+            max_per_line = 1,
+            max_per_period = 5,
         )
         @test length(violations) == 20
     end

@@ -1,91 +1,56 @@
 # UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
-# Copyright (C) 2019 Argonne National Laboratory
-# Written by Alinson Santos Xavier <axavier@anl.gov>
 
-using DataStructures
-using Base.Threads
+import Base.Threads: @threads
 
-struct Violation
-    time::Int
-    monitored_line::TransmissionLine
-    outage_line::Union{TransmissionLine,Nothing}
-    amount::Float64  # Violation amount (in MW)
-end
-
-function Violation(;
-    time::Int,
-    monitored_line::TransmissionLine,
-    outage_line::Union{TransmissionLine,Nothing},
-    amount::Float64,
-)::Violation
-    return Violation(time, monitored_line, outage_line, amount)
-end
-
-mutable struct ViolationFilter
-    max_per_line::Int
-    max_total::Int
-    queues::Dict{Int,PriorityQueue{Violation,Float64}}
-end
-
-function ViolationFilter(;
-    max_per_line::Int = 1,
-    max_total::Int = 5,
-)::ViolationFilter
-    return ViolationFilter(max_per_line, max_total, Dict())
-end
-
-function _offer(filter::ViolationFilter, v::Violation)::Nothing
-    if v.monitored_line.offset ∉ keys(filter.queues)
-        filter.queues[v.monitored_line.offset] =
-            PriorityQueue{Violation,Float64}()
+function _find_violations(
+    model::JuMP.Model;
+    max_per_line::Int,
+    max_per_period::Int,
+)
+    instance = model[:instance]
+    net_injection = model[:net_injection]
+    overflow = model[:overflow]
+    length(instance.buses) > 1 || return []
+    violations = []
+    @info "Verifying transmission limits..."
+    time_screening = @elapsed begin
+        non_slack_buses = [b for b in instance.buses if b.offset > 0]
+        net_injection_values = [
+            value(net_injection[b.name, t]) for b in non_slack_buses,
+            t in 1:instance.time
+        ]
+        overflow_values = [
+            value(overflow[lm.name, t]) for lm in instance.lines,
+            t in 1:instance.time
+        ]
+        violations = UnitCommitment._find_violations(
+            instance = instance,
+            net_injections = net_injection_values,
+            overflow = overflow_values,
+            isf = model[:isf],
+            lodf = model[:lodf],
+            max_per_line = max_per_line,
+            max_per_period = max_per_period,
+        )
     end
-    q::PriorityQueue{Violation,Float64} = filter.queues[v.monitored_line.offset]
-    if length(q) < filter.max_per_line
-        enqueue!(q, v => v.amount)
-    else
-        if v.amount > peek(q)[1].amount
-            dequeue!(q)
-            enqueue!(q, v => v.amount)
-        end
-    end
-    return nothing
-end
-
-function _query(filter::ViolationFilter)::Array{Violation,1}
-    violations = Array{Violation,1}()
-    time_queue = PriorityQueue{Violation,Float64}()
-    for l in keys(filter.queues)
-        line_queue = filter.queues[l]
-        while length(line_queue) > 0
-            v = dequeue!(line_queue)
-            if length(time_queue) < filter.max_total
-                enqueue!(time_queue, v => v.amount)
-            else
-                if v.amount > peek(time_queue)[1].amount
-                    dequeue!(time_queue)
-                    enqueue!(time_queue, v => v.amount)
-                end
-            end
-        end
-    end
-    while length(time_queue) > 0
-        violations = [violations; dequeue!(time_queue)]
-    end
+    @info @sprintf(
+        "Verified transmission limits in %.2f seconds",
+        time_screening
+    )
     return violations
 end
 
 """
-
     function _find_violations(
         instance::UnitCommitmentInstance,
         net_injections::Array{Float64, 2};
         isf::Array{Float64,2},
         lodf::Array{Float64,2},
-        max_per_line::Int = 1,
-        max_per_period::Int = 5,
-    )::Array{Violation, 1}
+        max_per_line::Int,
+        max_per_period::Int,
+    )::Array{_Violation, 1}
 
 Find transmission constraint violations (both pre-contingency, as well as
 post-contingency).
@@ -103,9 +68,9 @@ function _find_violations(;
     overflow::Array{Float64,2},
     isf::Array{Float64,2},
     lodf::Array{Float64,2},
-    max_per_line::Int = 1,
-    max_per_period::Int = 5,
-)::Array{Violation,1}
+    max_per_line::Int,
+    max_per_period::Int,
+)::Array{_Violation,1}
     B = length(instance.buses) - 1
     L = length(instance.lines)
     T = instance.time
@@ -116,7 +81,7 @@ function _find_violations(;
     size(lodf) == (L, L) || error("lodf has incorrect size")
 
     filters = Dict(
-        t => ViolationFilter(
+        t => _ViolationFilter(
             max_total = max_per_period,
             max_per_line = max_per_line,
         ) for t in 1:T
@@ -177,7 +142,7 @@ function _find_violations(;
             if pre_v[lm, k] > 1e-5
                 _offer(
                     filters[t],
-                    Violation(
+                    _Violation(
                         time = t,
                         monitored_line = instance.lines[lm],
                         outage_line = nothing,
@@ -192,7 +157,7 @@ function _find_violations(;
             if post_v[lm, lc, k] > 1e-5 && is_vulnerable[lc]
                 _offer(
                     filters[t],
-                    Violation(
+                    _Violation(
                         time = t,
                         monitored_line = instance.lines[lm],
                         outage_line = instance.lines[lc],
@@ -203,7 +168,7 @@ function _find_violations(;
         end
     end
 
-    violations = Violation[]
+    violations = _Violation[]
     for t in 1:instance.time
         append!(violations, _query(filters[t]))
     end

@@ -4,16 +4,15 @@
 
 using DataStructures, JSON, GZip
 
-function _read_json(path::String)::OrderedDict
-    if endswith(path, ".gz")
-        file = GZip.gzopen(path)
-    else
-        file = open(path)
-    end
-    return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
-end
+"""
 
-function _read_egret_solution(path::String)::OrderedDict
+    read_egret_solution(path::String)::OrderedDict
+
+Read a JSON solution file produced by EGRET and transforms it into a
+dictionary having the same structure as the one produced by
+UnitCommitment.solution(model).
+"""
+function read_egret_solution(path::String)::OrderedDict
     egret = _read_json(path)
     T = length(egret["system"]["time_keys"])
 

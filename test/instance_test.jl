@@ -149,7 +149,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
         # Should be able to build model without errors
         optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
-        model = build_model(
+        model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
             variable_names = true,

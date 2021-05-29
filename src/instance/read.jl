@@ -8,104 +8,35 @@ using DataStructures
 using GZip
 import Base: getindex, time
 
-mutable struct Bus
-    name::String
-    offset::Int
-    load::Vector{Float64}
-    units::Vector
-    price_sensitive_loads::Vector
-end
+"""
+    read_benchmark(name::AbstractString)::UnitCommitmentInstance
 
-mutable struct CostSegment
-    mw::Vector{Float64}
-    cost::Vector{Float64}
-end
+Read one of the benchmark unit commitment instances included in the package.
+See "Instances" section of the documentation for the entire list of benchmark
+instances available.
 
-mutable struct StartupCategory
-    delay::Int
-    cost::Float64
-end
+Example
+-------
 
-mutable struct Unit
-    name::String
-    bus::Bus
-    max_power::Vector{Float64}
-    min_power::Vector{Float64}
-    must_run::Vector{Bool}
-    min_power_cost::Vector{Float64}
-    cost_segments::Vector{CostSegment}
-    min_uptime::Int
-    min_downtime::Int
-    ramp_up_limit::Float64
-    ramp_down_limit::Float64
-    startup_limit::Float64
-    shutdown_limit::Float64
-    initial_status::Union{Int,Nothing}
-    initial_power::Union{Float64,Nothing}
-    provides_spinning_reserves::Vector{Bool}
-    startup_categories::Vector{StartupCategory}
-end
-
-mutable struct TransmissionLine
-    name::String
-    offset::Int
-    source::Bus
-    target::Bus
-    reactance::Float64
-    susceptance::Float64
-    normal_flow_limit::Vector{Float64}
-    emergency_flow_limit::Vector{Float64}
-    flow_limit_penalty::Vector{Float64}
-end
-
-mutable struct Reserves
-    spinning::Vector{Float64}
-end
-
-mutable struct Contingency
-    name::String
-    lines::Vector{TransmissionLine}
-    units::Vector{Unit}
-end
-
-mutable struct PriceSensitiveLoad
-    name::String
-    bus::Bus
-    demand::Vector{Float64}
-    revenue::Vector{Float64}
-end
-
-mutable struct UnitCommitmentInstance
-    time::Int
-    power_balance_penalty::Vector{Float64}
-    units::Vector{Unit}
-    buses::Vector{Bus}
-    lines::Vector{TransmissionLine}
-    reserves::Reserves
-    contingencies::Vector{Contingency}
-    price_sensitive_loads::Vector{PriceSensitiveLoad}
-end
-
-function Base.show(io::IO, instance::UnitCommitmentInstance)
-    print(io, "UnitCommitmentInstance(")
-    print(io, "$(length(instance.units)) units, ")
-    print(io, "$(length(instance.buses)) buses, ")
-    print(io, "$(length(instance.lines)) lines, ")
-    print(io, "$(length(instance.contingencies)) contingencies, ")
-    print(
-        io,
-        "$(length(instance.price_sensitive_loads)) price sensitive loads, ",
-    )
-    print(io, "$(instance.time) time steps")
-    print(io, ")")
-    return
-end
-
+    import UnitCommitment
+    instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
+"""
 function read_benchmark(name::AbstractString)::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
-    return UnitCommitment.read("$basedir/../instances/$name.json.gz")
+    return UnitCommitment.read("$basedir/../../instances/$name.json.gz")
 end
 
+"""
+    read(path::AbstractString)::UnitCommitmentInstance
+
+Read a unit commitment instance from a file. The file may be gzipped.
+
+Example
+-------
+
+    import UnitCommitment
+    instance = UnitCommitment.read("/path/to/input.json.gz")
+"""
 function read(path::AbstractString)::UnitCommitmentInstance
     if endswith(path, ".gz")
         return _read(gzopen(path))
@@ -118,6 +49,15 @@ function _read(file::IO)::UnitCommitmentInstance
     return _from_json(
         JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing)),
     )
+end
+
+function _read_json(path::String)::OrderedDict
+    if endswith(path, ".gz")
+        file = GZip.gzopen(path)
+    else
+        file = open(path)
+    end
+    return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
 end
 
 function _from_json(json; repair = true)
@@ -336,54 +276,3 @@ function _from_json(json; repair = true)
     end
     return instance
 end
-
-"""
-    slice(instance, range)
-
-Creates a new instance, with only a subset of the time periods.
-This function does not modify the provided instance. The initial
-conditions are also not modified.
-
-Example
--------
-
-    # Build a 2-hour UC instance
-    instance = UnitCommitment.read_benchmark("test/case14")
-    modified = UnitCommitment.slice(instance, 1:2)
-
-"""
-function slice(
-    instance::UnitCommitmentInstance,
-    range::UnitRange{Int},
-)::UnitCommitmentInstance
-    modified = deepcopy(instance)
-    modified.time = length(range)
-    modified.power_balance_penalty = modified.power_balance_penalty[range]
-    modified.reserves.spinning = modified.reserves.spinning[range]
-    for u in modified.units
-        u.max_power = u.max_power[range]
-        u.min_power = u.min_power[range]
-        u.must_run = u.must_run[range]
-        u.min_power_cost = u.min_power_cost[range]
-        u.provides_spinning_reserves = u.provides_spinning_reserves[range]
-        for s in u.cost_segments
-            s.mw = s.mw[range]
-            s.cost = s.cost[range]
-        end
-    end
-    for b in modified.buses
-        b.load = b.load[range]
-    end
-    for l in modified.lines
-        l.normal_flow_limit = l.normal_flow_limit[range]
-        l.emergency_flow_limit = l.emergency_flow_limit[range]
-        l.flow_limit_penalty = l.flow_limit_penalty[range]
-    end
-    for ps in modified.price_sensitive_loads
-        ps.demand = ps.demand[range]
-        ps.revenue = ps.revenue[range]
-    end
-    return modified
-end
-
-export UnitCommitmentInstance
