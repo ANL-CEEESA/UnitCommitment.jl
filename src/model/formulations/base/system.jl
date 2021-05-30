@@ -10,9 +10,9 @@ end
 
 function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
     T = model[:instance].time
-    net_injection = _get(model, :net_injection)
-    eq_net_injection_def = _get(model, :eq_net_injection_def)
-    eq_power_balance = _get(model, :eq_power_balance)
+    net_injection = _init(model, :net_injection)
+    eq_net_injection_def = _init(model, :eq_net_injection_def)
+    eq_power_balance = _init(model, :eq_power_balance)
     for t in 1:T, b in model[:instance].buses
         n = net_injection[b.name, t] = @variable(model)
         eq_net_injection_def[t, b.name] =
@@ -28,7 +28,7 @@ function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
 end
 
 function _add_reserve_eqs!(model::JuMP.Model)::Nothing
-    eq_min_reserve = _get(model, :eq_min_reserve)
+    eq_min_reserve = _init(model, :eq_min_reserve)
     for t in 1:model[:instance].time
         eq_min_reserve[t] = @constraint(
             model,

@@ -72,10 +72,9 @@ function _line_outage_factors(;
     lines::Array{TransmissionLine,1},
     isf::Array{Float64,2},
 )::Array{Float64,2}
-    n_lines, n_buses = size(isf)
     incidence = Array(_reduced_incidence_matrix(lines = lines, buses = buses))
     lodf::Array{Float64,2} = isf * transpose(incidence)
-    m, n = size(lodf)
+    _, n = size(lodf)
     for i in 1:n
         lodf[:, i] *= 1.0 / (1.0 - lodf[i, i])
         lodf[i, i] = -1

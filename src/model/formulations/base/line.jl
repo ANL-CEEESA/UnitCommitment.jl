@@ -2,11 +2,60 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_transmission_line!(model, lm)::Nothing
-    overflow = _get(model, :overflow)
+function _add_transmission_line!(
+    model::JuMP.Model,
+    lm::TransmissionLine,
+    f::_TransmissionFormulation,
+)::Nothing
+    overflow = _init(model, :overflow)
     for t in 1:model[:instance].time
-        v = overflow[lm.name, t] = @variable(model, lower_bound = 0)
-        add_to_expression!(model[:obj], v, lm.flow_limit_penalty[t])
+        overflow[lm.name, t] = @variable(model, lower_bound = 0)
+        add_to_expression!(
+            model[:obj],
+            overflow[lm.name, t],
+            lm.flow_limit_penalty[t],
+        )
     end
+    return
+end
+
+function _setup_transmission(
+    model::JuMP.Model,
+    formulation::_TransmissionFormulation,
+)::Nothing
+    instance = model[:instance]
+    isf = formulation.precomputed_isf
+    lodf = formulation.precomputed_lodf
+    if length(instance.buses) == 1
+        isf = zeros(0, 0)
+        lodf = zeros(0, 0)
+    elseif isf === nothing
+        @info "Computing injection shift factors..."
+        time_isf = @elapsed begin
+            isf = UnitCommitment._injection_shift_factors(
+                lines = instance.lines,
+                buses = instance.buses,
+            )
+        end
+        @info @sprintf("Computed ISF in %.2f seconds", time_isf)
+        @info "Computing line outage factors..."
+        time_lodf = @elapsed begin
+            lodf = UnitCommitment._line_outage_factors(
+                lines = instance.lines,
+                buses = instance.buses,
+                isf = isf,
+            )
+        end
+        @info @sprintf("Computed LODF in %.2f seconds", time_lodf)
+        @info @sprintf(
+            "Applying PTDF and LODF cutoffs (%.5f, %.5f)",
+            formulation.isf_cutoff,
+            formulation.lodf_cutoff
+        )
+        isf[abs.(isf).<formulation.isf_cutoff] .= 0
+        lodf[abs.(lodf).<formulation.lodf_cutoff] .= 0
+    end
+    model[:isf] = isf
+    model[:lodf] = lodf
     return
 end

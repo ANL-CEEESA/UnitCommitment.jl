@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_unit!(model::JuMP.Model, g::Unit)
+function _add_unit!(model::JuMP.Model, g::Unit, f::_GeneratorFormulation)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
     end
@@ -11,26 +11,31 @@ function _add_unit!(model::JuMP.Model, g::Unit)
     end
 
     # Variables
-    _add_production_vars!(model, g)
-    _add_reserve_vars!(model, g)
-    _add_startup_shutdown_vars!(model, g)
-    _add_status_vars!(model, g)
+    _add_production_vars!(model, g, f)
+    _add_reserve_vars!(model, g, f)
+    _add_startup_shutdown_vars!(model, g, f)
+    _add_status_vars!(model, g, f)
 
     # Constraints and objective function
-    _add_min_uptime_downtime_eqs!(model, g)
-    _add_net_injection_eqs!(model, g)
-    _add_production_eqs!(model, g)
-    _add_ramp_eqs!(model, g)
-    _add_startup_shutdown_costs_eqs!(model, g)
-    _add_startup_shutdown_limit_eqs!(model, g)
-    return _add_status_eqs!(model, g)
+    _add_min_uptime_downtime_eqs!(model, g, f)
+    _add_net_injection_eqs!(model, g, f)
+    _add_production_eqs!(model, g, f)
+    _add_ramp_eqs!(model, g, f.ramping)
+    _add_startup_shutdown_costs_eqs!(model, g, f)
+    _add_startup_shutdown_limit_eqs!(model, g, f)
+    _add_status_eqs!(model, g, f)
+    return
 end
 
 _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
-function _add_production_vars!(model::JuMP.Model, g::Unit)::Nothing
-    prod_above = _get(model, :prod_above)
-    segprod = _get(model, :segprod)
+function _add_production_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    prod_above = _init(model, :prod_above)
+    segprod = _init(model, :segprod)
     for t in 1:model[:instance].time
         for k in 1:length(g.cost_segments)
             segprod[g.name, t, k] = @variable(model, lower_bound = 0)
@@ -40,10 +45,14 @@ function _add_production_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_production_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_prod_above_def = _get(model, :eq_prod_above_def)
-    eq_prod_limit = _get(model, :eq_prod_limit)
-    eq_segprod_limit = _get(model, :eq_segprod_limit)
+function _add_production_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    eq_prod_above_def = _init(model, :eq_prod_above_def)
+    eq_prod_limit = _init(model, :eq_prod_limit)
+    eq_segprod_limit = _init(model, :eq_segprod_limit)
     is_on = model[:is_on]
     K = length(g.cost_segments)
     prod_above = model[:prod_above]
@@ -82,8 +91,12 @@ function _add_production_eqs!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
-    reserve = _get(model, :reserve)
+function _add_reserve_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    reserve = _init(model, :reserve)
     for t in 1:model[:instance].time
         if g.provides_spinning_reserves[t]
             reserve[g.name, t] = @variable(model, lower_bound = 0)
@@ -94,7 +107,11 @@ function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_reserve_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_reserve_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
     reserve = model[:reserve]
     for t in 1:model[:instance].time
         add_to_expression!(expr_reserve[g.bus.name, t], reserve[g.name, t], 1.0)
@@ -102,8 +119,12 @@ function _add_reserve_eqs!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
-    startup = _get(model, :startup)
+function _add_startup_shutdown_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    startup = _init(model, :startup)
     for t in 1:model[:instance].time
         for s in 1:length(g.startup_categories)
             startup[g.name, t, s] = @variable(model, binary = true)
@@ -112,9 +133,13 @@ function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_shutdown_limit = _get(model, :eq_shutdown_limit)
-    eq_startup_limit = _get(model, :eq_startup_limit)
+function _add_startup_shutdown_limit_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    eq_shutdown_limit = _init(model, :eq_shutdown_limit)
+    eq_startup_limit = _init(model, :eq_startup_limit)
     is_on = model[:is_on]
     prod_above = model[:prod_above]
     reserve = model[:reserve]
@@ -147,9 +172,13 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_startup_shutdown_costs_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_startup_choose = _get(model, :eq_startup_choose)
-    eq_startup_restrict = _get(model, :eq_startup_restrict)
+function _add_startup_shutdown_costs_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    eq_startup_choose = _init(model, :eq_startup_choose)
+    eq_startup_restrict = _init(model, :eq_startup_restrict)
     S = length(g.startup_categories)
     startup = model[:startup]
     for t in 1:model[:instance].time
@@ -190,10 +219,14 @@ function _add_startup_shutdown_costs_eqs!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_status_vars!(model::JuMP.Model, g::Unit)::Nothing
-    is_on = _get(model, :is_on)
-    switch_on = _get(model, :switch_on)
-    switch_off = _get(model, :switch_off)
+function _add_status_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    is_on = _init(model, :is_on)
+    switch_on = _init(model, :switch_on)
+    switch_off = _init(model, :switch_off)
     for t in 1:model[:instance].time
         if g.must_run[t]
             is_on[g.name, t] = 1.0
@@ -208,9 +241,13 @@ function _add_status_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_status_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_binary_link = _get(model, :eq_binary_link)
-    eq_switch_on_off = _get(model, :eq_switch_on_off)
+function _add_status_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
+    eq_binary_link = _init(model, :eq_binary_link)
+    eq_switch_on_off = _init(model, :eq_switch_on_off)
     is_on = model[:is_on]
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
@@ -240,11 +277,15 @@ function _add_status_eqs!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_ramp_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_ramp_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
-    eq_ramp_up = _get(model, :eq_ramp_up)
-    eq_ramp_down = _get(model, :eq_ramp_down)
+    eq_ramp_up = _init(model, :eq_ramp_up)
+    eq_ramp_down = _init(model, :eq_ramp_down)
     for t in 1:model[:instance].time
         # Ramp up limit
         if t == 1
@@ -282,12 +323,16 @@ function _add_ramp_eqs!(model::JuMP.Model, g::Unit)::Nothing
     end
 end
 
-function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_min_uptime_downtime_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
     is_on = model[:is_on]
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
-    eq_min_uptime = _get(model, :eq_min_uptime)
-    eq_min_downtime = _get(model, :eq_min_downtime)
+    eq_min_uptime = _init(model, :eq_min_uptime)
+    eq_min_downtime = _init(model, :eq_min_downtime)
     T = model[:instance].time
     for t in 1:T
         # Minimum up-time
@@ -325,25 +370,29 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     end
 end
 
-function _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_net_injection_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::_GeneratorFormulation,
+)::Nothing
     expr_net_injection = model[:expr_net_injection]
-    expr_reserve = model[:expr_reserve]
-    is_on = model[:is_on]
-    prod_above = model[:prod_above]
-    reserve = model[:reserve]
     for t in 1:model[:instance].time
         # Add to net injection expression
         add_to_expression!(
             expr_net_injection[g.bus.name, t],
-            prod_above[g.name, t],
+            model[:prod_above][g.name, t],
             1.0,
         )
         add_to_expression!(
             expr_net_injection[g.bus.name, t],
-            is_on[g.name, t],
+            model[:is_on][g.name, t],
             g.min_power[t],
         )
         # Add to reserves expression
-        add_to_expression!(expr_reserve[g.bus.name, t], reserve[g.name, t], 1.0)
+        add_to_expression!(
+            model[:expr_reserve][g.bus.name, t],
+            model[:reserve][g.name, t],
+            1.0,
+        )
     end
 end

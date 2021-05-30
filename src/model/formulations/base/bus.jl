@@ -3,9 +3,9 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function _add_bus!(model::JuMP.Model, b::Bus)::Nothing
-    net_injection = _get(model, :expr_net_injection)
-    reserve = _get(model, :expr_reserve)
-    curtail = _get(model, :curtail)
+    net_injection = _init(model, :expr_net_injection)
+    reserve = _init(model, :expr_reserve)
+    curtail = _init(model, :curtail)
     for t in 1:model[:instance].time
         # Fixed load
         net_injection[b.name, t] = AffExpr(-b.load[t])

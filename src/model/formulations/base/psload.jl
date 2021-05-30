@@ -6,8 +6,8 @@ function _add_price_sensitive_load!(
     model::JuMP.Model,
     ps::PriceSensitiveLoad,
 )::Nothing
-    loads = _get(model, :loads)
-    net_injection = _get(model, :expr_net_injection)
+    loads = _init(model, :loads)
+    net_injection = _init(model, :expr_net_injection)
     for t in 1:model[:instance].time
         # Decision variable
         loads[ps.name, t] =

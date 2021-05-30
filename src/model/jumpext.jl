@@ -19,7 +19,7 @@ function set_name(x::Float64, n::String)
     # nop
 end
 
-function _get(model::JuMP.Model, key::Symbol)::OrderedDict
+function _init(model::JuMP.Model, key::Symbol)::OrderedDict
     if !(key in keys(object_dictionary(model)))
         model[key] = OrderedDict()
     end

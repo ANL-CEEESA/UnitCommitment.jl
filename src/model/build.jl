@@ -55,45 +55,25 @@ julia> model = UnitCommitment.build_model(
 """
 function build_model(;
     instance::UnitCommitmentInstance,
-    isf::Union{Matrix{Float64},Nothing} = nothing,
-    lodf::Union{Matrix{Float64},Nothing} = nothing,
-    isf_cutoff::Float64 = 0.005,
-    lodf_cutoff::Float64 = 0.001,
     optimizer = nothing,
     variable_names::Bool = false,
 )::JuMP.Model
-    if length(instance.buses) == 1
-        isf = zeros(0, 0)
-        lodf = zeros(0, 0)
-    else
-        if isf === nothing
-            @info "Computing injection shift factors..."
-            time_isf = @elapsed begin
-                isf = UnitCommitment._injection_shift_factors(
-                    lines = instance.lines,
-                    buses = instance.buses,
-                )
-            end
-            @info @sprintf("Computed ISF in %.2f seconds", time_isf)
-            @info "Computing line outage factors..."
-            time_lodf = @elapsed begin
-                lodf = UnitCommitment._line_outage_factors(
-                    lines = instance.lines,
-                    buses = instance.buses,
-                    isf = isf,
-                )
-            end
-            @info @sprintf("Computed LODF in %.2f seconds", time_lodf)
+    return _build_model(
+        instance,
+        _GeneratorFormulation(),
+        _ShiftFactorsFormulation(),
+        optimizer = optimizer,
+        variable_names = variable_names,
+    )
+end
 
-            @info @sprintf(
-                "Applying PTDF and LODF cutoffs (%.5f, %.5f)",
-                isf_cutoff,
-                lodf_cutoff
-            )
-            isf[abs.(isf).<isf_cutoff] .= 0
-            lodf[abs.(lodf).<lodf_cutoff] .= 0
-        end
-    end
+function _build_model(
+    instance::UnitCommitmentInstance,
+    fg::_GeneratorFormulation,
+    ft::_TransmissionFormulation;
+    optimizer = nothing,
+    variable_names::Bool = false,
+)::JuMP.Model
     @info "Building model..."
     time_model = @elapsed begin
         model = Model()
@@ -102,12 +82,19 @@ function build_model(;
         end
         model[:obj] = AffExpr()
         model[:instance] = instance
-        model[:isf] = isf
-        model[:lodf] = lodf
-        _add_transmission_line!.(model, instance.lines)
-        _add_bus!.(model, instance.buses)
-        _add_unit!.(model, instance.units)
-        _add_price_sensitive_load!.(model, instance.price_sensitive_loads)
+        _setup_transmission(model, ft)
+        for l in instance.lines
+            _add_transmission_line!(model, l, ft)
+        end
+        for b in instance.buses
+            _add_bus!(model, b)
+        end
+        for g in instance.units
+            _add_unit!(model, g, fg)
+        end
+        for ps in instance.price_sensitive_loads
+            _add_price_sensitive_load!(model, ps)
+        end
         _add_system_wide_eqs!(model)
         @objective(model, Min, model[:obj])
     end
