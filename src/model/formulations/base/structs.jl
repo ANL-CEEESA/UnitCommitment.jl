@@ -9,7 +9,7 @@ struct _GeneratorFormulation
     ramping::_RampingFormulation
 
     function _GeneratorFormulation(
-        ramping::_RampingFormulation = _DamKucRajAta16(),
+        ramping::_RampingFormulation = _MorLatRam13(),
     )
         return new(ramping)
     end
