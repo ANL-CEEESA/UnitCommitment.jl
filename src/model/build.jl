@@ -8,10 +8,6 @@ import JuMP: value, fix, set_name
 """
     function build_model(;
         instance::UnitCommitmentInstance,
-        isf::Union{Matrix{Float64},Nothing} = nothing,
-        lodf::Union{Matrix{Float64},Nothing} = nothing,
-        isf_cutoff::Float64 = 0.005,
-        lodf_cutoff::Float64 = 0.001,
         optimizer = nothing,
         variable_names::Bool = false,
     )::JuMP.Model
@@ -20,38 +16,15 @@ Build the JuMP model corresponding to the given unit commitment instance.
 
 Arguments
 =========
-- `instance::UnitCommitmentInstance`:
+- `instance`:
     the instance.
-- `isf::Union{Matrix{Float64},Nothing} = nothing`:
-    the injection shift factors matrix. If not provided, it will be computed.
-- `lodf::Union{Matrix{Float64},Nothing} = nothing`: 
-    the line outage distribution factors matrix. If not provided, it will be
-    computed.
-- `isf_cutoff::Float64 = 0.005`: 
-    the cutoff that should be applied to the ISF matrix. Entries with magnitude
-    smaller than this value will be set to zero.
-- `lodf_cutoff::Float64 = 0.001`: 
-    the cutoff that should be applied to the LODF matrix. Entries with magnitude
-    smaller than this value will be set to zero.
-- `optimizer = nothing`:
+- `optimizer`:
     the optimizer factory that should be attached to this model (e.g. Cbc.Optimizer).
     If not provided, no optimizer will be attached.
-- `variable_names::Bool = false`: 
+- `variable_names`: 
     If true, set variable and constraint names. Important if the model is going
     to be exported to an MPS file. For large models, this can take significant
     time, so it's disabled by default.
-
-Example
-=======
-```jldoctest
-julia> import Cbc, UnitCommitment
-julia> instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
-julia> model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=Cbc.Optimizer,
-    variable_names=true,
-)
-```
 """
 function build_model(;
     instance::UnitCommitmentInstance,
