@@ -9,4 +9,4 @@ Formulation described in:
     MILP formulation for the thermal unit commitment problem. IEEE Transactions
     on Power Systems, 28(4), 4897-4908.
 """
-mutable struct _MorLatRam13 <: _RampingFormulation end
+struct MorLatRam13 <: RampingFormulation end

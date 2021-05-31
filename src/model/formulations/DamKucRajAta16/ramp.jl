@@ -5,7 +5,7 @@
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_DamKucRajAta16,
+    formulation::DamKucRajAta16,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -31,15 +31,15 @@ function _add_ramp_eqs!(
         time_invariant =
             (t > 1) ? (abs(g.min_power[t] - g.min_power[t-1]) < 1e-7) : true
 
-        if t > 1 && !time_invariant
-            warning(
-                "Ramping according to Damcı-Kurt et al. (2016) requires " *
-                "time-invariant minimum power. This does not hold for " *
-                "generator $(gn): min_power[$t] = $(g.min_power[t]); " *
-                "min_power[$(t-1)] = $(g.min_power[t-1]). Reverting to " *
-                "Arroyo and Conejo (2000) formulation for this generator.",
-            )
-        end
+        # if t > 1 && !time_invariant
+        #     @warn(
+        #         "Ramping according to Damcı-Kurt et al. (2016) requires " *
+        #         "time-invariant minimum power. This does not hold for " *
+        #         "generator $(gn): min_power[$t] = $(g.min_power[t]); " *
+        #         "min_power[$(t-1)] = $(g.min_power[t-1]). Reverting to " *
+        #         "Arroyo and Conejo (2000) formulation for this generator.",
+        #     )
+        # end
 
         max_prod_this_period =
             prod_above[gn, t] + (

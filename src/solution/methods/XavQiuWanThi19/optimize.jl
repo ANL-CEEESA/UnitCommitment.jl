@@ -2,17 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-"""
-    optimize!(model::JuMP.Model, method::_XaQiWaTh19)::Nothing
-
-Solve the given unit commitment model, enforcing transmission and N-1
-security constraints lazily, according to the algorithm described in:
-
-    Xavier, A. S., Qiu, F., Wang, F., & Thimmapuram, P. R. (2019). Transmission
-    constraint filtering in large-scale security-constrained unit commitment. 
-    IEEE Transactions on Power Systems, 34(3), 2457-2460.
-"""
-function optimize!(model::JuMP.Model, method::_XaQiWaTh19)::Nothing
+function optimize!(model::JuMP.Model, method::XavQiuWanThi19)::Nothing
     function set_gap(gap)
         try
             JuMP.set_optimizer_attribute(model, "MIPGap", gap)
@@ -21,7 +11,6 @@ function optimize!(model::JuMP.Model, method::_XaQiWaTh19)::Nothing
             @warn "Could not change MIP gap tolerance"
         end
     end
-    instance = model[:instance]
     initial_time = time()
     large_gap = false
     has_transmission = (length(model[:isf]) > 0)

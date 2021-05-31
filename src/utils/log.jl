@@ -49,6 +49,9 @@ function handle_message(
     if level >= logger.screen_log_level
         printstyled(time_string, color = color)
         println(message)
+        flush(stdout)
+        flush(stderr)
+        Base.Libc.flush_cstdio()
     end
     if logger.file !== nothing && level >= logger.io_log_level
         write(logger.file, time_string)

@@ -5,7 +5,7 @@
 function _add_transmission_line!(
     model::JuMP.Model,
     lm::TransmissionLine,
-    f::_TransmissionFormulation,
+    f::ShiftFactorsFormulation,
 )::Nothing
     overflow = _init(model, :overflow)
     for t in 1:model[:instance].time
@@ -21,7 +21,7 @@ end
 
 function _setup_transmission(
     model::JuMP.Model,
-    formulation::_TransmissionFormulation,
+    formulation::ShiftFactorsFormulation,
 )::Nothing
     instance = model[:instance]
     isf = formulation.precomputed_isf

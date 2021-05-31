@@ -2,21 +2,23 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-abstract type _RampingFormulation end
-abstract type _TransmissionFormulation end
+abstract type TransmissionFormulation end
+abstract type RampingFormulation end
 
-struct _GeneratorFormulation
-    ramping::_RampingFormulation
+struct Formulation
+    ramping::RampingFormulation
+    transmission::TransmissionFormulation
 
-    function _GeneratorFormulation(
-        ramping::_RampingFormulation = _MorLatRam13(),
+    function Formulation(;
+        ramping::RampingFormulation = MorLatRam13(),
+        transmission::TransmissionFormulation = ShiftFactorsFormulation(),
     )
-        return new(ramping)
+        return new(ramping, transmission)
     end
 end
 
 """
-    mutable struct _ShiftFactorsFormulation <: _TransmissionFormulation
+    struct ShiftFactorsFormulation <: TransmissionFormulation
         isf_cutoff::Float64
         lodf_cutoff::Float64
         precomputed_isf::Union{Nothing,Matrix{Float64}}
@@ -40,13 +42,13 @@ Arguments
     the cutoff that should be applied to the LODF matrix. Entries with magnitude
     smaller than this value will be set to zero.
 """
-mutable struct _ShiftFactorsFormulation <: _TransmissionFormulation
+struct ShiftFactorsFormulation <: TransmissionFormulation
     isf_cutoff::Float64
     lodf_cutoff::Float64
     precomputed_isf::Union{Nothing,Matrix{Float64}}
     precomputed_lodf::Union{Nothing,Matrix{Float64}}
 
-    function _ShiftFactorsFormulation(;
+    function ShiftFactorsFormulation(;
         isf_cutoff = 0.005,
         lodf_cutoff = 0.001,
         precomputed_isf = nothing,

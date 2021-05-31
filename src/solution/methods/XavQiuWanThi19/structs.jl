@@ -5,7 +5,7 @@
 import DataStructures: PriorityQueue
 
 """
-    struct _XaQiWaTh19 <: SolutionMethod
+    struct XavQiuWanThi19 <: SolutionMethod
         time_limit::Float64
         gap_limit::Float64
         two_phase_gap::Bool
@@ -19,7 +19,8 @@ Lazy constraint solution method described in:
     constraint filtering in large-scale security-constrained unit commitment. 
     IEEE Transactions on Power Systems, 34(3), 2457-2460.
 
-## Fields
+Fields
+------
 
 - `time_limit`:
     the time limit over the entire optimization procedure.
@@ -36,14 +37,14 @@ Lazy constraint solution method described in:
     formulation per time period.
 
 """
-struct _XaQiWaTh19
+struct XavQiuWanThi19
     time_limit::Float64
     gap_limit::Float64
     two_phase_gap::Bool
     max_violations_per_line::Int
     max_violations_per_period::Int
 
-    function _XaQiWaTh19(;
+    function XavQiuWanThi19(;
         time_limit::Float64 = 86400.0,
         gap_limit::Float64 = 1e-3,
         two_phase_gap::Bool = true,

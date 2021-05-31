@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_unit!(model::JuMP.Model, g::Unit, f::_GeneratorFormulation)
+function _add_unit!(model::JuMP.Model, g::Unit, f::Formulation)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
     end
@@ -32,7 +32,7 @@ _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 function _add_production_vars!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     prod_above = _init(model, :prod_above)
     segprod = _init(model, :segprod)
@@ -48,7 +48,7 @@ end
 function _add_production_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     eq_prod_above_def = _init(model, :eq_prod_above_def)
     eq_prod_limit = _init(model, :eq_prod_limit)
@@ -94,7 +94,7 @@ end
 function _add_reserve_vars!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     reserve = _init(model, :reserve)
     for t in 1:model[:instance].time
@@ -110,7 +110,7 @@ end
 function _add_reserve_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     reserve = model[:reserve]
     for t in 1:model[:instance].time
@@ -122,7 +122,7 @@ end
 function _add_startup_shutdown_vars!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     startup = _init(model, :startup)
     for t in 1:model[:instance].time
@@ -136,7 +136,7 @@ end
 function _add_startup_shutdown_limit_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
@@ -175,7 +175,7 @@ end
 function _add_startup_shutdown_costs_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     eq_startup_choose = _init(model, :eq_startup_choose)
     eq_startup_restrict = _init(model, :eq_startup_restrict)
@@ -222,7 +222,7 @@ end
 function _add_status_vars!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     is_on = _init(model, :is_on)
     switch_on = _init(model, :switch_on)
@@ -244,7 +244,7 @@ end
 function _add_status_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     eq_binary_link = _init(model, :eq_binary_link)
     eq_switch_on_off = _init(model, :eq_switch_on_off)
@@ -280,7 +280,7 @@ end
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::RampingFormulation,
 )::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
@@ -326,7 +326,7 @@ end
 function _add_min_uptime_downtime_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     is_on = model[:is_on]
     switch_off = model[:switch_off]
@@ -373,7 +373,7 @@ end
 function _add_net_injection_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::_GeneratorFormulation,
+    formulation::Formulation,
 )::Nothing
     expr_net_injection = model[:expr_net_injection]
     for t in 1:model[:instance].time

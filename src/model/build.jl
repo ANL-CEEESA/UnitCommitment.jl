@@ -33,8 +33,7 @@ function build_model(;
 )::JuMP.Model
     return _build_model(
         instance,
-        _GeneratorFormulation(),
-        _ShiftFactorsFormulation(),
+        Formulation(),
         optimizer = optimizer,
         variable_names = variable_names,
     )
@@ -42,8 +41,7 @@ end
 
 function _build_model(
     instance::UnitCommitmentInstance,
-    fg::_GeneratorFormulation,
-    ft::_TransmissionFormulation;
+    formulation::Formulation;
     optimizer = nothing,
     variable_names::Bool = false,
 )::JuMP.Model
@@ -55,15 +53,15 @@ function _build_model(
         end
         model[:obj] = AffExpr()
         model[:instance] = instance
-        _setup_transmission(model, ft)
+        _setup_transmission(model, formulation.transmission)
         for l in instance.lines
-            _add_transmission_line!(model, l, ft)
+            _add_transmission_line!(model, l, formulation.transmission)
         end
         for b in instance.buses
             _add_bus!(model, b)
         end
         for g in instance.units
-            _add_unit!(model, g, fg)
+            _add_unit!(model, g, formulation)
         end
         for ps in instance.price_sensitive_loads
             _add_price_sensitive_load!(model, ps)
