@@ -8,7 +8,7 @@ VERSION := 0.2
 build/sysimage.so: src/utils/sysimage.jl Project.toml Manifest.toml
 	mkdir -p build
 	mkdir -p benchmark/results/test
-	cd benchmark; $(JULIA) --trace-compile=../build/precompile.jl run.jl test/case14.1.sol.json
+	cd benchmark; $(JULIA) --trace-compile=../build/precompile.jl benchmark.jl test/case14
 	$(JULIA) src/utils/sysimage.jl
 
 clean:

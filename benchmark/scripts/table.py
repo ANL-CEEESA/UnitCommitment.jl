@@ -9,8 +9,7 @@ from tabulate import tabulate
 
 
 def process_all_log_files():
-    pathlist = list(Path(".").glob("results/*/*/*.log"))
-    pathlist += list(Path(".").glob("results/*/*.log"))
+    pathlist = list(Path(".").glob("results/**/*.log"))
     rows = []
     for path in pathlist:
         if ".ipy" in str(path):
@@ -26,9 +25,9 @@ def process_all_log_files():
 
 def process(filename):
     parts = filename.replace(".log", "").split("/")
-    group_name = "/".join(parts[1:-1])
-    instance_name = parts[-1]
-    instance_name, sample_name = instance_name.split(".")
+    group_name = parts[1]
+    instance_name = "/".join(parts[2:-1])
+    sample_name = parts[-1]
     nodes = 0.0
     optimize_time = 0.0
     simplex_iterations = 0.0
@@ -174,28 +173,37 @@ def process(filename):
 
 def generate_chart():
     import pandas as pd
+    import matplotlib
     import matplotlib.pyplot as plt
     import seaborn as sns
+
+    matplotlib.use("Agg")
+    sns.set("talk")
+    sns.set_palette(
+        [
+            "#9b59b6",
+            "#3498db",
+            "#95a5a6",
+            "#e74c3c",
+            "#34495e",
+            "#2ecc71",
+        ]
+    )
 
     tables = []
     files = ["tables/benchmark.csv"]
     for f in files:
         table = pd.read_csv(f, index_col=0)
-        table.loc[:, "Instance"] = (
-            table.loc[:, "Group"] + "/" + table.loc[:, "Instance"]
-        )
         table.loc[:, "Filename"] = f
         tables += [table]
     benchmark = pd.concat(tables, sort=True)
     benchmark = benchmark.sort_values(by="Instance")
     k = len(benchmark.groupby("Instance"))
-    plt.figure(figsize=(12, 0.50 * k))
-    sns.set_style("whitegrid")
-    sns.set_palette("Set1")
+    plt.figure(figsize=(12, k))
     sns.barplot(
         y="Instance",
         x="Total time (s)",
-        color="tab:red",
+        hue="Group",
         capsize=0.15,
         errcolor="k",
         errwidth=1.25,

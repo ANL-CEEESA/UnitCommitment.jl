@@ -5,71 +5,84 @@
 import pandas as pd
 import numpy as np
 import seaborn as sns
+import matplotlib
 import matplotlib.pyplot as plt
 import sys
 
-# easy_cutoff = 120
-
-b1 = pd.read_csv(sys.argv[1], index_col=0)
-b2 = pd.read_csv(sys.argv[2], index_col=0)
-
-c1 = b1.groupby(["Group", "Instance", "Sample"])[
-    ["Optimization time (s)", "Primal bound"]
-].mean()
-c2 = b2.groupby(["Group", "Instance", "Sample"])[
-    ["Optimization time (s)", "Primal bound"]
-].mean()
-c1.columns = ["A Time (s)", "A Value"]
-c2.columns = ["B Time (s)", "B Value"]
-
-merged = pd.concat([c1, c2], axis=1)
-merged["Speedup"] = merged["A Time (s)"] / merged["B Time (s)"]
-merged["Time diff (s)"] = merged["B Time (s)"] - merged["A Time (s)"]
-merged["Value diff (%)"] = np.round(
-    (merged["B Value"] - merged["A Value"]) / merged["A Value"] * 100.0, 5
+matplotlib.use("Agg")
+sns.set("talk")
+sns.set_palette(
+    [
+        "#9b59b6",
+        "#3498db",
+        "#95a5a6",
+        "#e74c3c",
+        "#34495e",
+        "#2ecc71",
+    ]
 )
-merged.loc[merged.loc[:, "B Time (s)"] <= 0, "Speedup"] = float("nan")
-merged.loc[merged.loc[:, "B Time (s)"] <= 0, "Time diff (s)"] = float("nan")
-# merged = merged[(merged["A Time (s)"] >= easy_cutoff) | (merged["B Time (s)"] >= easy_cutoff)]
-merged.reset_index(inplace=True)
-merged["Name"] = merged["Group"] + "/" + merged["Instance"]
-# merged = merged.sort_values(by="Speedup", ascending=False)
 
+filename = sys.argv[1]
+m1 = sys.argv[2]
+m2 = sys.argv[3]
 
-k = len(merged.groupby("Name"))
-plt.figure(figsize=(12, 0.50 * k))
-plt.rcParams["xtick.bottom"] = plt.rcParams["xtick.labelbottom"] = True
-plt.rcParams["xtick.top"] = plt.rcParams["xtick.labeltop"] = True
-sns.set_style("whitegrid")
-sns.set_palette("Set1")
+# Prepare data
+data = pd.read_csv(filename, index_col=0)
+b1 = (
+    data[data["Group"] == m1]
+    .groupby(["Instance", "Sample"])
+    .mean()[["Optimization time (s)"]]
+)
+b2 = (
+    data[data["Group"] == m2]
+    .groupby(["Instance", "Sample"])
+    .mean()[["Optimization time (s)"]]
+)
+b1.columns = [f"{m1} time (s)"]
+b2.columns = [f"{m2} time (s)"]
+merged = pd.merge(b1, b2, left_index=True, right_index=True).reset_index().dropna()
+merged["Speedup"] = merged[f"{m1} time (s)"] / merged[f"{m2} time (s)"]
+merged["Group"] = merged["Instance"].str.replace(r"\/.*", "", regex=True)
+merged = merged.sort_values(by=["Instance", "Sample"], ascending=True)
+merged = merged[(merged[f"{m1} time (s)"] > 0) & (merged[f"{m2} time (s)"] > 0)]
+
+# Plot results
+k1 = len(merged.groupby("Instance").mean())
+k2 = len(merged.groupby("Group").mean())
+k = k1 + k2
+fig = plt.figure(
+    constrained_layout=True,
+    figsize=(15, max(5, 0.75 * k)),
+)
+plt.suptitle(f"{m1} vs {m2}")
+gs1 = fig.add_gridspec(nrows=k, ncols=1)
+ax1 = fig.add_subplot(gs1[0:k1, 0:1])
+ax2 = fig.add_subplot(gs1[k1:, 0:1], sharex=ax1)
 sns.barplot(
     data=merged,
     x="Speedup",
-    y="Name",
-    color="tab:red",
+    y="Instance",
+    color="tab:purple",
     capsize=0.15,
     errcolor="k",
     errwidth=1.25,
+    ax=ax1,
 )
-plt.axvline(1.0, linestyle="--", color="k")
-plt.tight_layout()
+sns.barplot(
+    data=merged,
+    x="Speedup",
+    y="Group",
+    color="tab:purple",
+    capsize=0.15,
+    errcolor="k",
+    errwidth=1.25,
+    ax=ax2,
+)
+ax1.axvline(1.0, linestyle="--", color="k")
+ax2.axvline(1.0, linestyle="--", color="k")
 
 print("Writing tables/compare.png")
 plt.savefig("tables/compare.png", dpi=150)
 
 print("Writing tables/compare.csv")
-merged.loc[
-    :,
-    [
-        "Group",
-        "Instance",
-        "Sample",
-        "A Time (s)",
-        "B Time (s)",
-        "Speedup",
-        "Time diff (s)",
-        "A Value",
-        "B Value",
-        "Value diff (%)",
-    ],
-].to_csv("tables/compare.csv", index_label="Index")
+merged.to_csv("tables/compare.csv", index_label="Index")
