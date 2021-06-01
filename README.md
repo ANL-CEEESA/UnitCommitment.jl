@@ -16,39 +16,64 @@
 
 **UnitCommitment.jl** (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and JuMP implementations of state-of-the-art mixed-integer programming formulations.
 
-### Package Components
+## Package Components
 
 * **Data Format:** The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports all the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.
 * **Benchmark Instances:** The package provides a diverse collection of large-scale benchmark instances collected from the literature and extended to make them more challenging and realistic.
 * **Model Implementation**: The package provides a Julia/JuMP implementation of state-of-the-art formulations and solution methods for SCUC. Our goal is to keep this implementation up-to-date, as new methods are proposed in the literature.
 * **Benchmark Tools:** The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.
 
-### Documentation
+## Documentation
 
-* [Usage](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/usage/)
-* [Data Format](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/format/)
-* [Instances](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/instances/)
+For installation instructions and basic usage, see the [official documentation](https://anl-ceeesa.github.io/UnitCommitment.jl/).
 
-### Authors
+## Authors
 * **Alinson Santos Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
 * **Feng Qiu** (Argonne National Laboratory)
 
-### Acknowledgments
+## Acknowledgments
 
 * We would like to **Yonghong Chen** (Midcontinent Independent System Operator), **Feng Pan** (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.
 
-* Based upon work supported by **Laboratory Directed Research and Development** (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357, and the U.S. Department of Energy **Advanced Grid Modeling Program** under Grant DE-OE0000875
+* Based upon work supported by **Laboratory Directed Research and Development** (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357
 
-### Citing
+* Based upon work supported by the **U.S. Department of Energy Advanced Grid Modeling Program** under Grant DE-OE0000875.
 
-If you use UnitCommitment.jl in your research, we request that you cite the package as follows:
+## Citing
+
+If you use UnitCommitment.jl in your research (instances, models or algorithms), we kindly request that you cite the package as follows:
 
 * **Alinson S. Xavier, Aleksandr M. Kazachkov, Feng Qiu**. "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
 
-If you make use of the provided instances files, we request that you additionally cite the original sources, as described in the [instances page](https://anl-ceeesa.github.io/UnitCommitment.jl/0.1/instances/).
+If you use the instances, we additionally request that you cite the original sources, as described in the [instances page](docs/instances.md).
 
-### License
+## License
 
-Released under the modified BSD license. See `LICENSE.md` for more details.
+```text
+UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment
+Copyright © 2020-2021, UChicago Argonne, LLC. All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted
+provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of
+   conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of
+   conditions and the following disclaimer in the documentation and/or other materials provided
+   with the distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to
+   endorse or promote products derived from this software without specific prior written
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+```
 
