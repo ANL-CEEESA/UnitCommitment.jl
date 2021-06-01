@@ -197,9 +197,10 @@ def generate_chart():
         table.loc[:, "Filename"] = f
         tables += [table]
     benchmark = pd.concat(tables, sort=True)
-    benchmark = benchmark.sort_values(by="Instance")
-    k = len(benchmark.groupby("Instance"))
-    plt.figure(figsize=(12, k))
+    benchmark = benchmark.sort_values(by=["Group", "Instance"])
+    k1 = len(benchmark.groupby("Instance"))
+    k2 = len(benchmark.groupby("Group"))
+    plt.figure(figsize=(12, 0.25 * k1 * k2))
     sns.barplot(
         y="Instance",
         x="Total time (s)",

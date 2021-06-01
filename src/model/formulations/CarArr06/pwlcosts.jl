@@ -1,3 +1,7 @@
+# UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+# Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
+# Released under the modified BSD license. See COPYING.md for more details.
+
 function _add_production_piecewise_linear_eqs!(
     model::JuMP.Model,
     g::Unit,
@@ -30,8 +34,7 @@ function _add_production_piecewise_linear_eqs!(
             # Equation (43) in Kneuven et al. (2020)
             eq_prod_above_def[gn, t] = @constraint(
                 model,
-                prod_above[gn, t] ==
-                sum(segprod[gn, t, k] for k in 1:K)
+                prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
             )
 
             # Objective function

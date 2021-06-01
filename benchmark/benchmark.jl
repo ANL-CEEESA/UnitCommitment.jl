@@ -61,8 +61,16 @@ function main()
     formulations = Dict(
         "ArrCon00" =>
             UnitCommitment.Formulation(ramping = UnitCommitment.ArrCon00()),
+        "CarArr06" => UnitCommitment.Formulation(
+            pwl_costs = UnitCommitment.CarArr06(),
+        ),
         "DamKucRajAta16" => UnitCommitment.Formulation(
             ramping = UnitCommitment.DamKucRajAta16(),
+        ),
+        "Gar62" =>
+            UnitCommitment.Formulation(pwl_costs = UnitCommitment.Gar62()),
+        "KnuOstWat18" => UnitCommitment.Formulation(
+            pwl_costs = UnitCommitment.KnuOstWat18(),
         ),
         "MorLatRam13" => UnitCommitment.Formulation(
             ramping = UnitCommitment.MorLatRam13(),
