@@ -59,9 +59,8 @@ function main()
         "tejada19/UC_168h_199g",
     ]
     formulations = Dict(
-        # "ArrCon00" => UnitCommitment.Formulation(
-        #     ramping=UnitCommitment._ArrCon00(),
-        # ),
+        "ArrCon00" =>
+            UnitCommitment.Formulation(ramping = UnitCommitment.ArrCon00()),
         "DamKucRajAta16" => UnitCommitment.Formulation(
             ramping = UnitCommitment.DamKucRajAta16(),
         ),
@@ -142,7 +141,10 @@ end
         BLAS.set_num_threads(1)
         UnitCommitment.optimize!(
             model,
-            UnitCommitment.XavQiuWanThi19(time_limit = 3600.0, gap_limit=1e-4),
+            UnitCommitment.XavQiuWanThi19(
+                time_limit = 3600.0,
+                gap_limit = 1e-4,
+            ),
         )
     end
     @info @sprintf("Total time was %.2f seconds", total_time)

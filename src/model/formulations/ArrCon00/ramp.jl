@@ -32,7 +32,7 @@ function _add_ramp_eqs!(
             if is_initially_on
                 # min power is _not_ multiplied by is_on because if !is_on, then ramp up is irrelevant
                 eq_ramp_up[gn, t] = @constraint(
-                    mip,
+                    model,
                     g.min_power[t] +
                     prod_above[gn, t] +
                     (RESERVES_WHEN_RAMP_UP ? reserve[gn, t] : 0.0) <=
@@ -52,7 +52,7 @@ function _add_ramp_eqs!(
 
             # Equation (24) in Kneuven et al. (2020)
             eq_ramp_up[gn, t] = @constraint(
-                mip,
+                model,
                 max_prod_this_period - min_prod_last_period <=
                 RU * is_on[gn, t-1] + SU * switch_on[gn, t]
             )
@@ -66,7 +66,7 @@ function _add_ramp_eqs!(
                 #      then the generator should be able to shut down at time t = 1,
                 #      but the constraint below will force the unit to produce power
                 eq_ramp_down[gn, t] = @constraint(
-                    mip,
+                    model,
                     g.initial_power - (g.min_power[t] + prod_above[gn, t]) <= RD
                 )
             end
@@ -83,7 +83,7 @@ function _add_ramp_eqs!(
 
             # Equation (25) in Kneuven et al. (2020)
             eq_ramp_down[gn, t] = @constraint(
-                mip,
+                model,
                 max_prod_last_period - min_prod_this_period <=
                 RD * is_on[gn, t] + SD * switch_off[gn, t]
             )
