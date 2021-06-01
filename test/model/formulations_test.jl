@@ -15,4 +15,6 @@ end
     _test(UnitCommitment.Formulation(ramping = UnitCommitment.DamKucRajAta16()))
     _test(UnitCommitment.Formulation(ramping = UnitCommitment.MorLatRam13()))
     _test(UnitCommitment.Formulation(ramping = UnitCommitment.PanGua16()))
+    _test(UnitCommitment.Formulation(pwl_costs = UnitCommitment.Gar62()))
+    _test(UnitCommitment.Formulation(pwl_costs = UnitCommitment.CarArr06()))
 end
