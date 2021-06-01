@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, Cbc, JuMP
+using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON
 
 @testset "build_model" begin
     instance = UnitCommitment.read_benchmark("test/case14")
