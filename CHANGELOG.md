@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 - The format is based on [Keep a Changelog][changelog].
 - This project adheres to [Semantic Versioning][semver].
-- For versions before 1.0, we follow [the Pkg.jl convention][pkjjl]
+- For versions before 1.0, we follow the [Pkg.jl convention][pkjjl]
   that `0.a.b` is compatible with `0.a.c`.
 
 [changelog]: https://keepachangelog.com/en/1.0.0/
@@ -13,13 +13,15 @@ All notable changes to this project will be documented in this file.
 
 ## [0.3.0] - [Unreleased]
 ### Added
-- Add multiple ramping formulations (ArrCon00, MorLatRam13, DamKucRajAta16, PanGua16)
+- Add multiple ramping formulations (ArrCon2000, MorLatRam2013, DamKucRajAta2016, PanGua2016)
+- Add multiple piecewise-linear costs formulations (Garver1962, CarArr2006, KnuOstWat2018)
+- Allow benchmark scripts to compare multiple formulations
 
 ## [0.2.0] - 2021-05-28
 ### Added
 - Add sub-hourly unit commitment.
 - Add `UnitCommitment.write(filename, solution)`.
-- Add mathematical formulation to the documentation.
+- Add current mathematical formulation to the documentation.
 
 ### Changed
 - Rename "Time (h)" parameter to "Time horizon (h)".
