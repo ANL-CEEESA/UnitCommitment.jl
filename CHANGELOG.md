@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
+## [0.3.0] - [Unreleased]
+### Added
+- Add multiple ramping formulations (ArrCon00, MorLatRam13, DamKucRajAta16, PanGua16)
+
 ## [0.2.0] - 2021-05-28
 ### Added
 - Add sub-hourly unit commitment.

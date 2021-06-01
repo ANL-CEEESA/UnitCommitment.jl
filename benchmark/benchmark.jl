@@ -67,6 +67,9 @@ function main()
         "MorLatRam13" => UnitCommitment.Formulation(
             ramping = UnitCommitment.MorLatRam13(),
         ),
+        "PanGua16" => UnitCommitment.Formulation(
+            ramping = UnitCommitment.PanGua16(),
+        ),
     )
     trials = [i for i in 1:5]
     combinations = [
