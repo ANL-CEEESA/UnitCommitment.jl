@@ -4,7 +4,7 @@
 
 using UnitCommitment, Cbc, JuMP
 
-@testset "Initial conditions" begin
+@testset "generate_initial_conditions!" begin
     # Load instance
     instance = UnitCommitment.read("$(pwd())/fixtures/case118-initcond.json.gz")
     optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)

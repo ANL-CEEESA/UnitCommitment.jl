@@ -8,6 +8,7 @@
 benchmark/results
 benchmark/runs
 benchmark/tables
+benchmark/tmp.json
 build
 instances/**/*.json
 instances/_source

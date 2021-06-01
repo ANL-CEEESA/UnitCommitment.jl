@@ -8,11 +8,25 @@ using UnitCommitment
 UnitCommitment._setup_logger()
 
 @testset "UnitCommitment" begin
-    include("instance_test.jl")
-    include("model_test.jl")
-    include("sensitivity_test.jl")
-    include("screening_test.jl")
-    include("convert_test.jl")
-    include("validate_test.jl")
-    include("initcond_test.jl")
+    @testset "import" begin
+        include("import/egret_test.jl")
+    end
+    @testset "instance" begin
+        include("instance/read_test.jl")
+    end
+    @testset "model" begin
+        include("model/build_test.jl")
+    end
+    @testset "XavQiuWanThi19" begin
+        include("solution/methods/XavQiuWanThi19/filter_test.jl")
+        include("solution/methods/XavQiuWanThi19/find_test.jl")
+        include("solution/methods/XavQiuWanThi19/sensitivity_test.jl")
+    end
+    @testset "transform" begin
+        include("transform/initcond_test.jl")
+        include("transform/slice_test.jl")
+    end
+    @testset "validation" begin
+        include("validation/repair_test.jl")
+    end
 end
