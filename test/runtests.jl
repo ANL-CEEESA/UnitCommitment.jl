@@ -8,6 +8,7 @@ using UnitCommitment
 UnitCommitment._setup_logger()
 
 @testset "UnitCommitment" begin
+    include("usage.jl")
     @testset "import" begin
         include("import/egret_test.jl")
     end
@@ -15,7 +16,7 @@ UnitCommitment._setup_logger()
         include("instance/read_test.jl")
     end
     @testset "model" begin
-        include("model/build_test.jl")
+        include("model/formulations_test.jl")
     end
     @testset "XavQiuWanThi19" begin
         include("solution/methods/XavQiuWanThi19/filter_test.jl")

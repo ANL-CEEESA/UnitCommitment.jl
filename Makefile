@@ -24,7 +24,7 @@ test: build/sysimage.so
 
 
 format:
-	julia -e 'using JuliaFormatter; format("src"); format("test"); format("benchmark")'
+	julia -e 'using JuliaFormatter; format(["src", "test", "benchmark"], verbose=true);'
 
 install-deps:
 	julia -e 'using Pkg; Pkg.add(PackageSpec(name="JuliaFormatter", version="0.14.4"))'
