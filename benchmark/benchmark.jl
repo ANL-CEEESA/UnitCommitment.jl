@@ -70,27 +70,15 @@ function main()
         "tejada19/UC_168h_199g",
     ]
     formulations = Dict(
-        "ArrCon2000" => Formulation(
-            ramping = ArrCon2000.Ramping(),
-        ),
-        "CarArr2006" => Formulation(
-            pwl_costs = CarArr2006.PwlCosts(),
-        ),
-        "DamKucRajAta2016" => Formulation(
-            ramping = DamKucRajAta2016.Ramping(),
-        ),
-        "Gar1962" => Formulation(
-            pwl_costs = Gar1962.PwlCosts(),
-        ),
-        "KnuOstWat2018" => Formulation(
-            pwl_costs = KnuOstWat2018.PwlCosts(),
-        ),
-        "MorLatRam2013" => Formulation(
-            ramping = MorLatRam2013.Ramping(),
-        ),
-        "PanGua2016" => Formulation(
-            ramping = PanGua2016.Ramping(),
-        ),
+        "ArrCon2000" => Formulation(ramping = ArrCon2000.Ramping()),
+        "CarArr2006" => Formulation(pwl_costs = CarArr2006.PwlCosts()),
+        "DamKucRajAta2016" =>
+            Formulation(ramping = DamKucRajAta2016.Ramping()),
+        "Gar1962" => Formulation(pwl_costs = Gar1962.PwlCosts()),
+        "KnuOstWat2018" =>
+            Formulation(pwl_costs = KnuOstWat2018.PwlCosts()),
+        "MorLatRam2013" => Formulation(ramping = MorLatRam2013.Ramping()),
+        "PanGua2016" => Formulation(ramping = PanGua2016.Ramping()),
     )
     trials = [i for i in 1:5]
     combinations = [
@@ -149,10 +137,7 @@ end
         BLAS.set_num_threads(1)
         UnitCommitment.optimize!(
             model,
-            XavQiuWanThi2019.Method(
-                time_limit = 3600.0,
-                gap_limit = 1e-4,
-            ),
+            XavQiuWanThi2019.Method(time_limit = 3600.0, gap_limit = 1e-4),
         )
     end
     @info @sprintf("Total time was %.2f seconds", total_time)

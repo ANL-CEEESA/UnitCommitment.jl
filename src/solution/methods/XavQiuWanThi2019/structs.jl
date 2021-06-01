@@ -2,7 +2,6 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-
 """
 Lazy constraint solution method described in:
 
