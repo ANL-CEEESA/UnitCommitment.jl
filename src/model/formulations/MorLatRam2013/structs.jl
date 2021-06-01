@@ -5,7 +5,8 @@
 """
 Formulation described in:
 
-    Damcı-Kurt, P., Küçükyavuz, S., Rajan, D., & Atamtürk, A. (2016). A polyhedral
-    study of production ramping. Mathematical Programming, 158(1), 175-205.
+    Morales-España, G., Latorre, J. M., & Ramos, A. (2013). Tight and compact
+    MILP formulation for the thermal unit commitment problem. IEEE Transactions
+    on Power Systems, 28(4), 4897-4908.
 """
-struct DamKucRajAta16 <: RampingFormulation end
+struct MorLatRam2013 <: RampingFormulation end

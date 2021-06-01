@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function optimize!(model::JuMP.Model, method::XavQiuWanThi19)::Nothing
+function optimize!(model::JuMP.Model, method::XavQiuWanThi2019)::Nothing
     function set_gap(gap)
         try
             JuMP.set_optimizer_attribute(model, "MIPGap", gap)

@@ -5,8 +5,7 @@
 """
 Formulation described in:
 
-    Arroyo, J. M., & Conejo, A. J. (2000). Optimal response of a thermal unit
-    to an electricity spot market. IEEE Transactions on power systems, 15(3), 
-    1098-1104.
+    Damcı-Kurt, P., Küçükyavuz, S., Rajan, D., & Atamtürk, A. (2016). A polyhedral
+    study of production ramping. Mathematical Programming, 158(1), 175-205.
 """
-struct ArrCon00 <: RampingFormulation end
+struct DamKucRajAta2016 <: RampingFormulation end

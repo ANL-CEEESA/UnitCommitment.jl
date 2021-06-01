@@ -12,8 +12,8 @@ struct Formulation
     transmission::TransmissionFormulation
 
     function Formulation(;
-        pwl_costs::PiecewiseLinearCostsFormulation = Gar62(),
-        ramping::RampingFormulation = MorLatRam13(),
+        pwl_costs::PiecewiseLinearCostsFormulation = Gar1962(),
+        ramping::RampingFormulation = MorLatRam2013(),
         transmission::TransmissionFormulation = ShiftFactorsFormulation(),
     )
         return new(pwl_costs, ramping, transmission)

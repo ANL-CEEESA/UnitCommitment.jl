@@ -10,4 +10,4 @@ Formulation described in:
     of Electrical Engineers. Part III: Power Apparatus and Systems, 81(3), 730-734.
 
 """
-struct Gar62 <: PiecewiseLinearCostsFormulation end
+struct Gar1962 <: PiecewiseLinearCostsFormulation end

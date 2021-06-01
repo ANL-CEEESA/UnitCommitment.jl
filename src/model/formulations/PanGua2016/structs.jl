@@ -5,8 +5,7 @@
 """
 Formulation described in:
 
-    Knueven, B., Ostrowski, J., & Watson, J. P. (2018). Exploiting identical
-    generators in unit commitment. IEEE Transactions on Power Systems, 33(4),
-    4496-4507.
+    Pan, K., & Guan, Y. (2016). Strong formulations for multistage stochastic
+    self-scheduling unit commitment. Operations Research, 64(6), 1482-1498.
 """
-struct KnuOstWat18 <: PiecewiseLinearCostsFormulation end
+struct PanGua2016 <: RampingFormulation end

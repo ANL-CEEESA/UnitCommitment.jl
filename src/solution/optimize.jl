@@ -10,5 +10,5 @@ advanced methods to accelerate the solution process and to enforce transmission
 and N-1 security constraints.
 """
 function optimize!(model::JuMP.Model)::Nothing
-    return UnitCommitment.optimize!(model, XavQiuWanThi19())
+    return UnitCommitment.optimize!(model, XavQiuWanThi2019())
 end

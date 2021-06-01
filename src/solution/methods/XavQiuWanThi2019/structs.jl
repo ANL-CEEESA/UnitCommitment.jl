@@ -5,7 +5,7 @@
 import DataStructures: PriorityQueue
 
 """
-    struct XavQiuWanThi19 <: SolutionMethod
+    struct XavQiuWanThi2019 <: SolutionMethod
         time_limit::Float64
         gap_limit::Float64
         two_phase_gap::Bool
@@ -37,14 +37,14 @@ Fields
     formulation per time period.
 
 """
-struct XavQiuWanThi19
+struct XavQiuWanThi2019
     time_limit::Float64
     gap_limit::Float64
     two_phase_gap::Bool
     max_violations_per_line::Int
     max_violations_per_period::Int
 
-    function XavQiuWanThi19(;
+    function XavQiuWanThi2019(;
         time_limit::Float64 = 86400.0,
         gap_limit::Float64 = 1e-3,
         two_phase_gap::Bool = true,

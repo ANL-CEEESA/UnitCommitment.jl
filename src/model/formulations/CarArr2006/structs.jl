@@ -9,4 +9,4 @@ Formulation described in:
     mixed-integer linear formulation for the thermal unit commitment problem.
     IEEE Transactions on power systems, 21(3), 1371-1378.
 """
-struct CarArr06 <: PiecewiseLinearCostsFormulation end
+struct CarArr2006 <: PiecewiseLinearCostsFormulation end

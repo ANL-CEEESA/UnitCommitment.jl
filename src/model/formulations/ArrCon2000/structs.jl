@@ -5,7 +5,8 @@
 """
 Formulation described in:
 
-    Pan, K., & Guan, Y. (2016). Strong formulations for multistage stochastic
-    self-scheduling unit commitment. Operations Research, 64(6), 1482-1498.
+    Arroyo, J. M., & Conejo, A. J. (2000). Optimal response of a thermal unit
+    to an electricity spot market. IEEE Transactions on power systems, 15(3), 
+    1098-1104.
 """
-struct PanGua16 <: RampingFormulation end
+struct ArrCon2000 <: RampingFormulation end

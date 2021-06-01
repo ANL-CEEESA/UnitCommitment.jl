@@ -59,24 +59,27 @@ function main()
         "tejada19/UC_168h_199g",
     ]
     formulations = Dict(
-        "ArrCon00" =>
-            UnitCommitment.Formulation(ramping = UnitCommitment.ArrCon00()),
-        "CarArr06" => UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.CarArr06(),
+        "ArrCon2000" => UnitCommitment.Formulation(
+            ramping = UnitCommitment.ArrCon2000(),
         ),
-        "DamKucRajAta16" => UnitCommitment.Formulation(
-            ramping = UnitCommitment.DamKucRajAta16(),
+        "CarArr2006" => UnitCommitment.Formulation(
+            pwl_costs = UnitCommitment.CarArr2006(),
         ),
-        "Gar62" =>
-            UnitCommitment.Formulation(pwl_costs = UnitCommitment.Gar62()),
-        "KnuOstWat18" => UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.KnuOstWat18(),
+        "DamKucRajAta2016" => UnitCommitment.Formulation(
+            ramping = UnitCommitment.DamKucRajAta2016(),
         ),
-        "MorLatRam13" => UnitCommitment.Formulation(
-            ramping = UnitCommitment.MorLatRam13(),
+        "Gar1962" => UnitCommitment.Formulation(
+            pwl_costs = UnitCommitment.Gar1962(),
         ),
-        "PanGua16" =>
-            UnitCommitment.Formulation(ramping = UnitCommitment.PanGua16()),
+        "KnuOstWat2018" => UnitCommitment.Formulation(
+            pwl_costs = UnitCommitment.KnuOstWat2018(),
+        ),
+        "MorLatRam2013" => UnitCommitment.Formulation(
+            ramping = UnitCommitment.MorLatRam2013(),
+        ),
+        "PanGua2016" => UnitCommitment.Formulation(
+            ramping = UnitCommitment.PanGua2016(),
+        ),
     )
     trials = [i for i in 1:5]
     combinations = [
@@ -99,34 +102,18 @@ end
     dirname = "results/$name"
     mkpath(dirname)
     if isfile("$dirname/$trial.json")
-        @info @sprintf(
-            "%-8s %-20s %-40s",
-            "skip",
-            formulation_name,
-            "$case/$trial",
-        )
+        @info @sprintf("%-4s %-16s %s", "skip", formulation_name, case)
         return
     end
-    @info @sprintf(
-        "%-8s %-20s %-40s",
-        "start",
-        formulation_name,
-        "$case/$trial",
-    )
-    time = @elapsed open("$dirname/$trial.log", "w") do file
+    @info @sprintf("%-4s %-16s %s", "run", formulation_name, case)
+    open("$dirname/$trial.log", "w") do file
         redirect_stdout(file) do
             redirect_stderr(file) do
                 return _run_sample(case, formulation, "$dirname/$trial")
             end
         end
     end
-    @info @sprintf(
-        "%-8s %-20s %-40s %12.3f",
-        "finish",
-        formulation_name,
-        "$case/$trial",
-        time
-    )
+    @info @sprintf("%-4s %-16s %s", "done", formulation_name, case)
 end
 
 @everywhere function _run_sample(case, formulation, prefix)
@@ -151,7 +138,7 @@ end
         BLAS.set_num_threads(1)
         UnitCommitment.optimize!(
             model,
-            UnitCommitment.XavQiuWanThi19(
+            UnitCommitment.XavQiuWanThi2019(
                 time_limit = 3600.0,
                 gap_limit = 1e-4,
             ),

@@ -5,8 +5,8 @@
 """
 Formulation described in:
 
-    Morales-España, G., Latorre, J. M., & Ramos, A. (2013). Tight and compact
-    MILP formulation for the thermal unit commitment problem. IEEE Transactions
-    on Power Systems, 28(4), 4897-4908.
+    Knueven, B., Ostrowski, J., & Watson, J. P. (2018). Exploiting identical
+    generators in unit commitment. IEEE Transactions on Power Systems, 33(4),
+    4496-4507.
 """
-struct MorLatRam13 <: RampingFormulation end
+struct KnuOstWat2018 <: PiecewiseLinearCostsFormulation end
