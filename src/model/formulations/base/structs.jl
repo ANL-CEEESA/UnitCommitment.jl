@@ -4,16 +4,19 @@
 
 abstract type TransmissionFormulation end
 abstract type RampingFormulation end
+abstract type PiecewiseLinearCostsFormulation end
 
 struct Formulation
+    pwl_costs::PiecewiseLinearCostsFormulation
     ramping::RampingFormulation
     transmission::TransmissionFormulation
 
     function Formulation(;
+        pwl_costs::PiecewiseLinearCostsFormulation = Gar62(),
         ramping::RampingFormulation = MorLatRam13(),
         transmission::TransmissionFormulation = ShiftFactorsFormulation(),
     )
-        return new(ramping, transmission)
+        return new(pwl_costs, ramping, transmission)
     end
 end
 

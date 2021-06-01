@@ -6,11 +6,13 @@ module UnitCommitment
 
 include("instance/structs.jl")
 include("model/formulations/base/structs.jl")
+include("solution/structs.jl")
+
 include("model/formulations/ArrCon00/structs.jl")
 include("model/formulations/DamKucRajAta16/structs.jl")
+include("model/formulations/Gar62/structs.jl")
 include("model/formulations/MorLatRam13/structs.jl")
 include("model/formulations/PanGua16/structs.jl")
-include("solution/structs.jl")
 include("solution/methods/XavQiuWanThi19/structs.jl")
 
 include("import/egret.jl")
@@ -24,6 +26,7 @@ include("model/formulations/base/sensitivity.jl")
 include("model/formulations/base/system.jl")
 include("model/formulations/base/unit.jl")
 include("model/formulations/DamKucRajAta16/ramp.jl")
+include("model/formulations/Gar62/pwlcosts.jl")
 include("model/formulations/MorLatRam13/ramp.jl")
 include("model/formulations/PanGua16/ramp.jl")
 include("model/jumpext.jl")

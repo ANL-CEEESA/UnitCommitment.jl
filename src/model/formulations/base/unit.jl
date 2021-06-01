@@ -20,7 +20,7 @@ function _add_unit!(model::JuMP.Model, g::Unit, f::Formulation)
     _add_min_uptime_downtime_eqs!(model, g)
     _add_net_injection_eqs!(model, g)
     _add_production_limit_eqs!(model, g)
-    _add_production_piecewise_linear_eqs!(model, g)
+    _add_production_piecewise_linear_eqs!(model, g, f.pwl_costs)
     _add_ramp_eqs!(model, g, f.ramping)
     _add_startup_shutdown_costs_eqs!(model, g)
     _add_startup_shutdown_limit_eqs!(model, g)
@@ -67,54 +67,6 @@ function _add_production_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
             prod_above[gn, t] + reserve[gn, t] <= power_diff * is_on[gn, t]
         )
     end
-end
-
-function _add_production_piecewise_linear_eqs!(
-    model::JuMP.Model,
-    g::Unit,
-)::Nothing
-    eq_prod_above_def = _init(model, :eq_prod_above_def)
-    eq_segprod_limit = _init(model, :eq_segprod_limit)
-    is_on = model[:is_on]
-    prod_above = model[:prod_above]
-    segprod = model[:segprod]
-    gn = g.name
-    K = length(g.cost_segments)
-    for t in 1:model[:instance].time
-        # Definition of production
-        # Equation (43) in Kneuven et al. (2020)
-        eq_prod_above_def[gn, t] = @constraint(
-            model,
-            prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
-        )
-
-        for k in 1:K
-            # Equation (42) in Kneuven et al. (2020)
-            # Without this, solvers will add a lot of implied bound cuts to
-            # have this same effect.
-            # NB: when reading instance, UnitCommitment.jl already calculates
-            #     difference between max power for segments k and k-1 so the
-            #     value of cost_segments[k].mw[t] is the max production *for
-            #     that segment*
-            eq_segprod_limit[gn, t, k] = @constraint(
-                model,
-                segprod[gn, t, k] <= g.cost_segments[k].mw[t] * is_on[gn, t]
-            )
-
-            # Also add this as an explicit upper bound on segprod to make the
-            # solver's work a bit easier
-            set_upper_bound(segprod[gn, t, k], g.cost_segments[k].mw[t])
-
-            # Objective function
-            # Equation (44) in Kneuven et al. (2020)
-            add_to_expression!(
-                model[:obj],
-                segprod[gn, t, k],
-                g.cost_segments[k].cost[t],
-            )
-        end
-    end
-    return
 end
 
 function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
