@@ -10,4 +10,10 @@ Formulation described in:
     of Electrical Engineers. Part III: Power Apparatus and Systems, 81(3), 730-734.
 
 """
-struct Gar1962 <: PiecewiseLinearCostsFormulation end
+module Gar1962
+
+import ..PiecewiseLinearCostsFormulation
+
+struct PwlCosts <: PiecewiseLinearCostsFormulation end
+
+end

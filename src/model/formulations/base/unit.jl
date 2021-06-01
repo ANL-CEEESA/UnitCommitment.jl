@@ -22,7 +22,7 @@ function _add_unit!(model::JuMP.Model, g::Unit, f::Formulation)
     _add_production_limit_eqs!(model, g)
     _add_production_piecewise_linear_eqs!(model, g, f.pwl_costs)
     _add_ramp_eqs!(model, g, f.ramping)
-    _add_startup_shutdown_costs_eqs!(model, g)
+    _add_startup_cost_eqs!(model, g, f.startup_costs)
     _add_startup_shutdown_limit_eqs!(model, g)
     _add_status_eqs!(model, g)
     return
@@ -128,49 +128,6 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
                 (g.max_power[t] - g.min_power[t]) * is_on[g.name, t] -
                 max(0, g.max_power[t] - g.shutdown_limit) *
                 switch_off[g.name, t+1]
-            )
-        end
-    end
-    return
-end
-
-function _add_startup_shutdown_costs_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_startup_choose = _init(model, :eq_startup_choose)
-    eq_startup_restrict = _init(model, :eq_startup_restrict)
-    S = length(g.startup_categories)
-    startup = model[:startup]
-    for t in 1:model[:instance].time
-        for s in 1:S
-            # If unit is switching on, we must choose a startup category
-            eq_startup_choose[g.name, t, s] = @constraint(
-                model,
-                model[:switch_on][g.name, t] ==
-                sum(startup[g.name, t, s] for s in 1:S)
-            )
-
-            # If unit has not switched off in the last `delay` time periods, startup category is forbidden.
-            # The last startup category is always allowed.
-            if s < S
-                range_start = t - g.startup_categories[s+1].delay + 1
-                range_end = t - g.startup_categories[s].delay
-                range = (range_start:range_end)
-                initial_sum = (
-                    g.initial_status < 0 && (g.initial_status + 1 in range) ? 1.0 : 0.0
-                )
-                eq_startup_restrict[g.name, t, s] = @constraint(
-                    model,
-                    startup[g.name, t, s] <=
-                    initial_sum + sum(
-                        model[:switch_off][g.name, i] for i in range if i >= 1
-                    )
-                )
-            end
-
-            # Objective function terms for start-up costs
-            add_to_expression!(
-                model[:obj],
-                startup[g.name, t, s],
-                g.startup_categories[s].cost,
             )
         end
     end

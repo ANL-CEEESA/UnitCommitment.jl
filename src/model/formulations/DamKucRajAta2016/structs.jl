@@ -8,4 +8,10 @@ Formulation described in:
     Damcı-Kurt, P., Küçükyavuz, S., Rajan, D., & Atamtürk, A. (2016). A polyhedral
     study of production ramping. Mathematical Programming, 158(1), 175-205.
 """
-struct DamKucRajAta2016 <: RampingFormulation end
+module DamKucRajAta2016
+
+import ..RampingFormulation
+
+struct Ramping <: RampingFormulation end
+
+end

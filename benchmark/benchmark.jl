@@ -18,6 +18,17 @@ Pkg.activate(".")
 @everywhere using LinearAlgebra
 @everywhere using Random
 
+@everywhere import UnitCommitment:
+    ArrCon2000,
+    CarArr2006,
+    DamKucRajAta2016,
+    Formulation,
+    Gar1962,
+    KnuOstWat2018,
+    MorLatRam2013,
+    PanGua2016,
+    XavQiuWanThi2019
+
 @everywhere UnitCommitment._setup_logger()
 
 function main()
@@ -59,26 +70,26 @@ function main()
         "tejada19/UC_168h_199g",
     ]
     formulations = Dict(
-        "ArrCon2000" => UnitCommitment.Formulation(
-            ramping = UnitCommitment.ArrCon2000(),
+        "ArrCon2000" => Formulation(
+            ramping = ArrCon2000.Ramping(),
         ),
-        "CarArr2006" => UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.CarArr2006(),
+        "CarArr2006" => Formulation(
+            pwl_costs = CarArr2006.PwlCosts(),
         ),
-        "DamKucRajAta2016" => UnitCommitment.Formulation(
-            ramping = UnitCommitment.DamKucRajAta2016(),
+        "DamKucRajAta2016" => Formulation(
+            ramping = DamKucRajAta2016.Ramping(),
         ),
-        "Gar1962" => UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.Gar1962(),
+        "Gar1962" => Formulation(
+            pwl_costs = Gar1962.PwlCosts(),
         ),
-        "KnuOstWat2018" => UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.KnuOstWat2018(),
+        "KnuOstWat2018" => Formulation(
+            pwl_costs = KnuOstWat2018.PwlCosts(),
         ),
-        "MorLatRam2013" => UnitCommitment.Formulation(
-            ramping = UnitCommitment.MorLatRam2013(),
+        "MorLatRam2013" => Formulation(
+            ramping = MorLatRam2013.Ramping(),
         ),
-        "PanGua2016" => UnitCommitment.Formulation(
-            ramping = UnitCommitment.PanGua2016(),
+        "PanGua2016" => Formulation(
+            ramping = PanGua2016.Ramping(),
         ),
     )
     trials = [i for i in 1:5]
@@ -138,7 +149,7 @@ end
         BLAS.set_num_threads(1)
         UnitCommitment.optimize!(
             model,
-            UnitCommitment.XavQiuWanThi2019(
+            XavQiuWanThi2019.Method(
                 time_limit = 3600.0,
                 gap_limit = 1e-4,
             ),

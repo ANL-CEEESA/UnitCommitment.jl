@@ -9,4 +9,10 @@ Formulation described in:
     generators in unit commitment. IEEE Transactions on Power Systems, 33(4),
     4496-4507.
 """
-struct KnuOstWat2018 <: PiecewiseLinearCostsFormulation end
+module KnuOstWat2018
+
+import ..PiecewiseLinearCostsFormulation
+
+struct PwlCosts <: PiecewiseLinearCostsFormulation end
+
+end

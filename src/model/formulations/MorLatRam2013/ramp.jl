@@ -5,7 +5,7 @@
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::MorLatRam2013,
+    formulation::MorLatRam2013.Ramping,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true

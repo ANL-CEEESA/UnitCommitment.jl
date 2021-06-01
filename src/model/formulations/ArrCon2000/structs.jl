@@ -9,4 +9,10 @@ Formulation described in:
     to an electricity spot market. IEEE Transactions on power systems, 15(3), 
     1098-1104.
 """
-struct ArrCon2000 <: RampingFormulation end
+module ArrCon2000
+
+import ..RampingFormulation
+
+struct Ramping <: RampingFormulation end
+
+end

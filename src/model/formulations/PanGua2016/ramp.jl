@@ -1,7 +1,7 @@
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::PanGua2016,
+    formulation::PanGua2016.Ramping,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_SHUT_DOWN = true

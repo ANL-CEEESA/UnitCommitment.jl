@@ -8,4 +8,10 @@ Formulation described in:
     Pan, K., & Guan, Y. (2016). Strong formulations for multistage stochastic
     self-scheduling unit commitment. Operations Research, 64(6), 1482-1498.
 """
-struct PanGua2016 <: RampingFormulation end
+module PanGua2016
+
+import ..RampingFormulation
+
+struct Ramping <: RampingFormulation end
+
+end

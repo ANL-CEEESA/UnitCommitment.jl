@@ -2,22 +2,24 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-import DataStructures: PriorityQueue
 
 """
-    struct XavQiuWanThi2019 <: SolutionMethod
+Lazy constraint solution method described in:
+
+    Xavier, A. S., Qiu, F., Wang, F., & Thimmapuram, P. R. (2019). Transmission
+    constraint filtering in large-scale security-constrained unit commitment. 
+    IEEE Transactions on Power Systems, 34(3), 2457-2460.
+"""
+module XavQiuWanThi2019
+import ..SolutionMethod
+"""
+    struct Method
         time_limit::Float64
         gap_limit::Float64
         two_phase_gap::Bool
         max_violations_per_line::Int
         max_violations_per_period::Int
     end
-
-Lazy constraint solution method described in:
-
-    Xavier, A. S., Qiu, F., Wang, F., & Thimmapuram, P. R. (2019). Transmission
-    constraint filtering in large-scale security-constrained unit commitment. 
-    IEEE Transactions on Power Systems, 34(3), 2457-2460.
 
 Fields
 ------
@@ -37,14 +39,14 @@ Fields
     formulation per time period.
 
 """
-struct XavQiuWanThi2019
+struct Method <: SolutionMethod
     time_limit::Float64
     gap_limit::Float64
     two_phase_gap::Bool
     max_violations_per_line::Int
     max_violations_per_period::Int
 
-    function XavQiuWanThi2019(;
+    function Method(;
         time_limit::Float64 = 86400.0,
         gap_limit::Float64 = 1e-3,
         two_phase_gap::Bool = true,
@@ -60,6 +62,9 @@ struct XavQiuWanThi2019
         )
     end
 end
+end
+
+import DataStructures: PriorityQueue
 
 struct _Violation
     time::Int
