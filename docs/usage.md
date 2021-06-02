@@ -33,35 +33,33 @@ Typical Usage
 
 ### Solving user-provided instances
 
-The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See the [data format page]() for a complete description of the data format UC.jl expects. The next steps, as shown below, are to read the instance from file, construct the optimization model, run the optimization and extract the optimal solution.
+The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.
 
 ```julia
 using Cbc
 using JSON
 using UnitCommitment
 
-# Read instance
+# 1. Read instance
 instance = UnitCommitment.read("/path/to/input.json")
 
-# Construct optimization model
+# 2. Construct optimization model
 model = UnitCommitment.build_model(
     instance=instance,
     optimizer=Cbc.Optimizer,
 )
 
-# Solve model
+# 3. Solve model
 UnitCommitment.optimize!(model)
 
-# Extract solution
+# 4. Write solution to a file
 solution = UnitCommitment.solution(model)
-
-# Write solution to a file
 UnitCommitment.write("/path/to/output.json", solution)
 ```
 
 ### Solving benchmark instances
 
-As described in the [Instances page](instances.md), UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used:
+UnitCommitment.jl contains a large number of benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used, as shown below. See [Instances](instances.md) for the complete list of available instances.
 
 ```julia
 using UnitCommitment
@@ -71,10 +69,38 @@ instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 Advanced usage
 --------------
 
+### Customizing the formulation
 
-### Modifying the formulation
+By default, `build_model` uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based the modeling components that you choose, as shown in the next example.
 
-For the time being, the recommended way of modifying the MILP formulation used by UC.jl is to create a local copy of our git repository and directly modify the source code of the package. In a future version, it will be possible to switch between multiple formulations, or to simply add/remove constraints after the model has been generated.
+```julia
+using Cbc
+using UnitCommitment
+
+import UnitCommitment:
+    Formulation,
+    KnuOstWat2018,
+    MorLatRam2013,
+    ShiftFactorsFormulation
+
+instance = UnitCommitment.read_benchmark(
+    "matpower/case118/2017-02-01",
+)
+
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = Cbc.Optimizer,
+    formulation = Formulation(
+        pwl_costs = KnuOstWat2018.PwlCosts(),
+        ramping = MorLatRam2013.Ramping(),
+        startup_costs = MorLatRam2013.StartupCosts(),
+        transmission = ShiftFactorsFormulation(
+            isf_cutoff = 0.005,
+            lodf_cutoff = 0.001,
+        ),
+    ),
+)
+```
 
 ### Generating initial conditions
 
