@@ -214,8 +214,8 @@
   </a>
   <ul class="nav section-nav flex-column">
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#modifying-the-formulation">
-     Modifying the formulation
+    <a class="reference internal nav-link" href="#customizing-the-formulation">
+     Customizing the formulation
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
@@ -260,34 +260,32 @@
 <h2><span class="sectnum">1.2.</span> Typical Usage<a class="headerlink" href="#typical-usage" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="solving-user-provided-instances">
 <h3>Solving user-provided instances<a class="headerlink" href="#solving-user-provided-instances" title="Permalink to this headline">¶</a></h3>
-<p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See the <span class="xref myst">data format page</span> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to read the instance from file, construct the optimization model, run the optimization and extract the optimal solution.</p>
+<p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See <a class="reference internal" href="../format/"><span class="doc std std-doc">Data Format</span></a> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.</p>
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
 <span class="k">using</span> <span class="n">JSON</span>
 <span class="k">using</span> <span class="n">UnitCommitment</span>
 
-<span class="c"># Read instance</span>
+<span class="c"># 1. Read instance</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;/path/to/input.json&quot;</span><span class="p">)</span>
 
-<span class="c"># Construct optimization model</span>
+<span class="c"># 2. Construct optimization model</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
     <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
     <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c"># Solve model</span>
+<span class="c"># 3. Solve model</span>
 <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
 
-<span class="c"># Extract solution</span>
+<span class="c"># 4. Write solution to a file</span>
 <span class="n">solution</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">solution</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-
-<span class="c"># Write solution to a file</span>
 <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="solving-benchmark-instances">
 <h3>Solving benchmark instances<a class="headerlink" href="#solving-benchmark-instances" title="Permalink to this headline">¶</a></h3>
-<p>As described in the <a class="reference internal" href="../instances/"><span class="doc std std-doc">Instances page</span></a>, UnitCommitment.jl contains a number of benchmark instances collected from the literature. To solve one of these instances individually, instead of constructing your own, the function <code class="docutils literal notranslate"><span class="pre">read_benchmark</span></code> can be used:</p>
+<p>UnitCommitment.jl contains a large number of benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function <code class="docutils literal notranslate"><span class="pre">read_benchmark</span></code> can be used, as shown below. See <a class="reference internal" href="../instances/"><span class="doc std std-doc">Instances</span></a> for the complete list of available instances.</p>
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">UnitCommitment</span>
 <span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case3375wp/2017-02-01&quot;</span><span class="p">)</span>
 </pre></div>
@@ -296,9 +294,37 @@
 </div>
 <div class="section" id="advanced-usage">
 <h2><span class="sectnum">1.3.</span> Advanced usage<a class="headerlink" href="#advanced-usage" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="modifying-the-formulation">
-<h3>Modifying the formulation<a class="headerlink" href="#modifying-the-formulation" title="Permalink to this headline">¶</a></h3>
-<p>For the time being, the recommended way of modifying the MILP formulation used by UC.jl is to create a local copy of our git repository and directly modify the source code of the package. In a future version, it will be possible to switch between multiple formulations, or to simply add/remove constraints after the model has been generated.</p>
+<div class="section" id="customizing-the-formulation">
+<h3>Customizing the formulation<a class="headerlink" href="#customizing-the-formulation" title="Permalink to this headline">¶</a></h3>
+<p>By default, <code class="docutils literal notranslate"><span class="pre">build_model</span></code> uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based the modeling components that you choose, as shown in the next example.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
+
+<span class="k">import</span> <span class="n">UnitCommitment</span><span class="o">:</span>
+    <span class="n">Formulation</span><span class="p">,</span>
+    <span class="n">KnuOstWat2018</span><span class="p">,</span>
+    <span class="n">MorLatRam2013</span><span class="p">,</span>
+    <span class="n">ShiftFactorsFormulation</span>
+
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span>
+    <span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+    <span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span><span class="p">,</span>
+    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+    <span class="n">formulation</span> <span class="o">=</span> <span class="n">Formulation</span><span class="p">(</span>
+        <span class="n">pwl_costs</span> <span class="o">=</span> <span class="n">KnuOstWat2018</span><span class="o">.</span><span class="n">PwlCosts</span><span class="p">(),</span>
+        <span class="n">ramping</span> <span class="o">=</span> <span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">Ramping</span><span class="p">(),</span>
+        <span class="n">startup_costs</span> <span class="o">=</span> <span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">StartupCosts</span><span class="p">(),</span>
+        <span class="n">transmission</span> <span class="o">=</span> <span class="n">ShiftFactorsFormulation</span><span class="p">(</span>
+            <span class="n">isf_cutoff</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
+            <span class="n">lodf_cutoff</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">),</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="generating-initial-conditions">
 <h3>Generating initial conditions<a class="headerlink" href="#generating-initial-conditions" title="Permalink to this headline">¶</a></h3>

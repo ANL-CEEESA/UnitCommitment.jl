@@ -180,26 +180,28 @@
   <a class="reference internal nav-link" href="#package-components">
    Package Components
   </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#authors">
-   Authors
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#acknowledgments">
-   Acknowledgments
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#citing">
-   Citing
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#license">
-   License
-  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#authors">
+     Authors
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#acknowledgments">
+     Acknowledgments
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#citing">
+     Citing
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#license">
+     License
+    </a>
+   </li>
+  </ul>
  </li>
  <li class="toc-h2 nav-item toc-entry">
   <a class="reference internal nav-link" href="#site-contents">
@@ -224,36 +226,36 @@
 <h2>Package Components<a class="headerlink" href="#package-components" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Data Format:</strong> The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports all the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.</p></li>
-<li><p><strong>Benchmark Instances:</strong> The package provides a diverse collection of large-scale benchmark instances collected from the literature and extended to make them more challenging and realistic.</p></li>
-<li><p><strong>Model Implementation</strong>: The package provides a Julia/JuMP implementation of state-of-the-art formulations and solution methods for SCUC. Our goal is to keep this implementation up-to-date, as new methods are proposed in the literature.</p></li>
+<li><p><strong>Benchmark Instances:</strong> The package provides a diverse collection of large-scale benchmark instances collected from the literature, converted into a common data format, and extended using data-driven methods to make them more challenging and realistic.</p></li>
+<li><p><strong>Model Implementation</strong>: The package provides a Julia/JuMP implementations of state-of-the-art formulations and solution methods for SCUC, including multiple ramping formulations (<a class="reference external" href="https://doi.org/10.1109/59.871739">ArrCon2000</a>, <a class="reference external" href="https://doi.org/10.1109/TPWRS.2013.2251373">MorLatRam2013</a>, <a class="reference external" href="https://doi.org/10.1007/s10107-015-0919-9">DamKucRajAta2016</a>, <a class="reference external" href="https://doi.org/10.1287/opre.2016.1520">PanGua2016</a>), multiple piecewise-linear costs formulations (<a class="reference external" href="https://doi.org/10.1109/AIEEPAS.1962.4501405">Gar1962</a>, <a class="reference external" href="https://doi.org/10.1109/TPWRS.2006.876672">CarArr2006</a>, <a class="reference external" href="https://doi.org/10.1109/TPWRS.2017.2783850">KnuOstWat2018</a>) and contingency screening methods (<a class="reference external" href="https://doi.org/10.1109/TPWRS.2019.2892620">XavQiuWanThi2019</a>). Our goal is to keep these implementations up-to-date as new methods are proposed in the literature.</p></li>
 <li><p><strong>Benchmark Tools:</strong> The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.</p></li>
 </ul>
-</div>
 <div class="section" id="authors">
-<h2>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h2>
+<h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p><strong>Alinson Santos Xavier</strong> (Argonne National Laboratory)</p></li>
+<li><p><strong>Alinson S. Xavier</strong> (Argonne National Laboratory)</p></li>
+<li><p><strong>Aleksandr M. Kazachkov</strong> (University of Florida)</p></li>
 <li><p><strong>Feng Qiu</strong> (Argonne National Laboratory)</p></li>
 </ul>
 </div>
 <div class="section" id="acknowledgments">
-<h2>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline">¶</a></h2>
+<h3>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><p>We would like to thank <strong>Aleksandr M. Kazachkov</strong> (University of Florida), <strong>Yonghong Chen</strong> (Midcontinent Independent System Operator), <strong>Feng Pan</strong> (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.</p></li>
+<li><p>We would like to thank <strong>Yonghong Chen</strong> (Midcontinent Independent System Operator), <strong>Feng Pan</strong> (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.</p></li>
 <li><p>Based upon work supported by <strong>Laboratory Directed Research and Development</strong> (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357</p></li>
 <li><p>Based upon work supported by the <strong>U.S. Department of Energy Advanced Grid Modeling Program</strong> under Grant DE-OE0000875.</p></li>
 </ul>
 </div>
 <div class="section" id="citing">
-<h2>Citing<a class="headerlink" href="#citing" title="Permalink to this headline">¶</a></h2>
+<h3>Citing<a class="headerlink" href="#citing" title="Permalink to this headline">¶</a></h3>
 <p>If you use UnitCommitment.jl in your research (instances, models or algorithms), we kindly request that you cite the package as follows:</p>
 <ul class="simple">
-<li><p><strong>Alinson S. Xavier, Feng Qiu</strong>, “UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment”. Zenodo (2020). <a class="reference external" href="https://doi.org/10.5281/zenodo.4269874">DOI: 10.5281/zenodo.4269874</a>.</p></li>
+<li><p><strong>Alinson S. Xavier, Aleksandr M. Kazachkov, Feng Qiu</strong>, “UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment”. Zenodo (2020). <a class="reference external" href="https://doi.org/10.5281/zenodo.4269874">DOI: 10.5281/zenodo.4269874</a>.</p></li>
 </ul>
 <p>If you use the instances, we additionally request that you cite the original sources, as described in the <a class="reference internal" href="instances/"><span class="doc std std-doc">instances page</span></a>.</p>
 </div>
 <div class="section" id="license">
-<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<h3>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment
 Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.
 
@@ -279,6 +281,7 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING N
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="site-contents">
