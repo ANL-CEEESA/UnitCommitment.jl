@@ -19,7 +19,7 @@
 [XavQiuWanThi2019]: https://doi.org/10.1109/TPWRS.2019.2892620
 
 ### Authors
-* **Alinson Santos Xavier** (Argonne National Laboratory)
+* **Alinson S. Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
 * **Feng Qiu** (Argonne National Laboratory)
 

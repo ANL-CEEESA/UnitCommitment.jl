@@ -93,7 +93,7 @@ UnitCommitment.write("/tmp/output.json", solution)
 4. [JuMP Model](https://anl-ceeesa.github.io/UnitCommitment.jl/0.2/model/)
 
 ## Authors
-* **Alinson Santos Xavier** (Argonne National Laboratory)
+* **Alinson S. Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
 * **Feng Qiu** (Argonne National Laboratory)
 
