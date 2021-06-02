@@ -119,7 +119,10 @@ instance = UnitCommitment.read("instance.json")
 UnitCommitment.generate_initial_conditions!(instance, Cbc.Optimizer)
 
 # Construct and solve optimization model
-model = UnitCommitment.build_model(instance, Cbc.Optimizer)
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
 UnitCommitment.optimize!(model)
 ```
 
