@@ -8,6 +8,7 @@ Lazy constraint solution method described in:
     Xavier, A. S., Qiu, F., Wang, F., & Thimmapuram, P. R. (2019). Transmission
     constraint filtering in large-scale security-constrained unit commitment. 
     IEEE Transactions on Power Systems, 34(3), 2457-2460.
+    DOI: https://doi.org/10.1109/TPWRS.2019.2892620
 """
 module XavQiuWanThi2019
 import ..SolutionMethod

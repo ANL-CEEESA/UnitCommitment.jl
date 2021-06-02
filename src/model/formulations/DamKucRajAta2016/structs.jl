@@ -7,6 +7,7 @@ Formulation described in:
 
     Damcı-Kurt, P., Küçükyavuz, S., Rajan, D., & Atamtürk, A. (2016). A polyhedral
     study of production ramping. Mathematical Programming, 158(1), 175-205.
+    DOI: https://doi.org/10.1007/s10107-015-0919-9
 """
 module DamKucRajAta2016
 

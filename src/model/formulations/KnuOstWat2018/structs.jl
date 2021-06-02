@@ -7,7 +7,7 @@ Formulation described in:
 
     Knueven, B., Ostrowski, J., & Watson, J. P. (2018). Exploiting identical
     generators in unit commitment. IEEE Transactions on Power Systems, 33(4),
-    4496-4507.
+    4496-4507. DOI: https://doi.org/10.1109/TPWRS.2017.2783850
 """
 module KnuOstWat2018
 

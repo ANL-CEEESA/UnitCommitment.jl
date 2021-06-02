@@ -20,8 +20,17 @@
 
 * **Data Format:** The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports all the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.
 * **Benchmark Instances:** The package provides a diverse collection of large-scale benchmark instances collected from the literature, converted into a common data format, and extended using data-driven methods to make them more challenging and realistic.
-* **Model Implementation**: The package provides a Julia/JuMP implementations of state-of-the-art formulations and solution methods for SCUC, including multiple ramping formulations (*ArrCon2000*, *MorLatRam2013*, *DamKucRajAta2016*, *PanGua2016*), multiple piecewise-linear costs formulations (*Gar1962*, *CarArr2006*, *KnuOstWat2018*) and contingency screening methods (*XavQiuWanThi2019*). Our goal is to keep these implementations up-to-date as new methods are proposed in the literature.
+* **Model Implementation**: The package provides a Julia/JuMP implementations of state-of-the-art formulations and solution methods for SCUC, including multiple ramping formulations ([ArrCon2000][ArrCon2000], [MorLatRam2013][MorLatRam2013], [DamKucRajAta2016][DamKucRajAta2016], [PanGua2016][PanGua2016]), multiple piecewise-linear costs formulations ([Gar1962][Gar1962], [CarArr2006][CarArr2006], [KnuOstWat2018][KnuOstWat2018]) and contingency screening methods ([XavQiuWanThi2019][XavQiuWanThi2019]). Our goal is to keep these implementations up-to-date as new methods are proposed in the literature.
 * **Benchmark Tools:** The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.
+
+[ArrCon2000]: https://doi.org/10.1109/59.871739
+[CarArr2006]: https://doi.org/10.1109/TPWRS.2006.876672
+[DamKucRajAta2016]: https://doi.org/10.1007/s10107-015-0919-9
+[Gar1962]: https://doi.org/10.1109/AIEEPAS.1962.4501405
+[KnuOstWat2018]: https://doi.org/10.1109/TPWRS.2017.2783850
+[MorLatRam2013]: https://doi.org/10.1109/TPWRS.2013.2251373
+[PanGua2016]: https://doi.org/10.1287/opre.2016.1520
+[XavQiuWanThi2019]: https://doi.org/10.1109/TPWRS.2019.2892620
 
 ## Sample Usage
 
@@ -37,25 +46,27 @@ import UnitCommitment:
     ShiftFactorsFormulation
 
 # Read benchmark instance
-instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+instance = UnitCommitment.read_benchmark(
+    "matpower/case118/2017-02-01",
+)
 
 # Construct model (using state-of-the-art defaults)
 model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=Cbc.Optimizer,
+    instance = instance,
+    optimizer = Cbc.Optimizer,
 )
 
 # Construct model (using customized formulation)
 model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=Cbc.Optimizer,
-    formulation=Formulation(
+    instance = instance,
+    optimizer = Cbc.Optimizer,
+    formulation = Formulation(
         pwl_costs = KnuOstWat2018.PwlCosts(),
         ramping = MorLatRam2013.Ramping(),
         startup_costs = MorLatRam2013.StartupCosts(),
         transmission = ShiftFactorsFormulation(
-          isf_cutoff = 0.005,
-          lodf_cutoff = 0.001,
+            isf_cutoff = 0.005,
+            lodf_cutoff = 0.001,
         ),
     ),
 )
@@ -63,7 +74,7 @@ model = UnitCommitment.build_model(
 # Modify the model (e.g. add custom constraints)
 @constraint(
     model,
-    model[:is_on]["g3",1] + model[:is_on]["g4",1] <= 1,
+    model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,
 )
 
 # Solve model
