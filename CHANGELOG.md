@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
-## [0.3.0] - [Unreleased]
+## [0.2.1] - 2021-06-02
 ### Added
 - Add multiple ramping formulations (ArrCon2000, MorLatRam2013, DamKucRajAta2016, PanGua2016)
 - Add multiple piecewise-linear costs formulations (Garver1962, CarArr2006, KnuOstWat2018)
