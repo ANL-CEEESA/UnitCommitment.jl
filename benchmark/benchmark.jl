@@ -70,6 +70,7 @@ function main()
         "tejada19/UC_168h_199g",
     ]
     formulations = Dict(
+        "Default" => Formulation(),
         "ArrCon2000" => Formulation(ramping = ArrCon2000.Ramping()),
         "CarArr2006" => Formulation(pwl_costs = CarArr2006.PwlCosts()),
         "DamKucRajAta2016" =>
@@ -123,9 +124,9 @@ end
         end
         @info @sprintf("Read problem in %.2f seconds", time_read)
         BLAS.set_num_threads(4)
-        model = UnitCommitment._build_model(
-            instance,
-            formulation,
+        model = UnitCommitment.build_model(
+            instance = instance,
+            formulation = formulation,
             optimizer = optimizer_with_attributes(
                 Gurobi.Optimizer,
                 "Threads" => 4,

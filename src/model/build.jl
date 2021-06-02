@@ -29,20 +29,7 @@ Arguments
 function build_model(;
     instance::UnitCommitmentInstance,
     optimizer = nothing,
-    variable_names::Bool = false,
-)::JuMP.Model
-    return _build_model(
-        instance,
-        Formulation(),
-        optimizer = optimizer,
-        variable_names = variable_names,
-    )
-end
-
-function _build_model(
-    instance::UnitCommitmentInstance,
-    formulation::Formulation;
-    optimizer = nothing,
+    formulation = Formulation(),
     variable_names::Bool = false,
 )::JuMP.Model
     @info "Building model..."

@@ -11,21 +11,75 @@
   </a>
   <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/discussions">
     <img src="https://img.shields.io/badge/GitHub-Discussions-%23fc4ebc" />
-  </a>  
+  </a>
 </p>
 
-**UnitCommitment.jl** (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and JuMP implementations of state-of-the-art mixed-integer programming formulations.
+**UnitCommitment.jl** (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and Julia/JuMP implementations of state-of-the-art mixed-integer programming formulations.
 
 ## Package Components
 
 * **Data Format:** The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports all the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.
-* **Benchmark Instances:** The package provides a diverse collection of large-scale benchmark instances collected from the literature and extended to make them more challenging and realistic.
-* **Model Implementation**: The package provides a Julia/JuMP implementation of state-of-the-art formulations and solution methods for SCUC. Our goal is to keep this implementation up-to-date, as new methods are proposed in the literature.
+* **Benchmark Instances:** The package provides a diverse collection of large-scale benchmark instances collected from the literature, converted into a common data format, and extended using data-driven methods to make them more challenging and realistic.
+* **Model Implementation**: The package provides a Julia/JuMP implementations of state-of-the-art formulations and solution methods for SCUC, including multiple ramping formulations (*ArrCon2000*, *MorLatRam2013*, *DamKucRajAta2016*, *PanGua2016*), multiple piecewise-linear costs formulations (*Gar1962*, *CarArr2006*, *KnuOstWat2018*) and contingency screening methods (*XavQiuWanThi2019*). Our goal is to keep these implementation up-to-date as new methods are proposed in the literature.
 * **Benchmark Tools:** The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.
+
+## Sample Usage
+
+```julia
+using Cbc
+using JuMP
+using UnitCommitment
+
+import UnitCommitment:
+    Formulation,
+    KnuOstWat2018,
+    MorLatRam2013,
+    ShiftFactorsFormulation
+
+# Read benchmark instance
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+
+# Construct model (using state-of-the-art defaults)
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
+
+# Construct model (using customized formulation)
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+    formulation=Formulation(
+        pwl_costs = KnuOstWat2018.PwlCosts(),
+        ramping = MorLatRam2013.Ramping(),
+        startup_costs = MorLatRam2013.StartupCosts(),
+        transmission = ShiftFactorsFormulation(
+          isf_cutoff = 0.005,
+          lodf_cutoff = 0.001,
+        ),
+    ),
+)
+
+# Modify the model (e.g. add custom constraints)
+@constraint(
+    model,
+    model[:is_on]["g3",1] + model[:is_on]["g4",1] <= 1,
+)
+
+# Solve model
+UnitCommitment.optimize!(model)
+
+# Extract solution
+solution = UnitCommitment.solution(model)
+UnitCommitment.write("/tmp/output.json", solution)
+```
 
 ## Documentation
 
-For installation instructions and basic usage, see the [official documentation](https://anl-ceeesa.github.io/UnitCommitment.jl/).
+1. [Usage](https://anl-ceeesa.github.io/UnitCommitment.jl/0.2/usage/)
+2. [Data Format](https://anl-ceeesa.github.io/UnitCommitment.jl/0.2/format/)
+3. [Instances](https://anl-ceeesa.github.io/UnitCommitment.jl/0.2/instances/)
+4. [JuMP Model](https://anl-ceeesa.github.io/UnitCommitment.jl/0.2/model/)
 
 ## Authors
 * **Alinson Santos Xavier** (Argonne National Laboratory)

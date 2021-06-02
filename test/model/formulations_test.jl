@@ -15,7 +15,7 @@ import UnitCommitment:
 
 function _test(formulation::Formulation)::Nothing
     instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
-    UnitCommitment._build_model(instance, formulation)  # should not crash
+    UnitCommitment.build_model(instance = instance, formulation = formulation)  # should not crash
     return
 end
 
