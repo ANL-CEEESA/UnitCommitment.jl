@@ -71,7 +71,7 @@ Advanced usage
 
 ### Customizing the formulation
 
-By default, `build_model` uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based the modeling components that you choose, as shown in the next example.
+By default, `build_model` uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.
 
 ```julia
 using Cbc
@@ -119,7 +119,10 @@ instance = UnitCommitment.read("instance.json")
 UnitCommitment.generate_initial_conditions!(instance, Cbc.Optimizer)
 
 # Construct and solve optimization model
-model = UnitCommitment.build_model(instance, Cbc.Optimizer)
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
 UnitCommitment.optimize!(model)
 ```
 
