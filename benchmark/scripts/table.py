@@ -6,6 +6,9 @@ from pathlib import Path
 import pandas as pd
 import re
 from tabulate import tabulate
+from colorama import init, Fore, Back, Style
+
+init()
 
 
 def process_all_log_files():
@@ -48,6 +51,7 @@ def process(filename):
     # m = re.search("case([0-9]*)", instance_name)
     # n_buses = int(m.group(1))
     n_buses = 0
+    validation_errors = 0
 
     with open(filename) as file:
         for line in file.readlines():
@@ -137,6 +141,14 @@ def process(filename):
             if m is not None:
                 transmission_count += 1
 
+            m = re.search(r".*Found ([0-9]*) validation errors", line)
+            if m is not None:
+                validation_errors += int(m.group(1))
+                print(
+                    f"{Fore.YELLOW}{Style.BRIGHT}Warning:{Style.RESET_ALL} {validation_errors:8d} "
+                    f"{Style.DIM}validation errors in {Style.RESET_ALL}{group_name}/{instance_name}/{sample_name}"
+                )
+
     return {
         "Group": group_name,
         "Instance": instance_name,
@@ -168,6 +180,7 @@ def process(filename):
         "Transmission screening constraints": transmission_count,
         "Transmission screening time": transmission_time,
         "Transmission screening calls": transmission_calls,
+        "Validation errors": validation_errors,
     }
 
 
