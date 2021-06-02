@@ -205,7 +205,6 @@ def generate_chart():
         y="Instance",
         x="Total time (s)",
         hue="Group",
-        capsize=0.15,
         errcolor="k",
         errwidth=1.25,
         data=benchmark,
