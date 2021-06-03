@@ -5,7 +5,8 @@
 function _add_production_piecewise_linear_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::KnuOstWat2018.PwlCosts,
+    formulation_status_vars::Gar1962.StatusVars,
+    formulation_pwl::KnuOstWat2018.PwlCosts,
 )::Nothing
     eq_prod_above_def = _init(model, :eq_prod_above_def)
     eq_segprod_limit_a = _init(model, :eq_segprod_limit_a)
@@ -13,12 +14,14 @@ function _add_production_piecewise_linear_eqs!(
     eq_segprod_limit_c = _init(model, :eq_segprod_limit_c)
     prod_above = model[:prod_above]
     segprod = model[:segprod]
-    is_on = model[:is_on]
-    switch_on = model[:switch_on]
-    switch_off = model[:switch_off]
     gn = g.name
     K = length(g.cost_segments)
     T = model[:instance].time
+
+    # Gar1962.StatusVars
+    is_on = model[:is_on]
+    switch_on = model[:switch_on]
+    switch_off = model[:switch_off]
 
     for t in 1:T
         for k in 1:K

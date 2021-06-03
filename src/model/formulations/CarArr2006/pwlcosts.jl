@@ -5,6 +5,7 @@
 function _add_production_piecewise_linear_eqs!(
     model::JuMP.Model,
     g::Unit,
+    formulation_status_vars::StatusVarsFormulation,
     formulation::CarArr2006.PwlCosts,
 )::Nothing
     eq_prod_above_def = _init(model, :eq_prod_above_def)

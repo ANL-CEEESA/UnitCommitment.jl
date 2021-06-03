@@ -14,7 +14,9 @@ Formulation described in:
 module Gar1962
 
 import ..PiecewiseLinearCostsFormulation
+import ..StatusVarsFormulation
 
 struct PwlCosts <: PiecewiseLinearCostsFormulation end
+struct StatusVars <: StatusVarsFormulation end
 
 end

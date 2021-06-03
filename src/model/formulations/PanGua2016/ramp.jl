@@ -1,16 +1,18 @@
+# UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+# Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
+# Released under the modified BSD license. See COPYING.md for more details.
+
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::PanGua2016.Ramping,
+    formulation_status_vars::Gar1962.StatusVars,
+    formulation_ramping::PanGua2016.Ramping,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_SHUT_DOWN = true
     gn = g.name
-    is_on = model[:is_on]
     prod_above = model[:prod_above]
     reserve = model[:reserve]
-    switch_off = model[:switch_off]
-    switch_on = model[:switch_on]
     eq_str_prod_limit = _init(model, :eq_str_prod_limit)
     eq_prod_limit_ramp_up_extra_period =
         _init(model, :eq_prod_limit_ramp_up_extra_period)
@@ -22,6 +24,11 @@ function _add_ramp_eqs!(
     RU = g.ramp_up_limit   # ramp up rate
     RD = g.ramp_down_limit # ramp down rate
     T = model[:instance].time
+
+    # Gar1962.StatusVars
+    is_on = model[:is_on]
+    switch_off = model[:switch_off]
+    switch_on = model[:switch_on]
 
     for t in 1:T
         Pbar = g.max_power[t]

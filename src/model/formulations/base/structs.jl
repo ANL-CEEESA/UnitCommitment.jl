@@ -6,20 +6,23 @@ abstract type TransmissionFormulation end
 abstract type RampingFormulation end
 abstract type PiecewiseLinearCostsFormulation end
 abstract type StartupCostsFormulation end
+abstract type StatusVarsFormulation end
 
 struct Formulation
     pwl_costs::PiecewiseLinearCostsFormulation
     ramping::RampingFormulation
     startup_costs::StartupCostsFormulation
+    status_vars::StatusVarsFormulation
     transmission::TransmissionFormulation
 
     function Formulation(;
         pwl_costs::PiecewiseLinearCostsFormulation = KnuOstWat2018.PwlCosts(),
         ramping::RampingFormulation = MorLatRam2013.Ramping(),
         startup_costs::StartupCostsFormulation = MorLatRam2013.StartupCosts(),
+        status_vars::StatusVarsFormulation = Gar1962.StatusVars(),
         transmission::TransmissionFormulation = ShiftFactorsFormulation(),
     )
-        return new(pwl_costs, ramping, startup_costs, transmission)
+        return new(pwl_costs, ramping, startup_costs, status_vars, transmission)
     end
 end
 

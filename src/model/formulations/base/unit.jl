@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_unit!(model::JuMP.Model, g::Unit, f::Formulation)
+function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
     end
@@ -14,17 +14,22 @@ function _add_unit!(model::JuMP.Model, g::Unit, f::Formulation)
     _add_production_vars!(model, g)
     _add_reserve_vars!(model, g)
     _add_startup_shutdown_vars!(model, g)
-    _add_status_vars!(model, g)
+    _add_status_vars!(model, g, formulation.status_vars)
 
     # Constraints and objective function
     _add_min_uptime_downtime_eqs!(model, g)
     _add_net_injection_eqs!(model, g)
     _add_production_limit_eqs!(model, g)
-    _add_production_piecewise_linear_eqs!(model, g, f.pwl_costs)
-    _add_ramp_eqs!(model, g, f.ramping)
-    _add_startup_cost_eqs!(model, g, f.startup_costs)
+    _add_production_piecewise_linear_eqs!(
+        model,
+        g,
+        formulation.status_vars,
+        formulation.pwl_costs,
+    )
+    _add_ramp_eqs!(model, g, formulation.status_vars, formulation.ramping)
+    _add_startup_cost_eqs!(model, g, formulation.startup_costs)
     _add_startup_shutdown_limit_eqs!(model, g)
-    _add_status_eqs!(model, g)
+    _add_status_eqs!(model, g, formulation.status_vars)
     return
 end
 
@@ -128,56 +133,6 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
                 (g.max_power[t] - g.min_power[t]) * is_on[g.name, t] -
                 max(0, g.max_power[t] - g.shutdown_limit) *
                 switch_off[g.name, t+1]
-            )
-        end
-    end
-    return
-end
-
-function _add_status_vars!(model::JuMP.Model, g::Unit)::Nothing
-    is_on = _init(model, :is_on)
-    switch_on = _init(model, :switch_on)
-    switch_off = _init(model, :switch_off)
-    for t in 1:model[:instance].time
-        if g.must_run[t]
-            is_on[g.name, t] = 1.0
-            switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
-            switch_off[g.name, t] = 0.0
-        else
-            is_on[g.name, t] = @variable(model, binary = true)
-            switch_on[g.name, t] = @variable(model, binary = true)
-            switch_off[g.name, t] = @variable(model, binary = true)
-        end
-    end
-    return
-end
-
-function _add_status_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_binary_link = _init(model, :eq_binary_link)
-    eq_switch_on_off = _init(model, :eq_switch_on_off)
-    is_on = model[:is_on]
-    switch_off = model[:switch_off]
-    switch_on = model[:switch_on]
-    for t in 1:model[:instance].time
-        if !g.must_run[t]
-            # Link binary variables
-            if t == 1
-                eq_binary_link[g.name, t] = @constraint(
-                    model,
-                    is_on[g.name, t] - _is_initially_on(g) ==
-                    switch_on[g.name, t] - switch_off[g.name, t]
-                )
-            else
-                eq_binary_link[g.name, t] = @constraint(
-                    model,
-                    is_on[g.name, t] - is_on[g.name, t-1] ==
-                    switch_on[g.name, t] - switch_off[g.name, t]
-                )
-            end
-            # Cannot switch on and off at the same time
-            eq_switch_on_off[g.name, t] = @constraint(
-                model,
-                switch_on[g.name, t] + switch_off[g.name, t] <= 1
             )
         end
     end
