@@ -5,13 +5,13 @@
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation_status_vars::Gar1962.StatusVars,
+    formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::PanGua2016.Ramping,
+    formulation_status_vars::Gar1962.StatusVars,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_SHUT_DOWN = true
     gn = g.name
-    prod_above = model[:prod_above]
     reserve = model[:reserve]
     eq_str_prod_limit = _init(model, :eq_str_prod_limit)
     eq_prod_limit_ramp_up_extra_period =
@@ -24,6 +24,9 @@ function _add_ramp_eqs!(
     RU = g.ramp_up_limit   # ramp up rate
     RD = g.ramp_down_limit # ramp down rate
     T = model[:instance].time
+
+    # Gar1962.ProdVars
+    prod_above = model[:prod_above]
 
     # Gar1962.StatusVars
     is_on = model[:is_on]

@@ -11,7 +11,7 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     end
 
     # Variables
-    _add_production_vars!(model, g)
+    _add_production_vars!(model, g, formulation.prod_vars)
     _add_reserve_vars!(model, g)
     _add_startup_shutdown_vars!(model, g)
     _add_status_vars!(model, g, formulation.status_vars)
@@ -19,14 +19,21 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     # Constraints and objective function
     _add_min_uptime_downtime_eqs!(model, g)
     _add_net_injection_eqs!(model, g)
-    _add_production_limit_eqs!(model, g)
+    _add_production_limit_eqs!(model, g, formulation.prod_vars)
     _add_production_piecewise_linear_eqs!(
         model,
         g,
-        formulation.status_vars,
+        formulation.prod_vars,
         formulation.pwl_costs,
+        formulation.status_vars,
     )
-    _add_ramp_eqs!(model, g, formulation.status_vars, formulation.ramping)
+    _add_ramp_eqs!(
+        model,
+        g,
+        formulation.prod_vars,
+        formulation.ramping,
+        formulation.status_vars,
+    )
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
     _add_startup_shutdown_limit_eqs!(model, g)
     _add_status_eqs!(model, g, formulation.status_vars)
@@ -34,45 +41,6 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
 end
 
 _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
-
-function _add_production_vars!(model::JuMP.Model, g::Unit)::Nothing
-    prod_above = _init(model, :prod_above)
-    segprod = _init(model, :segprod)
-    for t in 1:model[:instance].time
-        for k in 1:length(g.cost_segments)
-            segprod[g.name, t, k] = @variable(model, lower_bound = 0)
-        end
-        prod_above[g.name, t] = @variable(model, lower_bound = 0)
-    end
-    return
-end
-
-function _add_production_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    eq_prod_limit = _init(model, :eq_prod_limit)
-    is_on = model[:is_on]
-    prod_above = model[:prod_above]
-    reserve = model[:reserve]
-    gn = g.name
-    for t in 1:model[:instance].time
-        # Objective function terms for production costs
-        # Part of (69) of Kneuven et al. (2020) as C^R_g * u_g(t) term
-        add_to_expression!(model[:obj], is_on[gn, t], g.min_power_cost[t])
-
-        # Production limit
-        # Equation (18) in Kneuven et al. (2020)
-        #   as \bar{p}_g(t) \le \bar{P}_g u_g(t)
-        # amk: this is a weaker version of (20) and (21) in Kneuven et al. (2020)
-        #      but keeping it here in case those are not present
-        power_diff = max(g.max_power[t], 0.0) - max(g.min_power[t], 0.0)
-        if power_diff < 1e-7
-            power_diff = 0.0
-        end
-        eq_prod_limit[gn, t] = @constraint(
-            model,
-            prod_above[gn, t] + reserve[gn, t] <= power_diff * is_on[gn, t]
-        )
-    end
-end
 
 function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
     reserve = _init(model, :reserve)
@@ -149,7 +117,7 @@ function _add_ramp_eqs!(
     eq_ramp_up = _init(model, :eq_ramp_up)
     eq_ramp_down = _init(model, :eq_ramp_down)
     for t in 1:model[:instance].time
-        # Ramp up limit
+        # Ramp up limit 
         if t == 1
             if _is_initially_on(g) == 1
                 eq_ramp_up[g.name, t] = @constraint(

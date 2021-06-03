@@ -5,8 +5,9 @@
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation_status_vars::Gar1962.StatusVars,
+    formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::ArrCon2000.Ramping,
+    formulation_status_vars::Gar1962.StatusVars,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -18,11 +19,13 @@ function _add_ramp_eqs!(
     RD = g.ramp_down_limit
     SU = g.startup_limit
     SD = g.shutdown_limit
-    prod_above = model[:prod_above]
     reserve = model[:reserve]
     eq_ramp_down = _init(model, :eq_ramp_down)
     eq_ramp_up = _init(model, :eq_ramp_up)
     is_initially_on = (g.initial_status > 0)
+
+    # Gar1962.ProdVars
+    prod_above = model[:prod_above]
 
     # Gar1962.StatusVars
     is_on = model[:is_on]
