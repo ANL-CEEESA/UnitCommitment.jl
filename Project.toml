@@ -6,6 +6,7 @@ version = "0.2.1"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
@@ -19,6 +20,7 @@ SparseArrays = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
 [compat]
 Cbc = "0.7"
 DataStructures = "0.18"
+Distributions = "0.25"
 GZip = "0.5"
 JSON = "0.21"
 JuMP = "0.21"

@@ -26,6 +26,7 @@ UnitCommitment._setup_logger()
     @testset "transform" begin
         include("transform/initcond_test.jl")
         include("transform/slice_test.jl")
+        include("transform/randomize_test.jl")
     end
     @testset "validation" begin
         include("validation/repair_test.jl")

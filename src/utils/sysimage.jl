@@ -5,12 +5,20 @@
 using PackageCompiler
 
 using DataStructures
+using Distributions
 using JSON
 using JuMP
 using MathOptInterface
 using SparseArrays
 
-pkg = [:DataStructures, :JSON, :JuMP, :MathOptInterface, :SparseArrays]
+pkg = [
+    :DataStructures,
+    :Distributions,
+    :JSON,
+    :JuMP,
+    :MathOptInterface,
+    :SparseArrays,
+]
 
 @info "Building system image..."
 create_sysimage(
