@@ -7,6 +7,8 @@ using UnitCommitment
 
 UnitCommitment._setup_logger()
 
+const ENABLE_LARGE_TESTS = ("UCJL_LARGE_TESTS" in keys(ENV))
+
 @testset "UnitCommitment" begin
     include("usage.jl")
     @testset "import" begin

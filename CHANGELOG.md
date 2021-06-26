@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
+## [0.2.2] - Unreleased
+### Fixed
+- Fix small bug in validation scripts related to startup costs
+
 ## [0.2.1] - 2021-06-02
 ### Added
 - Add multiple ramping formulations (ArrCon2000, MorLatRam2013, DamKucRajAta2016, PanGua2016)
