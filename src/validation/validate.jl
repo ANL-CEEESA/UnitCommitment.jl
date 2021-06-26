@@ -208,12 +208,8 @@ function _validate_units(instance, solution; tol = 0.01)
                         break
                     end
                 end
-                if t == time_down + 1
-                    initial_down = unit.min_downtime
-                    if unit.initial_status < 0
-                        initial_down = -unit.initial_status
-                    end
-                    time_down += initial_down
+                if (t == time_down + 1) && (unit.initial_status < 0)
+                    time_down -= unit.initial_status
                 end
 
                 # Calculate startup costs
@@ -246,14 +242,6 @@ function _validate_units(instance, solution; tol = 0.01)
                         break
                     end
                 end
-                if t == time_up + 1
-                    initial_up = unit.min_uptime
-                    if unit.initial_status > 0
-                        initial_up = unit.initial_status
-                    end
-                    time_up += initial_up
-                end
-
                 if (t == time_up + 1) && (unit.initial_status > 0)
                     time_up += unit.initial_status
                 end
