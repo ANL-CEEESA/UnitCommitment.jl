@@ -12,14 +12,14 @@ function _add_startup_cost_eqs!(
     S = length(g.startup_categories)
     startup = model[:startup]
     for t in 1:model[:instance].time
-        for s in 1:S
-            # If unit is switching on, we must choose a startup category
-            eq_startup_choose[g.name, t, s] = @constraint(
-                model,
-                model[:switch_on][g.name, t] ==
-                sum(startup[g.name, t, s] for s in 1:S)
-            )
+        # If unit is switching on, we must choose a startup category
+        eq_startup_choose[g.name, t] = @constraint(
+            model,
+            model[:switch_on][g.name, t] ==
+            sum(startup[g.name, t, s] for s in 1:S)
+        )
 
+        for s in 1:S
             # If unit has not switched off in the last `delay` time periods, startup category is forbidden.
             # The last startup category is always allowed.
             if s < S
