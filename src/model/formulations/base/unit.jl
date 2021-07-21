@@ -2,6 +2,15 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
+
+Add production, reserve, startup, shutdown, and status variables,
+and constraints for min uptime/downtime, net injection, production, ramping, startup, shutdown, and status.
+
+Fix variables if a certain generator _must_ run or if a generator provides spinning reserves.
+Also, add overflow penalty to objective for each transmission line.
+"""
 function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
@@ -35,6 +44,7 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
         formulation.status_vars,
     )
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
+    _add_shutdown_cost_eqs!(model, g)
     _add_startup_shutdown_limit_eqs!(model, g)
     _add_status_eqs!(model, g, formulation.status_vars)
     return
@@ -42,26 +52,42 @@ end
 
 _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
-function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
+"""
+    _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
+
+Add `:reserve` variable to `model`, fixed to zero if no spinning reserves specified.
+"""
+function _add_reserve_vars!(model::JuMP.Model, g::Unit, ALWAYS_CREATE_VARS = false)::Nothing
     reserve = _init(model, :reserve)
+    reserve_shortfall = _init(model, :reserve_shortfall) # for accounting for shortfall penalty in the objective
     for t in 1:model[:instance].time
         if g.provides_spinning_reserves[t]
             reserve[g.name, t] = @variable(model, lower_bound = 0)
         else
-            reserve[g.name, t] = 0.0
+            if ALWAYS_CREATE_VARS
+                reserve[g.name, t] = @variable(model, lower_bound = 0)
+                fix(reserve[g.name, t], 0.0; force = true)
+            else
+                reserve[g.name, t] = 0.0
+            end
         end
     end
     return
 end
 
+"""
+    _add_reserve_eqs!(model::JuMP.Model, g::Unit)::Nothing
+"""
 function _add_reserve_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    reserve = model[:reserve]
-    for t in 1:model[:instance].time
-        add_to_expression!(expr_reserve[g.bus.name, t], reserve[g.name, t], 1.0)
-    end
+    # nothing to do here
     return
 end
 
+"""
+    _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
+
+Add `startup` to model.
+"""
 function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
     startup = _init(model, :startup)
     for t in 1:model[:instance].time
@@ -72,6 +98,22 @@ function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
+"""
+    _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
+
+Variables
+---
+* :is_on
+* :prod_above
+* :reserve
+* :switch_on
+* :switch_off
+
+Constraints
+---
+* :eq_startup_limit
+* :eq_shutdown_limit
+"""
 function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
@@ -91,8 +133,13 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
         )
         # Shutdown limit
         if g.initial_power > g.shutdown_limit
-            eq_shutdown_limit[g.name, 0] =
-                @constraint(model, switch_off[g.name, 1] <= 0)
+            # TODO check what happens with these variables when exporting the model
+            # Generator producing too much to be turned off in the first time period
+            # (can a binary variable have bounds x = 0?)
+            #eqs.shutdown_limit[gi, 0] = @constraint(mip, vars.switch_off[gi, 1] <= 0)
+            fix(model.vars.switch_off[gi, 1], 0.; force = true)
+            #eq_shutdown_limit[g.name, 0] =
+                #@constraint(model, switch_off[g.name, 1] <= 0)
         end
         if t < T
             eq_shutdown_limit[g.name, t] = @constraint(
@@ -107,10 +154,36 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
+"""
+    _add_shutdown_cost_eqs!
+
+Variables
+---
+* :switch_off
+"""
+function _add_shutdown_cost_eqs!(model::JuMP.Modle, g::Unit)::Nothing
+    T = model[:instance].time
+    gi = g.name
+    for t = 1:T
+      shutdown_cost = 0.
+      if shutdown_cost > 1e-7
+        # Equation (62) in Kneuven et al. (2020)
+        add_to_expression!(model[:obj],
+                           model[:switch_off][gi, t],
+                           shutdown_cost)
+      end
+    end # loop over time
+end # _add_shutdown_cost_eqs!
+    
+end
+
+"""
+    _add_ramp_eqs!(model, unit, formulation)
+"""
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::RampingFormulation,
+    formulation::AbstractRampingFormulation,
 )::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
@@ -153,6 +226,26 @@ function _add_ramp_eqs!(
     end
 end
 
+"""
+    _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
+
+Ensure constraints on up/down time are met.
+Based on Garver (1962), Malkin (2003), and Rajan and Takritti (2005).
+Eqns. (3), (4), (5) in Kneuven et al. (2020).
+
+Variables
+---
+* :is_on
+* :switch_off
+* :switch_on
+
+
+Constraints
+---
+* :eq_min_uptime
+* :eq_min_downtime
+
+"""
 function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     is_on = model[:is_on]
     switch_off = model[:switch_off]
@@ -162,18 +255,24 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     T = model[:instance].time
     for t in 1:T
         # Minimum up-time
+        # Equation (4) in Kneuven et al. (2020)
         eq_min_uptime[g.name, t] = @constraint(
             model,
-            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <= is_on[g.name, t]
+            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1)
+            <= is_on[g.name, t]
         )
+
         # Minimum down-time
+        # Equation (5) in Kneuven et al. (2020)
         eq_min_downtime[g.name, t] = @constraint(
             model,
-            sum(
-                switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1
-            ) <= 1 - is_on[g.name, t]
+            sum(switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1)
+            <= 1 - is_on[g.name, t]
         )
+        
         # Minimum up/down-time for initial periods
+        # Equations (3a) and (3b) in Kneuven et al. (2020)
+        # (using :switch_on and :switch_off instead of :is_on)
         if t == 1
             if g.initial_status > 0
                 eq_min_uptime[g.name, 0] = @constraint(
@@ -196,6 +295,9 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     end
 end
 
+"""
+    _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
+"""
 function _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
     expr_net_injection = model[:expr_net_injection]
     for t in 1:model[:instance].time
@@ -209,12 +311,6 @@ function _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
             expr_net_injection[g.bus.name, t],
             model[:is_on][g.name, t],
             g.min_power[t],
-        )
-        # Add to reserves expression
-        add_to_expression!(
-            model[:expr_reserve][g.bus.name, t],
-            model[:reserve][g.name, t],
-            1.0,
         )
     end
 end

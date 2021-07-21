@@ -2,6 +2,9 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_price_sensitive_load!(model::JuMP.Model, ps::PriceSensitiveLoad)
+"""
 function _add_price_sensitive_load!(
     model::JuMP.Model,
     ps::PriceSensitiveLoad,

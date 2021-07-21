@@ -2,6 +2,11 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_production_vars!(model, unit, formulation_prod_vars)
+
+Creates variables `:prod_above` and `:segprod`.
+"""
 function _add_production_vars!(
     model::JuMP.Model,
     g::Unit,
@@ -18,6 +23,23 @@ function _add_production_vars!(
     return
 end
 
+"""
+    _add_production_limit_eqs!(model, unit, formulation_prod_vars)
+
+Ensure production limit constraints are met.
+Based on Garver (1962) and Morales-España et al. (2013).
+Eqns. (18), part of (69) in Kneuven et al. (2020).
+
+===
+Variables
+* :is_on
+* :prod_above
+* :reserve
+
+===
+Constraints
+* :eq_prod_limit
+"""
 function _add_production_limit_eqs!(
     model::JuMP.Model,
     g::Unit,

@@ -2,6 +2,27 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_ramp_eqs!
+
+Ensure constraints on ramping are met.
+Needs to be used in combination with shutdown rate constraints, e.g., (21b) in Kneuven et al. (2020).
+Based on Morales-España, Latorre, and Ramos, 2013.
+Eqns. (26)+(27) [replaced by (24)+(25) if time-varying min demand] in Kneuven et al. (2020).
+
+Variables
+---
+* :is_on
+* :switch_off
+* :switch_on
+* :prod_above
+* :reserve
+
+Constraints
+---
+* :eq_ramp_up
+* :eq_ramp_down
+"""
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
@@ -15,10 +36,10 @@ function _add_ramp_eqs!(
     RESERVES_WHEN_RAMP_DOWN = true
     RESERVES_WHEN_SHUT_DOWN = true
     is_initially_on = (g.initial_status > 0)
-    SU = g.startup_limit
-    SD = g.shutdown_limit
-    RU = g.ramp_up_limit
-    RD = g.ramp_down_limit
+    SU = g.startup_limit   # startup rate
+    SD = g.shutdown_limit  # shutdown rate
+    RU = g.ramp_up_limit   # ramp up rate
+    RD = g.ramp_down_limit # ramp down rate
     gn = g.name
     eq_ramp_down = _init(model, :eq_ramp_down)
     eq_ramp_up = _init(model, :eq_str_ramp_up)

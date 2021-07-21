@@ -2,6 +2,26 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_ramp_eqs!
+
+Ensure constraints on ramping are met.
+Based on Damcı-Kurt et al. (2016).
+Eqns. (35), (36) in Kneuven et al. (2020).
+
+Variables
+---
+* :prod_above
+* :reserve
+* :is_on
+* :switch_on
+* :switch_off],
+
+Constraints
+---
+* :eq_str_ramp_up
+* :eq_str_ramp_down
+"""
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
@@ -14,12 +34,14 @@ function _add_ramp_eqs!(
     RESERVES_WHEN_RAMP_UP = true
     RESERVES_WHEN_RAMP_DOWN = true
     RESERVES_WHEN_SHUT_DOWN = true
-    known_initial_conditions = true
-    is_initially_on = (g.initial_status > 0)
-    SU = g.startup_limit
-    SD = g.shutdown_limit
-    RU = g.ramp_up_limit
-    RD = g.ramp_down_limit
+    is_initially_on = _is_initially_on(g)
+    
+    # The following are the same for generator g across all time periods
+    SU = g.startup_limit   # startup rate
+    SD = g.shutdown_limit  # shutdown rate
+    RU = g.ramp_up_limit   # ramp up rate
+    RD = g.ramp_down_limit # ramp down rate
+
     gn = g.name
     eq_str_ramp_down = _init(model, :eq_str_ramp_down)
     eq_str_ramp_up = _init(model, :eq_str_ramp_up)
@@ -94,7 +116,7 @@ function _add_ramp_eqs!(
         on_last_period = 0.0
         if t > 1
             on_last_period = is_on[gn, t-1]
-        elseif (known_initial_conditions && g.initial_status > 0)
+        elseif is_initially_on
             on_last_period = 1.0
         end
 

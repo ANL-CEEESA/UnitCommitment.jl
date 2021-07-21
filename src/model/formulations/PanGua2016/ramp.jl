@@ -2,6 +2,28 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_ramp_eqs!
+
+Add tighter upper bounds on production based on ramp-down trajectory.
+Based on (28) in Pan and Guan (2016).
+But there is an extra time period covered using (40) of Kneuven et al. (2020).
+Eqns. (38), (40), (41) in Kneuven et al. (2020).
+
+Variables
+---
+* :prod_above
+* :reserve
+* :is_on
+* :switch_on
+* :switch_off
+
+Constraints
+---
+* :str_prod_limit
+* :prod_limit_ramp_up_extra_period
+* :prod_limit_shutdown_trajectory
+"""
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,

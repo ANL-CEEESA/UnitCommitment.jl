@@ -2,6 +2,30 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_production_piecewise_linear_eqs!
+
+Ensure respect of production limits along each segment.
+Based on Kneuven et al. (2018b).
+Eqns. (43), (44), (46), (48) in Kneuven et al. (2020).
+NB: when reading instance, UnitCommitment.jl already calculates difference between max power for segments k and k-1
+so the value of cost_segments[k].mw[t] is the max production *for that segment*.
+
+===
+Variables
+* :segprod
+* :is_on
+* :switch_on
+* :switch_off
+* :prod_above
+
+===
+Constraints
+* :eq_prod_above_def
+* :eq_segprod_limit_a
+* :eq_segprod_limit_b
+* :eq_segprod_limit_c
+"""
 function _add_production_piecewise_linear_eqs!(
     model::JuMP.Model,
     g::Unit,

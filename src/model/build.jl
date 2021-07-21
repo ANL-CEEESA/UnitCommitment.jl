@@ -21,6 +21,8 @@ Arguments
 - `optimizer`:
     the optimizer factory that should be attached to this model (e.g. Cbc.Optimizer).
     If not provided, no optimizer will be attached.
+- `formulation`:
+    the details of which constraints, variables, etc. to use
 - `variable_names`: 
     If true, set variable and constraint names. Important if the model is going
     to be exported to an MPS file. For large models, this can take significant

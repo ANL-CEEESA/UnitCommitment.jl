@@ -2,6 +2,26 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_ramp_eqs!
+
+Ensure constraints on ramping are met.
+Based on Arroyo and Conejo (2000).
+Eqns. (24), (25) in Kneuven et al. (2020).
+
+Variables
+---
+* :is_on
+* :switch_off
+* :switch_on
+* :prod_above
+* :reserve
+
+Constraints
+---
+* :eq_ramp_up
+* :eq_ramp_down
+"""
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
@@ -22,7 +42,6 @@ function _add_ramp_eqs!(
     reserve = model[:reserve]
     eq_ramp_down = _init(model, :eq_ramp_down)
     eq_ramp_up = _init(model, :eq_ramp_up)
-    is_initially_on = (g.initial_status > 0)
 
     # Gar1962.ProdVars
     prod_above = model[:prod_above]
@@ -35,7 +54,7 @@ function _add_ramp_eqs!(
     for t in 1:model[:instance].time
         # Ramp up limit
         if t == 1
-            if is_initially_on
+            if _is_initially_on(g)
                 # min power is _not_ multiplied by is_on because if !is_on, then ramp up is irrelevant
                 eq_ramp_up[gn, t] = @constraint(
                     model,
@@ -66,7 +85,7 @@ function _add_ramp_eqs!(
 
         # Ramp down limit
         if t == 1
-            if is_initially_on
+            if _is_initially_on(g)
                 # TODO If RD < SD, or more specifically if
                 #      min_power + RD < initial_power < SD
                 #      then the generator should be able to shut down at time t = 1,

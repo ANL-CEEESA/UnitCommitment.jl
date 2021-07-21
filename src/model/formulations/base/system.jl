@@ -2,12 +2,32 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_system_wide_eqs!(model::JuMP.Model)::Nothing
+
+Calls `_add_net_injection_eqs!` and `add_reserve_eqs!`.
+"""
 function _add_system_wide_eqs!(model::JuMP.Model)::Nothing
     _add_net_injection_eqs!(model)
     _add_reserve_eqs!(model)
     return
 end
 
+"""
+    _add_net_injection_eqs!(model::JuMP.Model)::Nothing
+
+Adds `net_injection`, `eq_net_injection_def`, and `eq_power_balance` identifiers into `model`.
+
+Variables
+---
+* expr_net_injection
+* net_injection
+
+Constraints
+---
+* eq_net_injection_def
+* eq_power_balance
+"""
 function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
     T = model[:instance].time
     net_injection = _init(model, :net_injection)
@@ -27,15 +47,49 @@ function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
     return
 end
 
+"""
+    _add_reserve_eqs!(model::JuMP.Model)::Nothing
+
+Ensure constraints on reserves are met.
+Based on Morales-España et al. (2013a).
+Eqn. (68) from Kneuven et al. (2020).
+
+Adds `eq_min_reserve` identifier to `model`, and corresponding constraint.
+
+Variables
+---
+* reserve
+* reserve_shortfall
+
+Constraints
+---
+* eq_min_reserve
+"""
 function _add_reserve_eqs!(model::JuMP.Model)::Nothing
+    instance = model[:instance]
     eq_min_reserve = _init(model, :eq_min_reserve)
-    for t in 1:model[:instance].time
+    for t in 1:instance.time
+        # Equation (68) in Kneuven et al. (2020)
+        # As in Morales-España et al. (2013a)
+        # Akin to the alternative formulation with max_power_avail
+        # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
+        shortfall_penalty = instance.shortfall_penalty[t]
         eq_min_reserve[t] = @constraint(
             model,
-            sum(
-                model[:expr_reserve][b.name, t] for b in model[:instance].buses
-            ) >= model[:instance].reserves.spinning[t]
+            sum(model[:reserve][g.name, t] for g in instance.units)
+            + (shortfall_penalty > 1e-7 ? model[:reserve_shortfall][t] : 0.)
+            >= instance.reserves.spinning[t]
         )
-    end
+
+        # Account for shortfall contribution to objective
+        if shortfall_penalty > 1e-7
+          add_to_expression!(model.obj,
+                             shortfall_penalty,
+                             model[:reserve_shortfall][t])
+        else
+          # Not added to the model at all
+          #fix(model.vars.reserve_shortfall[t], 0.; force=true)
+        end
+    end # loop over time
     return
 end
