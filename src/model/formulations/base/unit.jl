@@ -192,7 +192,7 @@ end
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::RampingFormulation,
+    formulation::AbstractRampingFormulation,
 )::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
@@ -265,16 +265,16 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
         # Equation (4) in Knueven et al. (2020)
         eq_min_uptime[g.name, t] = @constraint(
             model,
-            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <= is_on[g.name, t]
+            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1)
+            <= is_on[g.name, t]
         )
 
         # Minimum down-time
         # Equation (5) in Knueven et al. (2020)
         eq_min_downtime[g.name, t] = @constraint(
             model,
-            sum(
-                switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1
-            ) <= 1 - is_on[g.name, t]
+            sum(switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1)
+            <= 1 - is_on[g.name, t]
         )
 
         # Minimum up/down-time for initial periods
