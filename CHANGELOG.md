@@ -11,9 +11,10 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
-## [0.2.2] - Unreleased
+## [0.2.2] - 2021-07-21
 ### Fixed
 - Fix small bug in validation scripts related to startup costs
+- Fix duplicated startup constraints (@mtanneau, #12)
 
 ## [0.2.1] - 2021-06-02
 ### Added
