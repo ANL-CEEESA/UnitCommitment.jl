@@ -11,12 +11,12 @@ end
 function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
     T = model[:instance].time
     net_injection = _init(model, :net_injection)
-    eq_net_injection_def = _init(model, :eq_net_injection_def)
+    eq_net_injection = _init(model, :eq_net_injection)
     eq_power_balance = _init(model, :eq_power_balance)
     for t in 1:T, b in model[:instance].buses
         n = net_injection[b.name, t] = @variable(model)
-        eq_net_injection_def[t, b.name] =
-            @constraint(model, n == model[:expr_net_injection][b.name, t])
+        eq_net_injection[b.name, t] =
+            @constraint(model, -n + model[:expr_net_injection][b.name, t] == 0)
     end
     for t in 1:T
         eq_power_balance[t] = @constraint(

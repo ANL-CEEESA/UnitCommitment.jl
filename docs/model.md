@@ -148,7 +148,7 @@ for g in instance.units
 end
 ```
 
-### Modifying the model
+### Fixing variables, modifying objective function and adding constraints
 
 Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it. The script below shows how can this be accomplished. For more information on modifying an existing model, [see the JuMP documentation](https://jump.dev/JuMP.jl/stable/manual/variables/).
 
@@ -188,6 +188,54 @@ JuMP.set_objective_coefficient(
 
 # Solve the model
 UnitCommitment.optimize!(model)
+```
+
+### Adding new component to a bus
+
+The following snippet shows how to add a new grid component to a particular bus. For each time step, we create decision variables for the new grid component, add these variables to the objective function, then attach the component to a particular bus by modifying some existing model constraints. 
+
+```julia
+using Cbc
+using JuMP
+using UnitCommitment
+
+# Load instance and build base model
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
+
+# Get the number of time steps in the original instance
+T = instance.time
+
+# Create decision variables for the new grid component.
+# In this example, we assume that the new component can
+# inject up to 10 MW of power at each time step, so we
+# create new continuous variables 0 ≤ x[t] ≤ 10.
+@variable(model, x[1:T], lower_bound=0.0, upper_bound=10.0)
+
+# For each time step
+for t in 1:T
+
+    # Add production costs to the objective function.
+    # In this example, we assume a cost of $5/MW.
+    set_objective_coefficient(model, x[t], 5.0)
+
+    # Attach the new component to bus b1, by modifying the
+    # constraint `eq_net_injection`.
+    set_normalized_coefficient(
+        model[:eq_net_injection]["b1", t],
+        x[t],
+        1.0,
+    )
+end
+
+# Solve the model
+UnitCommitment.optimize!(model)
+
+# Show optimal values for the x variables
+@show value.(x)
 ```
 
 References
