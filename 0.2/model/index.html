@@ -238,8 +238,13 @@
     </a>
    </li>
    <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#modifying-the-model">
-     Modifying the model
+    <a class="reference internal nav-link" href="#fixing-variables-modifying-objective-function-and-adding-constraints">
+     Fixing variables, modifying objective function and adding constraints
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#adding-new-component-to-a-bus">
+     Adding new component to a bus
     </a>
    </li>
   </ul>
@@ -481,8 +486,8 @@
 </pre></div>
 </div>
 </div>
-<div class="section" id="modifying-the-model">
-<h3>Modifying the model<a class="headerlink" href="#modifying-the-model" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fixing-variables-modifying-objective-function-and-adding-constraints">
+<h3>Fixing variables, modifying objective function and adding constraints<a class="headerlink" href="#fixing-variables-modifying-objective-function-and-adding-constraints" title="Permalink to this headline">¶</a></h3>
 <p>Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it. The script below shows how can this be accomplished. For more information on modifying an existing model, <a class="reference external" href="https://jump.dev/JuMP.jl/stable/manual/variables/">see the JuMP documentation</a>.</p>
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
 <span class="k">using</span> <span class="n">JuMP</span>
@@ -519,6 +524,53 @@
 
 <span class="c"># Solve the model</span>
 <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="adding-new-component-to-a-bus">
+<h3>Adding new component to a bus<a class="headerlink" href="#adding-new-component-to-a-bus" title="Permalink to this headline">¶</a></h3>
+<p>The following snippet shows how to add a new grid component to a particular bus. For each time step, we create decision variables for the new grid component, add these variables to the objective function, then attach the component to a particular bus by modifying some existing model constraints.</p>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
+<span class="k">using</span> <span class="n">JuMP</span>
+<span class="k">using</span> <span class="n">UnitCommitment</span>
+
+<span class="c"># Load instance and build base model</span>
+<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
+    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c"># Get the number of time steps in the original instance</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">time</span>
+
+<span class="c"># Create decision variables for the new grid component.</span>
+<span class="c"># In this example, we assume that the new component can</span>
+<span class="c"># inject up to 10 MW of power at each time step, so we</span>
+<span class="c"># create new continuous variables 0 ≤ x[t] ≤ 10.</span>
+<span class="nd">@variable</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="n">T</span><span class="p">],</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+
+<span class="c"># For each time step</span>
+<span class="k">for</span> <span class="n">t</span> <span class="k">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">T</span>
+
+    <span class="c"># Add production costs to the objective function.</span>
+    <span class="c"># In this example, we assume a cost of $5/MW.</span>
+    <span class="n">set_objective_coefficient</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="mf">5.0</span><span class="p">)</span>
+
+    <span class="c"># Attach the new component to bus b1, by modifying the</span>
+    <span class="c"># constraint `eq_net_injection`.</span>
+    <span class="n">set_normalized_coefficient</span><span class="p">(</span>
+        <span class="n">model</span><span class="p">[</span><span class="ss">:eq_net_injection</span><span class="p">][</span><span class="s">&quot;b1&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">],</span>
+        <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
+        <span class="mf">1.0</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">end</span>
+
+<span class="c"># Solve the model</span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c"># Show optimal values for the x variables</span>
+<span class="nd">@show</span> <span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
