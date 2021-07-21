@@ -174,8 +174,6 @@ function _add_shutdown_cost_eqs!(model::JuMP.Modle, g::Unit)::Nothing
       end
     end # loop over time
 end # _add_shutdown_cost_eqs!
-    
-end
 
 """
     _add_ramp_eqs!(model, unit, formulation)
