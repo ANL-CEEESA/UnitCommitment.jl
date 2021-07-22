@@ -57,7 +57,11 @@ _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
 Add `:reserve` variable to `model`, fixed to zero if no spinning reserves specified.
 """
-function _add_reserve_vars!(model::JuMP.Model, g::Unit, ALWAYS_CREATE_VARS = false)::Nothing
+function _add_reserve_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    ALWAYS_CREATE_VARS = false,
+)::Nothing
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall) # for accounting for shortfall penalty in the objective
     for t in 1:model[:instance].time
@@ -137,9 +141,9 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
             # Generator producing too much to be turned off in the first time period
             # (can a binary variable have bounds x = 0?)
             #eqs.shutdown_limit[gi, 0] = @constraint(mip, vars.switch_off[gi, 1] <= 0)
-            fix(model.vars.switch_off[gi, 1], 0.; force = true)
+            fix(model.vars.switch_off[gi, 1], 0.0; force = true)
             #eq_shutdown_limit[g.name, 0] =
-                #@constraint(model, switch_off[g.name, 1] <= 0)
+            #@constraint(model, switch_off[g.name, 1] <= 0)
         end
         if t < T
             eq_shutdown_limit[g.name, t] = @constraint(
@@ -164,14 +168,16 @@ Variables
 function _add_shutdown_cost_eqs!(model::JuMP.Modle, g::Unit)::Nothing
     T = model[:instance].time
     gi = g.name
-    for t = 1:T
-      shutdown_cost = 0.
-      if shutdown_cost > 1e-7
-        # Equation (62) in Kneuven et al. (2020)
-        add_to_expression!(model[:obj],
-                           model[:switch_off][gi, t],
-                           shutdown_cost)
-      end
+    for t in 1:T
+        shutdown_cost = 0.0
+        if shutdown_cost > 1e-7
+            # Equation (62) in Kneuven et al. (2020)
+            add_to_expression!(
+                model[:obj],
+                model[:switch_off][gi, t],
+                shutdown_cost,
+            )
+        end
     end # loop over time
 end # _add_shutdown_cost_eqs!
 
@@ -256,18 +262,18 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
         # Equation (4) in Kneuven et al. (2020)
         eq_min_uptime[g.name, t] = @constraint(
             model,
-            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1)
-            <= is_on[g.name, t]
+            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <= is_on[g.name, t]
         )
 
         # Minimum down-time
         # Equation (5) in Kneuven et al. (2020)
         eq_min_downtime[g.name, t] = @constraint(
             model,
-            sum(switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1)
-            <= 1 - is_on[g.name, t]
+            sum(
+                switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1
+            ) <= 1 - is_on[g.name, t]
         )
-        
+
         # Minimum up/down-time for initial periods
         # Equations (3a) and (3b) in Kneuven et al. (2020)
         # (using :switch_on and :switch_off instead of :is_on)

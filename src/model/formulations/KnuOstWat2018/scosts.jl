@@ -61,55 +61,62 @@ function _add_startup_cost_eqs!(
         # Equation (59) in Kneuven et al. (2020)
         # Relate downtime_arc with switch_on
         # "switch_on[g,t] >= x_g(t',t) for all t' \in [t-TC+1, t-DT]"
-        eq_startup_at_t[gn, t] =
-            @constraint(model,
-                        switch_on[gn, t]
-                        >= sum(downtime_arc[gn,tmp_t,t]
-                            for tmp_t in t-TC+1:t-DT if tmp_t >= 1)
-                    )
+        eq_startup_at_t[gn, t] = @constraint(
+            model,
+            switch_on[gn, t] >= sum(
+                downtime_arc[gn, tmp_t, t] for
+                tmp_t in t-TC+1:t-DT if tmp_t >= 1
+            )
+        )
 
         # Equation (60) in Kneuven et al. (2020)
         # "switch_off[g,t] >= x_g(t,t') for all t' \in [t+DT, t+TC-1]"
-        eqs.shutdown_at_t[gn, t] =
-            @constraint(model,
-                        switch_off[gn, t]
-                        >= sum(downtime_arc[gn,t,tmp_t]
-                            for tmp_t in t+DT:t+TC-1 if tmp_t <= T)
-                    )
+        eqs.shutdown_at_t[gn, t] = @constraint(
+            model,
+            switch_off[gn, t] >= sum(
+                downtime_arc[gn, t, tmp_t] for
+                tmp_t in t+DT:t+TC-1 if tmp_t <= T
+            )
+        )
 
         # Objective function terms for start-up costs
         # Equation (61) in Kneuven et al. (2020)
         default_category = S
         if initial_time_shutdown > 0 && t + initial_time_shutdown - 1 < TC
             for s in 1:S-1
-            # If off for x periods before, then belongs to category s
-            # if -x+1 in [t-delay[s+1]+1,t-delay[s]]
-            # or, equivalently, if total time off in [delay[s], delay[s+1]-1]
-            # where total time off = t - 1 + initial_time_shutdown
-            # (the -1 because not off for current time period)
-            if t + initial_time_shutdown - 1 < g.startup_categories[s+1].delay
-                default_category = s
-                break # does not go into next category
-            end
+                # If off for x periods before, then belongs to category s
+                # if -x+1 in [t-delay[s+1]+1,t-delay[s]]
+                # or, equivalently, if total time off in [delay[s], delay[s+1]-1]
+                # where total time off = t - 1 + initial_time_shutdown
+                # (the -1 because not off for current time period)
+                if t + initial_time_shutdown - 1 <
+                   g.startup_categories[s+1].delay
+                    default_category = s
+                    break # does not go into next category
+                end
             end
         end
-        add_to_expression!(model[:obj],
-                            switch_on[gn, t],
-                            g.startup_categories[default_category].cost)
+        add_to_expression!(
+            model[:obj],
+            switch_on[gn, t],
+            g.startup_categories[default_category].cost,
+        )
 
         for s in 1:S-1
             # Objective function terms for start-up costs
             # Equation (61) in Kneuven et al. (2020)
             # Says to replace the cost of last category with cost of category s
-            start_range = max((t - g.startup_categories[s + 1].delay + 1),1)
-            end_range = min((t - g.startup_categories[s].delay),T-1)
+            start_range = max((t - g.startup_categories[s+1].delay + 1), 1)
+            end_range = min((t - g.startup_categories[s].delay), T - 1)
             for tmp_t in start_range:end_range
-            if (t < tmp_t + DT) || (t >= tmp_t + TC) # the second clause should never be true for s < S
-                continue
-            end
-            add_to_expression!(model[:obj],
-                                downtime_arc[gn,tmp_t,t],
-                                g.startup_categories[s].cost - g.startup_categories[S].cost)
+                if (t < tmp_t + DT) || (t >= tmp_t + TC) # the second clause should never be true for s < S
+                    continue
+                end
+                add_to_expression!(
+                    model[:obj],
+                    downtime_arc[gn, tmp_t, t],
+                    g.startup_categories[s].cost - g.startup_categories[S].cost,
+                )
             end
         end # iterate over startup categories
     end # iterate over time

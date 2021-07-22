@@ -12,7 +12,7 @@ function _add_status_vars!(
     model::JuMP.Model,
     g::Unit,
     formulation_status_vars::Gar1962.StatusVars,
-    ALWAYS_CREATE_VARS = false
+    ALWAYS_CREATE_VARS = false,
 )::Nothing
     is_on = _init(model, :is_on)
     switch_on = _init(model, :switch_on)
@@ -38,12 +38,16 @@ function _add_status_vars!(
                 end
             end
 
-            if g.must_run[t] 
+            if g.must_run[t]
                 # If the generator _must_ run, then it is obviously on and cannot be switched off
                 # In the first time period, force unit to switch on if was off before
                 # Otherwise, unit is on, and will never turn off, so will never need to turn on
                 fix(is_on[g.name, t], 1.0; force = true)
-                fix(switch_on[g.name, t], (t == 1 ? 1.0 - _is_initially_on(g) : 0.0); force = true)
+                fix(
+                    switch_on[g.name, t],
+                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0);
+                    force = true,
+                )
                 fix(switch_off[g.name, t], 0.0; force = true)
             end
         else
@@ -57,7 +61,8 @@ function _add_status_vars!(
             end
             if g.must_run[t]
                 is_on[g.name, t] = 1.0
-                switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
+                switch_on[g.name, t] =
+                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
                 switch_off[g.name, t] = 0.0
             end
         end # check if ALWAYS_CREATE_VARS

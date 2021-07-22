@@ -16,5 +16,5 @@ function _add_startup_cost_eqs!(
     g::Unit,
     formulation::MorLatRam2013.StartupCosts,
 )::Nothing
-    error("Not implemented.")
+    return error("Not implemented.")
 end

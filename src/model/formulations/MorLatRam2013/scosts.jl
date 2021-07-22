@@ -51,8 +51,7 @@ function _add_startup_cost_eqs!(
         # Equation (55) in Kneuven et al. (2020)
         eq_startup_choose[gn, t] = @constraint(
             model,
-            switch_on[gn, t] ==
-            sum(startup[gn, t, s] for s in 1:S)
+            switch_on[gn, t] == sum(startup[gn, t, s] for s in 1:S)
         )
 
         for s in 1:S
@@ -71,7 +70,8 @@ function _add_startup_cost_eqs!(
                 eq_startup_restrict[gn, t, s] = @constraint(
                     model,
                     startup[gn, t, s] <=
-                      initial_sum + sum(switch_off[gn, i] for i in range if i >= 1)
+                    initial_sum +
+                    sum(switch_off[gn, i] for i in range if i >= 1)
                 )
             end # if s < S (not the last category)
 

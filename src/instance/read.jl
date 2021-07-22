@@ -100,7 +100,7 @@ function _from_json(json; repair = true)
     )
     shortfall_penalty = timeseries(
         json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
-        default=[0. for t in 1:T]
+        default = [0.0 for t in 1:T],
     )
 
     # Read buses

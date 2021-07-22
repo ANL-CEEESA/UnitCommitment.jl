@@ -53,31 +53,33 @@ function _add_ramp_eqs!(
     SD = g.shutdown_limit  # shutdown rate
     RU = g.ramp_up_limit   # ramp up rate
     RD = g.ramp_down_limit # ramp down rate
-    
+
     # TODO check initial conditions, but maybe okay as long as (35) and (36) are also used
     for t in 1:model[:instance].time
         Pbar = g.max_power[t]
-    
+
         #TRD = floor((Pbar - SU)/RD)
         # TODO check amk changed TRD wrt Kneuven et al.
         TRD = ceil((Pbar - SD) / RD) # ramp down time
 
         if Pbar < 1e-7
-          # Skip this time period if max power = 0
-          continue
+            # Skip this time period if max power = 0
+            continue
         end
 
         if UT >= 1
             # Equation (37) in Kneuven et al. (2020)
-            KSD = min( TRD, UT-1, T-t-1 )
-            eq_str_prod_limit[gn, t] =
-            @constraint(model,
-                        prod_above[gn, t] + g.min_power[t] * is_on[gn, t]
-                        + (RESERVES_WHEN_RAMP_DOWN ? reserve[gn, t] : 0.) # amk added; TODO: should this be RESERVES_WHEN_RAMP_DOWN or RESERVES_WHEN_SHUT_DOWN?
-                        <= Pbar * is_on[gi, t]
-                            - sum((Pbar - (SD + i * RD)) * switch_off[gi, t+1+i]
-                                for i in 0:KSD)
-                        )
+            KSD = min(TRD, UT - 1, T - t - 1)
+            eq_str_prod_limit[gn, t] = @constraint(
+                model,
+                prod_above[gn, t] +
+                g.min_power[t] * is_on[gn, t] +
+                (RESERVES_WHEN_RAMP_DOWN ? reserve[gn, t] : 0.0) <=
+                Pbar * is_on[gi, t] - sum(
+                    (Pbar - (SD + i * RD)) * switch_off[gi, t+1+i] for
+                    i in 0:KSD
+                )
+            )
         end # check UT >= 1
     end # loop over time
 end

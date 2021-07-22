@@ -2,7 +2,6 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-
 """
     _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
@@ -42,26 +41,28 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
     T = model[:instance].time
     gi = g.name
-    for t = 1:T
+    for t in 1:T
         ## 2020-10-09 amk: added eqn (20) and check of g.min_uptime
         if g.min_uptime > 1 && t < T
             # Equation (20) in Kneuven et al. (2020)
             # UT > 1 required, to guarantee that vars.switch_on[gi, t] and vars.switch_off[gi, t+1] are not both = 1 at the same time
-            eq_startstop_limit[gi,t] =
-            @constraint(model,
-                        prod_above[gi, t] + reserve[gi, t]
-                        <= (g.max_power[t] - g.min_power[t]) * is_on[gi, t]
-                            - max(0, g.max_power[t] - g.startup_limit) * switch_on[gi, t]
-                            - max(0, g.max_power[t] - g.shutdown_limit) * switch_off[gi, t+1])
+            eq_startstop_limit[gi, t] = @constraint(
+                model,
+                prod_above[gi, t] + reserve[gi, t] <=
+                (g.max_power[t] - g.min_power[t]) * is_on[gi, t] -
+                max(0, g.max_power[t] - g.startup_limit) * switch_on[gi, t] -
+                max(0, g.max_power[t] - g.shutdown_limit) * switch_off[gi, t+1]
+            )
         else
             ## Startup limits
             # Equation (21a) in Kneuven et al. (2020)
             # Proposed by Morales-España et al. (2013a)
-            eqs_startup_limit[gi, t] =
-            @constraint(model,
-                        prod_above[gi, t] + reserve[gi, t]
-                        <= (g.max_power[t] - g.min_power[t]) * is_on[gi, t]
-                        - max(0, g.max_power[t] - g.startup_limit) * switch_on[gi, t])
+            eqs_startup_limit[gi, t] = @constraint(
+                model,
+                prod_above[gi, t] + reserve[gi, t] <=
+                (g.max_power[t] - g.min_power[t]) * is_on[gi, t] -
+                max(0, g.max_power[t] - g.startup_limit) * switch_on[gi, t]
+            )
 
             ## Shutdown limits
             if t < T
@@ -74,12 +75,14 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
                 # amk: if shutdown_limit is the max prod of generator in time period before shutting down,
                 #      then it makes sense to count reserves, because otherwise, if reserves ≠ 0,
                 #      then the generator will actually produce more than the limit
-                eqs.shutdown_limit[gi, t] =
-                    @constraint(model,
-                                prod_above[gi, t]
-                                + (RESERVES_WHEN_SHUT_DOWN ? reserve[gi, t] : 0.) # amk added
-                                <= (g.max_power[t] - g.min_power[t]) * is_on[gi, t]
-                                - max(0, g.max_power[t] - g.shutdown_limit) * switch_off[gi, t+1])
+                eqs.shutdown_limit[gi, t] = @constraint(
+                    model,
+                    prod_above[gi, t] +
+                    (RESERVES_WHEN_SHUT_DOWN ? reserve[gi, t] : 0.0) <=
+                    (g.max_power[t] - g.min_power[t]) * is_on[gi, t] -
+                    max(0, g.max_power[t] - g.shutdown_limit) *
+                    switch_off[gi, t+1]
+                )
             end
         end # check if g.min_uptime > 1
     end # loop over time
