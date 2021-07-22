@@ -165,7 +165,7 @@ Variables
 ---
 * :switch_off
 """
-function _add_shutdown_cost_eqs!(model::JuMP.Modle, g::Unit)::Nothing
+function _add_shutdown_cost_eqs!(model::JuMP.Model, g::Unit)::Nothing
     T = model[:instance].time
     gi = g.name
     for t in 1:T
@@ -187,7 +187,7 @@ end # _add_shutdown_cost_eqs!
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::AbstractRampingFormulation,
+    formulation::RampingFormulation,
 )::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
