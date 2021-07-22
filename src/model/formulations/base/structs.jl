@@ -2,10 +2,10 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-abstract type AbstractTransmissionFormulation end
-abstract type AbstractRampingFormulation end
+abstract type TransmissionFormulation end
+abstract type RampingFormulation end
 abstract type PiecewiseLinearCostsFormulation end
-abstract type AbstractStartupCostsFormulation end
+abstract type StartupCostsFormulation end
 abstract type StatusVarsFormulation end
 abstract type ProductionVarsFormulation end
 
@@ -21,18 +21,18 @@ Some of these components are allowed to be empty, as long as overall validity of
 struct Formulation
     prod_vars::ProductionVarsFormulation
     pwl_costs::PiecewiseLinearCostsFormulation
-    ramping::AbstractRampingFormulation
-    startup_costs::AbstractStartupCostsFormulation
+    ramping::RampingFormulation
+    startup_costs::StartupCostsFormulation
     status_vars::StatusVarsFormulation
-    transmission::AbstractTransmissionFormulation
+    transmission::TransmissionFormulation
 
     function Formulation(;
         prod_vars::ProductionVarsFormulation = Gar1962.ProdVars(),
         pwl_costs::PiecewiseLinearCostsFormulation = KnuOstWat2018.PwlCosts(),
-        ramping::AbstractRampingFormulation = MorLatRam2013.Ramping(),
-        startup_costs::AbstractStartupCostsFormulation = MorLatRam2013.StartupCosts(),
+        ramping::RampingFormulation = MorLatRam2013.Ramping(),
+        startup_costs::StartupCostsFormulation = MorLatRam2013.StartupCosts(),
         status_vars::StatusVarsFormulation = Gar1962.StatusVars(),
-        transmission::AbstractTransmissionFormulation = ShiftFactorsFormulation(),
+        transmission::TransmissionFormulation = ShiftFactorsFormulation(),
     )
         return new(
             prod_vars,
@@ -70,7 +70,7 @@ Arguments
     the cutoff that should be applied to the LODF matrix. Entries with magnitude
     smaller than this value will be set to zero.
 """
-struct ShiftFactorsFormulation <: AbstractTransmissionFormulation
+struct ShiftFactorsFormulation <: TransmissionFormulation
     isf_cutoff::Float64
     lodf_cutoff::Float64
     precomputed_isf::Union{Nothing,Matrix{Float64}}

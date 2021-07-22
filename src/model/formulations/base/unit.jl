@@ -192,7 +192,7 @@ end
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation::AbstractRampingFormulation,
+    formulation::RampingFormulation,
 )::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
