@@ -6,7 +6,7 @@
     _add_startup_cost_eqs!
 
 Extended formulation of startup costs using indicator variables
-based on Kneuven, Ostrowski, and Watson, 2020
+based on Knueven, Ostrowski, and Watson, 2020
 --- equations (59), (60), (61).
 
 Variables
@@ -58,7 +58,7 @@ function _add_startup_cost_eqs!(
         #  fix(vars.downtime_arc[gn, t, tmp_t], 0.; force = true)
         #end
 
-        # Equation (59) in Kneuven et al. (2020)
+        # Equation (59) in Knueven et al. (2020)
         # Relate downtime_arc with switch_on
         # "switch_on[g,t] >= x_g(t',t) for all t' \in [t-TC+1, t-DT]"
         eq_startup_at_t[gn, t] = @constraint(
@@ -69,7 +69,7 @@ function _add_startup_cost_eqs!(
             )
         )
 
-        # Equation (60) in Kneuven et al. (2020)
+        # Equation (60) in Knueven et al. (2020)
         # "switch_off[g,t] >= x_g(t,t') for all t' \in [t+DT, t+TC-1]"
         eqs.shutdown_at_t[gn, t] = @constraint(
             model,
@@ -80,7 +80,7 @@ function _add_startup_cost_eqs!(
         )
 
         # Objective function terms for start-up costs
-        # Equation (61) in Kneuven et al. (2020)
+        # Equation (61) in Knueven et al. (2020)
         default_category = S
         if initial_time_shutdown > 0 && t + initial_time_shutdown - 1 < TC
             for s in 1:S-1
@@ -104,7 +104,7 @@ function _add_startup_cost_eqs!(
 
         for s in 1:S-1
             # Objective function terms for start-up costs
-            # Equation (61) in Kneuven et al. (2020)
+            # Equation (61) in Knueven et al. (2020)
             # Says to replace the cost of last category with cost of category s
             start_range = max((t - g.startup_categories[s+1].delay + 1), 1)
             end_range = min((t - g.startup_categories[s].delay), T - 1)

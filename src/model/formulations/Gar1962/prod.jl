@@ -5,7 +5,7 @@
 """
     _add_production_vars!(model, unit, formulation_prod_vars)
 
-Creates variables `:prod_above` and `:segprod`.
+Adds symbols identified by `Gar1962.ProdVars` to `model`.
 """
 function _add_production_vars!(
     model::JuMP.Model,
@@ -28,7 +28,7 @@ end
 
 Ensure production limit constraints are met.
 Based on Garver (1962) and Morales-España et al. (2013).
-Eqns. (18), part of (69) in Kneuven et al. (2020).
+Eqns. (18), part of (69) in Knueven et al. (2020).
 
 ===
 Variables
@@ -52,13 +52,13 @@ function _add_production_limit_eqs!(
     gn = g.name
     for t in 1:model[:instance].time
         # Objective function terms for production costs
-        # Part of (69) of Kneuven et al. (2020) as C^R_g * u_g(t) term
+        # Part of (69) of Knueven et al. (2020) as C^R_g * u_g(t) term
         add_to_expression!(model[:obj], is_on[gn, t], g.min_power_cost[t])
 
         # Production limit
-        # Equation (18) in Kneuven et al. (2020)
+        # Equation (18) in Knueven et al. (2020)
         #   as \bar{p}_g(t) \le \bar{P}_g u_g(t)
-        # amk: this is a weaker version of (20) and (21) in Kneuven et al. (2020)
+        # amk: this is a weaker version of (20) and (21) in Knueven et al. (2020)
         #      but keeping it here in case those are not present
         power_diff = max(g.max_power[t], 0.0) - max(g.min_power[t], 0.0)
         if power_diff < 1e-7

@@ -6,7 +6,7 @@
     _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
 Startup and shutdown limits from Morales-España et al. (2013a).
-Eqns. (20), (21a), and (21b) in Kneuven et al. (2020).
+Eqns. (20), (21a), and (21b) in Knueven et al. (2020).
 
 Variables
 ---
@@ -44,7 +44,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     for t in 1:T
         ## 2020-10-09 amk: added eqn (20) and check of g.min_uptime
         if g.min_uptime > 1 && t < T
-            # Equation (20) in Kneuven et al. (2020)
+            # Equation (20) in Knueven et al. (2020)
             # UT > 1 required, to guarantee that vars.switch_on[gi, t] and vars.switch_off[gi, t+1] are not both = 1 at the same time
             eq_startstop_limit[gi, t] = @constraint(
                 model,
@@ -55,7 +55,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
             )
         else
             ## Startup limits
-            # Equation (21a) in Kneuven et al. (2020)
+            # Equation (21a) in Knueven et al. (2020)
             # Proposed by Morales-España et al. (2013a)
             eqs_startup_limit[gi, t] = @constraint(
                 model,
@@ -66,7 +66,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
             ## Shutdown limits
             if t < T
-                # Equation (21b) in Kneuven et al. (2020)
+                # Equation (21b) in Knueven et al. (2020)
                 # TODO different from what was in previous model, due to reserve variable
                 # ax: ideally should have reserve_up and reserve_down variables
                 #     i.e., the generator should be able to increase/decrease production as specified

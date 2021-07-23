@@ -7,8 +7,8 @@
 
 Add tighter upper bounds on production based on ramp-down trajectory.
 Based on (28) in Pan and Guan (2016).
-But there is an extra time period covered using (40) of Kneuven et al. (2020).
-Eqns. (38), (40), (41) in Kneuven et al. (2020).
+But there is an extra time period covered using (40) of Knueven et al. (2020).
+Eqns. (38), (40), (41) in Knueven et al. (2020).
 
 Variables
 ---
@@ -63,14 +63,14 @@ function _add_ramp_eqs!(
         end
 
         #TRD = floor((Pbar - SU) / RD) # ramp down time
-        # TODO check amk changed TRD wrt Kneuven et al.
+        # TODO check amk changed TRD wrt Knueven et al.
         TRD = ceil((Pbar - SD) / RD)  # ramp down time
         TRU = floor((Pbar - SU) / RU) # ramp up time, can be negative if Pbar < SU
 
         # TODO check initial time periods: what if generator has been running for x periods?
         # But maybe ok as long as (35) and (36) are also used...
         if UT > 1
-            # Equation (38) in Kneuven et al. (2020)
+            # Equation (38) in Knueven et al. (2020)
             # Generalization of (20)
             # Necessary that if any of the switch_on = 1 in the sum,
             # then switch_off[gn, t+1] = 0
@@ -87,7 +87,7 @@ function _add_ramp_eqs!(
             )
 
             if UT - 2 < TRU
-                # Equation (40) in Kneuven et al. (2020)
+                # Equation (40) in Knueven et al. (2020)
                 # Covers an additional time period of the ramp-up trajectory, compared to (38)
                 eq_prod_limit_ramp_up_extra_period[gn, t] = @constraint(
                     model,
@@ -105,7 +105,7 @@ function _add_ramp_eqs!(
             KSD = min(TRD, UT - 1, T - t - 1)
             if KSD > 0
                 KSU = min(TRU, UT - 2 - KSD, t - 1)
-                # Equation (41) in Kneuven et al. (2020)
+                # Equation (41) in Knueven et al. (2020)
                 eq_prod_limit_shutdown_trajectory[gn, t] = @constraint(
                     model,
                     prod_above[gn, t] +

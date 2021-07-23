@@ -14,6 +14,16 @@ module CarArr2006
 
 import ..PiecewiseLinearCostsFormulation
 
+"""
+Based on Garver (1962) and Carrión and Arryo (2006),
+which replaces (42) in Knueven et al. (2020) with a weaker version missing the on/off variable.
+Equations (45), (43), (44) in Knueven et al. (2020).
+
+Constraints
+---
+* `eq_prod_above_def`: Equation (43) in Knueven et al. (2020)
+* `eq_segprod_limit`: Equation (45) in Knueven et al. (2020)
+"""
 struct PwlCosts <: PiecewiseLinearCostsFormulation end
 
 end

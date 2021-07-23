@@ -7,7 +7,7 @@
 
 Ensure constraints on ramping are met.
 Based on Damcı-Kurt et al. (2016).
-Eqns. (35), (36) in Kneuven et al. (2020).
+Eqns. (35), (36) in Knueven et al. (2020).
 
 Variables
 ---
@@ -78,7 +78,7 @@ function _add_ramp_eqs!(
         if t > 1 && time_invariant
             min_prod_last_period = prod_above[gn, t-1]
 
-            # Equation (35) in Kneuven et al. (2020)
+            # Equation (35) in Knueven et al. (2020)
             # Sparser version of (24)
             eq_str_ramp_up[gn, t] = @constraint(
                 model,
@@ -98,7 +98,7 @@ function _add_ramp_eqs!(
             # (instead of using the amount above minimum, as min prod for t < 1 is unknown)
             max_prod_this_period += g.min_power[t] * is_on[gn, t]
 
-            # Modified version of equation (35) in Kneuven et al. (2020)
+            # Modified version of equation (35) in Knueven et al. (2020)
             # Equivalent to (24)
             eq_str_ramp_up[gn, t] = @constraint(
                 model,
@@ -121,7 +121,7 @@ function _add_ramp_eqs!(
         end
 
         if t > 1 && time_invariant
-            # Equation (36) in Kneuven et al. (2020)
+            # Equation (36) in Knueven et al. (2020)
             eq_str_ramp_down[gn, t] = @constraint(
                 model,
                 max_prod_last_period - min_prod_this_period <=
@@ -132,7 +132,7 @@ function _add_ramp_eqs!(
             # Add back in min power
             min_prod_this_period += g.min_power[t] * is_on[gn, t]
 
-            # Modified version of equation (36) in Kneuven et al. (2020)
+            # Modified version of equation (36) in Knueven et al. (2020)
             # Equivalent to (25)
             eq_str_ramp_down[gn, t] = @constraint(
                 model,

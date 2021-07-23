@@ -7,7 +7,7 @@
 
 Ensure respect of production limits along each segment.
 Based on Garver (1962).
-Equations (42), (43), (44) in Kneuven et al. (2020).
+Equations (42), (43), (44) in Knueven et al. (2020).
 NB: when reading instance, UnitCommitment.jl already calculates difference between max power for segments k and k-1,
 so the value of cost_segments[k].mw[t] is the max production *for that segment*.
 
@@ -45,14 +45,14 @@ function _add_production_piecewise_linear_eqs!(
     K = length(g.cost_segments)
     for t in 1:model[:instance].time
         # Definition of production
-        # Equation (43) in Kneuven et al. (2020)
+        # Equation (43) in Knueven et al. (2020)
         eq_prod_above_def[gn, t] = @constraint(
             model,
             prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
         )
 
         for k in 1:K
-            # Equation (42) in Kneuven et al. (2020)
+            # Equation (42) in Knueven et al. (2020)
             # Without this, solvers will add a lot of implied bound cuts to
             # have this same effect.
             # NB: when reading instance, UnitCommitment.jl already calculates
@@ -69,7 +69,7 @@ function _add_production_piecewise_linear_eqs!(
             set_upper_bound(segprod[gn, t, k], g.cost_segments[k].mw[t])
 
             # Objective function
-            # Equation (44) in Kneuven et al. (2020)
+            # Equation (44) in Knueven et al. (2020)
             add_to_expression!(
                 model[:obj],
                 segprod[gn, t, k],

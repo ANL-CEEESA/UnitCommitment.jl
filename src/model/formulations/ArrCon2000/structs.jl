@@ -13,6 +13,12 @@ module ArrCon2000
 
 import ..RampingFormulation
 
+"""
+Constraints
+---
+* `eq_ramp_up`: Equation (24) in Knueven et al. (2020)
+* `eq_ramp_down`: Equation (25) in Knueven et al. (2020)
+"""
 struct Ramping <: RampingFormulation end
 
 end

@@ -3,24 +3,13 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 """
-    _add_ramp_eqs!
+    _add_ramp_eqs!(model, unit, formulation_prod_vars, formulation_ramping, formulation_status_vars)::Nothing
 
 Ensure constraints on ramping are met.
 Based on Arroyo and Conejo (2000).
-Eqns. (24), (25) in Kneuven et al. (2020).
+Eqns. (24), (25) in Knueven et al. (2020).
 
-Variables
----
-* :is_on
-* :switch_off
-* :switch_on
-* :prod_above
-* :reserve
-
-Constraints
----
-* :eq_ramp_up
-* :eq_ramp_down
+Adds constraints identified by `ArrCon200.Ramping` to `model` using variables `Gar1962.ProdVars` and `is_on` from `Gar1962.StatusVars`.
 """
 function _add_ramp_eqs!(
     model::JuMP.Model,
@@ -75,7 +64,7 @@ function _add_ramp_eqs!(
             min_prod_last_period =
                 g.min_power[t-1] * is_on[gn, t-1] + prod_above[gn, t-1]
 
-            # Equation (24) in Kneuven et al. (2020)
+            # Equation (24) in Knueven et al. (2020)
             eq_ramp_up[gn, t] = @constraint(
                 model,
                 max_prod_this_period - min_prod_last_period <=
@@ -106,7 +95,7 @@ function _add_ramp_eqs!(
             min_prod_this_period =
                 g.min_power[t] * is_on[gn, t] + prod_above[gn, t]
 
-            # Equation (25) in Kneuven et al. (2020)
+            # Equation (25) in Knueven et al. (2020)
             eq_ramp_down[gn, t] = @constraint(
                 model,
                 max_prod_last_period - min_prod_this_period <=

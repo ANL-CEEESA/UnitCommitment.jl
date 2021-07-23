@@ -8,7 +8,7 @@
 Extended formulation of startup costs using indicator variables
 based on Muckstadt and Wilson, 1968;
 this version by Morales-España, Latorre, and Ramos, 2013.
-Eqns. (54), (55), and (56) in Kneuven et al. (2020).
+Eqns. (54), (55), and (56) in Knueven et al. (2020).
 Note that the last 'constraint' is actually setting the objective.
 
 \tstartup[gi,s,t] ≤ sum_{i=s.delay}^{(s+1).delay-1} switch_off[gi,t-i]
@@ -48,7 +48,7 @@ function _add_startup_cost_eqs!(
     gn = g.name
     for t in 1:model[:instance].time
         # If unit is switching on, we must choose a startup category
-        # Equation (55) in Kneuven et al. (2020)
+        # Equation (55) in Knueven et al. (2020)
         eq_startup_choose[gn, t] = @constraint(
             model,
             switch_on[gn, t] == sum(startup[gn, t, s] for s in 1:S)
@@ -65,7 +65,7 @@ function _add_startup_cost_eqs!(
                 initial_sum = (
                     g.initial_status < 0 && (g.initial_status + 1 in range) ? 1.0 : 0.0
                 )
-                # Change of index version of equation (54) in Kneuven et al. (2020):
+                # Change of index version of equation (54) in Knueven et al. (2020):
                 #   startup[gi,s,t] ≤ sum_{i=s.delay}^{(s+1).delay-1} switch_off[gi,t-i]
                 eq_startup_restrict[gn, t, s] = @constraint(
                     model,
@@ -76,7 +76,7 @@ function _add_startup_cost_eqs!(
             end # if s < S (not the last category)
 
             # Objective function terms for start-up costs
-            # Equation (56) in Kneuven et al. (2020)
+            # Equation (56) in Knueven et al. (2020)
             add_to_expression!(
                 model[:obj],
                 startup[gn, t, s],

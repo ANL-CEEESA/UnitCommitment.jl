@@ -6,9 +6,9 @@
     _add_ramp_eqs!
 
 Ensure constraints on ramping are met.
-Needs to be used in combination with shutdown rate constraints, e.g., (21b) in Kneuven et al. (2020).
+Needs to be used in combination with shutdown rate constraints, e.g., (21b) in Knueven et al. (2020).
 Based on Morales-España, Latorre, and Ramos, 2013.
-Eqns. (26)+(27) [replaced by (24)+(25) if time-varying min demand] in Kneuven et al. (2020).
+Eqns. (26)+(27) [replaced by (24)+(25) if time-varying min demand] in Knueven et al. (2020).
 
 Variables
 ---
@@ -92,7 +92,7 @@ function _add_ramp_eqs!(
                     RU * is_on[gn, t-1] + SU * switch_on[gn, t]
                 )
             else
-                # Equation (26) in Kneuven et al. (2020)
+                # Equation (26) in Knueven et al. (2020)
                 # TODO: what if RU < SU? places too stringent upper bound
                 # prod_above[gn, t] when starting up, and creates diff with (24).
                 eq_ramp_up[gn, t] = @constraint(
@@ -136,7 +136,7 @@ function _add_ramp_eqs!(
                     RD * is_on[gn, t] + SD * switch_off[gn, t]
                 )
             else
-                # Equation (27) in Kneuven et al. (2020)
+                # Equation (27) in Knueven et al. (2020)
                 # TODO: Similar to above, what to do if shutting down in time t
                 # and RD < SD? There is a difference with (25).
                 eq_ramp_down[gn, t] = @constraint(

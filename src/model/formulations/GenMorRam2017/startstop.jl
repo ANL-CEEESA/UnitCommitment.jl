@@ -6,23 +6,21 @@
     _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
 Startup and shutdown limits from Gentile et al. (2017).
-Eqns. (20), (23a), and (23b) in Kneuven et al. (2020).
+Eqns. (20), (23a), and (23b) in Knueven et al. (2020).
 
-Variables
----
-* :is_on
-* :prod_above
-* :reserve
-* :switch_on
-* :switch_off
+Creates constraints `eq_startstop_limit`,  `eq_startup_limit`, and `eq_shutdown_limit`
+using variables `Gar1962.StatusVars`, `prod_above` from `Gar1962.ProdVars`, and `reserve`.
 
 Constraints
 ---
-* :eq_startstop_limit
-* :eq_startup_limit
-* :eq_shutdown_limit
+* `eq_startstop_limit`
+* `eq_startup_limit`
+* `eq_shutdown_limit`
 """
-function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_startup_shutdown_limit_eqs!(
+    model::JuMP.Model, 
+    g::Unit,
+    formulation_status_vars::Gar1962.StatusVars)::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
     RESERVES_WHEN_RAMP_UP = true
@@ -44,14 +42,19 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
     if g.initial_power > g.shutdown_limit
         #eqs.shutdown_limit[gi, 0] = @constraint(mip, vars.switch_off[gi, 1] <= 0)
-        fix(switch_off[gi, 1], 0.0; force = true)
+        if formulation_status_vars.always_create_vars
+            fix(switch_off[gi, 1], 0.0; force = true)
+            @constraint(mip, vars.switch_off[gi, 1] <= 0)
+        else
+            switch_off[gi, 1] = 0.0
+        end
     end
 
     for t in 1:T
         ## 2020-10-09 amk: added eqn (20) and check of g.min_uptime
         # Not present in (23) in Kneueven et al.
         if g.min_uptime > 1
-            # Equation (20) in Kneuven et al. (2020)
+            # Equation (20) in Knueven et al. (2020)
             eqs.startstop_limit[gi, t] = @constraint(
                 model,
                 prod_above[gi, t] + reserve[gi, t] <=
@@ -64,7 +67,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
             )
         else
             ## Startup limits
-            # Equation (23a) in Kneuven et al. (2020)
+            # Equation (23a) in Knueven et al. (2020)
             eqs.startup_limit[gi, t] = @constraint(
                 model,
                 prod_above[gi, t] + reserve[gi, t] <=
@@ -78,7 +81,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
             ## Shutdown limits
             if t < T
-                # Equation (23b) in Kneuven et al. (2020)
+                # Equation (23b) in Knueven et al. (2020)
                 eqs.shutdown_limit[gi, t] = @constraint(
                     model,
                     prod_above[gi, t] + reserve[gi, t] <=
@@ -91,6 +94,6 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
                     switch_on[gi, t]
                 )
             end
-        end # check if g.min_uptime > 1
-    end # loop over time
-end # _add_startup_shutdown_limit_eqs!
+        end
+    end
+end

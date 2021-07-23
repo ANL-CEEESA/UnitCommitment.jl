@@ -5,7 +5,7 @@
 """
     _add_system_wide_eqs!(model::JuMP.Model)::Nothing
 
-Calls `_add_net_injection_eqs!` and `add_reserve_eqs!`.
+Adds constraints that apply to the whole system, such as relating to net injection and reserves.
 """
 function _add_system_wide_eqs!(model::JuMP.Model)::Nothing
     _add_net_injection_eqs!(model)
@@ -20,13 +20,13 @@ Adds `net_injection`, `eq_net_injection_def`, and `eq_power_balance` identifiers
 
 Variables
 ---
-* expr_net_injection
-* net_injection
+* `expr_net_injection`
+* `net_injection`
 
 Constraints
 ---
-* eq_net_injection_def
-* eq_power_balance
+* `eq_net_injection_def`
+* `eq_power_balance`
 """
 function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
     T = model[:instance].time
@@ -52,24 +52,24 @@ end
 
 Ensure constraints on reserves are met.
 Based on Morales-España et al. (2013a).
-Eqn. (68) from Kneuven et al. (2020).
+Eqn. (68) from Knueven et al. (2020).
 
 Adds `eq_min_reserve` identifier to `model`, and corresponding constraint.
 
 Variables
 ---
-* reserve
-* reserve_shortfall
+* `reserve`
+* `reserve_shortfall`
 
 Constraints
 ---
-* eq_min_reserve
+* `eq_min_reserve`
 """
 function _add_reserve_eqs!(model::JuMP.Model)::Nothing
     instance = model[:instance]
     eq_min_reserve = _init(model, :eq_min_reserve)
     for t in 1:instance.time
-        # Equation (68) in Kneuven et al. (2020)
+        # Equation (68) in Knueven et al. (2020)
         # As in Morales-España et al. (2013a)
         # Akin to the alternative formulation with max_power_avail
         # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)

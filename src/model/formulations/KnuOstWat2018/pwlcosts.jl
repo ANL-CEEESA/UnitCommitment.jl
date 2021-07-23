@@ -6,8 +6,8 @@
     _add_production_piecewise_linear_eqs!
 
 Ensure respect of production limits along each segment.
-Based on Kneuven et al. (2018b).
-Eqns. (43), (44), (46), (48) in Kneuven et al. (2020).
+Based on Knueven et al. (2018b).
+Eqns. (43), (44), (46), (48) in Knueven et al. (2020).
 NB: when reading instance, UnitCommitment.jl already calculates difference between max power for segments k and k-1
 so the value of cost_segments[k].mw[t] is the max production *for that segment*.
 
@@ -81,7 +81,7 @@ function _add_production_piecewise_linear_eqs!(
             end
 
             if g.min_uptime > 1
-                # Equation (46) in Kneuven et al. (2020)
+                # Equation (46) in Knueven et al. (2020)
                 eq_segprod_limit_a[gn, t, k] = @constraint(
                     model,
                     segprod[gn, t, k] <=
@@ -90,7 +90,7 @@ function _add_production_piecewise_linear_eqs!(
                     (t < T ? Cw * switch_off[gn, t+1] : 0.0)
                 )
             else
-                # Equation (47a)/(48a) in Kneuven et al. (2020)
+                # Equation (47a)/(48a) in Knueven et al. (2020)
                 eq_segprod_limit_b[gn, t, k] = @constraint(
                     model,
                     segprod[gn, t, k] <=
@@ -99,7 +99,7 @@ function _add_production_piecewise_linear_eqs!(
                     (t < T ? max(0, Cv - Cw) * switch_off[gn, t+1] : 0.0)
                 )
 
-                # Equation (47b)/(48b) in Kneuven et al. (2020)
+                # Equation (47b)/(48b) in Knueven et al. (2020)
                 eq_segprod_limit_c[gn, t, k] = @constraint(
                     model,
                     segprod[gn, t, k] <=
@@ -110,14 +110,14 @@ function _add_production_piecewise_linear_eqs!(
             end
 
             # Definition of production
-            # Equation (43) in Kneuven et al. (2020)
+            # Equation (43) in Knueven et al. (2020)
             eq_prod_above_def[gn, t] = @constraint(
                 model,
                 prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
             )
 
             # Objective function
-            # Equation (44) in Kneuven et al. (2020)
+            # Equation (44) in Knueven et al. (2020)
             add_to_expression!(
                 model[:obj],
                 segprod[gn, t, k],

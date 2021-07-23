@@ -2,6 +2,11 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_bus!(model::JuMP.Model, b::Bus)::Nothing
+
+Creates `expr_net_injection` and adds `curtail` variable to `model`.
+"""
 function _add_bus!(model::JuMP.Model, b::Bus)::Nothing
     net_injection = _init(model, :expr_net_injection)
     curtail = _init(model, :curtail)

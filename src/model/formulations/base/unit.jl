@@ -159,11 +159,11 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 end
 
 """
-    _add_shutdown_cost_eqs!
+    _add_shutdown_cost_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
 Variables
 ---
-* :switch_off
+* `switch_off`
 """
 function _add_shutdown_cost_eqs!(model::JuMP.Model, g::Unit)::Nothing
     T = model[:instance].time
@@ -171,7 +171,7 @@ function _add_shutdown_cost_eqs!(model::JuMP.Model, g::Unit)::Nothing
     for t in 1:T
         shutdown_cost = 0.0
         if shutdown_cost > 1e-7
-            # Equation (62) in Kneuven et al. (2020)
+            # Equation (62) in Knueven et al. (2020)
             add_to_expression!(
                 model[:obj],
                 model[:switch_off][gi, t],
@@ -179,7 +179,7 @@ function _add_shutdown_cost_eqs!(model::JuMP.Model, g::Unit)::Nothing
             )
         end
     end # loop over time
-end # _add_shutdown_cost_eqs!
+end
 
 """
     _add_ramp_eqs!(model, unit, formulation)
@@ -235,20 +235,19 @@ end
 
 Ensure constraints on up/down time are met.
 Based on Garver (1962), Malkin (2003), and Rajan and Takritti (2005).
-Eqns. (3), (4), (5) in Kneuven et al. (2020).
+Eqns. (3), (4), (5) in Knueven et al. (2020).
 
 Variables
 ---
-* :is_on
-* :switch_off
-* :switch_on
+* `is_on`
+* `switch_off`
+* `switch_on`
 
 
 Constraints
 ---
-* :eq_min_uptime
-* :eq_min_downtime
-
+* `eq_min_uptime`
+* `eq_min_downtime`
 """
 function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     is_on = model[:is_on]
@@ -259,14 +258,14 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     T = model[:instance].time
     for t in 1:T
         # Minimum up-time
-        # Equation (4) in Kneuven et al. (2020)
+        # Equation (4) in Knueven et al. (2020)
         eq_min_uptime[g.name, t] = @constraint(
             model,
             sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <= is_on[g.name, t]
         )
 
         # Minimum down-time
-        # Equation (5) in Kneuven et al. (2020)
+        # Equation (5) in Knueven et al. (2020)
         eq_min_downtime[g.name, t] = @constraint(
             model,
             sum(
@@ -275,7 +274,7 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
         )
 
         # Minimum up/down-time for initial periods
-        # Equations (3a) and (3b) in Kneuven et al. (2020)
+        # Equations (3a) and (3b) in Knueven et al. (2020)
         # (using :switch_on and :switch_off instead of :is_on)
         if t == 1
             if g.initial_status > 0

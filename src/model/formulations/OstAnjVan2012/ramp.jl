@@ -7,7 +7,7 @@
 
 Ensure constraints on ramping are met.
 Based on Ostrowski, Anjos, Vannelli (2012).
-Eqn (37) in Kneuven et al. (2020).
+Eqn (37) in Knueven et al. (2020).
 
 Variables
 ---
@@ -59,7 +59,7 @@ function _add_ramp_eqs!(
         Pbar = g.max_power[t]
 
         #TRD = floor((Pbar - SU)/RD)
-        # TODO check amk changed TRD wrt Kneuven et al.
+        # TODO check amk changed TRD wrt Knueven et al.
         TRD = ceil((Pbar - SD) / RD) # ramp down time
 
         if Pbar < 1e-7
@@ -68,7 +68,7 @@ function _add_ramp_eqs!(
         end
 
         if UT >= 1
-            # Equation (37) in Kneuven et al. (2020)
+            # Equation (37) in Knueven et al. (2020)
             KSD = min(TRD, UT - 1, T - t - 1)
             eq_str_prod_limit[gn, t] = @constraint(
                 model,
