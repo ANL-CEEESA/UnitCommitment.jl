@@ -17,6 +17,7 @@ function _add_status_vars!(
     switch_on = _init(model, :switch_on)
     switch_off = _init(model, :switch_off)
     FIX_VARS = !formulation_status_vars.fix_vars_via_constraint
+    is_initially_on = _is_initially_on(g) > 0
     for t in 1:model[:instance].time
         is_on[g.name, t] = @variable(model, binary = true)
         switch_on[g.name, t] = @variable(model, binary = true)
@@ -37,7 +38,7 @@ function _add_status_vars!(
                 )
                 fix(switch_off[g.name, t], 0.0; force = true)
             elseif t == 1
-                if _is_initially_on(g)
+                if is_initially_on
                     # Generator was on (for g.initial_status time periods),
                     # so cannot be more switched on until the period after the first time it can be turned off
                     fix(switch_on[g.name, 1], 0.0; force = true)
@@ -55,7 +56,7 @@ function _add_status_vars!(
                     (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
                 switch_off[g.name, t] = 0.0
             elseif t == 1
-                if _is_initially_on(g)
+                if is_initially_on
                     switch_on[g.name, t] = 0.0
                 else
                     switch_off[g.name, t] = 0.0
