@@ -18,9 +18,10 @@ Constraints
 * `eq_shutdown_limit`
 """
 function _add_startup_shutdown_limit_eqs!(
-    model::JuMP.Model, 
+    model::JuMP.Model,
     g::Unit,
-    formulation_status_vars::Gar1962.StatusVars)::Nothing
+    formulation_status_vars::Gar1962.StatusVars,
+)::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
     RESERVES_WHEN_RAMP_UP = true
