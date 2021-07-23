@@ -20,8 +20,14 @@ if ENABLE_LARGE_TESTS
 end
 
 function _small_test(formulation::Formulation)::Nothing
-    instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
-    UnitCommitment.build_model(instance = instance, formulation = formulation)  # should not crash
+    instances = ["matpower/case118/2017-02-01", "test/case14"]
+    for instance in instances
+        # Should not crash
+        UnitCommitment.build_model(
+            instance = UnitCommitment.read_benchmark(instance),
+            formulation = formulation,
+        )
+    end
     return
 end
 

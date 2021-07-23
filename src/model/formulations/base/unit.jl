@@ -44,12 +44,16 @@ _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
 function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
     reserve = _init(model, :reserve)
+    reserve_shortfall = _init(model, :reserve_shortfall)
     for t in 1:model[:instance].time
         if g.provides_spinning_reserves[t]
             reserve[g.name, t] = @variable(model, lower_bound = 0)
         else
             reserve[g.name, t] = 0.0
         end
+        reserve_shortfall[t] =
+            (model[:instance].shortfall_penalty[t] >= 0) ?
+            @variable(model, lower_bound = 0) : 0.0
     end
     return
 end
@@ -209,12 +213,6 @@ function _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
             expr_net_injection[g.bus.name, t],
             model[:is_on][g.name, t],
             g.min_power[t],
-        )
-        # Add to reserves expression
-        add_to_expression!(
-            model[:expr_reserve][g.bus.name, t],
-            model[:reserve][g.name, t],
-            1.0,
         )
     end
 end
