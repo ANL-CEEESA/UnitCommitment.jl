@@ -70,7 +70,7 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
     eq_min_reserve = _init(model, :eq_min_reserve)
     instance = model[:instance]
     for t in 1:instance.time
-        # Equation (68) in Kneuven et al. (2020)
+        # Equation (68) in Knueven et al. (2020)
         # As in Morales-España et al. (2013a)
         # Akin to the alternative formulation with max_power_avail
         # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)

@@ -12,7 +12,6 @@ function _add_status_vars!(
     model::JuMP.Model,
     g::Unit,
     formulation_status_vars::Gar1962.StatusVars,
-    ALWAYS_CREATE_VARS = false
 )::Nothing
     is_on = _init(model, :is_on)
     switch_on = _init(model, :switch_on)
@@ -65,9 +64,17 @@ function _add_status_vars!(
             end
         end
 
-        if ALWAYS_CREATE_VARS
-            # If variables are created, use initial conditions to fix some values
-            if t == 1
+        # Use initial conditions and whether a unit must run to fix variables
+        if FIX_VARS
+            # Fix variables using fix function
+            if g.must_run[t]
+                # If the generator _must_ run, then it is obviously on and cannot be switched off
+                # In the first time period, force unit to switch on if was off before
+                # Otherwise, unit is on, and will never turn off, so will never need to turn on
+                fix(is_on[g.name, t], 1.0; force = true)
+                fix(switch_on[g.name, t], (t == 1 ? 1.0 - _is_initially_on(g) : 0.0); force = true)
+                fix(switch_off[g.name, t], 0.0; force = true)
+            elseif t == 1
                 if _is_initially_on(g)
                     # Generator was on (for g.initial_status time periods),
                     # so cannot be more switched on until the period after the first time it can be turned off
@@ -78,30 +85,20 @@ function _add_status_vars!(
                     fix(switch_off[g.name, 1], 0.0; force = true)
                 end
             end
-
-            if g.must_run[t] 
-                # If the generator _must_ run, then it is obviously on and cannot be switched off
-                # In the first time period, force unit to switch on if was off before
-                # Otherwise, unit is on, and will never turn off, so will never need to turn on
-                fix(is_on[g.name, t], 1.0; force = true)
-                fix(switch_on[g.name, t], (t == 1 ? 1.0 - _is_initially_on(g) : 0.0); force = true)
-                fix(switch_off[g.name, t], 0.0; force = true)
-            end
         else
-            # If vars are not created, then replace them by a constant
-            if t == 1
+            # Add explicit constraint if !FIX_VARS
+            if g.must_run[t]
+                is_on[g.name, t] = 1.0
+                switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
+                switch_off[g.name, t] = 0.0
+            elseif t == 1
                 if _is_initially_on(g)
                     switch_on[g.name, t] = 0.0
                 else
                     switch_off[g.name, t] = 0.0
                 end
             end
-            if g.must_run[t]
-                is_on[g.name, t] = 1.0
-                switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
-                switch_off[g.name, t] = 0.0
-            end
-        end # check if ALWAYS_CREATE_VARS
+        end
     end
     return
 end
