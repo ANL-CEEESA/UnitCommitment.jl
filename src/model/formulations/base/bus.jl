@@ -14,9 +14,6 @@ function _add_bus!(model::JuMP.Model, b::Bus)::Nothing
         # Fixed load
         net_injection[b.name, t] = AffExpr(-b.load[t])
 
-        # Reserves
-        reserve[b.name, t] = AffExpr()
-
         # Load curtailment
         curtail[b.name, t] =
             @variable(model, lower_bound = 0, upper_bound = b.load[t])
