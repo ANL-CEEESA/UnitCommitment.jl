@@ -46,7 +46,7 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
         # Account for shortfall contribution to objective
         if shortfall_penalty >= 0
             add_to_expression!(
-                model.obj,
+                model[:obj],
                 shortfall_penalty,
                 model[:reserve_shortfall][t],
             )
