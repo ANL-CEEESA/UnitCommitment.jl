@@ -50,10 +50,7 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
                 shortfall_penalty,
                 model[:reserve_shortfall][t],
             )
-        else
-            # Not added to the model at all
-            #fix(model.vars.reserve_shortfall[t], 0.; force=true)
         end
-    end # loop over time
+    end
     return
 end
