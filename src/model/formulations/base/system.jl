@@ -39,12 +39,12 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
         eq_min_reserve[t] = @constraint(
             model,
             sum(model[:reserve][g.name, t] for g in instance.units) + (
-                shortfall_penalty > -1e-7 ? model[:reserve_shortfall][t] : 0.0
+                shortfall_penalty >= 0 ? model[:reserve_shortfall][t] : 0.0
             ) >= instance.reserves.spinning[t]
         )
 
         # Account for shortfall contribution to objective
-        if shortfall_penalty > -1e-7
+        if shortfall_penalty >= 0
             add_to_expression!(
                 model.obj,
                 shortfall_penalty,
