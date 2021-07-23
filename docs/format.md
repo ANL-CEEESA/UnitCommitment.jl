@@ -35,7 +35,7 @@ This section describes system-wide parameters, such as power balance and reserve
 | `Time horizon (h)` | Length of the planning horizon (in hours). | Required | N
 | `Time step (min)` | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc). | `60` | N
 | `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged. | `1000.0` | Y
-| `Reserve shortfall penalty (\$/MW)` | Penalty for system-wide shortage in meeting reserve requirements (in $/MW). This is charged per time step. Negative value implies no penalty. | `-1` | Y
+| `Reserve shortfall penalty (\$/MW)` | Penalty for system-wide shortage in meeting reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1` | Y
 
 
 #### Example
