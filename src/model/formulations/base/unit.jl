@@ -51,6 +51,9 @@ function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
         else
             reserve[g.name, t] = 0.0
         end
+        reserve_shortfall[t] =
+            (model[:instance].shortfall_penalty[t] >= 0) ?
+            @variable(model, lower_bound = 0) : 0.0
     end
     return
 end
