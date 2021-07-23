@@ -29,13 +29,31 @@ end
 
 function _add_reserve_eqs!(model::JuMP.Model)::Nothing
     eq_min_reserve = _init(model, :eq_min_reserve)
-    for t in 1:model[:instance].time
+    instance = model[:instance]
+    for t in 1:instance.time
+        # Equation (68) in Kneuven et al. (2020)
+        # As in Morales-España et al. (2013a)
+        # Akin to the alternative formulation with max_power_avail
+        # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
+        shortfall_penalty = instance.shortfall_penalty[t]
         eq_min_reserve[t] = @constraint(
             model,
-            sum(
-                model[:expr_reserve][b.name, t] for b in model[:instance].buses
-            ) >= model[:instance].reserves.spinning[t]
+            sum(model[:reserve][g.name, t] for g in instance.units) + (
+                shortfall_penalty > 1e-7 ? model[:reserve_shortfall][t] : 0.0
+            ) >= instance.reserves.spinning[t]
         )
-    end
+
+        # Account for shortfall contribution to objective
+        if shortfall_penalty > 1e-7
+            add_to_expression!(
+                model.obj,
+                shortfall_penalty,
+                model[:reserve_shortfall][t],
+            )
+        else
+            # Not added to the model at all
+            #fix(model.vars.reserve_shortfall[t], 0.; force=true)
+        end
+    end # loop over time
     return
 end

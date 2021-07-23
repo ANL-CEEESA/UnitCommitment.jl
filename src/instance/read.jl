@@ -98,6 +98,10 @@ function _from_json(json; repair = true)
         json["Parameters"]["Power balance penalty (\$/MW)"],
         default = [1000.0 for t in 1:T],
     )
+    shortfall_penalty = timeseries(
+        json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
+        default = [0.0 for t in 1:T],
+    )
 
     # Read buses
     for (bus_name, dict) in json["Buses"]
@@ -264,6 +268,7 @@ function _from_json(json; repair = true)
     instance = UnitCommitmentInstance(
         T,
         power_balance_penalty,
+        shortfall_penalty,
         units,
         buses,
         lines,

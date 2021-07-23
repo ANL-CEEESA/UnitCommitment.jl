@@ -4,14 +4,10 @@
 
 function _add_bus!(model::JuMP.Model, b::Bus)::Nothing
     net_injection = _init(model, :expr_net_injection)
-    reserve = _init(model, :expr_reserve)
     curtail = _init(model, :curtail)
     for t in 1:model[:instance].time
         # Fixed load
         net_injection[b.name, t] = AffExpr(-b.load[t])
-
-        # Reserves
-        reserve[b.name, t] = AffExpr()
 
         # Load curtailment
         curtail[b.name, t] =

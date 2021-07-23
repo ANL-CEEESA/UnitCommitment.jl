@@ -72,6 +72,8 @@ end
 mutable struct UnitCommitmentInstance
     time::Int
     power_balance_penalty::Vector{Float64}
+    "Penalty for failing to meet reserve requirement."
+    shortfall_penalty::Vector{Float64}
     units::Vector{Unit}
     buses::Vector{Bus}
     lines::Vector{TransmissionLine}
