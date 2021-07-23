@@ -324,11 +324,13 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
         # Verify spinning reserves
         reserve =
             sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
-        if reserve < instance.reserves.spinning[t] - tol
+        reserve_shortfall = solution["Reserve shortfall (MW)"][t]
+        if reserve + reserve_shortfall < instance.reserves.spinning[t] - tol
             @error @sprintf(
-                "Insufficient spinning reserves at time %d (%.2f should be %.2f)",
+                "Insufficient spinning reserves at time %d (%.2f + %.2f should be %.2f)",
                 t,
                 reserve,
+                reserve_shortfall,
                 instance.reserves.spinning[t],
             )
             err_count += 1
