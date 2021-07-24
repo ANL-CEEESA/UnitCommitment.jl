@@ -247,10 +247,6 @@ Variables
 * `is_on`
 * `switch_off`
 * `switch_on`
-<<<<<<< HEAD
-=======
-
->>>>>>> c8bf25f (Documented reserve shortfall, soved comments on variables/constraints to structs.jl files, simplified loops, removed extra comments, started replacement of constant-subsitution with @constraint (with option to use fix).)
 
 Constraints
 ---
