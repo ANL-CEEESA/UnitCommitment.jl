@@ -2,7 +2,7 @@ name = "UnitCommitment"
 uuid = "64606440-39ea-11e9-0f29-3303a1d3d877"
 authors = ["Santos Xavier, Alinson <axavier@anl.gov>"]
 repo = "https://github.com/ANL-CEEESA/UnitCommitment.jl"
-version = "0.2.2"
+version = "0.2.3"
 
 [deps]
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"

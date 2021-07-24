@@ -51,9 +51,12 @@ function solution(model::JuMP.Model)::OrderedDict
     sol["Switch on"] = timeseries(model[:switch_on], instance.units)
     sol["Switch off"] = timeseries(model[:switch_off], instance.units)
     sol["Reserve (MW)"] = timeseries(model[:reserve], instance.units)
-    sol["Reserve shortfall (MW)"] =
-        (model[:instance].shortfall_penalty[t] >= 0) ?
-        model[:reserve_shortfall] : [0 for t in 1:T]
+    sol["Reserve shortfall (MW)"] = OrderedDict(
+        t =>
+            (instance.shortfall_penalty[t] >= 0) ?
+            round(value(model[:reserve_shortfall][t]), digits = 5) : 0.0 for
+        t in 1:instance.time
+    )
     sol["Net injection (MW)"] =
         timeseries(model[:net_injection], instance.buses)
     sol["Load curtail (MW)"] = timeseries(model[:curtail], instance.buses)
