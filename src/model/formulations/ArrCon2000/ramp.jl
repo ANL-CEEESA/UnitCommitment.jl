@@ -40,10 +40,12 @@ function _add_ramp_eqs!(
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
 
+    is_initially_on = _is_initially_on(g) > 0
+
     for t in 1:model[:instance].time
         # Ramp up limit
         if t == 1
-            if _is_initially_on(g)
+            if is_initially_on
                 # min power is _not_ multiplied by is_on because if !is_on, then ramp up is irrelevant
                 eq_ramp_up[gn, t] = @constraint(
                     model,
@@ -74,7 +76,7 @@ function _add_ramp_eqs!(
 
         # Ramp down limit
         if t == 1
-            if _is_initially_on(g)
+            if is_initially_on
                 # TODO If RD < SD, or more specifically if
                 #      min_power + RD < initial_power < SD
                 #      then the generator should be able to shut down at time t = 1,

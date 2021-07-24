@@ -45,7 +45,7 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     )
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
     _add_shutdown_cost_eqs!(model, g)
-    _add_startup_shutdown_limit_eqs!(model, g)
+    _add_startup_shutdown_limit_eqs!(model, g, formulation.status_vars, formulation.prod_vars)
     _add_status_eqs!(model, g, formulation.status_vars)
     return
 end
@@ -105,27 +105,28 @@ end
 """
     _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
 
-Variables
----
-* :is_on
-* :prod_above
-* :reserve
-* :switch_on
-* :switch_off
+Creates startup/shutdown limit constraints below based on variables `Gar1962.StatusVars`, `prod_above` from `Gar1962.ProdVars`, and `reserve`.
 
 Constraints
 ---
 * :eq_startup_limit
 * :eq_shutdown_limit
 """
-function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_startup_shutdown_limit_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation_status_vars::Gar1962.StatusVars,
+    formulation_prod_vars::Gar1962.ProdVars
+)::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
+
     is_on = model[:is_on]
-    prod_above = model[:prod_above]
-    reserve = model[:reserve]
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
+    prod_above = model[:prod_above]
+    reserve = model[:reserve]
+
     T = model[:instance].time
     for t in 1:T
         # Startup limit
@@ -140,10 +141,11 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
             # TODO check what happens with these variables when exporting the model
             # Generator producing too much to be turned off in the first time period
             # (can a binary variable have bounds x = 0?)
-            #eqs.shutdown_limit[gi, 0] = @constraint(mip, vars.switch_off[gi, 1] <= 0)
-            fix(model.vars.switch_off[gi, 1], 0.0; force = true)
-            #eq_shutdown_limit[g.name, 0] =
-            #@constraint(model, switch_off[g.name, 1] <= 0)
+            if formulation_status_vars.fix_vars_via_constraint
+                eq_shutdown_limit[g.name, 0] = @constraint(model, model[:switch_off][g.name, 1] <= 0.0)
+            else
+                fix(model[:switch_off][g.name, 1], 0.0; force = true)
+            end
         end
         if t < T
             eq_shutdown_limit[g.name, t] = @constraint(
@@ -242,7 +244,6 @@ Variables
 * `is_on`
 * `switch_off`
 * `switch_on`
-
 
 Constraints
 ---
