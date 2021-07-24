@@ -324,7 +324,8 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
         # Verify spinning reserves
         reserve =
             sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
-        reserve_shortfall = (instance.shortfall_penalty[t] >= 0) ?
+        reserve_shortfall =
+            (instance.shortfall_penalty[t] >= 0) ?
             solution["Reserve shortfall (MW)"][t] : 0
 
         if reserve + reserve_shortfall < instance.reserves.spinning[t] - tol
