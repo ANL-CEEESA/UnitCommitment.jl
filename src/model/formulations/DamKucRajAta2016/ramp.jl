@@ -35,7 +35,7 @@ function _add_ramp_eqs!(
     RESERVES_WHEN_RAMP_DOWN = true
     RESERVES_WHEN_SHUT_DOWN = true
     is_initially_on = _is_initially_on(g)
-    
+
     # The following are the same for generator g across all time periods
     SU = g.startup_limit   # startup rate
     SD = g.shutdown_limit  # shutdown rate

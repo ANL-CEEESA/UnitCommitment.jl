@@ -45,7 +45,12 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     )
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
     _add_shutdown_cost_eqs!(model, g)
-    _add_startup_shutdown_limit_eqs!(model, g, formulation.status_vars, formulation.prod_vars)
+    _add_startup_shutdown_limit_eqs!(
+        model,
+        g,
+        formulation.status_vars,
+        formulation.prod_vars,
+    )
     _add_status_eqs!(model, g, formulation.status_vars)
     return
 end
@@ -119,7 +124,7 @@ function _add_startup_shutdown_limit_eqs!(
     model::JuMP.Model,
     g::Unit,
     formulation_status_vars::Gar1962.StatusVars,
-    formulation_prod_vars::Gar1962.ProdVars
+    formulation_prod_vars::Gar1962.ProdVars,
 )::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
@@ -145,7 +150,8 @@ function _add_startup_shutdown_limit_eqs!(
             # Generator producing too much to be turned off in the first time period
             # (can a binary variable have bounds x = 0?)
             if formulation_status_vars.fix_vars_via_constraint
-                eq_shutdown_limit[g.name, 0] = @constraint(model, model[:switch_off][g.name, 1] <= 0.0)
+                eq_shutdown_limit[g.name, 0] =
+                    @constraint(model, model[:switch_off][g.name, 1] <= 0.0)
             else
                 fix(model[:switch_off][g.name, 1], 0.0; force = true)
             end
@@ -265,16 +271,16 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
         # Equation (4) in Knueven et al. (2020)
         eq_min_uptime[g.name, t] = @constraint(
             model,
-            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1)
-            <= is_on[g.name, t]
+            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <= is_on[g.name, t]
         )
 
         # Minimum down-time
         # Equation (5) in Knueven et al. (2020)
         eq_min_downtime[g.name, t] = @constraint(
             model,
-            sum(switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1)
-            <= 1 - is_on[g.name, t]
+            sum(
+                switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1
+            ) <= 1 - is_on[g.name, t]
         )
 
         # Minimum up/down-time for initial periods

@@ -72,7 +72,11 @@ function _add_status_vars!(
                 # In the first time period, force unit to switch on if was off before
                 # Otherwise, unit is on, and will never turn off, so will never need to turn on
                 fix(is_on[g.name, t], 1.0; force = true)
-                fix(switch_on[g.name, t], (t == 1 ? 1.0 - _is_initially_on(g) : 0.0); force = true)
+                fix(
+                    switch_on[g.name, t],
+                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0);
+                    force = true,
+                )
                 fix(switch_off[g.name, t], 0.0; force = true)
             elseif t == 1
                 if is_initially_on
@@ -89,7 +93,8 @@ function _add_status_vars!(
             # Add explicit constraint if !FIX_VARS
             if g.must_run[t]
                 is_on[g.name, t] = 1.0
-                switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
+                switch_on[g.name, t] =
+                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
                 switch_off[g.name, t] = 0.0
             elseif t == 1
                 if is_initially_on
