@@ -44,7 +44,6 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
         formulation.status_vars,
     )
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
-    _add_shutdown_cost_eqs!(model, g)
     _add_startup_shutdown_limit_eqs!(
         model,
         g,
