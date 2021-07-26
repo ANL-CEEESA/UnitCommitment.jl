@@ -2,6 +2,15 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
+
+Add production, reserve, startup, shutdown, and status variables,
+and constraints for min uptime/downtime, net injection, production, ramping, startup, shutdown, and status.
+
+Fix variables if a certain generator _must_ run or if a generator provides spinning reserves.
+Also, add overflow penalty to objective for each transmission line.
+"""
 function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
@@ -35,7 +44,13 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
         formulation.status_vars,
     )
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
-    _add_startup_shutdown_limit_eqs!(model, g)
+    _add_shutdown_cost_eqs!(model, g)
+    _add_startup_shutdown_limit_eqs!(
+        model,
+        g,
+        formulation.status_vars,
+        formulation.prod_vars,
+    )
     _add_status_eqs!(model, g, formulation.status_vars)
     return
 end
@@ -76,6 +91,16 @@ function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
+"""
+    _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
+
+Creates startup/shutdown limit constraints below based on variables `Gar1962.StatusVars`, `prod_above` from `Gar1962.ProdVars`, and `reserve`.
+
+Constraints
+---
+* :eq_startup_limit
+* :eq_shutdown_limit
+"""
 function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
