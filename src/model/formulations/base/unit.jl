@@ -95,8 +95,15 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
         )
         # Shutdown limit
         if g.initial_power > g.shutdown_limit
-            eq_shutdown_limit[g.name, 0] =
-                @constraint(model, switch_off[g.name, 1] <= 0)
+            # TODO check what happens with these variables when exporting the model
+            # Generator producing too much to be turned off in the first time period
+            # (can a binary variable have bounds x = 0?)
+            if formulation_status_vars.fix_vars_via_constraint
+                eq_shutdown_limit[g.name, 0] =
+                    @constraint(model, model[:switch_off][g.name, 1] <= 0.0)
+            else
+                fix(model[:switch_off][g.name, 1], 0.0; force = true)
+            end
         end
         if t < T
             eq_shutdown_limit[g.name, t] = @constraint(
