@@ -100,7 +100,12 @@ Constraints
 * :eq_startup_limit
 * :eq_shutdown_limit
 """
-function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_startup_shutdown_limit_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation_status_vars::Gar1962.StatusVars,
+    formulation_prod_vars::Gar1962.ProdVars,
+)::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
     is_on = model[:is_on]
