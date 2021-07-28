@@ -47,8 +47,8 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     _add_startup_shutdown_limit_eqs!(
         model,
         g,
-        formulation.status_vars,
         formulation.prod_vars,
+        formulation.status_vars,
     )
     _add_status_eqs!(model, g, formulation.status_vars)
     return
@@ -103,8 +103,8 @@ Constraints
 function _add_startup_shutdown_limit_eqs!(
     model::JuMP.Model,
     g::Unit,
-    formulation_status_vars::Gar1962.StatusVars,
     formulation_prod_vars::Gar1962.ProdVars,
+    formulation_status_vars::Gar1962.StatusVars,
 )::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
