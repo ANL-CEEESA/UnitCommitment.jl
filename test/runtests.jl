@@ -28,7 +28,9 @@ const ENABLE_LARGE_TESTS = ("UCJL_LARGE_TESTS" in keys(ENV))
     @testset "transform" begin
         include("transform/initcond_test.jl")
         include("transform/slice_test.jl")
-        include("transform/randomize_test.jl")
+        @testset "randomize" begin
+            include("transform/randomize/XavQiuAhm2021_test.jl")
+        end
     end
     @testset "validation" begin
         include("validation/repair_test.jl")
