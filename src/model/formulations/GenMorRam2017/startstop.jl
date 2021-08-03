@@ -43,7 +43,8 @@ function _add_startup_shutdown_limit_eqs!(
     gi = g.name
 
     if g.initial_power > g.shutdown_limit
-        eqs.shutdown_limit[gi, 0] = @constraint(mip, vars.switch_off[gi, 1] <= 0)
+        eqs.shutdown_limit[gi, 0] =
+            @constraint(mip, vars.switch_off[gi, 1] <= 0)
     end
 
     for t in 1:T
