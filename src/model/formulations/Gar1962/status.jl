@@ -2,12 +2,6 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-"""
-    _add_status_vars!
-
-Adds symbols identified by `Gar1962.StatusVars` to `model`.
-Fix variables if a certain generator _must_ run or based on initial conditions.
-"""
 function _add_status_vars!(
     model::JuMP.Model,
     g::Unit,
@@ -16,93 +10,15 @@ function _add_status_vars!(
     is_on = _init(model, :is_on)
     switch_on = _init(model, :switch_on)
     switch_off = _init(model, :switch_off)
-    FIX_VARS = !formulation_status_vars.fix_vars_via_constraint
-    is_initially_on = _is_initially_on(g) > 0
     for t in 1:model[:instance].time
-        is_on[g.name, t] = @variable(model, binary = true)
-        switch_on[g.name, t] = @variable(model, binary = true)
-        switch_off[g.name, t] = @variable(model, binary = true)
-
-        # Use initial conditions and whether a unit must run to fix variables
-        if FIX_VARS
-            # Fix variables using fix function
-            if g.must_run[t]
-                # If the generator _must_ run, then it is obviously on and cannot be switched off
-                # In the first time period, force unit to switch on if was off before
-                # Otherwise, unit is on, and will never turn off, so will never need to turn on
-                fix(is_on[g.name, t], 1.0; force = true)
-                fix(
-                    switch_on[g.name, t],
-                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0);
-                    force = true,
-                )
-                fix(switch_off[g.name, t], 0.0; force = true)
-            elseif t == 1
-                if is_initially_on
-                    # Generator was on (for g.initial_status time periods),
-                    # so cannot be more switched on until the period after the first time it can be turned off
-                    fix(switch_on[g.name, 1], 0.0; force = true)
-                else
-                    # Generator is initially off (for -g.initial_status time periods)
-                    # Cannot be switched off more
-                    fix(switch_off[g.name, 1], 0.0; force = true)
-                end
-            end
+        if g.must_run[t]
+            is_on[g.name, t] = 1.0
+            switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
+            switch_off[g.name, t] = 0.0
         else
-            # Add explicit constraint if !FIX_VARS
-            if g.must_run[t]
-                is_on[g.name, t] = 1.0
-                switch_on[g.name, t] =
-                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
-                switch_off[g.name, t] = 0.0
-            elseif t == 1
-                if is_initially_on
-                    switch_on[g.name, t] = 0.0
-                else
-                    switch_off[g.name, t] = 0.0
-                end
-            end
-        end
-
-        # Use initial conditions and whether a unit must run to fix variables
-        if FIX_VARS
-            # Fix variables using fix function
-            if g.must_run[t]
-                # If the generator _must_ run, then it is obviously on and cannot be switched off
-                # In the first time period, force unit to switch on if was off before
-                # Otherwise, unit is on, and will never turn off, so will never need to turn on
-                fix(is_on[g.name, t], 1.0; force = true)
-                fix(
-                    switch_on[g.name, t],
-                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0);
-                    force = true,
-                )
-                fix(switch_off[g.name, t], 0.0; force = true)
-            elseif t == 1
-                if is_initially_on
-                    # Generator was on (for g.initial_status time periods),
-                    # so cannot be more switched on until the period after the first time it can be turned off
-                    fix(switch_on[g.name, 1], 0.0; force = true)
-                else
-                    # Generator is initially off (for -g.initial_status time periods)
-                    # Cannot be switched off more
-                    fix(switch_off[g.name, 1], 0.0; force = true)
-                end
-            end
-        else
-            # Add explicit constraint if !FIX_VARS
-            if g.must_run[t]
-                is_on[g.name, t] = 1.0
-                switch_on[g.name, t] =
-                    (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
-                switch_off[g.name, t] = 0.0
-            elseif t == 1
-                if is_initially_on
-                    switch_on[g.name, t] = 0.0
-                else
-                    switch_off[g.name, t] = 0.0
-                end
-            end
+            is_on[g.name, t] = @variable(model, binary = true)
+            switch_on[g.name, t] = @variable(model, binary = true)
+            switch_off[g.name, t] = @variable(model, binary = true)
         end
     end
     return

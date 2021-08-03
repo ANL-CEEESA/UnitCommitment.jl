@@ -2,15 +2,6 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-"""
-    _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
-
-Add production, reserve, startup, shutdown, and status variables,
-and constraints for min uptime/downtime, net injection, production, ramping, startup, shutdown, and status.
-
-Fix variables if a certain generator _must_ run or if a generator provides spinning reserves.
-Also, add overflow penalty to objective for each transmission line.
-"""
 function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
@@ -124,15 +115,8 @@ function _add_startup_shutdown_limit_eqs!(
         )
         # Shutdown limit
         if g.initial_power > g.shutdown_limit
-            # TODO check what happens with these variables when exporting the model
-            # Generator producing too much to be turned off in the first time period
-            # (can a binary variable have bounds x = 0?)
-            if formulation_status_vars.fix_vars_via_constraint
-                eq_shutdown_limit[g.name, 0] =
-                    @constraint(model, model[:switch_off][g.name, 1] <= 0.0)
-            else
-                fix(model[:switch_off][g.name, 1], 0.0; force = true)
-            end
+            eq_shutdown_limit[g.name, 0] =
+                @constraint(model, switch_off[g.name, 1] <= 0)
         end
         if t < T
             eq_shutdown_limit[g.name, t] = @constraint(
