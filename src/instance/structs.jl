@@ -69,17 +69,21 @@ mutable struct PriceSensitiveLoad
     revenue::Vector{Float64}
 end
 
-mutable struct UnitCommitmentInstance
-    time::Int
-    power_balance_penalty::Vector{Float64}
-    "Penalty for failing to meet reserve requirement."
-    shortfall_penalty::Vector{Float64}
-    units::Vector{Unit}
+Base.@kwdef mutable struct UnitCommitmentInstance
+    buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
-    lines::Vector{TransmissionLine}
-    reserves::Reserves
+    contingencies_by_name::Dict{AbstractString,Contingency}
     contingencies::Vector{Contingency}
+    lines_by_name::Dict{AbstractString,TransmissionLine}
+    lines::Vector{TransmissionLine}
+    power_balance_penalty::Vector{Float64}
+    price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}
+    reserves::Reserves
+    shortfall_penalty::Vector{Float64}
+    time::Int
+    units_by_name::Dict{AbstractString,Unit}
+    units::Vector{Unit}
 end
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)

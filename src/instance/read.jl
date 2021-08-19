@@ -266,15 +266,20 @@ function _from_json(json; repair = true)
     end
 
     instance = UnitCommitmentInstance(
-        T,
-        power_balance_penalty,
-        shortfall_penalty,
-        units,
-        buses,
-        lines,
-        reserves,
-        contingencies,
-        loads,
+        buses_by_name = Dict(b.name => b for b in buses),
+        buses = buses,
+        contingencies_by_name = Dict(c.name => c for c in contingencies),
+        contingencies = contingencies,
+        lines_by_name = Dict(l.name => l for l in lines),
+        lines = lines,
+        power_balance_penalty = power_balance_penalty,
+        price_sensitive_loads_by_name = Dict(ps.name => ps for ps in loads),
+        price_sensitive_loads = loads,
+        reserves = reserves,
+        shortfall_penalty = shortfall_penalty,
+        time = T,
+        units_by_name = Dict(g.name => g for g in units),
+        units = units,
     )
     if repair
         UnitCommitment.repair!(instance)

@@ -22,6 +22,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test instance.lines[5].normal_flow_limit == [1e8 for t in 1:4]
     @test instance.lines[5].emergency_flow_limit == [1e8 for t in 1:4]
     @test instance.lines[5].flow_limit_penalty == [5e3 for t in 1:4]
+    @test instance.lines_by_name["l5"].name == "l5"
 
     @test instance.lines[1].name == "l1"
     @test instance.lines[1].source.name == "b1"
@@ -34,6 +35,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
     @test instance.buses[9].name == "b9"
     @test instance.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
+    @test instance.buses_by_name["b9"].name == "b9"
 
     unit = instance.units[1]
     @test unit.name == "g1"
@@ -62,6 +64,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.startup_categories[1].cost == 1000.0
     @test unit.startup_categories[2].cost == 1500.0
     @test unit.startup_categories[3].cost == 2000.0
+    @test instance.units_by_name["g1"].name == "g1"
 
     unit = instance.units[2]
     @test unit.name == "g2"
@@ -92,12 +95,15 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
     @test instance.contingencies[1].lines == [instance.lines[1]]
     @test instance.contingencies[1].units == []
+    @test instance.contingencies[1].name == "c1"
+    @test instance.contingencies_by_name["c1"].name == "c1"
 
     load = instance.price_sensitive_loads[1]
     @test load.name == "ps1"
     @test load.bus.name == "b3"
     @test load.revenue == [100.0 for t in 1:4]
     @test load.demand == [50.0 for t in 1:4]
+    @test instance.price_sensitive_loads_by_name["ps1"].name == "ps1"
 end
 
 @testset "read_benchmark sub-hourly" begin
