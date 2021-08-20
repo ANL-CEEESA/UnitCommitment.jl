@@ -3,26 +3,31 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using PackageCompiler
+using TOML
+using Logging
 
-using DataStructures
-using Distributions
-using JSON
-using JuMP
-using MathOptInterface
-using SparseArrays
+Logging.disable_logging(Logging.Info)
+mkpath("build")
 
-pkg = [
-    :DataStructures,
-    :Distributions,
-    :JSON,
-    :JuMP,
-    :MathOptInterface,
-    :SparseArrays,
-]
+println("Generating precompilation statements...")
+run(`julia --project=. --trace-compile=build/precompile.jl $(ARGS)`)
 
-@info "Building system image..."
+println("Finding dependencies...")
+project = TOML.parsefile("Project.toml")
+manifest = TOML.parsefile("Manifest.toml")
+deps = Symbol[]
+for dep in keys(project["deps"])
+    if "path" in keys(manifest[dep][1])
+        println("  - $(dep) [skip]")
+    else
+        println("  - $(dep)")
+        push!(deps, Symbol(dep))
+    end
+end
+
+println("Building system image...")
 create_sysimage(
-    pkg,
+    deps,
     precompile_statements_file = "build/precompile.jl",
     sysimage_path = "build/sysimage.so",
 )

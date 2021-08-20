@@ -5,23 +5,20 @@
 JULIA := julia --color=yes --project=@.
 VERSION := 0.2
 
-build/sysimage.so: src/utils/sysimage.jl Project.toml Manifest.toml
-	mkdir -p build
-	mkdir -p benchmark/results/test
-	cd benchmark; $(JULIA) --trace-compile=../build/precompile.jl benchmark.jl test/case14
-	$(JULIA) src/utils/sysimage.jl
+build/sysimage.so: src/utils/sysimage.jl Project.toml
+	julia --project=. -e "using Pkg; Pkg.instantiate()"
+	julia --project=test -e "using Pkg; Pkg.instantiate()"
+	$(JULIA) src/utils/sysimage.jl test/runtests.jl
 
 clean:
-	rm -rf build/*
+	rm -rfv build
 
 docs:
 	cd docs; make clean; make dirhtml
 	rsync -avP --delete-after docs/_build/dirhtml/ ../docs/$(VERSION)/
 	
 test: build/sysimage.so
-	@echo Running tests...
-	$(JULIA) --sysimage build/sysimage.so -e 'using Pkg; Pkg.test("UnitCommitment")' | tee build/test.log
-
+	$(JULIA) --sysimage build/sysimage.so test/runtests.jl
 
 format:
 	julia -e 'using JuliaFormatter; format(["src", "test", "benchmark"], verbose=true);'

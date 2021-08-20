@@ -4,9 +4,12 @@
 
 using UnitCommitment, Cbc, JuMP
 
+basedir = @__DIR__
+
 @testset "generate_initial_conditions!" begin
     # Load instance
-    instance = UnitCommitment.read("$(pwd())/fixtures/case118-initcond.json.gz")
+    instance =
+        UnitCommitment.read("$basedir/../fixtures/case118-initcond.json.gz")
     optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
 
     # All units should have unknown initial conditions

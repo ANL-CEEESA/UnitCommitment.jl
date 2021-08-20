@@ -4,9 +4,11 @@
 
 using UnitCommitment, JSON, GZip, DataStructures
 
+basedir = @__DIR__
+
 function parse_case14()
     return JSON.parse(
-        GZip.gzopen("../instances/test/case14.json.gz"),
+        GZip.gzopen("$basedir/../../instances/test/case14.json.gz"),
         dicttype = () -> DefaultOrderedDict(nothing),
     )
 end
