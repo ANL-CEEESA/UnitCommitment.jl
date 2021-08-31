@@ -50,6 +50,7 @@ include("transform/initcond.jl")
 include("transform/slice.jl")
 include("transform/randomize/XavQiuAhm2021.jl")
 include("utils/log.jl")
+include("utils/benchmark.jl")
 include("validation/repair.jl")
 include("validation/validate.jl")
 
