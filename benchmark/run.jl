@@ -126,9 +126,13 @@ formulations = Dict(
 
 # Solution methods
 # -----------------------------------------------------------------------------
+const gap_limit = parse(Float64, args["--gap"])
+const time_limit = parse(Float64, args["--time-limit"])
 methods = Dict(
-    "default" =>
-        XavQiuWanThi2019.Method(time_limit = 3600.0, gap_limit = 1e-4),
+    "default" => XavQiuWanThi2019.Method(
+        time_limit = time_limit,
+        gap_limit = gap_limit,
+    ),
 )
 
 # MIP solvers
@@ -154,8 +158,6 @@ end
 if !isempty(args["--solver"])
     optimizers = filter(p -> p.first in args["--solver"], optimizers)
 end
-const time_limit = parse(Float64, args["--time-limit"])
-const gap_limit = parse(Float64, args["--gap"])
 const ntrials = parse(Int, args["--trials"])
 
 # Print benchmark settings
