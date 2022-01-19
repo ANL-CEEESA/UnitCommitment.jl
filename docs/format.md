@@ -35,7 +35,6 @@ This section describes system-wide parameters, such as power balance and reserve
 | `Time horizon (h)` | Length of the planning horizon (in hours). | Required | N
 | `Time step (min)` | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc). | `60` | N
 | `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged. | `1000.0` | Y
-| `Reserve shortfall penalty ($/MW)` | Penalty for system-wide shortage in meeting reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1` | Y
 
 
 #### Example
@@ -44,7 +43,6 @@ This section describes system-wide parameters, such as power balance and reserve
     "Parameters": {
         "Time horizon (h)": 4,
         "Power balance penalty ($/MW)": 1000.0,
-        "Reserve shortfall penalty ($/MW)": -1.0
     }
 }
 ```
@@ -96,7 +94,7 @@ This section describes all generators in the system, including thermal units, re
 | `Initial status (h)`  | If set to a positive number, indicates the amount of time (in hours) the generator has been on at the beginning of the simulation, and if set to a negative number, the amount of time the generator has been off. For example, if `Initial status (h)` is `-2`, this means that the generator was off since `-02:00` (h:min). The simulation starts at time `00:00`. If `Initial status (h)` is `3`, this means that the generator was on since `-03:00`. A value of zero is not acceptable. | Required | N
 | `Initial power (MW)`  | Amount of power the generator at time step `-1`, immediately before the planning horizon starts. | Required | N
 | `Must run?`               | If `true`, the generator should be committed, even if that is not economical (Boolean). | `false` | Y
-| `Provides spinning reserves?`    | If `true`, this generator may provide spinning reserves (Boolean). | `true` | Y
+| `Reserve eligibility` | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves. | `[]` | N
 
 #### Production costs and limits
 
@@ -135,13 +133,13 @@ Note that this curve also specifies the production limits. Specifically, the fir
             "Minimum uptime (h)": 4,
             "Initial status (h)": 12,
             "Must run?": false,
-            "Provides spinning reserves?": true,
+            "Reserve eligibility": ["r1"],
         },
         "gen2": {
             "Bus": "b5",
             "Production cost curve (MW)": [0.0, [10.0, 8.0, 0.0, 3.0]],
             "Production cost curve ($)": [0.0, 0.0],
-            "Provides spinning reserves?": true,
+            "Reserve eligibility": ["r1", "r2"],
         }
     }
 }
@@ -206,24 +204,30 @@ This section describes the characteristics of transmission system, such as its t
 
 ### Reserves
 
-This section describes the hourly amount of operating reserves required.
+This section describes the hourly amount of reserves required.
 
 
 | Key                   | Description                                        | Default   |  Time series?
 | :-------------------- | :------------------------------------------------- | --------- |  :----:
-| `Spinning (MW)`       | Minimum amount of system-wide spinning reserves (in MW). Only generators which are online may provide this reserve. | `0.0` | Y
+| `Type` | Type of reserve product. Currently, only `Spinning` is supported. | Required | N
+| `Amount (MW)` | Amount of reserves required. | Required | Y
+| `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1` | Y
 
 #### Example
 
 ```json
 {
     "Reserves": {
-        "Spinning (MW)": [
-            57.30552,
-            53.88429,
-            51.31838,
-            50.46307
-        ]
+        "r1": {
+            "Type": "Spinning",
+            "Amount (MW)": [
+                57.30552,
+                53.88429,
+                51.31838,
+                50.46307
+            ],
+            "Shortfall penalty ($/MW)": 5.0
+        }
     }
 }
 ```
@@ -286,9 +290,6 @@ The output data format is also JSON-based, but it is not currently documented si
 Current limitations
 -------------------
 
-* All reserves are system-wide. Zonal reserves are not currently supported.
 * Network topology remains the same for all time periods
 * Only N-1 transmission contingencies are supported. Generator contingencies are not currently supported.
 * Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
-
-

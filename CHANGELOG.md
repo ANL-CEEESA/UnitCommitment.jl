@@ -11,6 +11,17 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
+## [Unreleased]
+### Added
+- Add multiple reserve products
+
+### Changed
+- To support multiple reserve products, the input data format has been modified as follows:
+    - In `Generators`, replace `Provides spinning reserves?` by `Reserve eligibility`
+    - In `Parameters`, remove `Reserve shortfall penalty`
+    - Revise `Reserves` section
+
+
 ## [0.2.2] - 2021-07-21
 ### Fixed
 - Fix small bug in validation scripts related to startup costs
