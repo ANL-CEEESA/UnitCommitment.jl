@@ -20,6 +20,12 @@ mutable struct StartupCategory
     cost::Float64
 end
 
+Base.@kwdef mutable struct Reserve
+    name::String
+    type::String
+    amount::Vector{Float64}
+end
+
 mutable struct Unit
     name::String
     bus::Bus
@@ -38,6 +44,7 @@ mutable struct Unit
     initial_power::Union{Float64,Nothing}
     provides_spinning_reserves::Vector{Bool}
     startup_categories::Vector{StartupCategory}
+    reserves::Vector{Reserve}
 end
 
 mutable struct TransmissionLine
@@ -80,6 +87,8 @@ Base.@kwdef mutable struct UnitCommitmentInstance
     price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}
     reserves::Reserves
+    reserves2::Vector{Reserve}
+    reserves_by_name::Dict{AbstractString,Reserve}
     shortfall_penalty::Vector{Float64}
     time::Int
     units_by_name::Dict{AbstractString,Unit}

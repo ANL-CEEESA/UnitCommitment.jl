@@ -12,6 +12,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test length(instance.units) == 6
     @test length(instance.contingencies) == 19
     @test length(instance.price_sensitive_loads) == 1
+    @test length(instance.reserves2) == 1
     @test instance.time == 4
 
     @test instance.lines[5].name == "l5"
@@ -36,6 +37,11 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test instance.buses[9].name == "b9"
     @test instance.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
     @test instance.buses_by_name["b9"].name == "b9"
+
+    @test instance.reserves2[1].name == "r1"
+    @test instance.reserves2[1].type == "spinning"
+    @test instance.reserves2[1].amount == [100.0, 100.0, 100.0, 100.0]
+    @test instance.reserves_by_name["r1"].name == "r1"
 
     unit = instance.units[1]
     @test unit.name == "g1"
@@ -64,11 +70,13 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.startup_categories[1].cost == 1000.0
     @test unit.startup_categories[2].cost == 1500.0
     @test unit.startup_categories[3].cost == 2000.0
+    @test length(unit.reserves) == 0
     @test instance.units_by_name["g1"].name == "g1"
 
     unit = instance.units[2]
     @test unit.name == "g2"
     @test unit.must_run == [false for t in 1:4]
+    @test length(unit.reserves) == 1
 
     unit = instance.units[3]
     @test unit.name == "g3"
@@ -90,6 +98,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
         @test unit.cost_segments[2].cost[t] ≈ 38.04
         @test unit.cost_segments[3].cost[t] ≈ 44.77853
     end
+    @test length(unit.reserves) == 1
 
     @test instance.reserves.spinning == zeros(4)
 

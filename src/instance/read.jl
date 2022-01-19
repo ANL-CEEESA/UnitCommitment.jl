@@ -66,6 +66,7 @@ function _from_json(json; repair = true)
     contingencies = Contingency[]
     lines = TransmissionLine[]
     loads = PriceSensitiveLoad[]
+    reserves2 = Reserve[]
 
     function scalar(x; default = nothing)
         x !== nothing || return default
@@ -86,6 +87,7 @@ function _from_json(json; repair = true)
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
     name_to_unit = Dict{String,Unit}()
+    name_to_reserve = Dict{String,Reserve}()
 
     function timeseries(x; default = nothing)
         x !== nothing || return default
@@ -114,6 +116,19 @@ function _from_json(json; repair = true)
         )
         name_to_bus[bus_name] = bus
         push!(buses, bus)
+    end
+
+    # Read reserves
+    if "Reserves2" in keys(json)
+        for (reserve_name, dict) in json["Reserves2"]
+            reserve = Reserve(
+                name = reserve_name,
+                type = lowercase(dict["Type"]),
+                amount = timeseries(dict["Amount (MW)"]),
+            )
+            name_to_reserve[reserve_name] = reserve
+            push!(reserves2, reserve)
+        end
     end
 
     # Read units
@@ -151,6 +166,12 @@ function _from_json(json; repair = true)
                     startup_costs[k],
                 ),
             )
+        end
+
+        # Read reserves
+        unit_reserves = Reserve[]
+        if "Reserve eligibility" in keys(dict)
+            unit_reserves = [name_to_reserve[n] for n in dict["Reserve eligibility"]]
         end
 
         # Read and validate initial conditions
@@ -191,6 +212,7 @@ function _from_json(json; repair = true)
                 default = [true for t in 1:T],
             ),
             startup_categories,
+            unit_reserves,
         )
         push!(bus.units, unit)
         name_to_unit[unit_name] = unit
@@ -276,6 +298,8 @@ function _from_json(json; repair = true)
         price_sensitive_loads_by_name = Dict(ps.name => ps for ps in loads),
         price_sensitive_loads = loads,
         reserves = reserves,
+        reserves2 = reserves2,
+        reserves_by_name = name_to_reserve,
         shortfall_penalty = shortfall_penalty,
         time = T,
         units_by_name = Dict(g.name => g for g in units),
