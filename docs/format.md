@@ -28,7 +28,7 @@ Each section is described in detail below. For a complete example, see [case14](
 
 ### Parameters
 
-This section describes system-wide parameters, such as power balance and reserve shortfall penalties, and optimization parameters, such as the length of the planning horizon and the time.
+This section describes system-wide parameters, such as power balance penalty, and optimization parameters, such as the length of the planning horizon and the time.
 
 | Key                            | Description                                       | Default  | Time series?
 | :----------------------------- | :------------------------------------------------ | :------: | :------------:

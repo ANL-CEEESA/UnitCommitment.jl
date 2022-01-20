@@ -19,10 +19,10 @@ function _add_ramp_eqs!(
     RD = g.ramp_down_limit
     SU = g.startup_limit
     SD = g.shutdown_limit
-    reserve = model[:reserve]
     eq_ramp_down = _init(model, :eq_ramp_down)
     eq_ramp_up = _init(model, :eq_ramp_up)
     is_initially_on = (g.initial_status > 0)
+    reserve = _total_reserves(model, g)
 
     # Gar1962.ProdVars
     prod_above = model[:prod_above]
@@ -41,7 +41,7 @@ function _add_ramp_eqs!(
                     model,
                     g.min_power[t] +
                     prod_above[gn, t] +
-                    (RESERVES_WHEN_RAMP_UP ? reserve[gn, t] : 0.0) <=
+                    (RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0) <=
                     g.initial_power + RU
                 )
             end
@@ -51,7 +51,7 @@ function _add_ramp_eqs!(
                 prod_above[gn, t] +
                 (
                     RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ?
-                    reserve[gn, t] : 0.0
+                    reserve[t] : 0.0
                 )
             min_prod_last_period =
                 g.min_power[t-1] * is_on[gn, t-1] + prod_above[gn, t-1]
@@ -82,7 +82,7 @@ function _add_ramp_eqs!(
                 prod_above[gn, t-1] +
                 (
                     RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN ?
-                    reserve[gn, t-1] : 0.0
+                    reserve[t-1] : 0.0
                 )
             min_prod_this_period =
                 g.min_power[t] * is_on[gn, t] + prod_above[gn, t]

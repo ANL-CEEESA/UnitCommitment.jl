@@ -24,6 +24,8 @@ Base.@kwdef mutable struct Reserve
     name::String
     type::String
     amount::Vector{Float64}
+    units::Vector
+    shortfall_penalty::Float64
 end
 
 mutable struct Unit

@@ -23,7 +23,7 @@ function _add_ramp_eqs!(
     gn = g.name
     eq_str_ramp_down = _init(model, :eq_str_ramp_down)
     eq_str_ramp_up = _init(model, :eq_str_ramp_up)
-    reserve = model[:reserve]
+    reserve = _total_reserves(model, g)
 
     # Gar1962.ProdVars
     prod_above = model[:prod_above]
@@ -48,10 +48,8 @@ function _add_ramp_eqs!(
         # end
 
         max_prod_this_period =
-            prod_above[gn, t] + (
-                RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ?
-                reserve[gn, t] : 0.0
-            )
+            prod_above[gn, t] +
+            (RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0)
         min_prod_last_period = 0.0
         if t > 1 && time_invariant
             min_prod_last_period = prod_above[gn, t-1]
@@ -88,7 +86,7 @@ function _add_ramp_eqs!(
         max_prod_last_period =
             min_prod_last_period + (
                 t > 1 && (RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN) ?
-                reserve[gn, t-1] : 0.0
+                reserve[t-1] : 0.0
             )
         min_prod_this_period = prod_above[gn, t]
         on_last_period = 0.0

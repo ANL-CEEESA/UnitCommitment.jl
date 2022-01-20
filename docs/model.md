@@ -23,7 +23,7 @@ Name | Symbol | Description | Unit
 `switch_off[g,t]` | $w_{g}(t)$ | True if generator `g` switches off at time `t`. | Binary
 `prod_above[g,t]` |$p'_{g}(t)$ | Amount of power produced by generator `g` above its minimum power output at time `t`. For example, if the minimum power of generator `g` is 100 MW and `g` is producing 115 MW of power at time `t`, then `prod_above[g,t]` equals `15.0`. | MW
 `segprod[g,t,k]` | $p^k_g(t)$ | Amount of power from piecewise linear segment `k` produced by generator `g` at time `t`. For example, if cost curve for generator `g` is defined by the points `(100, 1400)`, `(110, 1600)`, `(130, 2200)` and `(135, 2400)`, and if the generator is producing 115 MW of power at time `t`, then `segprod[g,t,:]` equals `[10.0, 5.0, 0.0]`.| MW
-`reserve[g,t]` | $r_g(t)$ | Amount of reserves provided by generator `g` at time `t`. | MW
+`reserve[r,g,t]` | $r_g(t)$ | Amount of reserve `r` provided by unit `g` at time `t`. | MW
 `startup[g,t,s]` | $\delta^s_g(t)$ | True if generator `g` switches on at time `t` incurring start-up costs from start-up category `s`. | Binary
 
 

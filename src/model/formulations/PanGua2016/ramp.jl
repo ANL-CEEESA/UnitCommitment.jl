@@ -12,7 +12,7 @@ function _add_ramp_eqs!(
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_SHUT_DOWN = true
     gn = g.name
-    reserve = model[:reserve]
+    reserve = _total_reserves(model, g)
     eq_str_prod_limit = _init(model, :eq_str_prod_limit)
     eq_prod_limit_ramp_up_extra_period =
         _init(model, :eq_prod_limit_ramp_up_extra_period)
@@ -56,7 +56,7 @@ function _add_ramp_eqs!(
                 model,
                 prod_above[gn, t] +
                 g.min_power[t] * is_on[gn, t] +
-                reserve[gn, t] <=
+                reserve[t] <=
                 Pbar * is_on[gn, t] -
                 (t < T ? (Pbar - SD) * switch_off[gn, t+1] : 0.0) - sum(
                     (Pbar - (SU + i * RU)) * switch_on[gn, t-i] for
@@ -71,7 +71,7 @@ function _add_ramp_eqs!(
                     model,
                     prod_above[gn, t] +
                     g.min_power[t] * is_on[gn, t] +
-                    reserve[gn, t] <=
+                    reserve[t] <=
                     Pbar * is_on[gn, t] - sum(
                         (Pbar - (SU + i * RU)) * switch_on[gn, t-i] for
                         i in 0:min(UT - 1, TRU, t - 1)
@@ -88,7 +88,7 @@ function _add_ramp_eqs!(
                     model,
                     prod_above[gn, t] +
                     g.min_power[t] * is_on[gn, t] +
-                    (RESERVES_WHEN_SHUT_DOWN ? reserve[gn, t] : 0.0) <=
+                    (RESERVES_WHEN_SHUT_DOWN ? reserve[t] : 0.0) <=
                     Pbar * is_on[gn, t] - sum(
                         (Pbar - (SD + i * RD)) * switch_off[gn, t+1+i] for
                         i in 0:KSD

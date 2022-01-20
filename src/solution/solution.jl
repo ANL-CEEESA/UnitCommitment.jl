@@ -67,5 +67,19 @@ function solution(model::JuMP.Model)::OrderedDict
         sol["Price-sensitive loads (MW)"] =
             timeseries(model[:loads], instance.price_sensitive_loads)
     end
+    sol["Reserve 2 (MW)"] = OrderedDict(
+        r.name => OrderedDict(
+            g.name => [
+                value(model[:reserve2][r.name, g.name, t]) for
+                t in 1:instance.time
+            ] for g in r.units
+        ) for r in instance.reserves2
+    )
+    sol["Reserve shortfall 2 (MW)"] = OrderedDict(
+        r.name => [
+            value(model[:reserve_shortfall2][r.name, t]) for
+            t in 1:instance.time
+        ] for r in instance.reserves2
+    )
     return sol
 end

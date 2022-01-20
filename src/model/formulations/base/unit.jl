@@ -55,13 +55,19 @@ function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
             (model[:instance].shortfall_penalty[t] >= 0) ?
             @variable(model, lower_bound = 0) : 0.0
     end
-    return
-end
 
-function _add_reserve_eqs!(model::JuMP.Model, g::Unit)::Nothing
-    reserve = model[:reserve]
-    for t in 1:model[:instance].time
-        add_to_expression!(expr_reserve[g.bus.name, t], reserve[g.name, t], 1.0)
+    reserve2 = _init(model, :reserve2)
+    reserve_shortfall2 = _init(model, :reserve_shortfall2)
+    for r in g.reserves
+        for t in 1:model[:instance].time
+            reserve2[r.name, g.name, t] = @variable(model, lower_bound = 0)
+            if (r.name, t) ∉ keys(reserve_shortfall2)
+                reserve_shortfall2[r.name, t] = @variable(model, lower_bound = 0)
+                if r.shortfall_penalty < 0
+                    set_upper_bound(reserve_shortfall2[r.name, t], 0.0)
+                end
+            end
+        end
     end
     return
 end
@@ -81,7 +87,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     eq_startup_limit = _init(model, :eq_startup_limit)
     is_on = model[:is_on]
     prod_above = model[:prod_above]
-    reserve = model[:reserve]
+    reserve = _total_reserves(model, g)
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
     T = model[:instance].time
@@ -89,7 +95,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
         # Startup limit
         eq_startup_limit[g.name, t] = @constraint(
             model,
-            prod_above[g.name, t] + reserve[g.name, t] <=
+            prod_above[g.name, t] + reserve[t] <=
             (g.max_power[t] - g.min_power[t]) * is_on[g.name, t] -
             max(0, g.max_power[t] - g.startup_limit) * switch_on[g.name, t]
         )
@@ -117,7 +123,7 @@ function _add_ramp_eqs!(
     formulation::RampingFormulation,
 )::Nothing
     prod_above = model[:prod_above]
-    reserve = model[:reserve]
+    reserve = _total_reserves(model, g)
     eq_ramp_up = _init(model, :eq_ramp_up)
     eq_ramp_down = _init(model, :eq_ramp_down)
     for t in 1:model[:instance].time
@@ -126,14 +132,14 @@ function _add_ramp_eqs!(
             if _is_initially_on(g) == 1
                 eq_ramp_up[g.name, t] = @constraint(
                     model,
-                    prod_above[g.name, t] + reserve[g.name, t] <=
+                    prod_above[g.name, t] + reserve[t] <=
                     (g.initial_power - g.min_power[t]) + g.ramp_up_limit
                 )
             end
         else
             eq_ramp_up[g.name, t] = @constraint(
                 model,
-                prod_above[g.name, t] + reserve[g.name, t] <=
+                prod_above[g.name, t] + reserve[t] <=
                 prod_above[g.name, t-1] + g.ramp_up_limit
             )
         end
@@ -215,4 +221,16 @@ function _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
             g.min_power[t],
         )
     end
+end
+
+function _total_reserves(model, g)::Vector
+    T = model[:instance].time
+    reserve = [model[:reserve][g.name, t] for t in 1:T]
+    if !isempty(g.reserves)
+        reserve += [
+            sum(model[:reserve2][r.name, g.name, t] for r in g.reserves) for
+            t in 1:model[:instance].time
+        ]
+    end
+    return reserve
 end

@@ -26,7 +26,7 @@ function _add_production_limit_eqs!(
     eq_prod_limit = _init(model, :eq_prod_limit)
     is_on = model[:is_on]
     prod_above = model[:prod_above]
-    reserve = model[:reserve]
+    reserve = _total_reserves(model, g)
     gn = g.name
     for t in 1:model[:instance].time
         # Objective function terms for production costs
@@ -44,7 +44,7 @@ function _add_production_limit_eqs!(
         end
         eq_prod_limit[gn, t] = @constraint(
             model,
-            prod_above[gn, t] + reserve[gn, t] <= power_diff * is_on[gn, t]
+            prod_above[gn, t] + reserve[t] <= power_diff * is_on[gn, t]
         )
     end
 end

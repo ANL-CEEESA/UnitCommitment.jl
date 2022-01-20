@@ -22,7 +22,7 @@ function _add_ramp_eqs!(
     gn = g.name
     eq_ramp_down = _init(model, :eq_ramp_down)
     eq_ramp_up = _init(model, :eq_str_ramp_up)
-    reserve = model[:reserve]
+    reserve = _total_reserves(model, g)
 
     # Gar1962.ProdVars
     prod_above = model[:prod_above]
@@ -43,7 +43,7 @@ function _add_ramp_eqs!(
                     model,
                     g.min_power[t] +
                     prod_above[gn, t] +
-                    (RESERVES_WHEN_RAMP_UP ? reserve[gn, t] : 0.0) <=
+                    (RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0) <=
                     g.initial_power + RU
                 )
             end
@@ -61,7 +61,7 @@ function _add_ramp_eqs!(
                     prod_above[gn, t] +
                     (
                         RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ?
-                        reserve[gn, t] : 0.0
+                        reserve[t] : 0.0
                     )
                 min_prod_last_period =
                     g.min_power[t-1] * is_on[gn, t-1] + prod_above[gn, t-1]
@@ -77,7 +77,7 @@ function _add_ramp_eqs!(
                 eq_ramp_up[gn, t] = @constraint(
                     model,
                     prod_above[gn, t] +
-                    (RESERVES_WHEN_RAMP_UP ? reserve[gn, t] : 0.0) -
+                    (RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0) -
                     prod_above[gn, t-1] <= RU
                 )
             end
@@ -105,7 +105,7 @@ function _add_ramp_eqs!(
                     prod_above[gn, t-1] +
                     (
                         RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN ?
-                        reserve[gn, t-1] : 0.0
+                        reserve[t-1] : 0.0
                     )
                 min_prod_this_period =
                     g.min_power[t] * is_on[gn, t] + prod_above[gn, t]
@@ -121,7 +121,7 @@ function _add_ramp_eqs!(
                 eq_ramp_down[gn, t] = @constraint(
                     model,
                     prod_above[gn, t-1] +
-                    (RESERVES_WHEN_RAMP_DOWN ? reserve[gn, t-1] : 0.0) -
+                    (RESERVES_WHEN_RAMP_DOWN ? reserve[t-1] : 0.0) -
                     prod_above[gn, t] <= RD
                 )
             end

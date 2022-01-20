@@ -46,6 +46,12 @@ function _validate_units(instance, solution; tol = 0.01)
     for unit in instance.units
         production = solution["Production (MW)"][unit.name]
         reserve = solution["Reserve (MW)"][unit.name]
+        if !isempty(unit.reserves)
+            reserve += sum(
+                solution["Reserve 2 (MW)"][r.name][unit.name] for
+                r in unit.reserves
+            )
+        end
         actual_production_cost = solution["Production cost (\$)"][unit.name]
         actual_startup_cost = solution["Startup cost (\$)"][unit.name]
         is_on = bin(solution["Is on"][unit.name])
@@ -137,9 +143,11 @@ function _validate_units(instance, solution; tol = 0.01)
             # If unit is off, must produce zero
             if !is_on[t] && production[t] + reserve[t] > tol
                 @error @sprintf(
-                    "Unit %s produces power at time %d while off",
+                    "Unit %s produces power at time %d while off (%.2f + %.2f > 0)",
                     unit.name,
-                    t
+                    t,
+                    production[t],
+                    reserve[t],
                 )
                 err_count += 1
             end
@@ -337,6 +345,27 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 instance.reserves.spinning[t],
             )
             err_count += 1
+        end
+
+        # Verify reserves
+        for r in instance.reserves2
+            provided = sum(
+                solution["Reserve 2 (MW)"][r.name][g.name][t] for g in r.units
+            )
+            shortfall = solution["Reserve shortfall 2 (MW)"][r.name][t]
+            required = r.amount[t]
+
+            if provided + shortfall < required - tol
+                @error @sprintf(
+                    "Insufficient reserve %s at time %d (%.2f + %.2f < %.2f)",
+                    r.name,
+                    t,
+                    provided,
+                    shortfall,
+                    required,
+                )
+                err_count += 1
+            end
         end
     end
 

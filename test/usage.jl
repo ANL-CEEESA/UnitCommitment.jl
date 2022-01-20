@@ -4,7 +4,7 @@
 
 using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON
 
-@testset "build_model" begin
+@testset "usage" begin
     instance = UnitCommitment.read_benchmark("test/case14")
     for line in instance.lines, t in 1:4
         line.normal_flow_limit[t] = 10.0

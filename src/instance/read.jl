@@ -125,6 +125,11 @@ function _from_json(json; repair = true)
                 name = reserve_name,
                 type = lowercase(dict["Type"]),
                 amount = timeseries(dict["Amount (MW)"]),
+                units = [],
+                shortfall_penalty = scalar(
+                    dict["Shortfall penalty (\$/MW)"],
+                    default = -1,
+                ),
             )
             name_to_reserve[reserve_name] = reserve
             push!(reserves2, reserve)
@@ -171,7 +176,8 @@ function _from_json(json; repair = true)
         # Read reserves
         unit_reserves = Reserve[]
         if "Reserve eligibility" in keys(dict)
-            unit_reserves = [name_to_reserve[n] for n in dict["Reserve eligibility"]]
+            unit_reserves =
+                [name_to_reserve[n] for n in dict["Reserve eligibility"]]
         end
 
         # Read and validate initial conditions
@@ -215,6 +221,9 @@ function _from_json(json; repair = true)
             unit_reserves,
         )
         push!(bus.units, unit)
+        for r in unit_reserves
+            push!(r.units, unit)
+        end
         name_to_unit[unit_name] = unit
         push!(units, unit)
     end

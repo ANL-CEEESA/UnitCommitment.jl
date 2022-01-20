@@ -52,5 +52,29 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
             )
         end
     end
+
+    eq_min_reserve2 = _init(model, :eq_min_reserve2)
+    for r in instance.reserves2
+        for t in 1:instance.time
+            # Equation (68) in Kneuven et al. (2020)
+            # As in Morales-España et al. (2013a)
+            # Akin to the alternative formulation with max_power_avail
+            # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
+            eq_min_reserve2[r.name, t] = @constraint(
+                model,
+                sum(model[:reserve2][r.name, g.name, t] for g in r.units) +
+                model[:reserve_shortfall2][r.name, t] >= r.amount[t]
+            )
+
+            # Account for shortfall contribution to objective
+            if r.shortfall_penalty >= 0
+                add_to_expression!(
+                    model[:obj],
+                    r.shortfall_penalty,
+                    model[:reserve_shortfall2][r.name, t],
+                )
+            end
+        end
+    end
     return
 end

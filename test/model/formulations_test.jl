@@ -4,6 +4,8 @@
 
 using UnitCommitment
 using JuMP
+using Cbc
+using JSON
 import UnitCommitment:
     ArrCon2000,
     CarArr2006,
@@ -19,56 +21,78 @@ if ENABLE_LARGE_TESTS
     using Gurobi
 end
 
-function _small_test(formulation::Formulation)::Nothing
-    instances = ["matpower/case118/2017-02-01", "test/case14"]
-    for instance in instances
-        # Should not crash
-        UnitCommitment.build_model(
-            instance = UnitCommitment.read_benchmark(instance),
-            formulation = formulation,
-        )
+function _small_test(formulation::Formulation; dump::Bool = false)::Nothing
+    instance = UnitCommitment.read_benchmark("test/case14")
+    model = UnitCommitment.build_model(
+        instance = instance,
+        formulation = formulation,
+        optimizer = Cbc.Optimizer,
+        variable_names = true,
+    )
+    UnitCommitment.optimize!(model)
+    solution = UnitCommitment.solution(model)
+    if dump
+        open("/tmp/ucjl.json", "w") do f
+            return write(f, JSON.json(solution, 2))
+        end
+        write_to_file(model, "/tmp/ucjl.lp")
     end
+    @test UnitCommitment.validate(instance, solution)
     return
 end
 
 function _large_test(formulation::Formulation)::Nothing
-    instances = ["pglib-uc/ca/Scenario400_reserves_1"]
-    for instance in instances
-        instance = UnitCommitment.read_benchmark(instance)
-        model = UnitCommitment.build_model(
-            instance = instance,
-            formulation = formulation,
-            optimizer = Gurobi.Optimizer,
-        )
-        UnitCommitment.optimize!(
-            model,
-            XavQiuWanThi2019.Method(two_phase_gap = false, gap_limit = 0.1),
-        )
-        solution = UnitCommitment.solution(model)
-        @test UnitCommitment.validate(instance, solution)
-    end
+    instance =
+        UnitCommitment.read_benchmark("pglib-uc/ca/Scenario400_reserves_1")
+    model = UnitCommitment.build_model(
+        instance = instance,
+        formulation = formulation,
+        optimizer = Gurobi.Optimizer,
+    )
+    UnitCommitment.optimize!(
+        model,
+        XavQiuWanThi2019.Method(two_phase_gap = false, gap_limit = 0.1),
+    )
+    solution = UnitCommitment.solution(model)
+    @test UnitCommitment.validate(instance, solution)
     return
 end
 
-function _test(formulation::Formulation)::Nothing
-    _small_test(formulation)
+function _test(formulation::Formulation; dump::Bool = false)::Nothing
+    _small_test(formulation; dump)
     if ENABLE_LARGE_TESTS
         _large_test(formulation)
     end
 end
 
 @testset "formulations" begin
-    _test(Formulation())
-    _test(Formulation(ramping = ArrCon2000.Ramping()))
-    # _test(Formulation(ramping = DamKucRajAta2016.Ramping()))
-    _test(
-        Formulation(
-            ramping = MorLatRam2013.Ramping(),
-            startup_costs = MorLatRam2013.StartupCosts(),
-        ),
-    )
-    _test(Formulation(ramping = PanGua2016.Ramping()))
-    _test(Formulation(pwl_costs = Gar1962.PwlCosts()))
-    _test(Formulation(pwl_costs = CarArr2006.PwlCosts()))
-    _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
+    @testset "default" begin
+        _test(Formulation())
+    end
+    @testset "ArrCon2000" begin
+        _test(Formulation(ramping = ArrCon2000.Ramping()))
+    end
+    @testset "DamKucRajAta2016" begin
+        _test(Formulation(ramping = DamKucRajAta2016.Ramping()))
+    end
+    @testset "MorLatRam2013" begin
+        _test(
+            Formulation(
+                ramping = MorLatRam2013.Ramping(),
+                startup_costs = MorLatRam2013.StartupCosts(),
+            ),
+        )
+    end
+    @testset "PanGua2016" begin
+        _test(Formulation(ramping = PanGua2016.Ramping()))
+    end
+    @testset "Gar1962" begin
+        _test(Formulation(pwl_costs = Gar1962.PwlCosts()))
+    end
+    @testset "CarArr2006" begin
+        _test(Formulation(pwl_costs = CarArr2006.PwlCosts()))
+    end
+    @testset "KnuOstWat2018" begin
+        _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
+    end
 end
