@@ -28,42 +28,18 @@ function _add_net_injection_eqs!(model::JuMP.Model)::Nothing
 end
 
 function _add_reserve_eqs!(model::JuMP.Model)::Nothing
-    eq_min_reserve = _init(model, :eq_min_reserve)
     instance = model[:instance]
-    for t in 1:instance.time
-        # Equation (68) in Kneuven et al. (2020)
-        # As in Morales-España et al. (2013a)
-        # Akin to the alternative formulation with max_power_avail
-        # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
-        shortfall_penalty = instance.shortfall_penalty[t]
-        eq_min_reserve[t] = @constraint(
-            model,
-            sum(model[:reserve][g.name, t] for g in instance.units) +
-            (shortfall_penalty >= 0 ? model[:reserve_shortfall][t] : 0.0) >=
-            instance.reserves.spinning[t]
-        )
-
-        # Account for shortfall contribution to objective
-        if shortfall_penalty >= 0
-            add_to_expression!(
-                model[:obj],
-                shortfall_penalty,
-                model[:reserve_shortfall][t],
-            )
-        end
-    end
-
-    eq_min_reserve2 = _init(model, :eq_min_reserve2)
-    for r in instance.reserves2
+    eq_min_reserve = _init(model, :eq_min_reserve)
+    for r in instance.reserves
         for t in 1:instance.time
             # Equation (68) in Kneuven et al. (2020)
             # As in Morales-España et al. (2013a)
             # Akin to the alternative formulation with max_power_avail
             # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
-            eq_min_reserve2[r.name, t] = @constraint(
+            eq_min_reserve[r.name, t] = @constraint(
                 model,
-                sum(model[:reserve2][r.name, g.name, t] for g in r.units) +
-                model[:reserve_shortfall2][r.name, t] >= r.amount[t]
+                sum(model[:reserve][r.name, g.name, t] for g in r.units) +
+                model[:reserve_shortfall][r.name, t] >= r.amount[t]
             )
 
             # Account for shortfall contribution to objective
@@ -71,7 +47,7 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
                 add_to_expression!(
                     model[:obj],
                     r.shortfall_penalty,
-                    model[:reserve_shortfall2][r.name, t],
+                    model[:reserve_shortfall][r.name, t],
                 )
             end
         end

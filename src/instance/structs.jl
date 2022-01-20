@@ -44,7 +44,6 @@ mutable struct Unit
     shutdown_limit::Float64
     initial_status::Union{Int,Nothing}
     initial_power::Union{Float64,Nothing}
-    provides_spinning_reserves::Vector{Bool}
     startup_categories::Vector{StartupCategory}
     reserves::Vector{Reserve}
 end
@@ -59,10 +58,6 @@ mutable struct TransmissionLine
     normal_flow_limit::Vector{Float64}
     emergency_flow_limit::Vector{Float64}
     flow_limit_penalty::Vector{Float64}
-end
-
-mutable struct Reserves
-    spinning::Vector{Float64}
 end
 
 mutable struct Contingency
@@ -88,8 +83,7 @@ Base.@kwdef mutable struct UnitCommitmentInstance
     power_balance_penalty::Vector{Float64}
     price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}
-    reserves::Reserves
-    reserves2::Vector{Reserve}
+    reserves::Vector{Reserve}
     reserves_by_name::Dict{AbstractString,Reserve}
     shortfall_penalty::Vector{Float64}
     time::Int

@@ -45,26 +45,13 @@ _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall)
-    for t in 1:model[:instance].time
-        if g.provides_spinning_reserves[t]
-            reserve[g.name, t] = @variable(model, lower_bound = 0)
-        else
-            reserve[g.name, t] = 0.0
-        end
-        reserve_shortfall[t] =
-            (model[:instance].shortfall_penalty[t] >= 0) ?
-            @variable(model, lower_bound = 0) : 0.0
-    end
-
-    reserve2 = _init(model, :reserve2)
-    reserve_shortfall2 = _init(model, :reserve_shortfall2)
     for r in g.reserves
         for t in 1:model[:instance].time
-            reserve2[r.name, g.name, t] = @variable(model, lower_bound = 0)
-            if (r.name, t) ∉ keys(reserve_shortfall2)
-                reserve_shortfall2[r.name, t] = @variable(model, lower_bound = 0)
+            reserve[r.name, g.name, t] = @variable(model, lower_bound = 0)
+            if (r.name, t) ∉ keys(reserve_shortfall)
+                reserve_shortfall[r.name, t] = @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
-                    set_upper_bound(reserve_shortfall2[r.name, t], 0.0)
+                    set_upper_bound(reserve_shortfall[r.name, t], 0.0)
                 end
             end
         end
@@ -225,10 +212,10 @@ end
 
 function _total_reserves(model, g)::Vector
     T = model[:instance].time
-    reserve = [model[:reserve][g.name, t] for t in 1:T]
+    reserve = 0.0
     if !isempty(g.reserves)
         reserve += [
-            sum(model[:reserve2][r.name, g.name, t] for r in g.reserves) for
+            sum(model[:reserve][r.name, g.name, t] for r in g.reserves) for
             t in 1:model[:instance].time
         ]
     end

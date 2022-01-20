@@ -66,7 +66,7 @@ function _from_json(json; repair = true)
     contingencies = Contingency[]
     lines = TransmissionLine[]
     loads = PriceSensitiveLoad[]
-    reserves2 = Reserve[]
+    reserves = Reserve[]
 
     function scalar(x; default = nothing)
         x !== nothing || return default
@@ -119,9 +119,9 @@ function _from_json(json; repair = true)
     end
 
     # Read reserves
-    if "Reserves2" in keys(json)
-        for (reserve_name, dict) in json["Reserves2"]
-            reserve = Reserve(
+    if "Reserves" in keys(json)
+        for (reserve_name, dict) in json["Reserves"]
+            r = Reserve(
                 name = reserve_name,
                 type = lowercase(dict["Type"]),
                 amount = timeseries(dict["Amount (MW)"]),
@@ -131,8 +131,8 @@ function _from_json(json; repair = true)
                     default = -1,
                 ),
             )
-            name_to_reserve[reserve_name] = reserve
-            push!(reserves2, reserve)
+            name_to_reserve[reserve_name] = r
+            push!(reserves, r)
         end
     end
 
@@ -173,7 +173,7 @@ function _from_json(json; repair = true)
             )
         end
 
-        # Read reserves
+        # Read reserve eligibility
         unit_reserves = Reserve[]
         if "Reserve eligibility" in keys(dict)
             unit_reserves =
@@ -213,10 +213,6 @@ function _from_json(json; repair = true)
             scalar(dict["Shutdown limit (MW)"], default = 1e6),
             initial_status,
             initial_power,
-            timeseries(
-                dict["Provides spinning reserves?"],
-                default = [true for t in 1:T],
-            ),
             startup_categories,
             unit_reserves,
         )
@@ -226,13 +222,6 @@ function _from_json(json; repair = true)
         end
         name_to_unit[unit_name] = unit
         push!(units, unit)
-    end
-
-    # Read reserves
-    reserves = Reserves(zeros(T))
-    if "Reserves" in keys(json)
-        reserves.spinning =
-            timeseries(json["Reserves"]["Spinning (MW)"], default = zeros(T))
     end
 
     # Read transmission lines
@@ -307,7 +296,6 @@ function _from_json(json; repair = true)
         price_sensitive_loads_by_name = Dict(ps.name => ps for ps in loads),
         price_sensitive_loads = loads,
         reserves = reserves,
-        reserves2 = reserves2,
         reserves_by_name = name_to_reserve,
         shortfall_penalty = shortfall_penalty,
         time = T,
