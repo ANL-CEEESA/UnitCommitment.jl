@@ -8,6 +8,8 @@ using DataStructures
 using GZip
 import Base: getindex, time
 
+const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.3/instances"
+
 """
     read_benchmark(name::AbstractString)::UnitCommitmentInstance
 
@@ -23,7 +25,15 @@ Example
 """
 function read_benchmark(name::AbstractString)::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
-    return UnitCommitment.read("$basedir/../../instances/$name.json.gz")
+    filename = "$basedir/../../instances/$name.json.gz"
+    url = "$INSTANCES_URL/$name.json.gz"
+    if !isfile(filename)
+        @info "Downloading: $(url)"
+        dpath = download(url)
+        mkpath(dirname(filename))
+        cp(dpath, filename)
+    end
+    return UnitCommitment.read(filename)
 end
 
 """
