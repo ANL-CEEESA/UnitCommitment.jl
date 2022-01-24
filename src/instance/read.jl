@@ -23,15 +23,21 @@ Example
     import UnitCommitment
     instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 """
-function read_benchmark(name::AbstractString)::UnitCommitmentInstance
+function read_benchmark(name::AbstractString; quiet::Bool=false)::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
     filename = "$basedir/../../instances/$name.json.gz"
     url = "$INSTANCES_URL/$name.json.gz"
     if !isfile(filename)
-        @info "Downloading: $(url)"
+        if !quiet
+            @info "Downloading: $(url)"
+        end
         dpath = download(url)
         mkpath(dirname(filename))
         cp(dpath, filename)
+        json = _read_json(filename)
+        if "SOURCE" in keys(json) && !quiet
+            @info "If you use this instance in your research, please cite:\n\n$(json["SOURCE"])\n"
+        end
     end
     return UnitCommitment.read(filename)
 end

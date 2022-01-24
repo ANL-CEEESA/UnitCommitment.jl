@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-VERSION := 0.2
+VERSION := 0.3
 
 clean:
 	rm -rfv build
