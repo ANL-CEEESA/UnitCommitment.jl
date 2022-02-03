@@ -108,6 +108,11 @@ function _from_json(json; repair = true)
         json["Parameters"]["Power balance penalty (\$/MW)"],
         default = [1000.0 for t in 1:T],
     )
+    # Penalty price for shortage in meeting system-wide flexiramp requirements
+    flexiramp_shortfall_penalty = timeseries(
+        json["Parameters"]["Flexiramp penalty (\$/MW)"],
+        default = [500.0 for t in 1:T],
+    )
     shortfall_penalty = timeseries(
         json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
         default = [-1.0 for t in 1:T],
@@ -200,6 +205,10 @@ function _from_json(json; repair = true)
                 dict["Provides spinning reserves?"],
                 default = [true for t in 1:T],
             ),
+            timeseries(
+                dict["Provides flexible capacity?"],
+                default = [true for t in 1:T],
+            ),
             startup_categories,
         )
         push!(bus.units, unit)
@@ -207,12 +216,16 @@ function _from_json(json; repair = true)
         push!(units, unit)
     end
 
-    # Read reserves
-    reserves = Reserves(zeros(T))
+    # Read spinning, up-flexiramp, and down-flexiramp reserve requirements
+    reserves = Reserves(zeros(T), zeros(T), zeros(T))
     if "Reserves" in keys(json)
-        reserves.spinning =
-            timeseries(json["Reserves"]["Spinning (MW)"], default = zeros(T))
-    end
+      reserves.spinning =
+          timeseries(json["Reserves"]["Spinning (MW)"], default = zeros(T))
+      reserves.upflexiramp =
+          timeseries(json["Reserves"]["Up-flexiramp (MW)"], default = zeros(T))
+      reserves.dwflexiramp =
+          timeseries(json["Reserves"]["Down-flexiramp (MW)"], default = zeros(T))
+  end
 
     # Read transmission lines
     if "Transmission lines" in keys(json)
@@ -287,6 +300,7 @@ function _from_json(json; repair = true)
         price_sensitive_loads = loads,
         reserves = reserves,
         shortfall_penalty = shortfall_penalty,
+        flexiramp_shortfall_penalty = flexiramp_shortfall_penalty,
         time = T,
         units_by_name = Dict(g.name => g for g in units),
         units = units,

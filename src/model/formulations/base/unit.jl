@@ -13,6 +13,7 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
     # Variables
     _add_production_vars!(model, g, formulation.prod_vars)
     _add_reserve_vars!(model, g)
+    _add_flexiramp_vars!(model, g) # Add variables for flexiramp
     _add_startup_shutdown_vars!(model, g)
     _add_status_vars!(model, g, formulation.status_vars)
 

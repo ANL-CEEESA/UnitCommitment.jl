@@ -338,6 +338,40 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
             )
             err_count += 1
         end
+
+        upflexiramp =
+            sum(solution["Up-flexiramp (MW)"][g.name][t] for g in instance.units)
+        upflexiramp_shortfall =
+            (instance.flexiramp_shortfall_penalty[t] >= 0) ?
+            solution["Up-flexiramp shortfall (MW)"][t] : 0
+
+        if upflexiramp + upflexiramp_shortfall < instance.reserves.upflexiramp[t] - tol
+            @error @sprintf(
+                "Insufficient up-flexiramp at time %d (%.2f + %.2f should be %.2f)",
+                t,
+                upflexiramp,
+                upflexiramp_shortfall,
+                instance.reserves.upflexiramp[t],
+            )
+            err_count += 1
+        end
+
+        dwflexiramp =
+            sum(solution["Down-flexiramp (MW)"][g.name][t] for g in instance.units)
+        dwflexiramp_shortfall =
+            (instance.flexiramp_shortfall_penalty[t] >= 0) ?
+            solution["Down-flexiramp shortfall (MW)"][t] : 0
+
+        if dwflexiramp + dwflexiramp_shortfall < instance.reserves.dwflexiramp[t] - tol
+            @error @sprintf(
+                "Insufficient down-flexiramp at time %d (%.2f + %.2f should be %.2f)",
+                t,
+                dwflexiramp,
+                dwflexiramp_shortfall,
+                instance.reserves.dwflexiramp[t],
+            )
+            err_count += 1
+        end
     end
 
     return err_count

@@ -36,6 +36,7 @@ This section describes system-wide parameters, such as power balance and reserve
 | `Time step (min)` | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc). | `60` | N
 | `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged. | `1000.0` | Y
 | `Reserve shortfall penalty ($/MW)` | Penalty for system-wide shortage in meeting reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1` | Y
+| `Flexiramp penalty ($/MW)` | Penalty for system-wide shortage in meeting flexible ramping product requirements (in $/MW). This is charged per time step. | `500` | Y
 
 
 #### Example
@@ -44,7 +45,8 @@ This section describes system-wide parameters, such as power balance and reserve
     "Parameters": {
         "Time horizon (h)": 4,
         "Power balance penalty ($/MW)": 1000.0,
-        "Reserve shortfall penalty ($/MW)": -1.0
+        "Reserve shortfall penalty ($/MW)": -1.0,
+        "Flexiramp penalty ($/MW)": 100.0
     }
 }
 ```
@@ -97,6 +99,8 @@ This section describes all generators in the system, including thermal units, re
 | `Initial power (MW)`  | Amount of power the generator at time step `-1`, immediately before the planning horizon starts. | Required | N
 | `Must run?`               | If `true`, the generator should be committed, even if that is not economical (Boolean). | `false` | Y
 | `Provides spinning reserves?`    | If `true`, this generator may provide spinning reserves (Boolean). | `true` | Y
+| `Provides flexible capacity?`    | If `true`, this generator may provide flexible ramping product (Boolean). | `true` | Y
+
 
 #### Production costs and limits
 
@@ -136,6 +140,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
             "Initial status (h)": 12,
             "Must run?": false,
             "Provides spinning reserves?": true,
+            "Provides flexible capacity?": false,
         },
         "gen2": {
             "Bus": "b5",
@@ -206,14 +211,16 @@ This section describes the characteristics of transmission system, such as its t
 
 ### Reserves
 
-This section describes the hourly amount of operating reserves required.
+This section describes the hourly amount of reserves required.
 
 
 | Key                   | Description                                        | Default   |  Time series?
 | :-------------------- | :------------------------------------------------- | --------- |  :----:
 | `Spinning (MW)`       | Minimum amount of system-wide spinning reserves (in MW). Only generators which are online may provide this reserve. | `0.0` | Y
+| `Up-flexiramp (MW)`       | Minimum amount of system-wide upward flexible ramping product (in MW). Only generators which are online may provide this reserve. | `0.0` | Y
+| `Down-flexiramp (MW)`       | Minimum amount of system-wide downward flexible ramping product (in MW). Only generators which are online may provide this reserve. | `0.0` | Y
 
-#### Example
+#### Example 1
 
 ```json
 {
@@ -223,6 +230,27 @@ This section describes the hourly amount of operating reserves required.
             53.88429,
             51.31838,
             50.46307
+        ]
+    }
+}
+```
+
+#### Example 2
+
+```json
+{
+    "Reserves": {
+        "up-flexiramp (MW)": [
+            20.31042,
+            23.65273,
+            27.41784,
+            25.34057
+        ],
+         "down-flexiramp (MW)": [
+            19.41546,
+            21.45377,
+            23.53402,
+            24.80973
         ]
     }
 }
@@ -287,6 +315,7 @@ Current limitations
 -------------------
 
 * All reserves are system-wide. Zonal reserves are not currently supported.
+* Upward and downward flexible ramping products can only be acquired under the WanHob2016 formulation, which does not support spinning reserves. 
 * Network topology remains the same for all time periods
 * Only N-1 transmission contingencies are supported. Generator contingencies are not currently supported.
 * Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.

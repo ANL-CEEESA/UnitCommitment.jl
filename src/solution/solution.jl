@@ -50,13 +50,35 @@ function solution(model::JuMP.Model)::OrderedDict
     sol["Is on"] = timeseries(model[:is_on], instance.units)
     sol["Switch on"] = timeseries(model[:switch_on], instance.units)
     sol["Switch off"] = timeseries(model[:switch_off], instance.units)
-    sol["Reserve (MW)"] = timeseries(model[:reserve], instance.units)
-    sol["Reserve shortfall (MW)"] = OrderedDict(
-        t =>
-            (instance.shortfall_penalty[t] >= 0) ?
-            round(value(model[:reserve_shortfall][t]), digits = 5) : 0.0 for
-        t in 1:instance.time
-    )
+    if instance.reserves.upflexiramp != zeros(T) || instance.reserves.dwflexiramp != zeros(T)
+        # Report flexiramp solutions only if either of the up-flexiramp and  
+        # down-flexiramp requirements is not a default array of zeros
+        sol["Up-flexiramp (MW)"] = timeseries(model[:upflexiramp], instance.units)
+        sol["Up-flexiramp shortfall (MW)"] = OrderedDict(
+            t =>
+                (instance.flexiramp_shortfall_penalty[t] >= 0) ?
+                round(value(model[:upflexiramp_shortfall][t]), digits = 5) : 0.0 for
+            t in 1:instance.time
+        )
+        sol["Down-flexiramp (MW)"] = timeseries(model[:dwflexiramp], instance.units)
+        sol["Down-flexiramp shortfall (MW)"] = OrderedDict(
+            t =>
+                (instance.flexiramp_shortfall_penalty[t] >= 0) ?
+                round(value(model[:dwflexiramp_shortfall][t]), digits = 5) : 0.0 for
+            t in 1:instance.time
+        )
+    else
+        # Report spinning reserve solutions only if both up-flexiramp and  
+        # down-flexiramp requirements are arrays of zeros.
+        sol["Reserve (MW)"] = timeseries(model[:reserve], instance.units)
+        sol["Reserve shortfall (MW)"] = OrderedDict(
+            t =>
+                (instance.shortfall_penalty[t] >= 0) ?
+                round(value(model[:reserve_shortfall][t]), digits = 5) : 0.0 for
+            t in 1:instance.time
+        )    
+        
+    end
     sol["Net injection (MW)"] =
         timeseries(model[:net_injection], instance.buses)
     sol["Load curtail (MW)"] = timeseries(model[:curtail], instance.buses)
