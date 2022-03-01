@@ -8,7 +8,7 @@ using DataStructures
 using GZip
 import Base: getindex, time
 
-const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.3/instances"
+const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.2/instances"
 
 """
     read_benchmark(name::AbstractString)::UnitCommitmentInstance
