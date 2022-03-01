@@ -5,12 +5,12 @@
 function _add_flexiramp_vars!(model::JuMP.Model, g::Unit)::Nothing
     upflexiramp = _init(model, :upflexiramp)
     upflexiramp_shortfall = _init(model, :upflexiramp_shortfall)
-    mfg=_init(model,:mfg)
+    mfg = _init(model, :mfg)
     dwflexiramp = _init(model, :dwflexiramp)
     dwflexiramp_shortfall = _init(model, :dwflexiramp_shortfall)
     for t in 1:model[:instance].time
         # maximum feasible generation, \bar{g_{its}} in Wang & Hobbs (2016)
-        mfg[g.name,t]=@variable(model, lower_bound = 0)
+        mfg[g.name, t] = @variable(model, lower_bound = 0)
         if g.provides_flexiramp_reserves[t]
             upflexiramp[g.name, t] = @variable(model) # up-flexiramp, ur_{it} in Wang & Hobbs (2016)
             dwflexiramp[g.name, t] = @variable(model) # down-flexiramp, dr_{it} in Wang & Hobbs (2016)
@@ -28,8 +28,6 @@ function _add_flexiramp_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-
-
 function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
@@ -43,110 +41,145 @@ function _add_ramp_eqs!(
     RU = g.ramp_up_limit
     RD = g.ramp_down_limit
     gn = g.name
-    minp=g.min_power
-    maxp=g.max_power
-    initial_power=g.initial_power
+    minp = g.min_power
+    maxp = g.max_power
+    initial_power = g.initial_power
 
     is_on = model[:is_on]
     prod_above = model[:prod_above]
-    upflexiramp=model[:upflexiramp]
-    dwflexiramp=model[:dwflexiramp]
-    mfg=model[:mfg]
-    
+    upflexiramp = model[:upflexiramp]
+    dwflexiramp = model[:dwflexiramp]
+    mfg = model[:mfg]
+
     for t in 1:model[:instance].time
-        
-        @constraint(model, prod_above[gn, t] + (is_on[gn,t]*minp[t]) 
-            <=mfg[gn,t]) # Eq. (19) in Wang & Hobbs (2016)
-        @constraint(model, mfg[gn,t]<= is_on[gn,t]* maxp[t]) # Eq. (22) in Wang & Hobbs (2016)
-        if t!=model[:instance].time 
-            @constraint(model, minp[t] * (is_on[gn,t+1]+is_on[gn,t]-1) <= 
-                prod_above[gn, t] - dwflexiramp[gn,t] +(is_on[gn,t]*minp[t]) 
-                ) # first inequality of Eq. (20) in Wang & Hobbs (2016)
-            @constraint(model, prod_above[gn, t] - dwflexiramp[gn,t] + (is_on[gn,t]*minp[t]) <=
-                mfg[gn,t+1]
-                + (maxp[t] * (1-is_on[gn,t+1]))
-                ) # second inequality of Eq. (20) in Wang & Hobbs (2016)
-            @constraint(model, minp[t] * (is_on[gn,t+1]+is_on[gn,t]-1) <=
-                prod_above[gn, t] + upflexiramp[gn,t] + (is_on[gn,t]*minp[t])
-                ) # first inequality of Eq. (21) in Wang & Hobbs (2016)
-            @constraint(model, prod_above[gn, t] + upflexiramp[gn,t] +(is_on[gn,t]*minp[t]) <=
-                mfg[gn,t+1] + (maxp[t] * (1-is_on[gn,t+1]))
-                ) # second inequality of Eq. (21) in Wang & Hobbs (2016)
-            if t!=1
-                @constraint(model, mfg[gn,t]<=prod_above[gn,t-1] + (is_on[gn,t-1]*minp[t])
-                    + (RU * is_on[gn,t-1])
-                    + (SU*(is_on[gn,t] - is_on[gn,t-1]))
-                    + maxp[t] * (1-is_on[gn,t])
-                    ) # Eq. (23) in Wang & Hobbs (2016)
-                @constraint(model, (prod_above[gn,t-1] + (is_on[gn,t-1]*minp[t])) 
-                    - (prod_above[gn,t] + (is_on[gn,t]*minp[t]))
-                    <= RD * is_on[gn,t] 
-                    + SD * (is_on[gn,t-1] - is_on[gn,t])
-                    + maxp[t] * (1-is_on[gn,t-1])
-                    ) # Eq. (25) in Wang & Hobbs (2016)
+        @constraint(
+            model,
+            prod_above[gn, t] + (is_on[gn, t] * minp[t]) <= mfg[gn, t]
+        ) # Eq. (19) in Wang & Hobbs (2016)
+        @constraint(model, mfg[gn, t] <= is_on[gn, t] * maxp[t]) # Eq. (22) in Wang & Hobbs (2016)
+        if t != model[:instance].time
+            @constraint(
+                model,
+                minp[t] * (is_on[gn, t+1] + is_on[gn, t] - 1) <=
+                prod_above[gn, t] - dwflexiramp[gn, t] +
+                (is_on[gn, t] * minp[t])
+            ) # first inequality of Eq. (20) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                prod_above[gn, t] - dwflexiramp[gn, t] +
+                (is_on[gn, t] * minp[t]) <=
+                mfg[gn, t+1] + (maxp[t] * (1 - is_on[gn, t+1]))
+            ) # second inequality of Eq. (20) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                minp[t] * (is_on[gn, t+1] + is_on[gn, t] - 1) <=
+                prod_above[gn, t] +
+                upflexiramp[gn, t] +
+                (is_on[gn, t] * minp[t])
+            ) # first inequality of Eq. (21) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                prod_above[gn, t] +
+                upflexiramp[gn, t] +
+                (is_on[gn, t] * minp[t]) <=
+                mfg[gn, t+1] + (maxp[t] * (1 - is_on[gn, t+1]))
+            ) # second inequality of Eq. (21) in Wang & Hobbs (2016)
+            if t != 1
+                @constraint(
+                    model,
+                    mfg[gn, t] <=
+                    prod_above[gn, t-1] +
+                    (is_on[gn, t-1] * minp[t]) +
+                    (RU * is_on[gn, t-1]) +
+                    (SU * (is_on[gn, t] - is_on[gn, t-1])) +
+                    maxp[t] * (1 - is_on[gn, t])
+                ) # Eq. (23) in Wang & Hobbs (2016)
+                @constraint(
+                    model,
+                    (prod_above[gn, t-1] + (is_on[gn, t-1] * minp[t])) -
+                    (prod_above[gn, t] + (is_on[gn, t] * minp[t])) <=
+                    RD * is_on[gn, t] +
+                    SD * (is_on[gn, t-1] - is_on[gn, t]) +
+                    maxp[t] * (1 - is_on[gn, t-1])
+                ) # Eq. (25) in Wang & Hobbs (2016)
             else
-                @constraint(model, mfg[gn,t]<=initial_power
-                    + (RU * is_initially_on)
-                    + (SU*(is_on[gn,t] - is_initially_on))
-                    + maxp[t] * (1-is_on[gn,t])
-                    ) # Eq. (23) in Wang & Hobbs (2016) for the first time period
-                @constraint(model, initial_power  
-                    - (prod_above[gn,t] + (is_on[gn,t]*minp[t]))
-                    <= RD * is_on[gn,t] 
-                    + SD * (is_initially_on - is_on[gn,t])
-                    + maxp[t] * (1-is_initially_on)
-                    ) # Eq. (25) in Wang & Hobbs (2016) for the first time period
+                @constraint(
+                    model,
+                    mfg[gn, t] <=
+                    initial_power +
+                    (RU * is_initially_on) +
+                    (SU * (is_on[gn, t] - is_initially_on)) +
+                    maxp[t] * (1 - is_on[gn, t])
+                ) # Eq. (23) in Wang & Hobbs (2016) for the first time period
+                @constraint(
+                    model,
+                    initial_power -
+                    (prod_above[gn, t] + (is_on[gn, t] * minp[t])) <=
+                    RD * is_on[gn, t] +
+                    SD * (is_initially_on - is_on[gn, t]) +
+                    maxp[t] * (1 - is_initially_on)
+                ) # Eq. (25) in Wang & Hobbs (2016) for the first time period
             end
-            @constraint(model, mfg[gn,t]<=
-                (SD*(is_on[gn,t] - is_on[gn,t+1]))
-                + (maxp[t] * is_on[gn,t+1])
-                ) # Eq. (24) in Wang & Hobbs (2016)
-            @constraint(model, -RD * is_on[gn,t+1]
-                -SD * (is_on[gn,t]-is_on[gn,t+1])
-                -maxp[t] * (1-is_on[gn,t]) 
-                <= upflexiramp[gn,t]
-                ) # first inequality of Eq. (26) in Wang & Hobbs (2016)
-            @constraint(model, upflexiramp[gn,t] <=
-                RU * is_on[gn,t]
-                + SU * (is_on[gn,t+1]-is_on[gn,t])
-                + maxp[t] * (1-is_on[gn,t+1])
-                ) # second inequality of Eq. (26) in Wang & Hobbs (2016)
-            @constraint(model, -RU * is_on[gn,t]
-                -SU * (is_on[gn,t+1]-is_on[gn,t])
-                -maxp[t] * (1-is_on[gn,t+1])
-                <= dwflexiramp[gn,t] 
-                ) # first inequality of Eq. (27) in Wang & Hobbs (2016)
-            @constraint(model, dwflexiramp[gn,t] <=
-                RD * is_on[gn,t+1]
-                + SD * (is_on[gn,t]-is_on[gn,t+1])
-                + maxp[t] * (1-is_on[gn,t])
-                ) # second inequality of Eq. (27) in Wang & Hobbs (2016)
-            @constraint(model, -maxp[t] * is_on[gn,t]
-                +minp[t] * is_on[gn,t+1]
-                <= upflexiramp[gn,t]
-                ) # first inequality of Eq. (28) in Wang & Hobbs (2016)
-            @constraint(model, upflexiramp[gn,t] <=
-                maxp[t] * is_on[gn,t+1]
-                ) # second inequality of Eq. (28) in Wang & Hobbs (2016)
-            @constraint(model, -maxp[t] * is_on[gn,t+1]
-                <= dwflexiramp[gn,t]
-                ) # first inequality of Eq. (29) in Wang & Hobbs (2016)
-            @constraint(model, dwflexiramp[gn,t] <=
-                (maxp[t] * is_on[gn,t])
-                -(minp[t] * is_on[gn,t+1])
-                ) # second inequality of Eq. (29) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                mfg[gn, t] <=
+                (SD * (is_on[gn, t] - is_on[gn, t+1])) +
+                (maxp[t] * is_on[gn, t+1])
+            ) # Eq. (24) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                -RD * is_on[gn, t+1] - SD * (is_on[gn, t] - is_on[gn, t+1]) -
+                maxp[t] * (1 - is_on[gn, t]) <= upflexiramp[gn, t]
+            ) # first inequality of Eq. (26) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                upflexiramp[gn, t] <=
+                RU * is_on[gn, t] +
+                SU * (is_on[gn, t+1] - is_on[gn, t]) +
+                maxp[t] * (1 - is_on[gn, t+1])
+            ) # second inequality of Eq. (26) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                -RU * is_on[gn, t] - SU * (is_on[gn, t+1] - is_on[gn, t]) -
+                maxp[t] * (1 - is_on[gn, t+1]) <= dwflexiramp[gn, t]
+            ) # first inequality of Eq. (27) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                dwflexiramp[gn, t] <=
+                RD * is_on[gn, t+1] +
+                SD * (is_on[gn, t] - is_on[gn, t+1]) +
+                maxp[t] * (1 - is_on[gn, t])
+            ) # second inequality of Eq. (27) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                -maxp[t] * is_on[gn, t] + minp[t] * is_on[gn, t+1] <=
+                upflexiramp[gn, t]
+            ) # first inequality of Eq. (28) in Wang & Hobbs (2016)
+            @constraint(model, upflexiramp[gn, t] <= maxp[t] * is_on[gn, t+1]) # second inequality of Eq. (28) in Wang & Hobbs (2016)
+            @constraint(model, -maxp[t] * is_on[gn, t+1] <= dwflexiramp[gn, t]) # first inequality of Eq. (29) in Wang & Hobbs (2016)
+            @constraint(
+                model,
+                dwflexiramp[gn, t] <=
+                (maxp[t] * is_on[gn, t]) - (minp[t] * is_on[gn, t+1])
+            ) # second inequality of Eq. (29) in Wang & Hobbs (2016)
         else
-            @constraint(model, mfg[gn,t]<=prod_above[gn,t-1] + (is_on[gn,t-1]*minp[t])
-                + (RU * is_on[gn,t-1])
-                + (SU*(is_on[gn,t] - is_on[gn,t-1]))
-                + maxp[t] * (1-is_on[gn,t])
-                ) # Eq. (23) in Wang & Hobbs (2016) for the last time period
-            @constraint(model, (prod_above[gn,t-1] + (is_on[gn,t-1]*minp[t])) 
-                - (prod_above[gn,t] + (is_on[gn,t]*minp[t]))
-                <= RD * is_on[gn,t] 
-                + SD * (is_on[gn,t-1] - is_on[gn,t])
-                + maxp[t] * (1-is_on[gn,t-1])
-                ) # Eq. (25) in Wang & Hobbs (2016) for the last time period
+            @constraint(
+                model,
+                mfg[gn, t] <=
+                prod_above[gn, t-1] +
+                (is_on[gn, t-1] * minp[t]) +
+                (RU * is_on[gn, t-1]) +
+                (SU * (is_on[gn, t] - is_on[gn, t-1])) +
+                maxp[t] * (1 - is_on[gn, t])
+            ) # Eq. (23) in Wang & Hobbs (2016) for the last time period
+            @constraint(
+                model,
+                (prod_above[gn, t-1] + (is_on[gn, t-1] * minp[t])) -
+                (prod_above[gn, t] + (is_on[gn, t] * minp[t])) <=
+                RD * is_on[gn, t] +
+                SD * (is_on[gn, t-1] - is_on[gn, t]) +
+                maxp[t] * (1 - is_on[gn, t-1])
+            ) # Eq. (25) in Wang & Hobbs (2016) for the last time period
         end
     end
 end

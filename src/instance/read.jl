@@ -23,7 +23,10 @@ Example
     import UnitCommitment
     instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 """
-function read_benchmark(name::AbstractString; quiet::Bool=false)::UnitCommitmentInstance
+function read_benchmark(
+    name::AbstractString;
+    quiet::Bool = false,
+)::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
     filename = "$basedir/../../instances/$name.json.gz"
     url = "$INSTANCES_URL/$name.json.gz"
@@ -225,13 +228,17 @@ function _from_json(json; repair = true)
     # Read spinning, up-flexiramp, and down-flexiramp reserve requirements
     reserves = Reserves(zeros(T), zeros(T), zeros(T))
     if "Reserves" in keys(json)
-      reserves.spinning =
-          timeseries(json["Reserves"]["Spinning (MW)"], default = zeros(T))
-      reserves.upflexiramp =
-          timeseries(json["Reserves"]["Up-flexiramp (MW)"], default = zeros(T))
-      reserves.dwflexiramp =
-          timeseries(json["Reserves"]["Down-flexiramp (MW)"], default = zeros(T))
-  end
+        reserves.spinning =
+            timeseries(json["Reserves"]["Spinning (MW)"], default = zeros(T))
+        reserves.upflexiramp = timeseries(
+            json["Reserves"]["Up-flexiramp (MW)"],
+            default = zeros(T),
+        )
+        reserves.dwflexiramp = timeseries(
+            json["Reserves"]["Down-flexiramp (MW)"],
+            default = zeros(T),
+        )
+    end
 
     # Read transmission lines
     if "Transmission lines" in keys(json)

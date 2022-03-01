@@ -57,7 +57,7 @@ function _add_reserve_eqs!(model::JuMP.Model)::Nothing
 end
 
 function _add_flexiramp_eqs!(model::JuMP.Model)::Nothing
-     # Note: The flexpramp requirements in Wang & Hobbs (2016) are imposed as hard constraints 
+    # Note: The flexpramp requirements in Wang & Hobbs (2016) are imposed as hard constraints 
     #       through Eq. (17) and Eq. (18). The constraints eq_min_upflexiramp[t] and eq_min_dwflexiramp[t] 
     #       provided below are modified versions of Eq. (17) and Eq. (18), respectively, in that   
     #       they include slack variables for flexiramp shortfall, which are penalized in the
@@ -71,15 +71,19 @@ function _add_flexiramp_eqs!(model::JuMP.Model)::Nothing
         eq_min_upflexiramp[t] = @constraint(
             model,
             sum(model[:upflexiramp][g.name, t] for g in instance.units) +
-            (flexiramp_shortfall_penalty >= 0 ? model[:upflexiramp_shortfall][t] : 0.0) >=
-            instance.reserves.upflexiramp[t]
+            (
+                flexiramp_shortfall_penalty >= 0 ?
+                model[:upflexiramp_shortfall][t] : 0.0
+            ) >= instance.reserves.upflexiramp[t]
         )
         # Eq. (18) in Wang & Hobbs (2016)
         eq_min_dwflexiramp[t] = @constraint(
             model,
             sum(model[:dwflexiramp][g.name, t] for g in instance.units) +
-            (flexiramp_shortfall_penalty >= 0 ? model[:dwflexiramp_shortfall][t] : 0.0) >=
-            instance.reserves.dwflexiramp[t]
+            (
+                flexiramp_shortfall_penalty >= 0 ?
+                model[:dwflexiramp_shortfall][t] : 0.0
+            ) >= instance.reserves.dwflexiramp[t]
         )
 
         # Account for flexiramp shortfall contribution to objective
@@ -87,7 +91,10 @@ function _add_flexiramp_eqs!(model::JuMP.Model)::Nothing
             add_to_expression!(
                 model[:obj],
                 flexiramp_shortfall_penalty,
-                (model[:upflexiramp_shortfall][t]+model[:dwflexiramp_shortfall][t]),
+                (
+                    model[:upflexiramp_shortfall][t] +
+                    model[:dwflexiramp_shortfall][t]
+                ),
             )
         end
     end

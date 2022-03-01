@@ -12,7 +12,6 @@ module WanHob2016
 
 import ..RampingFormulation
 
-
 struct Ramping <: RampingFormulation end
 
 end
