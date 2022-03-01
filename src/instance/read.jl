@@ -23,7 +23,10 @@ Example
     import UnitCommitment
     instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 """
-function read_benchmark(name::AbstractString; quiet::Bool=false)::UnitCommitmentInstance
+function read_benchmark(
+    name::AbstractString;
+    quiet::Bool = false,
+)::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
     filename = "$basedir/../../instances/$name.json.gz"
     url = "$INSTANCES_URL/$name.json.gz"
