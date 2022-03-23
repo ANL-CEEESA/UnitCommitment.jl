@@ -324,61 +324,63 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
         
         # Verify flexiramp solutions only if either of the up-flexiramp and  
         # down-flexiramp requirements is not a default array of zeros
-        if instance.reserves.upflexiramp != zeros(T) || instance.reserves.dwflexiramp != zeros(T)
+        if instance.reserves.upflexiramp != zeros(instance.time) || instance.reserves.dwflexiramp != zeros(instance.time)
             upflexiramp =
             sum(solution["Up-flexiramp (MW)"][g.name][t] for g in instance.units)
-        upflexiramp_shortfall =
-            (instance.flexiramp_shortfall_penalty[t] >= 0) ?
-            solution["Up-flexiramp shortfall (MW)"][t] : 0
+            upflexiramp_shortfall =
+                (instance.flexiramp_shortfall_penalty[t] >= 0) ?
+                solution["Up-flexiramp shortfall (MW)"][t] : 0
 
-        if upflexiramp + upflexiramp_shortfall < instance.reserves.upflexiramp[t] - tol
-            @error @sprintf(
-                "Insufficient up-flexiramp at time %d (%.2f + %.2f should be %.2f)",
-                t,
-                upflexiramp,
-                upflexiramp_shortfall,
-                instance.reserves.upflexiramp[t],
-            )
-            err_count += 1
+            if upflexiramp + upflexiramp_shortfall < instance.reserves.upflexiramp[t] - tol
+                @error @sprintf(
+                    "Insufficient up-flexiramp at time %d (%.2f + %.2f should be %.2f)",
+                    t,
+                    upflexiramp,
+                    upflexiramp_shortfall,
+                    instance.reserves.upflexiramp[t],
+                )
+                err_count += 1
+            end
+        
+
+            dwflexiramp =
+                sum(solution["Down-flexiramp (MW)"][g.name][t] for g in instance.units)
+            dwflexiramp_shortfall =
+                (instance.flexiramp_shortfall_penalty[t] >= 0) ?
+                solution["Down-flexiramp shortfall (MW)"][t] : 0
+
+            if dwflexiramp + dwflexiramp_shortfall < instance.reserves.dwflexiramp[t] - tol
+                @error @sprintf(
+                    "Insufficient down-flexiramp at time %d (%.2f + %.2f should be %.2f)",
+                    t,
+                    dwflexiramp,
+                    dwflexiramp_shortfall,
+                    instance.reserves.dwflexiramp[t],
+                )
+                err_count += 1
+            end
+        # Verify spinning reserve solutions only if both up-flexiramp and  
+        # down-flexiramp requirements are arrays of zeros.
+        else
+            reserve =
+                sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
+            reserve_shortfall =
+                (instance.shortfall_penalty[t] >= 0) ?
+                solution["Reserve shortfall (MW)"][t] : 0
+
+            if reserve + reserve_shortfall < instance.reserves.spinning[t] - tol
+                @error @sprintf(
+                    "Insufficient spinning reserves at time %d (%.2f + %.2f should be %.2f)",
+                    t,
+                    reserve,
+                    reserve_shortfall,
+                    instance.reserves.spinning[t],
+                )
+                err_count += 1
+            end
         end
-
-        dwflexiramp =
-            sum(solution["Down-flexiramp (MW)"][g.name][t] for g in instance.units)
-        dwflexiramp_shortfall =
-            (instance.flexiramp_shortfall_penalty[t] >= 0) ?
-            solution["Down-flexiramp shortfall (MW)"][t] : 0
-
-        if dwflexiramp + dwflexiramp_shortfall < instance.reserves.dwflexiramp[t] - tol
-            @error @sprintf(
-                "Insufficient down-flexiramp at time %d (%.2f + %.2f should be %.2f)",
-                t,
-                dwflexiramp,
-                dwflexiramp_shortfall,
-                instance.reserves.dwflexiramp[t],
-            )
-            err_count += 1
-        end
-    # Verify spinning reserve solutions only if both up-flexiramp and  
-    # down-flexiramp requirements are arrays of zeros.
-    else
-        reserve =
-            sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
-        reserve_shortfall =
-            (instance.shortfall_penalty[t] >= 0) ?
-            solution["Reserve shortfall (MW)"][t] : 0
-
-        if reserve + reserve_shortfall < instance.reserves.spinning[t] - tol
-            @error @sprintf(
-                "Insufficient spinning reserves at time %d (%.2f + %.2f should be %.2f)",
-                t,
-                reserve,
-                reserve_shortfall,
-                instance.reserves.spinning[t],
-            )
-            err_count += 1
-        end
-    end
  
+    end
 
     return err_count
 end
