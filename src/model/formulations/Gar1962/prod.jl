@@ -9,8 +9,8 @@ function _add_production_vars!(
 )::Nothing
     prod_above = _init(model, :prod_above)
     segprod = _init(model, :segprod)
-    for t in 1:model[:instance].time
-        for k in 1:length(g.cost_segments)
+    for t = 1:model[:instance].time
+        for k = 1:length(g.cost_segments)
             segprod[g.name, t, k] = @variable(model, lower_bound = 0)
         end
         prod_above[g.name, t] = @variable(model, lower_bound = 0)
@@ -28,7 +28,7 @@ function _add_production_limit_eqs!(
     prod_above = model[:prod_above]
     reserve = model[:reserve]
     gn = g.name
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         # Objective function terms for production costs
         # Part of (69) of Kneuven et al. (2020) as C^R_g * u_g(t) term
         add_to_expression!(model[:obj], is_on[gn, t], g.min_power_cost[t])

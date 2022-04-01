@@ -21,15 +21,13 @@ function _add_production_piecewise_linear_eqs!(
     is_on = model[:is_on]
 
     K = length(g.cost_segments)
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         # Definition of production
         # Equation (43) in Kneuven et al. (2020)
-        eq_prod_above_def[gn, t] = @constraint(
-            model,
-            prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
-        )
+        eq_prod_above_def[gn, t] =
+            @constraint(model, prod_above[gn, t] == sum(segprod[gn, t, k] for k = 1:K))
 
-        for k in 1:K
+        for k = 1:K
             # Equation (42) in Kneuven et al. (2020)
             # Without this, solvers will add a lot of implied bound cuts to
             # have this same effect.
@@ -48,11 +46,7 @@ function _add_production_piecewise_linear_eqs!(
 
             # Objective function
             # Equation (44) in Kneuven et al. (2020)
-            add_to_expression!(
-                model[:obj],
-                segprod[gn, t, k],
-                g.cost_segments[k].cost[t],
-            )
+            add_to_expression!(model[:obj], segprod[gn, t, k], g.cost_segments[k].cost[t])
         end
     end
     return

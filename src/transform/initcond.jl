@@ -11,10 +11,7 @@ Generates feasible initial conditions for the given instance, by constructing
 and solving a single-period mixed-integer optimization problem, using the given
 optimizer. The instance is modified in-place.
 """
-function generate_initial_conditions!(
-    instance::UnitCommitmentInstance,
-    optimizer,
-)::Nothing
+function generate_initial_conditions!(instance::UnitCommitmentInstance, optimizer)::Nothing
     G = instance.units
     B = instance.buses
     t = 1
@@ -31,11 +28,7 @@ function generate_initial_conditions!(
     @constraint(mip, max_power[g in G], p[g] <= g.max_power[t] * x[g])
 
     # Constraint: Production equals demand
-    @constraint(
-        mip,
-        power_balance,
-        sum(b.load[t] for b in B) == sum(p[g] for g in G)
-    )
+    @constraint(mip, power_balance, sum(b.load[t] for b in B) == sum(p[g] for g in G))
 
     # Constraint: Must run
     for g in G

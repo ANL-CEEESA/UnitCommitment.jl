@@ -33,19 +33,15 @@ function build_model(;
     variable_names::Bool = false,
 )::JuMP.Model
     if formulation.ramping == WanHob2016.Ramping() &&
-        instance.reserves.spinning >= ones(instance.time).*1e-6
-        error(
-            "Spinning reserves are not supported by the WanHob2016 ramping formulation",
-        )
+       instance.reserves.spinning >= ones(instance.time) .* 1e-6
+        error("Spinning reserves are not supported by the WanHob2016 ramping formulation")
     end
-    
+
     if formulation.ramping !== WanHob2016.Ramping() && (
-        instance.reserves.upflexiramp >= ones(instance.time).*1e-6 ||
-        instance.reserves.dwflexiramp >= ones(instance.time).*1e-6
+        instance.reserves.upflexiramp >= ones(instance.time) .* 1e-6 ||
+        instance.reserves.dwflexiramp >= ones(instance.time) .* 1e-6
     )
-        error(
-            "Flexiramp is supported only by the WanHob2016 ramping formulation",
-        )
+        error("Flexiramp is supported only by the WanHob2016 ramping formulation")
     end
 
     @info "Building model..."

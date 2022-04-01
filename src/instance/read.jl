@@ -23,10 +23,7 @@ Example
     import UnitCommitment
     instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 """
-function read_benchmark(
-    name::AbstractString;
-    quiet::Bool = false,
-)::UnitCommitmentInstance
+function read_benchmark(name::AbstractString; quiet::Bool = false)::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
     filename = "$basedir/../../instances/$name.json.gz"
     url = "$INSTANCES_URL/$name.json.gz"
@@ -65,9 +62,7 @@ function read(path::AbstractString)::UnitCommitmentInstance
 end
 
 function _read(file::IO)::UnitCommitmentInstance
-    return _from_json(
-        JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing)),
-    )
+    return _from_json(JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing)))
 end
 
 function _read_json(path::String)::OrderedDict
@@ -97,8 +92,7 @@ function _from_json(json; repair = true)
     end
     time_horizon !== nothing || error("Missing parameter: Time horizon (h)")
     time_step = scalar(json["Parameters"]["Time step (min)"], default = 60)
-    (60 % time_step == 0) ||
-        error("Time step $time_step is not a divisor of 60")
+    (60 % time_step == 0) || error("Time step $time_step is not a divisor of 60")
     time_multiplier = 60 ÷ time_step
     T = time_horizon * time_multiplier
 
@@ -108,23 +102,23 @@ function _from_json(json; repair = true)
 
     function timeseries(x; default = nothing)
         x !== nothing || return default
-        x isa Array || return [x for t in 1:T]
+        x isa Array || return [x for t = 1:T]
         return x
     end
 
     # Read parameters
     power_balance_penalty = timeseries(
         json["Parameters"]["Power balance penalty (\$/MW)"],
-        default = [1000.0 for t in 1:T],
+        default = [1000.0 for t = 1:T],
     )
     # Penalty price for shortage in meeting system-wide flexiramp requirements
     flexiramp_shortfall_penalty = timeseries(
         json["Parameters"]["Flexiramp penalty (\$/MW)"],
-        default = [500.0 for t in 1:T],
+        default = [500.0 for t = 1:T],
     )
     shortfall_penalty = timeseries(
         json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
-        default = [-1.0 for t in 1:T],
+        default = [-1.0 for t = 1:T],
     )
 
     # Read buses
@@ -146,17 +140,14 @@ function _from_json(json; repair = true)
 
         # Read production cost curve
         K = length(dict["Production cost curve (MW)"])
-        curve_mw = hcat(
-            [timeseries(dict["Production cost curve (MW)"][k]) for k in 1:K]...,
-        )
-        curve_cost = hcat(
-            [timeseries(dict["Production cost curve (\$)"][k]) for k in 1:K]...,
-        )
+        curve_mw = hcat([timeseries(dict["Production cost curve (MW)"][k]) for k = 1:K]...)
+        curve_cost =
+            hcat([timeseries(dict["Production cost curve (\$)"][k]) for k = 1:K]...)
         min_power = curve_mw[:, 1]
         max_power = curve_mw[:, K]
         min_power_cost = curve_cost[:, 1]
         segments = CostSegment[]
-        for k in 2:K
+        for k = 2:K
             amount = curve_mw[:, k] - curve_mw[:, k-1]
             cost = (curve_cost[:, k] - curve_cost[:, k-1]) ./ amount
             replace!(cost, NaN => 0.0)
@@ -167,13 +158,10 @@ function _from_json(json; repair = true)
         startup_delays = scalar(dict["Startup delays (h)"], default = [1])
         startup_costs = scalar(dict["Startup costs (\$)"], default = [0.0])
         startup_categories = StartupCategory[]
-        for k in 1:length(startup_delays)
+        for k = 1:length(startup_delays)
             push!(
                 startup_categories,
-                StartupCategory(
-                    startup_delays[k] .* time_multiplier,
-                    startup_costs[k],
-                ),
+                StartupCategory(startup_delays[k] .* time_multiplier, startup_costs[k]),
             )
         end
 
@@ -186,8 +174,7 @@ function _from_json(json; repair = true)
         else
             initial_status !== nothing ||
                 error("unit $unit_name has initial power but no initial status")
-            initial_status != 0 ||
-                error("unit $unit_name has invalid initial status")
+            initial_status != 0 || error("unit $unit_name has invalid initial status")
             if initial_status < 0 && initial_power > 1e-3
                 error("unit $unit_name has invalid initial power")
             end
@@ -199,7 +186,7 @@ function _from_json(json; repair = true)
             bus,
             max_power,
             min_power,
-            timeseries(dict["Must run?"], default = [false for t in 1:T]),
+            timeseries(dict["Must run?"], default = [false for t = 1:T]),
             min_power_cost,
             segments,
             scalar(dict["Minimum uptime (h)"], default = 1) * time_multiplier,
@@ -210,14 +197,8 @@ function _from_json(json; repair = true)
             scalar(dict["Shutdown limit (MW)"], default = 1e6),
             initial_status,
             initial_power,
-            timeseries(
-                dict["Provides spinning reserves?"],
-                default = [true for t in 1:T],
-            ),
-            timeseries(
-                dict["Provides flexible capacity?"],
-                default = [true for t in 1:T],
-            ),
+            timeseries(dict["Provides spinning reserves?"], default = [true for t = 1:T]),
+            timeseries(dict["Provides flexible capacity?"], default = [true for t = 1:T]),
             startup_categories,
         )
         push!(bus.units, unit)
@@ -230,14 +211,10 @@ function _from_json(json; repair = true)
     if "Reserves" in keys(json)
         reserves.spinning =
             timeseries(json["Reserves"]["Spinning (MW)"], default = zeros(T))
-        reserves.upflexiramp = timeseries(
-            json["Reserves"]["Up-flexiramp (MW)"],
-            default = zeros(T),
-        )
-        reserves.dwflexiramp = timeseries(
-            json["Reserves"]["Down-flexiramp (MW)"],
-            default = zeros(T),
-        )
+        reserves.upflexiramp =
+            timeseries(json["Reserves"]["Up-flexiramp (MW)"], default = zeros(T))
+        reserves.dwflexiramp =
+            timeseries(json["Reserves"]["Down-flexiramp (MW)"], default = zeros(T))
     end
 
     # Read transmission lines
@@ -250,17 +227,11 @@ function _from_json(json; repair = true)
                 name_to_bus[dict["Target bus"]],
                 scalar(dict["Reactance (ohms)"]),
                 scalar(dict["Susceptance (S)"]),
-                timeseries(
-                    dict["Normal flow limit (MW)"],
-                    default = [1e8 for t in 1:T],
-                ),
-                timeseries(
-                    dict["Emergency flow limit (MW)"],
-                    default = [1e8 for t in 1:T],
-                ),
+                timeseries(dict["Normal flow limit (MW)"], default = [1e8 for t = 1:T]),
+                timeseries(dict["Emergency flow limit (MW)"], default = [1e8 for t = 1:T]),
                 timeseries(
                     dict["Flow limit penalty (\$/MW)"],
-                    default = [5000.0 for t in 1:T],
+                    default = [5000.0 for t = 1:T],
                 ),
             )
             name_to_line[line_name] = line
@@ -274,12 +245,10 @@ function _from_json(json; repair = true)
             affected_units = Unit[]
             affected_lines = TransmissionLine[]
             if "Affected lines" in keys(dict)
-                affected_lines =
-                    [name_to_line[l] for l in dict["Affected lines"]]
+                affected_lines = [name_to_line[l] for l in dict["Affected lines"]]
             end
             if "Affected units" in keys(dict)
-                affected_units =
-                    [name_to_unit[u] for u in dict["Affected units"]]
+                affected_units = [name_to_unit[u] for u in dict["Affected units"]]
             end
             cont = Contingency(cont_name, affected_lines, affected_units)
             push!(contingencies, cont)

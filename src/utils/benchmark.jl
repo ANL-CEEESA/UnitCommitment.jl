@@ -93,9 +93,8 @@ function _run_benchmarks(;
     trials,
 )
     combinations = [
-        (c, s.first, s.second, m.first, m.second, f.first, f.second, t) for
-        c in cases for s in optimizers for f in formulations for
-        m in methods for t in trials
+        (c, s.first, s.second, m.first, m.second, f.first, f.second, t) for c in cases
+        for s in optimizers for f in formulations for m in methods for t in trials
     ]
     shuffle!(combinations)
     if nworkers() > 1

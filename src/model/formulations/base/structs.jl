@@ -25,14 +25,7 @@ struct Formulation
         status_vars::StatusVarsFormulation = Gar1962.StatusVars(),
         transmission::TransmissionFormulation = ShiftFactorsFormulation(),
     )
-        return new(
-            prod_vars,
-            pwl_costs,
-            ramping,
-            startup_costs,
-            status_vars,
-            transmission,
-        )
+        return new(prod_vars, pwl_costs, ramping, startup_costs, status_vars, transmission)
     end
 end
 

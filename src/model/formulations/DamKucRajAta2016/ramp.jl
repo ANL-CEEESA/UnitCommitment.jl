@@ -33,9 +33,8 @@ function _add_ramp_eqs!(
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
 
-    for t in 1:model[:instance].time
-        time_invariant =
-            (t > 1) ? (abs(g.min_power[t] - g.min_power[t-1]) < 1e-7) : true
+    for t = 1:model[:instance].time
+        time_invariant = (t > 1) ? (abs(g.min_power[t] - g.min_power[t-1]) < 1e-7) : true
 
         # if t > 1 && !time_invariant
         #     @warn(
@@ -48,10 +47,8 @@ function _add_ramp_eqs!(
         # end
 
         max_prod_this_period =
-            prod_above[gn, t] + (
-                RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ?
-                reserve[gn, t] : 0.0
-            )
+            prod_above[gn, t] +
+            (RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ? reserve[gn, t] : 0.0)
         min_prod_last_period = 0.0
         if t > 1 && time_invariant
             min_prod_last_period = prod_above[gn, t-1]
@@ -61,8 +58,7 @@ function _add_ramp_eqs!(
             eq_str_ramp_up[gn, t] = @constraint(
                 model,
                 max_prod_this_period - min_prod_last_period <=
-                (SU - g.min_power[t] - RU) * switch_on[gn, t] +
-                RU * is_on[gn, t]
+                (SU - g.min_power[t] - RU) * switch_on[gn, t] + RU * is_on[gn, t]
             )
         elseif (t == 1 && is_initially_on) || (t > 1 && !time_invariant)
             if t > 1
@@ -103,8 +99,7 @@ function _add_ramp_eqs!(
             eq_str_ramp_down[gn, t] = @constraint(
                 model,
                 max_prod_last_period - min_prod_this_period <=
-                (SD - g.min_power[t] - RD) * switch_off[gn, t] +
-                RD * on_last_period
+                (SD - g.min_power[t] - RD) * switch_off[gn, t] + RD * on_last_period
             )
         elseif (t == 1 && is_initially_on) || (t > 1 && !time_invariant)
             # Add back in min power

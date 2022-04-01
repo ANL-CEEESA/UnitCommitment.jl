@@ -2,10 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _enforce_transmission(
-    model::JuMP.Model,
-    violations::Vector{_Violation},
-)::Nothing
+function _enforce_transmission(model::JuMP.Model, violations::Vector{_Violation})::Nothing
     for v in violations
         _enforce_transmission(
             model = model,

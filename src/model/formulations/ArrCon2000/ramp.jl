@@ -32,7 +32,7 @@ function _add_ramp_eqs!(
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
 
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         # Ramp up limit
         if t == 1
             if is_initially_on
@@ -49,12 +49,8 @@ function _add_ramp_eqs!(
             max_prod_this_period =
                 g.min_power[t] * is_on[gn, t] +
                 prod_above[gn, t] +
-                (
-                    RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ?
-                    reserve[gn, t] : 0.0
-                )
-            min_prod_last_period =
-                g.min_power[t-1] * is_on[gn, t-1] + prod_above[gn, t-1]
+                (RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ? reserve[gn, t] : 0.0)
+            min_prod_last_period = g.min_power[t-1] * is_on[gn, t-1] + prod_above[gn, t-1]
 
             # Equation (24) in Kneuven et al. (2020)
             eq_ramp_up[gn, t] = @constraint(
@@ -81,11 +77,10 @@ function _add_ramp_eqs!(
                 g.min_power[t-1] * is_on[gn, t-1] +
                 prod_above[gn, t-1] +
                 (
-                    RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN ?
-                    reserve[gn, t-1] : 0.0
+                    RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN ? reserve[gn, t-1] :
+                    0.0
                 )
-            min_prod_this_period =
-                g.min_power[t] * is_on[gn, t] + prod_above[gn, t]
+            min_prod_this_period = g.min_power[t] * is_on[gn, t] + prod_above[gn, t]
 
             # Equation (25) in Kneuven et al. (2020)
             eq_ramp_down[gn, t] = @constraint(

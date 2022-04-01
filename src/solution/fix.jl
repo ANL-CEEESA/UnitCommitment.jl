@@ -14,12 +14,10 @@ function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
     for g in instance.units
-        for t in 1:T
+        for t = 1:T
             is_on_value = round(solution["Is on"][g.name][t])
-            prod_value =
-                round(solution["Production (MW)"][g.name][t], digits = 5)
-            reserve_value =
-                round(solution["Reserve (MW)"][g.name][t], digits = 5)
+            prod_value = round(solution["Production (MW)"][g.name][t], digits = 5)
+            reserve_value = round(solution["Reserve (MW)"][g.name][t], digits = 5)
             JuMP.fix(is_on[g.name, t], is_on_value, force = true)
             JuMP.fix(
                 prod_above[g.name, t],

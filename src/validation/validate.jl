@@ -24,10 +24,7 @@ This function is implemented independently from the optimization model in
 producing valid solutions. It can also be used to verify the solutions produced
 by other optimization packages.
 """
-function validate(
-    instance::UnitCommitmentInstance,
-    solution::Union{Dict,OrderedDict},
-)::Bool
+function validate(instance::UnitCommitmentInstance, solution::Union{Dict,OrderedDict})::Bool
     err_count = 0
     err_count += _validate_units(instance, solution)
     err_count += _validate_reserve_and_demand(instance, solution)
@@ -50,13 +47,12 @@ function _validate_units(instance, solution; tol = 0.01)
         actual_startup_cost = solution["Startup cost (\$)"][unit.name]
         is_on = bin(solution["Is on"][unit.name])
 
-        for t in 1:instance.time
+        for t = 1:instance.time
             # Auxiliary variables
             if t == 1
                 is_starting_up = (unit.initial_status < 0) && is_on[t]
                 is_shutting_down = (unit.initial_status > 0) && !is_on[t]
-                ramp_up =
-                    max(0, production[t] + reserve[t] - unit.initial_power)
+                ramp_up = max(0, production[t] + reserve[t] - unit.initial_power)
                 ramp_down = max(0, unit.initial_power - production[t])
             else
                 is_starting_up = !is_on[t-1] && is_on[t]
@@ -90,11 +86,7 @@ function _validate_units(instance, solution; tol = 0.01)
 
             # Verify must-run
             if !is_on[t] && unit.must_run[t]
-                @error @sprintf(
-                    "Must-run unit %s is offline at time %d",
-                    unit.name,
-                    t
-                )
+                @error @sprintf("Must-run unit %s is offline at time %d", unit.name, t)
                 err_count += 1
             end
 
@@ -121,8 +113,7 @@ function _validate_units(instance, solution; tol = 0.01)
             end
 
             # If unit is on, must produce at most its maximum power
-            if is_on[t] &&
-               (production[t] + reserve[t] > unit.max_power[t] + tol)
+            if is_on[t] && (production[t] + reserve[t] > unit.max_power[t] + tol)
                 @error @sprintf(
                     "Unit %s produces above its maximum limit at time %d (%.2f + %.2f> %.2f)",
                     unit.name,
@@ -136,11 +127,7 @@ function _validate_units(instance, solution; tol = 0.01)
 
             # If unit is off, must produce zero
             if !is_on[t] && production[t] + reserve[t] > tol
-                @error @sprintf(
-                    "Unit %s produces power at time %d while off",
-                    unit.name,
-                    t
-                )
+                @error @sprintf("Unit %s produces power at time %d while off", unit.name, t)
                 err_count += 1
             end
 
@@ -169,9 +156,7 @@ function _validate_units(instance, solution; tol = 0.01)
             end
 
             # Ramp-up limit
-            if !is_starting_up &&
-               !is_shutting_down &&
-               (ramp_up > unit.ramp_up_limit + tol)
+            if !is_starting_up && !is_shutting_down && (ramp_up > unit.ramp_up_limit + tol)
                 @error @sprintf(
                     "Unit %s exceeds ramp up limit at time %d (%.2f > %.2f)",
                     unit.name,
@@ -201,7 +186,7 @@ function _validate_units(instance, solution; tol = 0.01)
 
                 # Calculate how much time the unit has been offline
                 time_down = 0
-                for k in 1:(t-1)
+                for k = 1:(t-1)
                     if !is_on[t-k]
                         time_down += 1
                     else
@@ -235,7 +220,7 @@ function _validate_units(instance, solution; tol = 0.01)
 
                 # Calculate how much time the unit has been online
                 time_up = 0
-                for k in 1:(t-1)
+                for k = 1:(t-1)
                     if is_on[t-k]
                         time_up += 1
                     else
@@ -288,7 +273,7 @@ end
 
 function _validate_reserve_and_demand(instance, solution, tol = 0.01)
     err_count = 0
-    for t in 1:instance.time
+    for t = 1:instance.time
         load_curtail = 0
         fixed_load = sum(b.load[t] for b in instance.buses)
         ps_load = 0
@@ -298,13 +283,10 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 ps in instance.price_sensitive_loads
             )
         end
-        production =
-            sum(solution["Production (MW)"][g.name][t] for g in instance.units)
+        production = sum(solution["Production (MW)"][g.name][t] for g in instance.units)
         if "Load curtail (MW)" in keys(solution)
-            load_curtail = sum(
-                solution["Load curtail (MW)"][b.name][t] for
-                b in instance.buses
-            )
+            load_curtail =
+                sum(solution["Load curtail (MW)"][b.name][t] for b in instance.buses)
         end
         balance = fixed_load - load_curtail - production + ps_load
 
@@ -321,12 +303,13 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
             err_count += 1
         end
 
-        
+
         # Verify flexiramp solutions only if either of the up-flexiramp and  
         # down-flexiramp requirements is not a default array of zeros
-        if instance.reserves.upflexiramp != zeros(instance.time) || instance.reserves.dwflexiramp != zeros(instance.time)
+        if instance.reserves.upflexiramp != zeros(instance.time) ||
+           instance.reserves.dwflexiramp != zeros(instance.time)
             upflexiramp =
-            sum(solution["Up-flexiramp (MW)"][g.name][t] for g in instance.units)
+                sum(solution["Up-flexiramp (MW)"][g.name][t] for g in instance.units)
             upflexiramp_shortfall =
                 (instance.flexiramp_shortfall_penalty[t] >= 0) ?
                 solution["Up-flexiramp shortfall (MW)"][t] : 0
@@ -341,7 +324,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 )
                 err_count += 1
             end
-        
+
 
             dwflexiramp =
                 sum(solution["Down-flexiramp (MW)"][g.name][t] for g in instance.units)
@@ -359,11 +342,10 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 )
                 err_count += 1
             end
-        # Verify spinning reserve solutions only if both up-flexiramp and  
-        # down-flexiramp requirements are arrays of zeros.
+            # Verify spinning reserve solutions only if both up-flexiramp and  
+            # down-flexiramp requirements are arrays of zeros.
         else
-            reserve =
-                sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
+            reserve = sum(solution["Reserve (MW)"][g.name][t] for g in instance.units)
             reserve_shortfall =
                 (instance.shortfall_penalty[t] >= 0) ?
                 solution["Reserve shortfall (MW)"][t] : 0
@@ -379,7 +361,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 err_count += 1
             end
         end
- 
+
     end
 
     return err_count

@@ -8,13 +8,9 @@ function _add_transmission_line!(
     f::ShiftFactorsFormulation,
 )::Nothing
     overflow = _init(model, :overflow)
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         overflow[lm.name, t] = @variable(model, lower_bound = 0)
-        add_to_expression!(
-            model[:obj],
-            overflow[lm.name, t],
-            lm.flow_limit_penalty[t],
-        )
+        add_to_expression!(model[:obj], overflow[lm.name, t], lm.flow_limit_penalty[t])
     end
     return
 end

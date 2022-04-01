@@ -8,7 +8,7 @@ function _add_flexiramp_vars!(model::JuMP.Model, g::Unit)::Nothing
     mfg = _init(model, :mfg)
     dwflexiramp = _init(model, :dwflexiramp)
     dwflexiramp_shortfall = _init(model, :dwflexiramp_shortfall)
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         # maximum feasible generation, \bar{g_{its}} in Wang & Hobbs (2016)
         mfg[g.name, t] = @variable(model, lower_bound = 0)
         if g.provides_flexiramp_reserves[t]
@@ -51,37 +51,28 @@ function _add_ramp_eqs!(
     dwflexiramp = model[:dwflexiramp]
     mfg = model[:mfg]
 
-    for t in 1:model[:instance].time
-        @constraint(
-            model,
-            prod_above[gn, t] + (is_on[gn, t] * minp[t]) <= mfg[gn, t]
-        ) # Eq. (19) in Wang & Hobbs (2016)
+    for t = 1:model[:instance].time
+        @constraint(model, prod_above[gn, t] + (is_on[gn, t] * minp[t]) <= mfg[gn, t]) # Eq. (19) in Wang & Hobbs (2016)
         @constraint(model, mfg[gn, t] <= is_on[gn, t] * maxp[t]) # Eq. (22) in Wang & Hobbs (2016)
         if t != model[:instance].time
             @constraint(
                 model,
                 minp[t] * (is_on[gn, t+1] + is_on[gn, t] - 1) <=
-                prod_above[gn, t] - dwflexiramp[gn, t] +
-                (is_on[gn, t] * minp[t])
+                prod_above[gn, t] - dwflexiramp[gn, t] + (is_on[gn, t] * minp[t])
             ) # first inequality of Eq. (20) in Wang & Hobbs (2016)
             @constraint(
                 model,
-                prod_above[gn, t] - dwflexiramp[gn, t] +
-                (is_on[gn, t] * minp[t]) <=
+                prod_above[gn, t] - dwflexiramp[gn, t] + (is_on[gn, t] * minp[t]) <=
                 mfg[gn, t+1] + (maxp[t] * (1 - is_on[gn, t+1]))
             ) # second inequality of Eq. (20) in Wang & Hobbs (2016)
             @constraint(
                 model,
                 minp[t] * (is_on[gn, t+1] + is_on[gn, t] - 1) <=
-                prod_above[gn, t] +
-                upflexiramp[gn, t] +
-                (is_on[gn, t] * minp[t])
+                prod_above[gn, t] + upflexiramp[gn, t] + (is_on[gn, t] * minp[t])
             ) # first inequality of Eq. (21) in Wang & Hobbs (2016)
             @constraint(
                 model,
-                prod_above[gn, t] +
-                upflexiramp[gn, t] +
-                (is_on[gn, t] * minp[t]) <=
+                prod_above[gn, t] + upflexiramp[gn, t] + (is_on[gn, t] * minp[t]) <=
                 mfg[gn, t+1] + (maxp[t] * (1 - is_on[gn, t+1]))
             ) # second inequality of Eq. (21) in Wang & Hobbs (2016)
             if t != 1
@@ -113,8 +104,7 @@ function _add_ramp_eqs!(
                 ) # Eq. (23) in Wang & Hobbs (2016) for the first time period
                 @constraint(
                     model,
-                    initial_power -
-                    (prod_above[gn, t] + (is_on[gn, t] * minp[t])) <=
+                    initial_power - (prod_above[gn, t] + (is_on[gn, t] * minp[t])) <=
                     RD * is_on[gn, t] +
                     SD * (is_initially_on - is_on[gn, t]) +
                     maxp[t] * (1 - is_initially_on)
@@ -123,8 +113,7 @@ function _add_ramp_eqs!(
             @constraint(
                 model,
                 mfg[gn, t] <=
-                (SD * (is_on[gn, t] - is_on[gn, t+1])) +
-                (maxp[t] * is_on[gn, t+1])
+                (SD * (is_on[gn, t] - is_on[gn, t+1])) + (maxp[t] * is_on[gn, t+1])
             ) # Eq. (24) in Wang & Hobbs (2016)
             @constraint(
                 model,
@@ -152,15 +141,13 @@ function _add_ramp_eqs!(
             ) # second inequality of Eq. (27) in Wang & Hobbs (2016)
             @constraint(
                 model,
-                -maxp[t] * is_on[gn, t] + minp[t] * is_on[gn, t+1] <=
-                upflexiramp[gn, t]
+                -maxp[t] * is_on[gn, t] + minp[t] * is_on[gn, t+1] <= upflexiramp[gn, t]
             ) # first inequality of Eq. (28) in Wang & Hobbs (2016)
             @constraint(model, upflexiramp[gn, t] <= maxp[t] * is_on[gn, t+1]) # second inequality of Eq. (28) in Wang & Hobbs (2016)
             @constraint(model, -maxp[t] * is_on[gn, t+1] <= dwflexiramp[gn, t]) # first inequality of Eq. (29) in Wang & Hobbs (2016)
             @constraint(
                 model,
-                dwflexiramp[gn, t] <=
-                (maxp[t] * is_on[gn, t]) - (minp[t] * is_on[gn, t+1])
+                dwflexiramp[gn, t] <= (maxp[t] * is_on[gn, t]) - (minp[t] * is_on[gn, t+1])
             ) # second inequality of Eq. (29) in Wang & Hobbs (2016)
         else
             @constraint(

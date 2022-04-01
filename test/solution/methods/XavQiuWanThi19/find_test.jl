@@ -7,7 +7,7 @@ import UnitCommitment: _Violation, _offer, _query
 
 @testset "find_violations" begin
     instance = UnitCommitment.read_benchmark("test/case14")
-    for line in instance.lines, t in 1:instance.time
+    for line in instance.lines, t = 1:instance.time
         line.normal_flow_limit[t] = 1.0
         line.emergency_flow_limit[t] = 1.0
     end
@@ -20,8 +20,8 @@ import UnitCommitment: _Violation, _offer, _query
         buses = instance.buses,
         isf = isf,
     )
-    inj = [1000.0 for b in 1:13, t in 1:instance.time]
-    overflow = [0.0 for l in instance.lines, t in 1:instance.time]
+    inj = [1000.0 for b = 1:13, t = 1:instance.time]
+    overflow = [0.0 for l in instance.lines, t = 1:instance.time]
     violations = UnitCommitment._find_violations(
         instance = instance,
         net_injections = inj,

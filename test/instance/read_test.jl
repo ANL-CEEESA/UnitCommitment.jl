@@ -19,9 +19,9 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test instance.lines[5].target.name == "b5"
     @test instance.lines[5].reactance ≈ 0.17388
     @test instance.lines[5].susceptance ≈ 10.037550333
-    @test instance.lines[5].normal_flow_limit == [1e8 for t in 1:4]
-    @test instance.lines[5].emergency_flow_limit == [1e8 for t in 1:4]
-    @test instance.lines[5].flow_limit_penalty == [5e3 for t in 1:4]
+    @test instance.lines[5].normal_flow_limit == [1e8 for t = 1:4]
+    @test instance.lines[5].emergency_flow_limit == [1e8 for t = 1:4]
+    @test instance.lines[5].flow_limit_penalty == [5e3 for t = 1:4]
     @test instance.lines_by_name["l5"].name == "l5"
 
     @test instance.lines[1].name == "l1"
@@ -29,9 +29,9 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test instance.lines[1].target.name == "b2"
     @test instance.lines[1].reactance ≈ 0.059170
     @test instance.lines[1].susceptance ≈ 29.496860773945
-    @test instance.lines[1].normal_flow_limit == [300.0 for t in 1:4]
-    @test instance.lines[1].emergency_flow_limit == [400.0 for t in 1:4]
-    @test instance.lines[1].flow_limit_penalty == [1e3 for t in 1:4]
+    @test instance.lines[1].normal_flow_limit == [300.0 for t = 1:4]
+    @test instance.lines[1].emergency_flow_limit == [400.0 for t = 1:4]
+    @test instance.lines[1].flow_limit_penalty == [1e3 for t = 1:4]
 
     @test instance.buses[9].name == "b9"
     @test instance.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
@@ -44,12 +44,12 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.ramp_down_limit == 1e6
     @test unit.startup_limit == 1e6
     @test unit.shutdown_limit == 1e6
-    @test unit.must_run == [false for t in 1:4]
-    @test unit.min_power_cost == [1400.0 for t in 1:4]
+    @test unit.must_run == [false for t = 1:4]
+    @test unit.min_power_cost == [1400.0 for t = 1:4]
     @test unit.min_uptime == 1
     @test unit.min_downtime == 1
-    @test unit.provides_spinning_reserves == [true for t in 1:4]
-    for t in 1:1
+    @test unit.provides_spinning_reserves == [true for t = 1:4]
+    for t = 1:1
         @test unit.cost_segments[1].mw[t] == 10.0
         @test unit.cost_segments[2].mw[t] == 20.0
         @test unit.cost_segments[3].mw[t] == 5.0
@@ -68,7 +68,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
     unit = instance.units[2]
     @test unit.name == "g2"
-    @test unit.must_run == [false for t in 1:4]
+    @test unit.must_run == [false for t = 1:4]
 
     unit = instance.units[3]
     @test unit.name == "g3"
@@ -77,12 +77,12 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.ramp_down_limit == 70.0
     @test unit.startup_limit == 70.0
     @test unit.shutdown_limit == 70.0
-    @test unit.must_run == [true for t in 1:4]
-    @test unit.min_power_cost == [0.0 for t in 1:4]
+    @test unit.must_run == [true for t = 1:4]
+    @test unit.min_power_cost == [0.0 for t = 1:4]
     @test unit.min_uptime == 1
     @test unit.min_downtime == 1
-    @test unit.provides_spinning_reserves == [true for t in 1:4]
-    for t in 1:4
+    @test unit.provides_spinning_reserves == [true for t = 1:4]
+    for t = 1:4
         @test unit.cost_segments[1].mw[t] ≈ 33
         @test unit.cost_segments[2].mw[t] ≈ 33
         @test unit.cost_segments[3].mw[t] ≈ 34
@@ -101,8 +101,8 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     load = instance.price_sensitive_loads[1]
     @test load.name == "ps1"
     @test load.bus.name == "b3"
-    @test load.revenue == [100.0 for t in 1:4]
-    @test load.demand == [50.0 for t in 1:4]
+    @test load.revenue == [100.0 for t = 1:4]
+    @test load.demand == [50.0 for t = 1:4]
     @test instance.price_sensitive_loads_by_name["ps1"].name == "ps1"
 end
 

@@ -27,10 +27,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
             @info "Time limit exceeded"
             break
         end
-        @info @sprintf(
-            "Setting MILP time limit to %.2f seconds",
-            time_remaining
-        )
+        @info @sprintf("Setting MILP time limit to %.2f seconds", time_remaining)
         JuMP.set_time_limit_sec(model, time_remaining)
         @info "Solving MILP..."
         JuMP.optimize!(model)

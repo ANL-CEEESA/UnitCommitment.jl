@@ -10,7 +10,7 @@ function _add_status_vars!(
     is_on = _init(model, :is_on)
     switch_on = _init(model, :switch_on)
     switch_off = _init(model, :switch_off)
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         if g.must_run[t]
             is_on[g.name, t] = 1.0
             switch_on[g.name, t] = (t == 1 ? 1.0 - _is_initially_on(g) : 0.0)
@@ -34,7 +34,7 @@ function _add_status_eqs!(
     is_on = model[:is_on]
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
-    for t in 1:model[:instance].time
+    for t = 1:model[:instance].time
         if !g.must_run[t]
             # Link binary variables
             if t == 1
@@ -51,10 +51,8 @@ function _add_status_eqs!(
                 )
             end
             # Cannot switch on and off at the same time
-            eq_switch_on_off[g.name, t] = @constraint(
-                model,
-                switch_on[g.name, t] + switch_off[g.name, t] <= 1
-            )
+            eq_switch_on_off[g.name, t] =
+                @constraint(model, switch_on[g.name, t] + switch_off[g.name, t] <= 1)
         end
     end
     return
