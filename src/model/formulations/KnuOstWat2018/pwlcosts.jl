@@ -26,12 +26,12 @@ function _add_production_piecewise_linear_eqs!(
     switch_on = model[:switch_on]
     switch_off = model[:switch_off]
 
-    for t = 1:T
-        for k = 1:K
+    for t in 1:T
+        for k in 1:K
             # Pbar^{k-1)
             Pbar0 =
                 g.min_power[t] +
-                (k > 1 ? sum(g.cost_segments[ell].mw[t] for ell = 1:k-1) : 0.0)
+                (k > 1 ? sum(g.cost_segments[ell].mw[t] for ell in 1:k-1) : 0.0)
             # Pbar^k
             Pbar1 = g.cost_segments[k].mw[t] + Pbar0
 
@@ -61,7 +61,8 @@ function _add_production_piecewise_linear_eqs!(
                 eq_segprod_limit_a[gn, t, k] = @constraint(
                     model,
                     segprod[gn, t, k] <=
-                    g.cost_segments[k].mw[t] * is_on[gn, t] - Cv * switch_on[gn, t] -
+                    g.cost_segments[k].mw[t] * is_on[gn, t] -
+                    Cv * switch_on[gn, t] -
                     (t < T ? Cw * switch_off[gn, t+1] : 0.0)
                 )
             else
@@ -69,7 +70,8 @@ function _add_production_piecewise_linear_eqs!(
                 eq_segprod_limit_b[gn, t, k] = @constraint(
                     model,
                     segprod[gn, t, k] <=
-                    g.cost_segments[k].mw[t] * is_on[gn, t] - Cv * switch_on[gn, t] -
+                    g.cost_segments[k].mw[t] * is_on[gn, t] -
+                    Cv * switch_on[gn, t] -
                     (t < T ? max(0, Cv - Cw) * switch_off[gn, t+1] : 0.0)
                 )
 
@@ -85,12 +87,18 @@ function _add_production_piecewise_linear_eqs!(
 
             # Definition of production
             # Equation (43) in Kneuven et al. (2020)
-            eq_prod_above_def[gn, t] =
-                @constraint(model, prod_above[gn, t] == sum(segprod[gn, t, k] for k = 1:K))
+            eq_prod_above_def[gn, t] = @constraint(
+                model,
+                prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
+            )
 
             # Objective function
             # Equation (44) in Kneuven et al. (2020)
-            add_to_expression!(model[:obj], segprod[gn, t, k], g.cost_segments[k].cost[t])
+            add_to_expression!(
+                model[:obj],
+                segprod[gn, t, k],
+                g.cost_segments[k].cost[t],
+            )
 
             # Also add an explicit upper bound on segprod to make the solver's
             # work a bit easier

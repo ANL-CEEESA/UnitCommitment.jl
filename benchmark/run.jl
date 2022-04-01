@@ -129,15 +129,19 @@ formulations = Dict(
 const gap_limit = parse(Float64, args["--gap"])
 const time_limit = parse(Float64, args["--time-limit"])
 methods = Dict(
-    "default" =>
-        XavQiuWanThi2019.Method(time_limit = time_limit, gap_limit = gap_limit),
+    "default" => XavQiuWanThi2019.Method(
+        time_limit = time_limit,
+        gap_limit = gap_limit,
+    ),
 )
 
 # MIP solvers
 # -----------------------------------------------------------------------------
 optimizers = Dict(
-    "gurobi" =>
-        optimizer_with_attributes(Gurobi.Optimizer, "Threads" => Threads.nthreads()),
+    "gurobi" => optimizer_with_attributes(
+        Gurobi.Optimizer,
+        "Threads" => Threads.nthreads(),
+    ),
 )
 
 # Parse command line arguments

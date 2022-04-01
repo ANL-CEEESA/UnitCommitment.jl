@@ -46,7 +46,7 @@ _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall)
-    for t = 1:model[:instance].time
+    for t in 1:model[:instance].time
         if g.provides_spinning_reserves[t]
             reserve[g.name, t] = @variable(model, lower_bound = 0)
         else
@@ -61,7 +61,7 @@ end
 
 function _add_reserve_eqs!(model::JuMP.Model, g::Unit)::Nothing
     reserve = model[:reserve]
-    for t = 1:model[:instance].time
+    for t in 1:model[:instance].time
         add_to_expression!(expr_reserve[g.bus.name, t], reserve[g.name, t], 1.0)
     end
     return
@@ -69,8 +69,8 @@ end
 
 function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
     startup = _init(model, :startup)
-    for t = 1:model[:instance].time
-        for s = 1:length(g.startup_categories)
+    for t in 1:model[:instance].time
+        for s in 1:length(g.startup_categories)
             startup[g.name, t, s] = @variable(model, binary = true)
         end
     end
@@ -86,7 +86,7 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
     T = model[:instance].time
-    for t = 1:T
+    for t in 1:T
         # Startup limit
         eq_startup_limit[g.name, t] = @constraint(
             model,
@@ -96,14 +96,16 @@ function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit)::Nothing
         )
         # Shutdown limit
         if g.initial_power > g.shutdown_limit
-            eq_shutdown_limit[g.name, 0] = @constraint(model, switch_off[g.name, 1] <= 0)
+            eq_shutdown_limit[g.name, 0] =
+                @constraint(model, switch_off[g.name, 1] <= 0)
         end
         if t < T
             eq_shutdown_limit[g.name, t] = @constraint(
                 model,
                 prod_above[g.name, t] <=
                 (g.max_power[t] - g.min_power[t]) * is_on[g.name, t] -
-                max(0, g.max_power[t] - g.shutdown_limit) * switch_off[g.name, t+1]
+                max(0, g.max_power[t] - g.shutdown_limit) *
+                switch_off[g.name, t+1]
             )
         end
     end
@@ -119,7 +121,7 @@ function _add_ramp_eqs!(
     reserve = model[:reserve]
     eq_ramp_up = _init(model, :eq_ramp_up)
     eq_ramp_down = _init(model, :eq_ramp_down)
-    for t = 1:model[:instance].time
+    for t in 1:model[:instance].time
         # Ramp up limit 
         if t == 1
             if _is_initially_on(g) == 1
@@ -149,7 +151,8 @@ function _add_ramp_eqs!(
         else
             eq_ramp_down[g.name, t] = @constraint(
                 model,
-                prod_above[g.name, t] >= prod_above[g.name, t-1] - g.ramp_down_limit
+                prod_above[g.name, t] >=
+                prod_above[g.name, t-1] - g.ramp_down_limit
             )
         end
     end
@@ -162,18 +165,18 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     eq_min_uptime = _init(model, :eq_min_uptime)
     eq_min_downtime = _init(model, :eq_min_downtime)
     T = model[:instance].time
-    for t = 1:T
+    for t in 1:T
         # Minimum up-time
         eq_min_uptime[g.name, t] = @constraint(
             model,
-            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <=
-            is_on[g.name, t]
+            sum(switch_on[g.name, i] for i in (t-g.min_uptime+1):t if i >= 1) <= is_on[g.name, t]
         )
         # Minimum down-time
         eq_min_downtime[g.name, t] = @constraint(
             model,
-            sum(switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1) <=
-            1 - is_on[g.name, t]
+            sum(
+                switch_off[g.name, i] for i in (t-g.min_downtime+1):t if i >= 1
+            ) <= 1 - is_on[g.name, t]
         )
         # Minimum up/down-time for initial periods
         if t == 1
@@ -200,7 +203,7 @@ end
 
 function _add_net_injection_eqs!(model::JuMP.Model, g::Unit)::Nothing
     expr_net_injection = model[:expr_net_injection]
-    for t = 1:model[:instance].time
+    for t in 1:model[:instance].time
         # Add to net injection expression
         add_to_expression!(
             expr_net_injection[g.bus.name, t],

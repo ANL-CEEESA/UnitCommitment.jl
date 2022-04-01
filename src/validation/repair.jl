@@ -18,7 +18,7 @@ function repair!(instance::UnitCommitmentInstance)::Int
     for g in instance.units
 
         # Startup costs and delays must be increasing
-        for s = 2:length(g.startup_categories)
+        for s in 2:length(g.startup_categories)
             if g.startup_categories[s].delay <= g.startup_categories[s-1].delay
                 prev_value = g.startup_categories[s].delay
                 new_value = g.startup_categories[s-1].delay + 1
@@ -38,9 +38,9 @@ function repair!(instance::UnitCommitmentInstance)::Int
             end
         end
 
-        for t = 1:instance.time
+        for t in 1:instance.time
             # Production cost curve should be convex
-            for k = 2:length(g.cost_segments)
+            for k in 2:length(g.cost_segments)
                 cost = g.cost_segments[k].cost[t]
                 min_cost = g.cost_segments[k-1].cost[t]
                 if cost < min_cost - 1e-5

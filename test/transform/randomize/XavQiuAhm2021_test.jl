@@ -28,7 +28,10 @@ test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
         test_approx(bus.load[1] / prev_system_load[1], 0.012)
 
         Random.seed!(42)
-        randomize!(instance, XavQiuAhm2021.Randomization(randomize_load_profile = false))
+        randomize!(
+            instance,
+            XavQiuAhm2021.Randomization(randomize_load_profile = false),
+        )
 
         # Check randomized costs
         test_approx(unit.min_power_cost[1], 831.977)

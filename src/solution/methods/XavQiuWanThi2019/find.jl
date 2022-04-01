@@ -4,7 +4,11 @@
 
 import Base.Threads: @threads
 
-function _find_violations(model::JuMP.Model; max_per_line::Int, max_per_period::Int)
+function _find_violations(
+    model::JuMP.Model;
+    max_per_line::Int,
+    max_per_period::Int,
+)
     instance = model[:instance]
     net_injection = model[:net_injection]
     overflow = model[:overflow]
@@ -14,10 +18,13 @@ function _find_violations(model::JuMP.Model; max_per_line::Int, max_per_period::
     time_screening = @elapsed begin
         non_slack_buses = [b for b in instance.buses if b.offset > 0]
         net_injection_values = [
-            value(net_injection[b.name, t]) for b in non_slack_buses, t = 1:instance.time
+            value(net_injection[b.name, t]) for b in non_slack_buses,
+            t in 1:instance.time
         ]
-        overflow_values =
-            [value(overflow[lm.name, t]) for lm in instance.lines, t = 1:instance.time]
+        overflow_values = [
+            value(overflow[lm.name, t]) for lm in instance.lines,
+            t in 1:instance.time
+        ]
         violations = UnitCommitment._find_violations(
             instance = instance,
             net_injections = net_injection_values,
@@ -28,7 +35,10 @@ function _find_violations(model::JuMP.Model; max_per_line::Int, max_per_period::
             max_per_period = max_per_period,
         )
     end
-    @info @sprintf("Verified transmission limits in %.2f seconds", time_screening)
+    @info @sprintf(
+        "Verified transmission limits in %.2f seconds",
+        time_screening
+    )
     return violations
 end
 
@@ -71,8 +81,10 @@ function _find_violations(;
     size(lodf) == (L, L) || error("lodf has incorrect size")
 
     filters = Dict(
-        t => _ViolationFilter(max_total = max_per_period, max_per_line = max_per_line)
-        for t = 1:T
+        t => _ViolationFilter(
+            max_total = max_per_period,
+            max_per_line = max_per_line,
+        ) for t in 1:T
     )
 
     pre_flow::Array{Float64} = zeros(L, K)           # pre_flow[lm, thread]
@@ -80,30 +92,35 @@ function _find_violations(;
     pre_v::Array{Float64} = zeros(L, K)              # pre_v[lm, thread]
     post_v::Array{Float64} = zeros(L, L, K)          # post_v[lm, lc, thread]
 
-    normal_limits::Array{Float64,2} =
-        [l.normal_flow_limit[t] + overflow[l.offset, t] for l in instance.lines, t = 1:T]
+    normal_limits::Array{Float64,2} = [
+        l.normal_flow_limit[t] + overflow[l.offset, t] for
+        l in instance.lines, t in 1:T
+    ]
 
-    emergency_limits::Array{Float64,2} =
-        [l.emergency_flow_limit[t] + overflow[l.offset, t] for l in instance.lines, t = 1:T]
+    emergency_limits::Array{Float64,2} = [
+        l.emergency_flow_limit[t] + overflow[l.offset, t] for
+        l in instance.lines, t in 1:T
+    ]
 
     is_vulnerable::Array{Bool} = zeros(Bool, L)
     for c in instance.contingencies
         is_vulnerable[c.lines[1].offset] = true
     end
 
-    @threads for t = 1:T
+    @threads for t in 1:T
         k = threadid()
 
         # Pre-contingency flows
         pre_flow[:, k] = isf * net_injections[:, t]
 
         # Post-contingency flows
-        for lc = 1:L, lm = 1:L
-            post_flow[lm, lc, k] = pre_flow[lm, k] + pre_flow[lc, k] * lodf[lm, lc]
+        for lc in 1:L, lm in 1:L
+            post_flow[lm, lc, k] =
+                pre_flow[lm, k] + pre_flow[lc, k] * lodf[lm, lc]
         end
 
         # Pre-contingency violations
-        for lm = 1:L
+        for lm in 1:L
             pre_v[lm, k] = max(
                 0.0,
                 pre_flow[lm, k] - normal_limits[lm, t],
@@ -112,7 +129,7 @@ function _find_violations(;
         end
 
         # Post-contingency violations
-        for lc = 1:L, lm = 1:L
+        for lc in 1:L, lm in 1:L
             post_v[lm, lc, k] = max(
                 0.0,
                 post_flow[lm, lc, k] - emergency_limits[lm, t],
@@ -121,7 +138,7 @@ function _find_violations(;
         end
 
         # Offer pre-contingency violations
-        for lm = 1:L
+        for lm in 1:L
             if pre_v[lm, k] > 1e-5
                 _offer(
                     filters[t],
@@ -136,7 +153,7 @@ function _find_violations(;
         end
 
         # Offer post-contingency violations
-        for lm = 1:L, lc = 1:L
+        for lm in 1:L, lc in 1:L
             if post_v[lm, lc, k] > 1e-5 && is_vulnerable[lc]
                 _offer(
                     filters[t],
@@ -152,7 +169,7 @@ function _find_violations(;
     end
 
     violations = _Violation[]
-    for t = 1:instance.time
+    for t in 1:instance.time
         append!(violations, _query(filters[t]))
     end
 

@@ -4,9 +4,11 @@
 
 function _offer(filter::_ViolationFilter, v::_Violation)::Nothing
     if v.monitored_line.offset ∉ keys(filter.queues)
-        filter.queues[v.monitored_line.offset] = PriorityQueue{_Violation,Float64}()
+        filter.queues[v.monitored_line.offset] =
+            PriorityQueue{_Violation,Float64}()
     end
-    q::PriorityQueue{_Violation,Float64} = filter.queues[v.monitored_line.offset]
+    q::PriorityQueue{_Violation,Float64} =
+        filter.queues[v.monitored_line.offset]
     if length(q) < filter.max_per_line
         enqueue!(q, v => v.amount)
     else

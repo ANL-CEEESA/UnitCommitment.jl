@@ -96,7 +96,10 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "$(length(instance.buses)) buses, ")
     print(io, "$(length(instance.lines)) lines, ")
     print(io, "$(length(instance.contingencies)) contingencies, ")
-    print(io, "$(length(instance.price_sensitive_loads)) price sensitive loads, ")
+    print(
+        io,
+        "$(length(instance.price_sensitive_loads)) price sensitive loads, ",
+    )
     print(io, "$(instance.time) time steps")
     print(io, ")")
     return

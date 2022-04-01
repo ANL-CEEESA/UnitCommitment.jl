@@ -41,7 +41,7 @@ function read_egret_solution(path::String)::OrderedDict
         startup_cost[gen_name] = zeros(T)
         production_cost[gen_name] = zeros(T)
         if "commitment_cost" in keys(gen_dict)
-            for t = 1:T
+            for t in 1:T
                 x = gen_dict["commitment"]["values"][t]
                 commitment_cost = gen_dict["commitment_cost"]["values"][t]
                 prod_above_cost = gen_dict["production_cost"]["values"][t]

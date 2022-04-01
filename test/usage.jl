@@ -6,7 +6,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON
 
 @testset "build_model" begin
     instance = UnitCommitment.read_benchmark("test/case14")
-    for line in instance.lines, t = 1:4
+    for line in instance.lines, t in 1:4
         line.normal_flow_limit[t] = 10.0
     end
     optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)

@@ -117,7 +117,10 @@ Base.@kwdef struct Randomization
     randomize_load_share::Bool = true
 end
 
-function _randomize_costs(instance::UnitCommitmentInstance, distribution)::Nothing
+function _randomize_costs(
+    instance::UnitCommitmentInstance,
+    distribution,
+)::Nothing
     for unit in instance.units
         α = rand(distribution)
         unit.min_power_cost *= α
@@ -131,11 +134,17 @@ function _randomize_costs(instance::UnitCommitmentInstance, distribution)::Nothi
     return
 end
 
-function _randomize_load_share(instance::UnitCommitmentInstance, distribution)::Nothing
+function _randomize_load_share(
+    instance::UnitCommitmentInstance,
+    distribution,
+)::Nothing
     α = rand(distribution, length(instance.buses))
-    for t = 1:instance.time
+    for t in 1:instance.time
         total = sum(bus.load[t] for bus in instance.buses)
-        den = sum(bus.load[t] / total * α[i] for (i, bus) in enumerate(instance.buses))
+        den = sum(
+            bus.load[t] / total * α[i] for
+            (i, bus) in enumerate(instance.buses)
+        )
         for (i, bus) in enumerate(instance.buses)
             bus.load[t] *= α[i] / den
         end
@@ -149,9 +158,11 @@ function _randomize_load_profile(
 )::Nothing
     # Generate new system load
     system_load = [1.0]
-    for t = 2:instance.time
+    for t in 2:instance.time
         idx = (t - 1) % length(params.load_profile_mu) + 1
-        gamma = rand(Normal(params.load_profile_mu[idx], params.load_profile_sigma[idx]))
+        gamma = rand(
+            Normal(params.load_profile_mu[idx], params.load_profile_sigma[idx]),
+        )
         push!(system_load, system_load[t-1] * gamma)
     end
     capacity = sum(maximum(u.max_power) for u in instance.units)
@@ -161,7 +172,7 @@ function _randomize_load_profile(
     # Scale bus loads to match the new system load
     prev_system_load = sum(b.load for b in instance.buses)
     for b in instance.buses
-        for t = 1:instance.time
+        for t in 1:instance.time
             b.load[t] *= system_load[t] / prev_system_load[t]
         end
     end

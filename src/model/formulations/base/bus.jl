@@ -5,12 +5,13 @@
 function _add_bus!(model::JuMP.Model, b::Bus)::Nothing
     net_injection = _init(model, :expr_net_injection)
     curtail = _init(model, :curtail)
-    for t = 1:model[:instance].time
+    for t in 1:model[:instance].time
         # Fixed load
         net_injection[b.name, t] = AffExpr(-b.load[t])
 
         # Load curtailment
-        curtail[b.name, t] = @variable(model, lower_bound = 0, upper_bound = b.load[t])
+        curtail[b.name, t] =
+            @variable(model, lower_bound = 0, upper_bound = b.load[t])
 
         add_to_expression!(net_injection[b.name, t], curtail[b.name, t], 1.0)
         add_to_expression!(

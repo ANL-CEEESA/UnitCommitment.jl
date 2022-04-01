@@ -13,7 +13,10 @@ M[l.offset, b.offset] indicates the amount of power (in MW) that flows through
 transmission line l when 1 MW of power is injected at the slack bus (the bus
 that has offset zero) and withdrawn from b.
 """
-function _injection_shift_factors(; buses::Array{Bus}, lines::Array{TransmissionLine})
+function _injection_shift_factors(;
+    buses::Array{Bus},
+    lines::Array{TransmissionLine},
+)
     susceptance = _susceptance_matrix(lines)
     incidence = _reduced_incidence_matrix(lines = lines, buses = buses)
     laplacian = transpose(incidence) * susceptance * incidence
@@ -30,7 +33,10 @@ is the number of buses and L is the number of lines. For each row, there is a 1
 element and a -1 element, indicating the source and target buses, respectively,
 for that line.
 """
-function _reduced_incidence_matrix(; buses::Array{Bus}, lines::Array{TransmissionLine})
+function _reduced_incidence_matrix(;
+    buses::Array{Bus},
+    lines::Array{TransmissionLine},
+)
     matrix = spzeros(Float64, length(lines), length(buses) - 1)
     for line in lines
         if line.source.offset > 0
@@ -69,7 +75,7 @@ function _line_outage_factors(;
     incidence = Array(_reduced_incidence_matrix(lines = lines, buses = buses))
     lodf::Array{Float64,2} = isf * transpose(incidence)
     _, n = size(lodf)
-    for i = 1:n
+    for i in 1:n
         lodf[:, i] *= 1.0 / (1.0 - lodf[i, i])
         lodf[i, i] = -1
     end
