@@ -5,7 +5,6 @@
 using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
 @testset "slice" begin
-    @show "beginning slice"
     instance = UnitCommitment.read_benchmark("test/case14")
     modified = UnitCommitment.slice(instance, 1:2)
 
@@ -36,8 +35,6 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
         @test length(ps.demand) == 2
         @test length(ps.revenue) == 2
     end
-    @show "beginning building model under slice"
-    @show instance.reserves
     # Should be able to build model without errors
     optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
     model = UnitCommitment.build_model(

@@ -5,20 +5,11 @@
 import Logging: min_enabled_level, shouldlog, handle_message
 using Base.CoreLogging, Logging, Printf
 
-struct TimeLogger <: AbstractLogger
+Base.@kwdef struct TimeLogger <: AbstractLogger
     initial_time::Float64
-    file::Union{Nothing,IOStream}
-    screen_log_level::Any
-    io_log_level::Any
-end
-
-function TimeLogger(;
-    initial_time::Float64,
-    file::Union{Nothing,IOStream} = nothing,
-    screen_log_level = CoreLogging.Info,
-    io_log_level = CoreLogging.Info,
-)::TimeLogger
-    return TimeLogger(initial_time, file, screen_log_level, io_log_level)
+    file::Union{Nothing,IOStream} = nothing
+    screen_log_level::Any = CoreLogging.Info
+    io_log_level::Any = CoreLogging.Info
 end
 
 min_enabled_level(logger::TimeLogger) = logger.io_log_level
@@ -61,7 +52,12 @@ function handle_message(
     end
 end
 
-function _setup_logger()
+function _setup_logger(; level = CoreLogging.Info)
     initial_time = time()
-    return global_logger(TimeLogger(initial_time = initial_time))
+    return global_logger(
+        TimeLogger(
+            initial_time = initial_time,
+            screen_log_level = level,
+        )
+    )
 end

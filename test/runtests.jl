@@ -6,12 +6,11 @@ using Test
 using UnitCommitment
 
 push!(Base.LOAD_PATH, @__DIR__)
-UnitCommitment._setup_logger()
+UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
 
 const ENABLE_LARGE_TESTS = ("UCJL_LARGE_TESTS" in keys(ENV))
 
 @testset "UnitCommitment" begin
-    @show "running runtests.jl"
     include("usage.jl")
     @testset "import" begin
         include("import/egret_test.jl")
@@ -28,7 +27,6 @@ const ENABLE_LARGE_TESTS = ("UCJL_LARGE_TESTS" in keys(ENV))
         include("solution/methods/XavQiuWanThi19/sensitivity_test.jl")
     end
     @testset "transform" begin
-        @show "beginning transform"
         include("transform/initcond_test.jl")
         include("transform/slice_test.jl")
         @testset "randomize" begin
