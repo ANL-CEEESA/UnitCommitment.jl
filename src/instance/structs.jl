@@ -37,7 +37,7 @@ mutable struct Unit
     initial_status::Union{Int,Nothing}
     initial_power::Union{Float64,Nothing}
     provides_spinning_reserves::Vector{Bool}
-    provides_flexiramp_reserves::Vector{Bool} # binary variable indicating whether the unit provides flexiramp
+    provides_flexiramp_reserves::Vector{Bool}
     startup_categories::Vector{StartupCategory}
 end
 
@@ -55,8 +55,8 @@ end
 
 mutable struct Reserves
     spinning::Vector{Float64}
-    upflexiramp::Vector{Float64} # up-flexiramp reserve requirements
-    dwflexiramp::Vector{Float64} # down-flexiramp reserve requirements
+    upflexiramp::Vector{Float64}
+    dwflexiramp::Vector{Float64}
 end
 
 mutable struct Contingency
@@ -84,7 +84,7 @@ Base.@kwdef mutable struct UnitCommitmentInstance
     price_sensitive_loads::Vector{PriceSensitiveLoad}
     reserves::Reserves
     shortfall_penalty::Vector{Float64}
-    flexiramp_shortfall_penalty::Vector{Float64} # penalty price for flexiramp shortfall
+    flexiramp_shortfall_penalty::Vector{Float64}
     time::Int
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}

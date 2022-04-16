@@ -5,7 +5,7 @@
 function _add_system_wide_eqs!(model::JuMP.Model)::Nothing
     _add_net_injection_eqs!(model)
     _add_reserve_eqs!(model)
-    _add_flexiramp_eqs!(model) # Add system-wide flexiramp requirements
+    _add_flexiramp_eqs!(model)
     return
 end
 
