@@ -240,13 +240,13 @@ This section describes the hourly amount of reserves required.
 ```json
 {
     "Reserves": {
-        "up-flexiramp (MW)": [
+        "Up-flexiramp (MW)": [
             20.31042,
             23.65273,
             27.41784,
             25.34057
         ],
-         "down-flexiramp (MW)": [
+         "Down-flexiramp (MW)": [
             19.41546,
             21.45377,
             23.53402,

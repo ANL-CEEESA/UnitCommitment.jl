@@ -4,6 +4,7 @@
 
 using UnitCommitment
 using JuMP
+using Cbc
 import UnitCommitment:
     ArrCon2000,
     CarArr2006,
@@ -13,23 +14,35 @@ import UnitCommitment:
     KnuOstWat2018,
     MorLatRam2013,
     PanGua2016,
-    XavQiuWanThi2019
+    XavQiuWanThi2019,
+    WanHob2016
 
 if ENABLE_LARGE_TESTS
     using Gurobi
 end
 
-function _small_test(formulation::Formulation)::Nothing
-    instances = ["matpower/case118/2017-02-01", "test/case14"]
-    for instance in instances
-        # Should not crash
-        @show "$(instance)"
-        UnitCommitment.build_model(
-            instance = UnitCommitment.read_benchmark(instance),
+function _small_test(
+    formulation::Formulation;
+    instances::Array{String} = ["test/case14"],
+    optimizer = optimizer_with_attributes(
+        Cbc.Optimizer,
+        "logLevel" => 0,
+    )
+)::Nothing
+    for instance_name in instances
+        instance = UnitCommitment.read_benchmark(instance_name)
+        model = UnitCommitment.build_model(
+            instance = instance,
             formulation = formulation,
+            optimizer = optimizer,
         )
+        UnitCommitment.optimize!(
+            model,
+            XavQiuWanThi2019.Method(two_phase_gap = false, gap_limit = 0.1),
+        )
+        solution = UnitCommitment.solution(model)
+        @test UnitCommitment.validate(instance, solution)
     end
-    return
 end
 
 function _large_test(formulation::Formulation)::Nothing
@@ -80,5 +93,8 @@ end
     _test(Formulation(pwl_costs = CarArr2006.PwlCosts()))
     @show "KnuOstWat2018 PwlCosts"
     _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
-    @show "formulations completed"
+    _small_test(
+        Formulation(ramping = WanHob2016.Ramping()),
+        instances=["test/case14-flex"],
+    )
 end
