@@ -55,9 +55,6 @@ end
 function _setup_logger(; level = CoreLogging.Info)
     initial_time = time()
     return global_logger(
-        TimeLogger(
-            initial_time = initial_time,
-            screen_log_level = level,
-        )
+        TimeLogger(initial_time = initial_time, screen_log_level = level),
     )
 end
