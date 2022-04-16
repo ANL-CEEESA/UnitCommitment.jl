@@ -24,10 +24,7 @@ end
 function _small_test(
     formulation::Formulation;
     instances::Array{String} = ["test/case14"],
-    optimizer = optimizer_with_attributes(
-        Cbc.Optimizer,
-        "logLevel" => 0,
-    )
+    optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0),
 )::Nothing
     for instance_name in instances
         instance = UnitCommitment.read_benchmark(instance_name)
@@ -88,6 +85,6 @@ end
     _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
     _small_test(
         Formulation(ramping = WanHob2016.Ramping()),
-        instances=["test/case14-flex"],
+        instances = ["test/case14-flex"],
     )
 end
