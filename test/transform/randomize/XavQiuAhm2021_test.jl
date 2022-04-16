@@ -6,6 +6,7 @@ import Random
 import UnitCommitment: XavQiuAhm2021
 
 using Distributions
+using Random
 using UnitCommitment, Cbc, JuMP
 
 get_instance() = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
@@ -27,10 +28,10 @@ test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
         prev_system_load = system_load(instance)
         test_approx(bus.load[1] / prev_system_load[1], 0.012)
 
-        Random.seed!(42)
         randomize!(
             instance,
             XavQiuAhm2021.Randomization(randomize_load_profile = false),
+            rng = MersenneTwister(42),
         )
 
         # Check randomized costs
@@ -53,8 +54,11 @@ test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
         @test round.(system_load(instance), digits = 1)[1:8] ≈
               [3059.5, 2983.2, 2937.5, 2953.9, 3073.1, 3356.4, 4068.5, 4018.8]
 
-        Random.seed!(42)
-        randomize!(instance, XavQiuAhm2021.Randomization())
+        randomize!(
+            instance,
+            XavQiuAhm2021.Randomization(),
+            rng = MersenneTwister(42),
+        )
 
         # Check randomized load profile
         @test round.(system_load(instance), digits = 1)[1:8] ≈
