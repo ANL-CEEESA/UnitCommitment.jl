@@ -47,7 +47,14 @@ project = TOML.parsefile("Project.toml")
 manifest = TOML.parsefile("Manifest.toml")
 deps = Symbol[]
 for dep in keys(project["deps"])
-    if "path" in keys(manifest[dep][1])
+    if dep in keys(manifest)
+	# Up to Julia 1.6
+        dep_entry = manifest[dep][1]
+    else
+        # Julia 1.7+
+        dep_entry = manifest["deps"][dep][1]
+    end
+    if "path" in keys(dep_entry)
         println("  - \$(dep) [skip]")
     else
         println("  - \$(dep)")
