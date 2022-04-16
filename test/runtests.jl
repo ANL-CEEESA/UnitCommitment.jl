@@ -8,8 +8,6 @@ using UnitCommitment
 push!(Base.LOAD_PATH, @__DIR__)
 UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
 
-const ENABLE_LARGE_TESTS = ("UCJL_LARGE_TESTS" in keys(ENV))
-
 @testset "UnitCommitment" begin
     include("usage.jl")
     @testset "import" begin
