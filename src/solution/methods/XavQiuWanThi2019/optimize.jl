@@ -3,13 +3,12 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
+    if !occursin("Gurobi", JuMP.solver_name(model))
+        method.two_phase_gap = false
+    end
     function set_gap(gap)
-        try
-            JuMP.set_optimizer_attribute(model, "MIPGap", gap)
-            @info @sprintf("MIP gap tolerance set to %f", gap)
-        catch
-            @warn "Could not change MIP gap tolerance"
-        end
+        JuMP.set_optimizer_attribute(model, "MIPGap", gap)
+        @info @sprintf("MIP gap tolerance set to %f", gap)
     end
     initial_time = time()
     large_gap = false
@@ -17,8 +16,6 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
     if has_transmission && method.two_phase_gap
         set_gap(1e-2)
         large_gap = true
-    else
-        set_gap(method.gap_limit)
     end
     while true
         time_elapsed = time() - initial_time

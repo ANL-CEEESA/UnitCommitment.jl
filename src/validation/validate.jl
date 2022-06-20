@@ -46,10 +46,11 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     for unit in instance.units
         production = solution["Production (MW)"][unit.name]
         reserve = [0.0 for _ in 1:instance.time]
-        if !isempty(unit.reserves)
+        spinning_reserves = [r for r in unit.reserves if r.type == "spinning"]
+        if !isempty(spinning_reserves)
             reserve += sum(
-                solution["Reserve (MW)"][r.name][unit.name] for
-                r in unit.reserves
+                solution["Spinning reserve (MW)"][r.name][unit.name]
+                for r in spinning_reserves
             )
         end
         actual_production_cost = solution["Production cost (\$)"][unit.name]
@@ -106,14 +107,16 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
 
             # Verify reserve eligibility
             for r in instance.reserves
-                if unit ∉ r.units &&
-                   (unit in keys(solution["Reserve (MW)"][r.name]))
-                    @error @sprintf(
-                        "Unit %s is not eligible to provide reserve %s",
-                        unit.name,
-                        r.name,
-                    )
-                    err_count += 1
+                if r.type == "spinning"
+                    if unit ∉ r.units &&
+                    (unit in keys(solution["Spinning reserve (MW)"][r.name]))
+                        @error @sprintf(
+                            "Unit %s is not eligible to provide reserve %s",
+                            unit.name,
+                            r.name,
+                        )
+                        err_count += 1
+                    end
                 end
             end
 
@@ -305,16 +308,14 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
         ps_load = 0
         if length(instance.price_sensitive_loads) > 0
             ps_load = sum(
-                solution["Price-sensitive loads (MW)"][ps.name][t] for
-                ps in instance.price_sensitive_loads
+                solution["Price-sensitive loads (MW)"][ps.name][t] for ps in instance.price_sensitive_loads
             )
         end
         production =
             sum(solution["Production (MW)"][g.name][t] for g in instance.units)
         if "Load curtail (MW)" in keys(solution)
             load_curtail = sum(
-                solution["Load curtail (MW)"][b.name][t] for
-                b in instance.buses
+                solution["Load curtail (MW)"][b.name][t] for b in instance.buses
             )
         end
         balance = fixed_load - load_curtail - production + ps_load
@@ -334,22 +335,58 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
 
         # Verify reserves
         for r in instance.reserves
-            provided = sum(
-                solution["Reserve (MW)"][r.name][g.name][t] for g in r.units
-            )
-            shortfall = solution["Reserve shortfall (MW)"][r.name][t]
-            required = r.amount[t]
-
-            if provided + shortfall < required - tol
-                @error @sprintf(
-                    "Insufficient reserve %s at time %d (%.2f + %.2f < %.2f)",
-                    r.name,
-                    t,
-                    provided,
-                    shortfall,
-                    required,
+            if r.type == "spinning"
+                provided = sum(
+                    solution["Spinning reserve (MW)"][r.name][g.name][t] for g in r.units
                 )
-                err_count += 1
+                shortfall = solution["Spinning reserve shortfall (MW)"][r.name][t]
+                required = r.amount[t]
+
+                if provided + shortfall < required - tol
+                    @error @sprintf(
+                        "Insufficient reserve %s at time %d (%.2f + %.2f < %.2f)",
+                        r.name,
+                        t,
+                        provided,
+                        shortfall,
+                        required,
+                    )
+                end
+            elseif r.type == "flexiramp"
+                upflexiramp = sum(
+                    solution["Up-flexiramp (MW)"][r.name][g.name][t] for g in r.units
+                )
+                upflexiramp_shortfall =
+                    solution["Up-flexiramp shortfall (MW)"][r.name][t]
+
+                if upflexiramp + upflexiramp_shortfall < r.amount[t] - tol
+                    @error @sprintf(
+                        "Insufficient up-flexiramp at time %d (%.2f + %.2f < %.2f)",
+                        t,
+                        upflexiramp,
+                        upflexiramp_shortfall,
+                        r.amount[t],
+                    )
+                    err_count += 1
+                end
+
+                dwflexiramp = sum(
+                    solution["Down-flexiramp (MW)"][r.name][g.name][t] for g in r.units
+                )
+                dwflexiramp_shortfall = solution["Down-flexiramp shortfall (MW)"][r.name][t]
+
+                if dwflexiramp + dwflexiramp_shortfall < r.amount[t] - tol
+                    @error @sprintf(
+                        "Insufficient down-flexiramp at time %d (%.2f + %.2f < %.2f)",
+                        t,
+                        dwflexiramp,
+                        dwflexiramp_shortfall,
+                        r.amount[t],
+                    )
+                    err_count += 1
+                end
+            else
+                error("Unknown reserve type: $(r.type)")
             end
         end
     end

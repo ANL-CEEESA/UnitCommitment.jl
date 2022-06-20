@@ -12,7 +12,8 @@ function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
 
     # Variables
     _add_production_vars!(model, g, formulation.prod_vars)
-    _add_reserve_vars!(model, g)
+    _add_spinning_reserve_vars!(model, g)
+    _add_flexiramp_reserve_vars!(model, g)
     _add_startup_shutdown_vars!(model, g)
     _add_status_vars!(model, g, formulation.status_vars)
 
@@ -42,16 +43,43 @@ end
 
 _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
-function _add_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
+function _add_spinning_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall)
     for r in g.reserves
+        r.type == "spinning" || continue
         for t in 1:model[:instance].time
             reserve[r.name, g.name, t] = @variable(model, lower_bound = 0)
             if (r.name, t) ∉ keys(reserve_shortfall)
                 reserve_shortfall[r.name, t] = @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
                     set_upper_bound(reserve_shortfall[r.name, t], 0.0)
+                end
+            end
+        end
+    end
+    return
+end
+
+function _add_flexiramp_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
+    upflexiramp = _init(model, :upflexiramp)
+    upflexiramp_shortfall = _init(model, :upflexiramp_shortfall)
+    mfg = _init(model, :mfg)
+    dwflexiramp = _init(model, :dwflexiramp)
+    dwflexiramp_shortfall = _init(model, :dwflexiramp_shortfall)
+    for r in g.reserves
+        r.type == "flexiramp" || continue
+        for t in 1:model[:instance].time
+            # maximum feasible generation, \bar{g_{its}} in Wang & Hobbs (2016)
+            mfg[r.name, g.name, t] = @variable(model, lower_bound = 0)
+            upflexiramp[r.name, g.name, t] = @variable(model) # up-flexiramp, ur_{it} in Wang & Hobbs (2016)
+            dwflexiramp[r.name, g.name, t] = @variable(model) # down-flexiramp, dr_{it} in Wang & Hobbs (2016)
+            if (r.name, t) ∉ keys(upflexiramp_shortfall)
+                upflexiramp_shortfall[r.name, t] = @variable(model, lower_bound = 0)
+                dwflexiramp_shortfall[r.name, t] = @variable(model, lower_bound = 0)
+                if r.shortfall_penalty < 0
+                    set_upper_bound(upflexiramp_shortfall[r.name, t], 0.0)
+                    set_upper_bound(dwflexiramp_shortfall[r.name, t], 0.0)
                 end
             end
         end
@@ -176,16 +204,14 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
                 eq_min_uptime[g.name, 0] = @constraint(
                     model,
                     sum(
-                        switch_off[g.name, i] for
-                        i in 1:(g.min_uptime-g.initial_status) if i <= T
+                        switch_off[g.name, i] for i in 1:(g.min_uptime-g.initial_status) if i <= T
                     ) == 0
                 )
             else
                 eq_min_downtime[g.name, 0] = @constraint(
                     model,
                     sum(
-                        switch_on[g.name, i] for
-                        i in 1:(g.min_downtime+g.initial_status) if i <= T
+                        switch_on[g.name, i] for i in 1:(g.min_downtime+g.initial_status) if i <= T
                     ) == 0
                 )
             end
@@ -213,10 +239,10 @@ end
 function _total_reserves(model, g)::Vector
     T = model[:instance].time
     reserve = [0.0 for _ in 1:T]
-    if !isempty(g.reserves)
+    spinning_reserves = [r for r in g.reserves if r.type == "spinning"]
+    if !isempty(spinning_reserves)
         reserve += [
-            sum(model[:reserve][r.name, g.name, t] for r in g.reserves) for
-            t in 1:model[:instance].time
+            sum(model[:reserve][r.name, g.name, t] for r in spinning_reserves) for t in 1:model[:instance].time
         ]
     end
     return reserve

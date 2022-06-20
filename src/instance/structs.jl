@@ -86,6 +86,7 @@ Base.@kwdef mutable struct UnitCommitmentInstance
     reserves::Vector{Reserve}
     reserves_by_name::Dict{AbstractString,Reserve}
     shortfall_penalty::Vector{Float64}
+    flexiramp_shortfall_penalty::Vector{Float64}
     time::Int
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}

@@ -119,6 +119,11 @@ function _from_json(json; repair = true)
         json["Parameters"]["Power balance penalty (\$/MW)"],
         default = [1000.0 for t in 1:T],
     )
+    # Penalty price for shortage in meeting system-wide flexiramp requirements
+    flexiramp_shortfall_penalty = timeseries(
+        json["Parameters"]["Flexiramp penalty (\$/MW)"],
+        default = [500.0 for t in 1:T],
+    )
     shortfall_penalty = timeseries(
         json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
         default = [-1.0 for t in 1:T],
@@ -317,6 +322,7 @@ function _from_json(json; repair = true)
         reserves = reserves,
         reserves_by_name = name_to_reserve,
         shortfall_penalty = shortfall_penalty,
+        flexiramp_shortfall_penalty = flexiramp_shortfall_penalty,
         time = T,
         units_by_name = Dict(g.name => g for g in units),
         units = units,

@@ -118,11 +118,12 @@ Base.@kwdef struct Randomization
 end
 
 function _randomize_costs(
+    rng,
     instance::UnitCommitmentInstance,
     distribution,
 )::Nothing
     for unit in instance.units
-        α = rand(distribution)
+        α = rand(rng, distribution)
         unit.min_power_cost *= α
         for k in unit.cost_segments
             k.cost *= α
@@ -135,10 +136,11 @@ function _randomize_costs(
 end
 
 function _randomize_load_share(
+    rng,
     instance::UnitCommitmentInstance,
     distribution,
 )::Nothing
-    α = rand(distribution, length(instance.buses))
+    α = rand(rng, distribution, length(instance.buses))
     for t in 1:instance.time
         total = sum(bus.load[t] for bus in instance.buses)
         den = sum(
@@ -153,6 +155,7 @@ function _randomize_load_share(
 end
 
 function _randomize_load_profile(
+    rng,
     instance::UnitCommitmentInstance,
     params::Randomization,
 )::Nothing
@@ -161,12 +164,13 @@ function _randomize_load_profile(
     for t in 2:instance.time
         idx = (t - 1) % length(params.load_profile_mu) + 1
         gamma = rand(
+            rng,
             Normal(params.load_profile_mu[idx], params.load_profile_sigma[idx]),
         )
         push!(system_load, system_load[t-1] * gamma)
     end
     capacity = sum(maximum(u.max_power) for u in instance.units)
-    peak_load = rand(params.peak_load) * capacity
+    peak_load = rand(rng, params.peak_load) * capacity
     system_load = system_load ./ maximum(system_load) .* peak_load
 
     # Scale bus loads to match the new system load
@@ -186,22 +190,24 @@ end
     function randomize!(
         instance::UnitCommitment.UnitCommitmentInstance,
         method::XavQiuAhm2021.Randomization,
+        rng = MersenneTwister(),
     )::Nothing
 
 Randomize costs and loads based on the method described in XavQiuAhm2021.
 """
 function randomize!(
     instance::UnitCommitment.UnitCommitmentInstance,
-    method::XavQiuAhm2021.Randomization,
+    method::XavQiuAhm2021.Randomization;
+    rng = MersenneTwister(),
 )::Nothing
     if method.randomize_costs
-        XavQiuAhm2021._randomize_costs(instance, method.cost)
+        XavQiuAhm2021._randomize_costs(rng, instance, method.cost)
     end
     if method.randomize_load_share
-        XavQiuAhm2021._randomize_load_share(instance, method.load_share)
+        XavQiuAhm2021._randomize_load_share(rng, instance, method.load_share)
     end
     if method.randomize_load_profile
-        XavQiuAhm2021._randomize_load_profile(instance, method)
+        XavQiuAhm2021._randomize_load_profile(rng, instance, method)
     end
     return
 end

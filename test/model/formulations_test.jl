@@ -15,54 +15,34 @@ import UnitCommitment:
     KnuOstWat2018,
     MorLatRam2013,
     PanGua2016,
-    XavQiuWanThi2019
+    XavQiuWanThi2019,
+    WanHob2016
 
-if ENABLE_LARGE_TESTS
-    using Gurobi
-end
-
-function _small_test(formulation::Formulation; dump::Bool = false)::Nothing
-    instance = UnitCommitment.read_benchmark("test/case14")
-    model = UnitCommitment.build_model(
-        instance = instance,
-        formulation = formulation,
-        optimizer = Cbc.Optimizer,
-        variable_names = true,
-    )
-    UnitCommitment.optimize!(model)
-    solution = UnitCommitment.solution(model)
-    if dump
-        open("/tmp/ucjl.json", "w") do f
-            return write(f, JSON.json(solution, 2))
+function _test(
+    formulation::Formulation;
+    instances=["test/case14"],
+    dump::Bool = false,
+)::Nothing
+    for instance_name in instances
+        instance = UnitCommitment.read_benchmark(instance_name)
+        model = UnitCommitment.build_model(
+            instance = instance,
+            formulation = formulation,
+            optimizer = Cbc.Optimizer,
+            variable_names = true,
+        )
+        set_silent(model)
+        UnitCommitment.optimize!(model)
+        solution = UnitCommitment.solution(model)
+        if dump
+            open("/tmp/ucjl.json", "w") do f
+                return write(f, JSON.json(solution, 2))
+            end
+            write_to_file(model, "/tmp/ucjl.lp")
         end
-        write_to_file(model, "/tmp/ucjl.lp")
+        @test UnitCommitment.validate(instance, solution)
     end
-    @test UnitCommitment.validate(instance, solution)
     return
-end
-
-function _large_test(formulation::Formulation)::Nothing
-    instance =
-        UnitCommitment.read_benchmark("pglib-uc/ca/Scenario400_reserves_1")
-    model = UnitCommitment.build_model(
-        instance = instance,
-        formulation = formulation,
-        optimizer = Gurobi.Optimizer,
-    )
-    UnitCommitment.optimize!(
-        model,
-        XavQiuWanThi2019.Method(two_phase_gap = false, gap_limit = 0.1),
-    )
-    solution = UnitCommitment.solution(model)
-    @test UnitCommitment.validate(instance, solution)
-    return
-end
-
-function _test(formulation::Formulation; dump::Bool = false)::Nothing
-    _small_test(formulation; dump)
-    if ENABLE_LARGE_TESTS
-        _large_test(formulation)
-    end
 end
 
 @testset "formulations" begin
@@ -94,5 +74,11 @@ end
     end
     @testset "KnuOstWat2018" begin
         _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
+    end
+    @testset "WanHob2016" begin
+        _test(
+            Formulation(ramping = WanHob2016.Ramping()),
+            instances = ["test/case14-flex"],
+        )
     end
 end

@@ -95,6 +95,7 @@ UnitCommitment.write("/tmp/output.json", solution)
 ## Authors
 * **Alinson S. Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
+* **Ogün Yurdakul** (Technische Universität Berlin)
 * **Feng Qiu** (Argonne National Laboratory)
 
 ## Acknowledgments

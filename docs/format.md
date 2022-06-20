@@ -209,17 +209,17 @@ This section describes the hourly amount of reserves required.
 
 | Key                   | Description                                        | Default   |  Time series?
 | :-------------------- | :------------------------------------------------- | --------- |  :----:
-| `Type` | Type of reserve product. Currently, only `Spinning` is supported. | Required | N
+| `Type` | Type of reserve product. Must be either "spinning" or "flexiramp". | Required | N
 | `Amount (MW)` | Amount of reserves required. | Required | Y
 | `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1` | Y
 
-#### Example
+#### Example 1
 
 ```json
 {
     "Reserves": {
         "r1": {
-            "Type": "Spinning",
+            "Type": "spinning",
             "Amount (MW)": [
                 57.30552,
                 53.88429,
@@ -227,6 +227,15 @@ This section describes the hourly amount of reserves required.
                 50.46307
             ],
             "Shortfall penalty ($/MW)": 5.0
+        },
+        "r2": {
+            "Type": "flexiramp",
+            "Amount (MW)": [
+                20.31042,
+                23.65273,
+                27.41784,
+                25.34057
+            ],
         }
     }
 }
@@ -293,3 +302,4 @@ Current limitations
 * Network topology remains the same for all time periods
 * Only N-1 transmission contingencies are supported. Generator contingencies are not currently supported.
 * Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
+* Flexible ramping products can only be acquired under the `WanHob2016` formulation, which does not support spinning reserves. 

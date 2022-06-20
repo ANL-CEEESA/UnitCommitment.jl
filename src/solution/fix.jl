@@ -27,10 +27,11 @@ function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
         end
     end
     for r in instance.reserves
+        r.type == "spinning" || continue
         for g in r.units
             for t in 1:T
                 reserve_value = round(
-                    solution["Reserve (MW)"][r.name][g.name][t],
+                    solution["Spinning reserve (MW)"][r.name][g.name][t],
                     digits = 5,
                 )
                 JuMP.fix(

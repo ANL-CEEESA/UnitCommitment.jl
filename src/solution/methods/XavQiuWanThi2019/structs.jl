@@ -13,7 +13,7 @@ Lazy constraint solution method described in:
 module XavQiuWanThi2019
 import ..SolutionMethod
 """
-    struct Method
+    mutable struct Method
         time_limit::Float64
         gap_limit::Float64
         two_phase_gap::Bool
@@ -27,7 +27,7 @@ Fields
 - `time_limit`:
     the time limit over the entire optimization procedure.
 - `gap_limit`: 
-    the desired relative optimality gap.
+    the desired relative optimality gap. Only used when `two_phase_gap=true`.
 - `two_phase_gap`: 
     if true, solve the problem with large gap tolerance first, then reduce
     the gap tolerance when no further violated constraints are found.
@@ -39,7 +39,7 @@ Fields
     formulation per time period.
 
 """
-struct Method <: SolutionMethod
+mutable struct Method <: SolutionMethod
     time_limit::Float64
     gap_limit::Float64
     two_phase_gap::Bool

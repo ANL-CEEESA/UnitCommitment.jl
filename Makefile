@@ -5,7 +5,7 @@
 VERSION := 0.2
 
 clean:
-	rm -rfv build
+	rm -rfv build Manifest.toml test/Manifest.toml deps/formatter/build deps/formatter/Manifest.toml
 
 docs:
 	cd docs; make clean; make dirhtml
