@@ -40,15 +40,15 @@ function validate(
     return true
 end
 
-function _validate_units(instance, solution; tol = 0.01)
+function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     err_count = 0
 
     for unit in instance.units
         production = solution["Production (MW)"][unit.name]
-        reserve = solution["Reserve (MW)"][unit.name]
+        reserve = [0.0 for _ in 1:instance.time]
         if !isempty(unit.reserves)
             reserve += sum(
-                solution["Reserve 2 (MW)"][r.name][unit.name] for
+                solution["Reserve (MW)"][r.name][unit.name] for
                 r in unit.reserves
             )
         end
@@ -105,13 +105,16 @@ function _validate_units(instance, solution; tol = 0.01)
             end
 
             # Verify reserve eligibility
-            if !unit.provides_spinning_reserves[t] && reserve[t] > tol
-                @error @sprintf(
-                    "Unit %s is not eligible to provide spinning reserves at time %d",
-                    unit.name,
-                    t
-                )
-                err_count += 1
+            for r in instance.reserves
+                if unit ∉ r.units &&
+                   (unit in keys(solution["Reserve (MW)"][r.name]))
+                    @error @sprintf(
+                        "Unit %s is not eligible to provide reserve %s",
+                        unit.name,
+                        r.name,
+                    )
+                    err_count += 1
+                end
             end
 
             # If unit is on, must produce at least its minimum power

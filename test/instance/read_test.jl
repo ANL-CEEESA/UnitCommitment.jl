@@ -12,7 +12,6 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test length(instance.units) == 6
     @test length(instance.contingencies) == 19
     @test length(instance.price_sensitive_loads) == 1
-    @test length(instance.reserves2) == 1
     @test instance.time == 4
 
     @test instance.lines[5].name == "l5"
@@ -38,9 +37,9 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test instance.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
     @test instance.buses_by_name["b9"].name == "b9"
 
-    @test instance.reserves2[1].name == "r1"
-    @test instance.reserves2[1].type == "spinning"
-    @test instance.reserves2[1].amount == [100.0, 100.0, 100.0, 100.0]
+    @test instance.reserves[1].name == "r1"
+    @test instance.reserves[1].type == "spinning"
+    @test instance.reserves[1].amount == [100.0, 100.0, 100.0, 100.0]
     @test instance.reserves_by_name["r1"].name == "r1"
 
     unit = instance.units[1]
@@ -54,7 +53,6 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.min_power_cost == [1400.0 for t in 1:4]
     @test unit.min_uptime == 1
     @test unit.min_downtime == 1
-    @test unit.provides_spinning_reserves == [true for t in 1:4]
     for t in 1:1
         @test unit.cost_segments[1].mw[t] == 10.0
         @test unit.cost_segments[2].mw[t] == 20.0
@@ -89,7 +87,6 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.min_power_cost == [0.0 for t in 1:4]
     @test unit.min_uptime == 1
     @test unit.min_downtime == 1
-    @test unit.provides_spinning_reserves == [true for t in 1:4]
     for t in 1:4
         @test unit.cost_segments[1].mw[t] ≈ 33
         @test unit.cost_segments[2].mw[t] ≈ 33
@@ -99,8 +96,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
         @test unit.cost_segments[3].cost[t] ≈ 44.77853
     end
     @test length(unit.reserves) == 1
-
-    @test instance.reserves.spinning == zeros(4)
+    @test unit.reserves[1].name == "r1"
 
     @test instance.contingencies[1].lines == [instance.lines[1]]
     @test instance.contingencies[1].units == []

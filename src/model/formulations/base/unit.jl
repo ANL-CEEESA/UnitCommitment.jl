@@ -212,7 +212,7 @@ end
 
 function _total_reserves(model, g)::Vector
     T = model[:instance].time
-    reserve = 0.0
+    reserve = [0.0 for _ in 1:T]
     if !isempty(g.reserves)
         reserve += [
             sum(model[:reserve][r.name, g.name, t] for r in g.reserves) for

@@ -24,13 +24,14 @@ function slice(
     modified = deepcopy(instance)
     modified.time = length(range)
     modified.power_balance_penalty = modified.power_balance_penalty[range]
-    modified.reserves.spinning = modified.reserves.spinning[range]
+    for r in modified.reserves
+        r.amount = r.amount[range]
+    end
     for u in modified.units
         u.max_power = u.max_power[range]
         u.min_power = u.min_power[range]
         u.must_run = u.must_run[range]
         u.min_power_cost = u.min_power_cost[range]
-        u.provides_spinning_reserves = u.provides_spinning_reserves[range]
         for s in u.cost_segments
             s.mw = s.mw[range]
             s.cost = s.cost[range]
