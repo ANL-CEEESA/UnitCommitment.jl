@@ -9,12 +9,11 @@ suffix: .
 Instances
 =========
 
-UnitCommitment.jl provides a large collection of benchmark instances collected
-from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. 
-If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources.
+UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with `UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md).
 
-Raw instances files are [available at our GitHub repository](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances). Benchmark instances can also be loaded with
-`UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md).
+```{warning}
+The instances included in UC.jl are still under development and may change in the future. If you use these instances in your research, for reproducibility, you should specify what version of UC.jl they came from.
+```
 
 
 MATPOWER
@@ -43,15 +42,10 @@ A variety of smaller IEEE test cases, [compiled by University of Washington](htt
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
 | `matpower/case14/2017-02-01` | 14 | 5 | 20 | 19 | [MTPWR, PSTCA]
-| `matpower/case14/2017-08-01` | 14 | 5 | 20 | 19 | [MTPWR, PSTCA]
 | `matpower/case30/2017-02-01` | 30 | 6 | 41 | 38 | [MTPWR, PSTCA]
-| `matpower/case30/2017-08-01` | 30 | 6 | 41 | 38 | [MTPWR, PSTCA]
 | `matpower/case57/2017-02-01` | 57 | 7 | 80 | 79 | [MTPWR, PSTCA]
-| `matpower/case57/2017-08-01` | 57 | 7 | 80 | 79 | [MTPWR, PSTCA]
 | `matpower/case118/2017-02-01` | 118 | 54 | 186 | 177 | [MTPWR, PSTCA]
-| `matpower/case118/2017-08-01` | 118 | 54 | 186 | 177 | [MTPWR, PSTCA]
 | `matpower/case300/2017-02-01` | 300 | 69 | 411 | 320 | [MTPWR, PSTCA]
-| `matpower/case300/2017-08-01` | 300 | 69 | 411 | 320 | [MTPWR, PSTCA]
 
 
 ### MATPOWER/Polish
@@ -61,21 +55,13 @@ Test cases based on the Polish 400, 220 and 110 kV networks, originally provided
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
 | `matpower/case2383wp/2017-02-01` | 2383 | 323 | 2896 | 2240 | [MTPWR]
-| `matpower/case2383wp/2017-08-01` | 2383 | 323 | 2896 | 2240 | [MTPWR]
 | `matpower/case2736sp/2017-02-01` | 2736 | 289 | 3504 | 3159 | [MTPWR]
-| `matpower/case2736sp/2017-08-01` | 2736 | 289 | 3504 | 3159 | [MTPWR]
 | `matpower/case2737sop/2017-02-01` | 2737 | 267 | 3506 | 3161 | [MTPWR]
-| `matpower/case2737sop/2017-08-01` | 2737 | 267 | 3506 | 3161 | [MTPWR]
 | `matpower/case2746wop/2017-02-01` | 2746 | 443 | 3514 | 3155 | [MTPWR]
-| `matpower/case2746wop/2017-08-01` | 2746 | 443 | 3514 | 3155 | [MTPWR]
 | `matpower/case2746wp/2017-02-01` | 2746 | 457 | 3514 | 3156 | [MTPWR]
-| `matpower/case2746wp/2017-08-01` | 2746 | 457 | 3514 | 3156 | [MTPWR]
 | `matpower/case3012wp/2017-02-01` | 3012 | 496 | 3572 | 2854 | [MTPWR]
-| `matpower/case3012wp/2017-08-01` | 3012 | 496 | 3572 | 2854 | [MTPWR]
 | `matpower/case3120sp/2017-02-01` | 3120 | 483 | 3693 | 2950 | [MTPWR]
-| `matpower/case3120sp/2017-08-01` | 3120 | 483 | 3693 | 2950 | [MTPWR]
 | `matpower/case3375wp/2017-02-01` | 3374 | 590 | 4161 | 3245 | [MTPWR]
-| `matpower/case3375wp/2017-08-01` | 3374 | 590 | 4161 | 3245 | [MTPWR]
 
 ### MATPOWER/PEGASE
 
@@ -84,15 +70,10 @@ Test cases from the [Pan European Grid Advanced Simulation and State Estimation 
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
 | `matpower/case89pegase/2017-02-01` | 89 | 12 | 210 | 192 | [JoFlMa16, FlPaCa13, MTPWR]
-| `matpower/case89pegase/2017-08-01` | 89 | 12 | 210 | 192 | [JoFlMa16, FlPaCa13, MTPWR]
 | `matpower/case1354pegase/2017-02-01` | 1354 | 260 | 1991 | 1288 | [JoFlMa16, FlPaCa13, MTPWR]
-| `matpower/case1354pegase/2017-08-01` | 1354 | 260 | 1991 | 1288 | [JoFlMa16, FlPaCa13, MTPWR]
 | `matpower/case2869pegase/2017-02-01` | 2869 | 510 | 4582 | 3579 | [JoFlMa16, FlPaCa13, MTPWR]
-| `matpower/case2869pegase/2017-08-01` | 2869 | 510 | 4582 | 3579 | [JoFlMa16, FlPaCa13, MTPWR]
 | `matpower/case9241pegase/2017-02-01` | 9241 | 1445 | 16049 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
-| `matpower/case9241pegase/2017-08-01` | 9241 | 1445 | 16049 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
 | `matpower/case13659pegase/2017-02-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
-| `matpower/case13659pegase/2017-08-01` | 13659 | 4092 | 20467 | 13932 | [JoFlMa16, FlPaCa13, MTPWR]
 
 ### MATPOWER/RTE
 
@@ -101,21 +82,13 @@ Test cases from the R&D Division at [Reseau de Transport d'Electricite](https://
 | Name | Buses | Generators | Lines | Contingencies | References |
 |------|-------|------------|-------|---------------|--------|
 | `matpower/case1888rte/2017-02-01` | 1888 | 296 | 2531 | 1484 | [MTPWR, JoFlMa16]
-| `matpower/case1888rte/2017-08-01` | 1888 | 296 | 2531 | 1484 | [MTPWR, JoFlMa16]
 | `matpower/case1951rte/2017-02-01` | 1951 | 390 | 2596 | 1497 | [MTPWR, JoFlMa16]
-| `matpower/case1951rte/2017-08-01` | 1951 | 390 | 2596 | 1497 | [MTPWR, JoFlMa16]
 | `matpower/case2848rte/2017-02-01` | 2848 | 544 | 3776 | 2242 | [MTPWR, JoFlMa16]
-| `matpower/case2848rte/2017-08-01` | 2848 | 544 | 3776 | 2242 | [MTPWR, JoFlMa16]
 | `matpower/case2868rte/2017-02-01` | 2868 | 596 | 3808 | 2260 | [MTPWR, JoFlMa16]
-| `matpower/case2868rte/2017-08-01` | 2868 | 596 | 3808 | 2260 | [MTPWR, JoFlMa16]
 | `matpower/case6468rte/2017-02-01` | 6468 | 1262 | 9000 | 6094 | [MTPWR, JoFlMa16]
-| `matpower/case6468rte/2017-08-01` | 6468 | 1262 | 9000 | 6094 | [MTPWR, JoFlMa16]
 | `matpower/case6470rte/2017-02-01` | 6470 | 1306 | 9005 | 6085 | [MTPWR, JoFlMa16]
-| `matpower/case6470rte/2017-08-01` | 6470 | 1306 | 9005 | 6085 | [MTPWR, JoFlMa16]
 | `matpower/case6495rte/2017-02-01` | 6495 | 1352 | 9019 | 6060 | [MTPWR, JoFlMa16]
-| `matpower/case6495rte/2017-08-01` | 6495 | 1352 | 9019 | 6060 | [MTPWR, JoFlMa16]
 | `matpower/case6515rte/2017-02-01` | 6515 | 1368 | 9037 | 6063 | [MTPWR, JoFlMa16]
-| `matpower/case6515rte/2017-08-01` | 6515 | 1368 | 9037 | 6063 | [MTPWR, JoFlMa16]
 
 
 PGLIB-UC Instances
