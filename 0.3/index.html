@@ -1,0 +1,354 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UnitCommitment.jl &#8212; UnitCommitment.jl&lt;br/&gt;&lt;small&gt;0.2&lt;/small&gt;</title>
+    
+  <link href="_static/css/theme.css" rel="stylesheet" />
+  <link href="_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    
+  <link rel="preload" as="script" href="_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="genindex/" />
+    <link rel="search" title="Search" href="search/" />
+    <link rel="next" title="1. Usage" href="usage/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="#">
+      
+      
+      <h1 class="site-logo" id="site-title">UnitCommitment.jl<br/><small>0.2</small></h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="search/" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="usage/">
+   <span class="sectnum">
+    1.
+   </span>
+   Usage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="format/">
+   <span class="sectnum">
+    2.
+   </span>
+   Data Format
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="instances/">
+   <span class="sectnum">
+    3.
+   </span>
+   Instances
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="model/">
+   <span class="sectnum">
+    4.
+   </span>
+   JuMP Model
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="_sources/index.md.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#package-components">
+   Package Components
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#authors">
+     Authors
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#acknowledgments">
+     Acknowledgments
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#citing">
+     Citing
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#license">
+     License
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#site-contents">
+   Site contents
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="unitcommitment-jl">
+<h1>UnitCommitment.jl<a class="headerlink" href="#unitcommitment-jl" title="Permalink to this headline">¶</a></h1>
+<p><strong>UnitCommitment.jl</strong> (UC.jl) is a Julia/JuMP optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and Julia/JuMP implementations of state-of-the-art mixed-integer programming formulations.</p>
+<div class="section" id="package-components">
+<h2>Package Components<a class="headerlink" href="#package-components" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p><strong>Data Format:</strong> The package proposes an extensible and fully-documented JSON-based data specification format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports all the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.</p></li>
+<li><p><strong>Benchmark Instances:</strong> The package provides a diverse collection of large-scale benchmark instances collected from the literature, converted into a common data format, and extended using data-driven methods to make them more challenging and realistic.</p></li>
+<li><p><strong>Model Implementation</strong>: The package provides a Julia/JuMP implementations of state-of-the-art formulations and solution methods for SCUC, including multiple ramping formulations (<a class="reference external" href="https://doi.org/10.1109/59.871739">ArrCon2000</a>, <a class="reference external" href="https://doi.org/10.1109/TPWRS.2013.2251373">MorLatRam2013</a>, <a class="reference external" href="https://doi.org/10.1007/s10107-015-0919-9">DamKucRajAta2016</a>, <a class="reference external" href="https://doi.org/10.1287/opre.2016.1520">PanGua2016</a>), multiple piecewise-linear costs formulations (<a class="reference external" href="https://doi.org/10.1109/AIEEPAS.1962.4501405">Gar1962</a>, <a class="reference external" href="https://doi.org/10.1109/TPWRS.2006.876672">CarArr2006</a>, <a class="reference external" href="https://doi.org/10.1109/TPWRS.2017.2783850">KnuOstWat2018</a>) and contingency screening methods (<a class="reference external" href="https://doi.org/10.1109/TPWRS.2019.2892620">XavQiuWanThi2019</a>). Our goal is to keep these implementations up-to-date as new methods are proposed in the literature.</p></li>
+<li><p><strong>Benchmark Tools:</strong> The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.</p></li>
+</ul>
+<div class="section" id="authors">
+<h3>Authors<a class="headerlink" href="#authors" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p><strong>Alinson S. Xavier</strong> (Argonne National Laboratory)</p></li>
+<li><p><strong>Aleksandr M. Kazachkov</strong> (University of Florida)</p></li>
+<li><p><strong>Feng Qiu</strong> (Argonne National Laboratory)</p></li>
+</ul>
+</div>
+<div class="section" id="acknowledgments">
+<h3>Acknowledgments<a class="headerlink" href="#acknowledgments" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>We would like to thank <strong>Yonghong Chen</strong> (Midcontinent Independent System Operator), <strong>Feng Pan</strong> (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.</p></li>
+<li><p>Based upon work supported by <strong>Laboratory Directed Research and Development</strong> (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357</p></li>
+<li><p>Based upon work supported by the <strong>U.S. Department of Energy Advanced Grid Modeling Program</strong> under Grant DE-OE0000875.</p></li>
+</ul>
+</div>
+<div class="section" id="citing">
+<h3>Citing<a class="headerlink" href="#citing" title="Permalink to this headline">¶</a></h3>
+<p>If you use UnitCommitment.jl in your research (instances, models or algorithms), we kindly request that you cite the package as follows:</p>
+<ul class="simple">
+<li><p><strong>Alinson S. Xavier, Aleksandr M. Kazachkov, Feng Qiu</strong>, “UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment”. Zenodo (2020). <a class="reference external" href="https://doi.org/10.5281/zenodo.4269874">DOI: 10.5281/zenodo.4269874</a>.</p></li>
+</ul>
+<p>If you use the instances, we additionally request that you cite the original sources, as described in the <a class="reference internal" href="instances/"><span class="doc std std-doc">instances page</span></a>.</p>
+</div>
+<div class="section" id="license">
+<h3>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment
+Copyright © 2020, UChicago Argonne, LLC. All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without modification, are permitted
+provided that the following conditions are met:
+
+1. Redistributions of source code must retain the above copyright notice, this list of
+   conditions and the following disclaimer.
+2. Redistributions in binary form must reproduce the above copyright notice, this list of
+   conditions and the following disclaimer in the documentation and/or other materials provided
+   with the distribution.
+3. Neither the name of the copyright holder nor the names of its contributors may be used to
+   endorse or promote products derived from this software without specific prior written
+   permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot; AND ANY EXPRESS OR
+IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="site-contents">
+<h2>Site contents<a class="headerlink" href="#site-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="usage/"><span class="sectnum">1.</span> Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage/#installation"><span class="sectnum">1.1.</span> Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/#typical-usage"><span class="sectnum">1.2.</span> Typical Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage/#advanced-usage"><span class="sectnum">1.3.</span> Advanced usage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="format/"><span class="sectnum">2.</span> Data Format</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="format/#input-data-format"><span class="sectnum">2.1.</span> Input Data Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="format/#output-data-format"><span class="sectnum">2.2.</span> Output Data Format</a></li>
+<li class="toctree-l2"><a class="reference internal" href="format/#current-limitations"><span class="sectnum">2.3.</span> Current limitations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="instances/"><span class="sectnum">3.</span> Instances</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="instances/#matpower"><span class="sectnum">3.1.</span> MATPOWER</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instances/#pglib-uc-instances"><span class="sectnum">3.2.</span> PGLIB-UC Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instances/#or-lib-uc"><span class="sectnum">3.3.</span> OR-LIB/UC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instances/#tejada19"><span class="sectnum">3.4.</span> Tejada19</a></li>
+<li class="toctree-l2"><a class="reference internal" href="instances/#references"><span class="sectnum">3.5.</span> References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model/"><span class="sectnum">4.</span> JuMP Model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="model/#decision-variables"><span class="sectnum">4.1.</span> Decision variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/#objective-function"><span class="sectnum">4.2.</span> Objective function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/#constraints"><span class="sectnum">4.3.</span> Constraints</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/#inspecting-and-modifying-the-model"><span class="sectnum">4.4.</span> Inspecting and modifying the model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="model/#references"><span class="sectnum">4.5.</span> References</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='right-next' id="next-link" href="usage/" title="next page"><span class="sectnum">1.</span> Usage</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>

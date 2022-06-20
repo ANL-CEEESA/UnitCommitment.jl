@@ -1,0 +1,1805 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3. Instances &#8212; UnitCommitment.jl&lt;br/&gt;&lt;small&gt;0.2&lt;/small&gt;</title>
+    
+  <link href="../_static/css/theme.css" rel="stylesheet" />
+  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+
+    
+  <link rel="stylesheet"
+    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+
+    
+      
+
+    
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
+    
+  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+
+    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
+    <link rel="index" title="Index" href="../genindex/" />
+    <link rel="search" title="Search" href="../search/" />
+    <link rel="next" title="4. JuMP Model" href="../model/" />
+    <link rel="prev" title="2. Data Format" href="../format/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="docsearch:language" content="en" />
+    
+  </head>
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
+    
+    <div class="container-fluid" id="banner"></div>
+
+    
+
+    <div class="container-xl">
+      <div class="row">
+          
+<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
+    
+        <div class="navbar-brand-box">
+    <a class="navbar-brand text-wrap" href="../">
+      
+      
+      <h1 class="site-logo" id="site-title">UnitCommitment.jl<br/><small>0.2</small></h1>
+      
+    </a>
+</div><form class="bd-search d-flex align-items-center" action="../search/" method="get">
+  <i class="icon fas fa-search"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
+</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
+    <div class="bd-toc-item active">
+        <ul class="current nav bd-sidenav">
+ <li class="toctree-l1">
+  <a class="reference internal" href="../usage/">
+   <span class="sectnum">
+    1.
+   </span>
+   Usage
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../format/">
+   <span class="sectnum">
+    2.
+   </span>
+   Data Format
+  </a>
+ </li>
+ <li class="toctree-l1 current active">
+  <a class="current reference internal" href="#">
+   <span class="sectnum">
+    3.
+   </span>
+   Instances
+  </a>
+ </li>
+ <li class="toctree-l1">
+  <a class="reference internal" href="../model/">
+   <span class="sectnum">
+    4.
+   </span>
+   JuMP Model
+  </a>
+ </li>
+</ul>
+
+    </div>
+</nav> <!-- To handle the deprecated key -->
+
+</div>
+
+
+          
+
+
+          
+<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
+    
+    <div class="topbar container-xl fixed-top">
+    <div class="topbar-contents row">
+        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
+        <div class="col pl-md-4 topbar-main">
+            
+            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
+                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
+                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
+                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
+                <i class="fas fa-bars"></i>
+                <i class="fas fa-arrow-left"></i>
+                <i class="fas fa-arrow-up"></i>
+            </button>
+            
+            
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
+            class="fas fa-download"></i></button>
+
+    <div class="dropdown-buttons">
+        <!-- ipynb file if we had a myst markdown file -->
+        
+        <!-- Download raw file -->
+        <a class="dropdown-buttons" href="../_sources/instances.md.txt"><button type="button"
+                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
+                data-placement="left">.md</button></a>
+        <!-- Download PDF via print -->
+        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
+            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
+    </div>
+</div>
+
+            <!-- Source interaction buttons -->
+
+<div class="dropdown-buttons-trigger">
+    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
+        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
+    <div class="dropdown-buttons sourcebuttons">
+        <a class="repository-button"
+            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
+                data-toggle="tooltip" data-placement="left" title="Source repository"><i
+                    class="fab fa-github"></i>repository</button></a>
+        
+        
+    </div>
+</div>
+
+            <!-- Full screen (wrap in <a> to have style consistency -->
+
+<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
+        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
+        title="Fullscreen mode"><i
+            class="fas fa-expand"></i></button></a>
+
+            <!-- Launch buttons -->
+
+        </div>
+
+        <!-- Table of contents -->
+        <div class="d-none d-md-block col-md-2 bd-toc show">
+            
+            <div class="tocsection onthispage pt-5 pb-3">
+                <i class="fas fa-list"></i> Contents
+            </div>
+            <nav id="bd-toc-nav">
+                <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#matpower">
+   <span class="sectnum">
+    3.1.
+   </span>
+   MATPOWER
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#matpower-uw-pstca">
+     MATPOWER/UW-PSTCA
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#matpower-polish">
+     MATPOWER/Polish
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#matpower-pegase">
+     MATPOWER/PEGASE
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#matpower-rte">
+     MATPOWER/RTE
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#pglib-uc-instances">
+   <span class="sectnum">
+    3.2.
+   </span>
+   PGLIB-UC Instances
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pglib-uc-california">
+     PGLIB-UC/California
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pglib-uc-ferc">
+     PGLIB-UC/FERC
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#pglib-uc-rts-gmlc">
+     PGLIB-UC/RTS-GMLC
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#or-lib-uc">
+   <span class="sectnum">
+    3.3.
+   </span>
+   OR-LIB/UC
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#tejada19">
+   <span class="sectnum">
+    3.4.
+   </span>
+   Tejada19
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#references">
+   <span class="sectnum">
+    3.5.
+   </span>
+   References
+  </a>
+ </li>
+</ul>
+
+            </nav>
+        </div>
+    </div>
+</div>
+    <div id="main-content" class="row">
+        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
+        
+              <div>
+                
+  <div class="section" id="instances">
+<h1><span class="sectnum">3.</span> Instances<a class="headerlink" href="#instances" title="Permalink to this headline">¶</a></h1>
+<p>UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a <a class="reference internal" href="../format/"><span class="doc std std-doc">common data format</span></a>. In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with <code class="docutils literal notranslate"><span class="pre">UnitCommitment.read_benchmark(name)</span></code>, as explained in the <a class="reference internal" href="../usage/"><span class="doc std std-doc">usage section</span></a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The instances included in UC.jl are still under development and may change in the future. If you use these instances in your research, for reproducibility, you should specify what version of UC.jl they came from.</p>
+</div>
+<div class="section" id="matpower">
+<h2><span class="sectnum">3.1.</span> MATPOWER<a class="headerlink" href="#matpower" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/MATPOWER/matpower">MATPOWER</a> is an open-source package for solving power flow problems in MATLAB and Octave. It contains a number of power flow test cases, which have been widely used in the power systems literature.</p>
+<p>Because most MATPOWER test cases were originally designed for power flow studies, they lack a number of important unit commitment parameters, such as time-varying loads, production cost curves, ramp limits, reserves and initial conditions. The test cases included in UnitCommitment.jl are extended versions of the original MATPOWER test cases, modified as following:</p>
+<ul class="simple">
+<li><p><strong>Production cost</strong> curves were generated using a data-driven approach, based on publicly available data. More specifically, machine learning models were trained to predict typical production cost curves, for each day of the year, based on a generator’s maximum and minimum power output.</p></li>
+<li><p><strong>Load profiles</strong> were generated using a similar data-driven approach.</p></li>
+<li><p><strong>Ramp-up, ramp-down, startup and shutdown rates</strong> were set to a fixed proportion of the generator’s maximum output.</p></li>
+<li><p><strong>Minimum reserves</strong> were set to a fixed proportion of the total demand.</p></li>
+<li><p><strong>Contingencies</strong> were set to include all N-1 transmission line contingencies that do not generate islands or isolated buses. More specifically, there is one contingency for each transmission line, as long as that transmission line is not a bridge in the network graph.</p></li>
+</ul>
+<p>For each MATPOWER test case, UC.jl provides two variations (<code class="docutils literal notranslate"><span class="pre">2017-02-01</span></code> and <code class="docutils literal notranslate"><span class="pre">2017-08-01</span></code>) corresponding respectively to a winter and to a summer test case.</p>
+<div class="section" id="matpower-uw-pstca">
+<h3>MATPOWER/UW-PSTCA<a class="headerlink" href="#matpower-uw-pstca" title="Permalink to this headline">¶</a></h3>
+<p>A variety of smaller IEEE test cases, <a class="reference external" href="http://labs.ece.uw.edu/pstca/">compiled by University of Washington</a>, corresponding mostly to small portions of the American Electric Power System in the 1960s.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case14/2017-02-01</span></code></p></td>
+<td><p>14</p></td>
+<td><p>5</p></td>
+<td><p>20</p></td>
+<td><p>19</p></td>
+<td><p>[MTPWR, PSTCA]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case30/2017-02-01</span></code></p></td>
+<td><p>30</p></td>
+<td><p>6</p></td>
+<td><p>41</p></td>
+<td><p>38</p></td>
+<td><p>[MTPWR, PSTCA]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case57/2017-02-01</span></code></p></td>
+<td><p>57</p></td>
+<td><p>7</p></td>
+<td><p>80</p></td>
+<td><p>79</p></td>
+<td><p>[MTPWR, PSTCA]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case118/2017-02-01</span></code></p></td>
+<td><p>118</p></td>
+<td><p>54</p></td>
+<td><p>186</p></td>
+<td><p>177</p></td>
+<td><p>[MTPWR, PSTCA]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case300/2017-02-01</span></code></p></td>
+<td><p>300</p></td>
+<td><p>69</p></td>
+<td><p>411</p></td>
+<td><p>320</p></td>
+<td><p>[MTPWR, PSTCA]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="matpower-polish">
+<h3>MATPOWER/Polish<a class="headerlink" href="#matpower-polish" title="Permalink to this headline">¶</a></h3>
+<p>Test cases based on the Polish 400, 220 and 110 kV networks, originally provided by <strong>Roman Korab</strong> (Politechnika Śląska) and corrected by the MATPOWER team.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2383wp/2017-02-01</span></code></p></td>
+<td><p>2383</p></td>
+<td><p>323</p></td>
+<td><p>2896</p></td>
+<td><p>2240</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2736sp/2017-02-01</span></code></p></td>
+<td><p>2736</p></td>
+<td><p>289</p></td>
+<td><p>3504</p></td>
+<td><p>3159</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2737sop/2017-02-01</span></code></p></td>
+<td><p>2737</p></td>
+<td><p>267</p></td>
+<td><p>3506</p></td>
+<td><p>3161</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2746wop/2017-02-01</span></code></p></td>
+<td><p>2746</p></td>
+<td><p>443</p></td>
+<td><p>3514</p></td>
+<td><p>3155</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2746wp/2017-02-01</span></code></p></td>
+<td><p>2746</p></td>
+<td><p>457</p></td>
+<td><p>3514</p></td>
+<td><p>3156</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3012wp/2017-02-01</span></code></p></td>
+<td><p>3012</p></td>
+<td><p>496</p></td>
+<td><p>3572</p></td>
+<td><p>2854</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3120sp/2017-02-01</span></code></p></td>
+<td><p>3120</p></td>
+<td><p>483</p></td>
+<td><p>3693</p></td>
+<td><p>2950</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3375wp/2017-02-01</span></code></p></td>
+<td><p>3374</p></td>
+<td><p>590</p></td>
+<td><p>4161</p></td>
+<td><p>3245</p></td>
+<td><p>[MTPWR]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="matpower-pegase">
+<h3>MATPOWER/PEGASE<a class="headerlink" href="#matpower-pegase" title="Permalink to this headline">¶</a></h3>
+<p>Test cases from the <a class="reference external" href="https://cordis.europa.eu/project/id/211407">Pan European Grid Advanced Simulation and State Estimation (PEGASE) project</a>, describing part of the European high voltage transmission network.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case89pegase/2017-02-01</span></code></p></td>
+<td><p>89</p></td>
+<td><p>12</p></td>
+<td><p>210</p></td>
+<td><p>192</p></td>
+<td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1354pegase/2017-02-01</span></code></p></td>
+<td><p>1354</p></td>
+<td><p>260</p></td>
+<td><p>1991</p></td>
+<td><p>1288</p></td>
+<td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2869pegase/2017-02-01</span></code></p></td>
+<td><p>2869</p></td>
+<td><p>510</p></td>
+<td><p>4582</p></td>
+<td><p>3579</p></td>
+<td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case9241pegase/2017-02-01</span></code></p></td>
+<td><p>9241</p></td>
+<td><p>1445</p></td>
+<td><p>16049</p></td>
+<td><p>13932</p></td>
+<td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case13659pegase/2017-02-01</span></code></p></td>
+<td><p>13659</p></td>
+<td><p>4092</p></td>
+<td><p>20467</p></td>
+<td><p>13932</p></td>
+<td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="matpower-rte">
+<h3>MATPOWER/RTE<a class="headerlink" href="#matpower-rte" title="Permalink to this headline">¶</a></h3>
+<p>Test cases from the R&amp;D Division at <a class="reference external" href="https://www.rte-france.com">Reseau de Transport d’Electricite</a> representing the size and complexity of the French very high voltage transmission network.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1888rte/2017-02-01</span></code></p></td>
+<td><p>1888</p></td>
+<td><p>296</p></td>
+<td><p>2531</p></td>
+<td><p>1484</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1951rte/2017-02-01</span></code></p></td>
+<td><p>1951</p></td>
+<td><p>390</p></td>
+<td><p>2596</p></td>
+<td><p>1497</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2848rte/2017-02-01</span></code></p></td>
+<td><p>2848</p></td>
+<td><p>544</p></td>
+<td><p>3776</p></td>
+<td><p>2242</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2868rte/2017-02-01</span></code></p></td>
+<td><p>2868</p></td>
+<td><p>596</p></td>
+<td><p>3808</p></td>
+<td><p>2260</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6468rte/2017-02-01</span></code></p></td>
+<td><p>6468</p></td>
+<td><p>1262</p></td>
+<td><p>9000</p></td>
+<td><p>6094</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6470rte/2017-02-01</span></code></p></td>
+<td><p>6470</p></td>
+<td><p>1306</p></td>
+<td><p>9005</p></td>
+<td><p>6085</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6495rte/2017-02-01</span></code></p></td>
+<td><p>6495</p></td>
+<td><p>1352</p></td>
+<td><p>9019</p></td>
+<td><p>6060</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6515rte/2017-02-01</span></code></p></td>
+<td><p>6515</p></td>
+<td><p>1368</p></td>
+<td><p>9037</p></td>
+<td><p>6063</p></td>
+<td><p>[MTPWR, JoFlMa16]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="pglib-uc-instances">
+<h2><span class="sectnum">3.2.</span> PGLIB-UC Instances<a class="headerlink" href="#pglib-uc-instances" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="https://github.com/power-grid-lib/pglib-uc">PGLIB-UC</a> is a benchmark library curated and maintained by the <a class="reference external" href="https://power-grid-lib.github.io/">IEEE PES Task Force on Benchmarks for Validation of Emerging Power System Algorithms</a>. These test cases have been used in [KnOsWa20].</p>
+<div class="section" id="pglib-uc-california">
+<h3>PGLIB-UC/California<a class="headerlink" href="#pglib-uc-california" title="Permalink to this headline">¶</a></h3>
+<p>Test cases based on publicly available data from the California ISO. For more details, see <a class="reference external" href="https://github.com/power-grid-lib/pglib-uc">PGLIB-UC case file overview</a>.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-09-01_reserves_0</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-09-01_reserves_1</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-09-01_reserves_3</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-09-01_reserves_5</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-12-01_reserves_0</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-12-01_reserves_1</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-12-01_reserves_3</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2014-12-01_reserves_5</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-03-01_reserves_0</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-03-01_reserves_1</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-03-01_reserves_3</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-03-01_reserves_5</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-06-01_reserves_0</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-06-01_reserves_1</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-06-01_reserves_3</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/2015-06-01_reserves_5</span></code></p></td>
+<td><p>1</p></td>
+<td><p>610</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/Scenario400_reserves_0</span></code></p></td>
+<td><p>1</p></td>
+<td><p>611</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/Scenario400_reserves_1</span></code></p></td>
+<td><p>1</p></td>
+<td><p>611</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/Scenario400_reserves_3</span></code></p></td>
+<td><p>1</p></td>
+<td><p>611</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ca/Scenario400_reserves_5</span></code></p></td>
+<td><p>1</p></td>
+<td><p>611</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="pglib-uc-ferc">
+<h3>PGLIB-UC/FERC<a class="headerlink" href="#pglib-uc-ferc" title="Permalink to this headline">¶</a></h3>
+<p>Test cases based on a publicly available <a class="reference external" href="https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1">unit commitment test case produced by the Federal Energy Regulatory Commission</a>. For more details, see <a class="reference external" href="https://github.com/power-grid-lib/pglib-uc">PGLIB-UC case file overview</a>.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-01-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-01-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-02-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-02-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-03-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-03-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-04-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-04-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-05-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-05-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-06-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-06-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-07-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-07-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-08-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-08-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-09-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-09-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>979</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-10-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-10-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-11-02_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-11-02_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-12-01_hw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/ferc/2015-12-01_lw</span></code></p></td>
+<td><p>1</p></td>
+<td><p>935</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[KnOsWa20, KrHiOn12]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="pglib-uc-rts-gmlc">
+<h3>PGLIB-UC/RTS-GMLC<a class="headerlink" href="#pglib-uc-rts-gmlc" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference external" href="https://github.com/GridMod/RTS-GMLC">RTS-GMLC</a> is an updated version of the RTS-96 test system produced by the United States Department of Energy’s <a class="reference external" href="https://gmlc.doe.gov/">Grid Modernization Laboratory Consortium</a>. The PGLIB-UC/RTS-GMLC instances are modified versions of the original RTS-GMLC instances, with modified ramp-rates and without a transmission network. For more details, see <a class="reference external" href="https://github.com/power-grid-lib/pglib-uc">PGLIB-UC case file overview</a>.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-01-27</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-02-09</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-03-05</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-04-03</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-05-05</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-06-09</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-07-06</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-08-12</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-09-20</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-10-27</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-11-25</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">pglib-uc/rts_gmlc/2020-12-23</span></code></p></td>
+<td><p>1</p></td>
+<td><p>154</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[BaBlEh19]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section" id="or-lib-uc">
+<h2><span class="sectnum">3.3.</span> OR-LIB/UC<a class="headerlink" href="#or-lib-uc" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference external" href="http://people.brunel.ac.uk/~mastjjb/jeb/info.html">OR-LIB</a> is a collection of test data sets for a variety of operations research problems, including unit commitment. The UC instances in OR-LIB are synthetic instances generated by a <a class="reference external" href="http://groups.di.unipi.it/optimize/Data/UC.html">random problem generator</a> developed by the <a class="reference external" href="http://groups.di.unipi.it/optimize/">Operations Research Group at University of Pisa</a>. These test cases have been used in [FrGe06] and many other publications.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Hours</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/10_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/10_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/10_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/10_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/10_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/20_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>20</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/20_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>20</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/20_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>20</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/20_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>20</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/20_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>20</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/50_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/50_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/50_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/50_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/50_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>50</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/75_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>75</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/75_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>75</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/75_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>75</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/75_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>75</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/75_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>75</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/100_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>100</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/100_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>100</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/100_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>100</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/100_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>100</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/100_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>100</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/150_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>150</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/150_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>150</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/150_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>150</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/150_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>150</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/150_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>150</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_10_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_11_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_12_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_1_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_2_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_3_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_4_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_5_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_6_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_7_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_8_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">or-lib/200_0_9_w</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>200</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[ORLIB, FrGe06]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tejada19">
+<h2><span class="sectnum">3.4.</span> Tejada19<a class="headerlink" href="#tejada19" title="Permalink to this headline">¶</a></h2>
+<p>Test cases used in [TeLuSa19]. These instances are similar to OR-LIB/UC, in the sense that they use the same random problem generator, but are much larger.</p>
+<table class="colwidths-auto docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Name</p></th>
+<th class="head"><p>Hours</p></th>
+<th class="head"><p>Buses</p></th>
+<th class="head"><p>Generators</p></th>
+<th class="head"><p>Lines</p></th>
+<th class="head"><p>Contingencies</p></th>
+<th class="head"><p>References</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_214g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>214</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_250g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>250</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_290g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>290</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_480g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>480</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_505g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>505</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_623g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>623</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_647g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>647</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_836g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>836</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_850g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>850</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_918g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>918</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_931g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>931</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_940g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>940</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_957g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>957</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_959g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>959</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1069g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1069</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1130g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1130</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1376g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1376</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1393g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1393</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1577g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1577</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1615g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1615</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1632g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1632</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1768g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1768</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1804g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1804</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1820g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1820</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1823g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1823</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_24h_1888g</span></code></p></td>
+<td><p>24</p></td>
+<td><p>1</p></td>
+<td><p>1888</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_36g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>36</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_38g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>38</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_40g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>40</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_53g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>53</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_58g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>58</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_59g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>59</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_72g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>72</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_84g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>84</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_86g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>86</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_88g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>88</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_93g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>93</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_105g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>105</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_110g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>110</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_125g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>125</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_130g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>130</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_131g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>131</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_140g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>140</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_165g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>165</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_175g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>175</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_179g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>179</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_188g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>188</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_192g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>192</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tejada19/UC_168h_199g</span></code></p></td>
+<td><p>168</p></td>
+<td><p>1</p></td>
+<td><p>199</p></td>
+<td><p>0</p></td>
+<td><p>0</p></td>
+<td><p>[TeLuSa19]</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="references">
+<h2><span class="sectnum">3.5.</span> References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><p>[UCJL] <strong>Alinson S. Xavier, Aleksandr M. Kazachkov, Feng Qiu.</strong> “UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment”. Zenodo (2020). <a class="reference external" href="https://doi.org/10.5281/zenodo.4269874">DOI: 10.5281/zenodo.4269874</a></p></li>
+<li><p>[KnOsWa20] <strong>Bernard Knueven, James Ostrowski and Jean-Paul Watson.</strong> “On Mixed-Integer Programming Formulations for the Unit Commitment Problem”. INFORMS Journal on Computing (2020). <a class="reference external" href="https://doi.org/10.1287/ijoc.2019.0944">DOI: 10.1287/ijoc.2019.0944</a></p></li>
+<li><p>[KrHiOn12] <strong>Eric Krall, Michael Higgins and Richard P. O’Neill.</strong> “RTO unit commitment test system.” Federal Energy Regulatory Commission. Available at: <a class="reference external" href="https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1">https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1</a> (Accessed: Nov 14, 2020)</p></li>
+<li><p>[BaBlEh19] <strong>Clayton Barrows, Aaron Bloom, Ali Ehlen, Jussi Ikaheimo, Jennie Jorgenson, Dheepak Krishnamurthy, Jessica Lau et al.</strong> “The IEEE Reliability Test System: A Proposed 2019 Update.” IEEE Transactions on Power Systems (2019). <a class="reference external" href="https://doi.org/10.1109/TPWRS.2019.2925557">DOI: 10.1109/TPWRS.2019.2925557</a></p></li>
+<li><p>[JoFlMa16] <strong>C. Josz, S. Fliscounakis, J. Maeght, and P. Panciatici.</strong> “AC Power Flow
+Data in MATPOWER and QCQP Format: iTesla, RTE Snapshots, and PEGASE”. <a class="reference external" href="https://arxiv.org/abs/1603.01533">ArXiv (2016)</a>.</p></li>
+<li><p>[FlPaCa13] <strong>S. Fliscounakis, P. Panciatici, F. Capitanescu, and L. Wehenkel.</strong>
+“Contingency ranking with respect to overloads in very large power
+systems taking into account uncertainty, preventive and corrective
+actions”, Power Systems, IEEE Trans. on, (28)4:4909-4917, 2013.
+<a class="reference external" href="https://doi.org/10.1109/TPWRS.2013.2251015">DOI: 10.1109/TPWRS.2013.2251015</a></p></li>
+<li><p>[MTPWR] <strong>D. Zimmerman, C. E. Murillo-Sandnchez and R. J. Thomas.</strong> “Matpower:  Steady-state  operations,  planning,  and  analysis  tools  forpower systems research and education”, IEEE Transactions on PowerSystems, vol. 26, no. 1, pp. 12 –19, Feb. 2011. <a class="reference external" href="https://doi.org/10.1109/TPWRS.2010.2051168">DOI: 10.1109/TPWRS.2010.2051168</a></p></li>
+<li><p>[PSTCA] <strong>University of Washington, Dept. of Electrical Engineering.</strong> “Power Systems Test Case Archive”. Available at: <a class="reference external" href="http://www.ee.washington.edu/research/pstca/">http://www.ee.washington.edu/research/pstca/</a> (Accessed: Nov 14, 2020)</p></li>
+<li><p>[ORLIB] <strong>J.E.Beasley.</strong> “OR-Library: distributing test problems by electronic mail”, Journal of the Operational Research Society 41(11) (1990). <a class="reference external" href="https://doi.org/10.2307/2582903">DOI: 10.2307/2582903</a></p></li>
+<li><p>[FrGe06] <strong>A. Frangioni, C. Gentile.</strong> “Solving nonlinear single-unit commitment problems with ramping constraints” Operations Research 54(4), p. 767 - 775, 2006. <a class="reference external" href="https://doi.org/10.1287/opre.1060.0309">DOI: 10.1287/opre.1060.0309</a></p></li>
+<li><p>[TeLuSa19] <strong>D. A. Tejada-Arango, S. Lumbreras, P. Sanchez-Martin and A. Ramos.</strong> “Which Unit-Commitment Formulation is Best? A Systematic Comparison,” in IEEE Transactions on Power Systems. <a class="reference external" href="https://ieeexplore.ieee.org/document/8941313/">DOI: 10.1109/TPWRS.2019.2962024</a>.</p></li>
+</ul>
+</div>
+</div>
+
+
+              </div>
+              
+        
+        <div class='prev-next-bottom'>
+            
+    <a class='left-prev' id="prev-link" href="../format/" title="previous page"><span class="sectnum">2.</span> Data Format</a>
+    <a class='right-next' id="next-link" href="../model/" title="next page"><span class="sectnum">4.</span> JuMP Model</a>
+
+        </div>
+        
+        </div>
+    </div>
+    <footer class="footer mt-5 mt-md-0">
+    <div class="container">
+      <p>
+        
+            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+      </p>
+    </div>
+  </footer>
+</main>
+
+
+      </div>
+    </div>
+  
+  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
+
+  
+  </body>
+</html>
