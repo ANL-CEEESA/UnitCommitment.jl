@@ -12,10 +12,10 @@ Usage
 Installation
 ------------
 
-UnitCommitment.jl was tested and developed with [Julia 1.6](https://julialang.org/). To install Julia, please follow the [installation guide on the official Julia website](https://julialang.org/downloads/platform.html). To install UnitCommitment.jl, run the Julia interpreter, type `]` to open the package manager, then type:
+UnitCommitment.jl was tested and developed with [Julia 1.7](https://julialang.org/). To install Julia, please follow the [installation guide on the official Julia website](https://julialang.org/downloads/). To install UnitCommitment.jl, run the Julia interpreter, type `]` to open the package manager, then type:
 
 ```text
-pkg> add UnitCommitment@0.2
+pkg> add UnitCommitment@0.3
 ```
 
 To test that the package has been correctly installed, run:

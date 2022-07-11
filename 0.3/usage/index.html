@@ -145,19 +145,6 @@
 
             <!-- Source interaction buttons -->
 
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
-</div>
-
             <!-- Full screen (wrap in <a> to have style consistency -->
 
 <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
@@ -245,8 +232,8 @@
 <h1><span class="sectnum">1.</span> Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="installation">
 <h2><span class="sectnum">1.1.</span> Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>UnitCommitment.jl was tested and developed with <a class="reference external" href="https://julialang.org/">Julia 1.6</a>. To install Julia, please follow the <a class="reference external" href="https://julialang.org/downloads/platform.html">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code class="docutils literal notranslate"><span class="pre">]</span></code> to open the package manager, then type:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pkg&gt; add UnitCommitment@0.2
+<p>UnitCommitment.jl was tested and developed with <a class="reference external" href="https://julialang.org/">Julia 1.7</a>. To install Julia, please follow the <a class="reference external" href="https://julialang.org/downloads/">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code class="docutils literal notranslate"><span class="pre">]</span></code> to open the package manager, then type:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pkg&gt; add UnitCommitment@0.3
 </pre></div>
 </div>
 <p>To test that the package has been correctly installed, run:</p>
@@ -261,33 +248,33 @@
 <div class="section" id="solving-user-provided-instances">
 <h3>Solving user-provided instances<a class="headerlink" href="#solving-user-provided-instances" title="Permalink to this headline">¶</a></h3>
 <p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See <a class="reference internal" href="../format/"><span class="doc std std-doc">Data Format</span></a> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
-<span class="k">using</span> <span class="n">JSON</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">JSON</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="c"># 1. Read instance</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;/path/to/input.json&quot;</span><span class="p">)</span>
+<span class="c"># 1. Read instance</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;/path/to/input.json&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># 2. Construct optimization model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
-    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># 2. Construct optimization model</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># 3. Solve model</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c"># 3. Solve model</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># 4. Write solution to a file</span>
-<span class="n">solution</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">solution</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+<span class="c"># 4. Write solution to a file</span><span class="w"></span>
+<span class="n">solution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">solution</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">solution</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="solving-benchmark-instances">
 <h3>Solving benchmark instances<a class="headerlink" href="#solving-benchmark-instances" title="Permalink to this headline">¶</a></h3>
 <p>UnitCommitment.jl contains a large number of benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function <code class="docutils literal notranslate"><span class="pre">read_benchmark</span></code> can be used, as shown below. See <a class="reference internal" href="../instances/"><span class="doc std std-doc">Instances</span></a> for the complete list of available instances.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">UnitCommitment</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case3375wp/2017-02-01&quot;</span><span class="p">)</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case3375wp/2017-02-01&quot;</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -297,32 +284,32 @@
 <div class="section" id="customizing-the-formulation">
 <h3>Customizing the formulation<a class="headerlink" href="#customizing-the-formulation" title="Permalink to this headline">¶</a></h3>
 <p>By default, <code class="docutils literal notranslate"><span class="pre">build_model</span></code> uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="k">import</span> <span class="n">UnitCommitment</span><span class="o">:</span>
-    <span class="n">Formulation</span><span class="p">,</span>
-    <span class="n">KnuOstWat2018</span><span class="p">,</span>
-    <span class="n">MorLatRam2013</span><span class="p">,</span>
-    <span class="n">ShiftFactorsFormulation</span>
+<span class="k">import</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">:</span><span class="w"></span>
+<span class="w">    </span><span class="n">Formulation</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">KnuOstWat2018</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">MorLatRam2013</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">ShiftFactorsFormulation</span><span class="w"></span>
 
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span>
-    <span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
-    <span class="n">instance</span> <span class="o">=</span> <span class="n">instance</span><span class="p">,</span>
-    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-    <span class="n">formulation</span> <span class="o">=</span> <span class="n">Formulation</span><span class="p">(</span>
-        <span class="n">pwl_costs</span> <span class="o">=</span> <span class="n">KnuOstWat2018</span><span class="o">.</span><span class="n">PwlCosts</span><span class="p">(),</span>
-        <span class="n">ramping</span> <span class="o">=</span> <span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">Ramping</span><span class="p">(),</span>
-        <span class="n">startup_costs</span> <span class="o">=</span> <span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">StartupCosts</span><span class="p">(),</span>
-        <span class="n">transmission</span> <span class="o">=</span> <span class="n">ShiftFactorsFormulation</span><span class="p">(</span>
-            <span class="n">isf_cutoff</span> <span class="o">=</span> <span class="mf">0.005</span><span class="p">,</span>
-            <span class="n">lodf_cutoff</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
-        <span class="p">),</span>
-    <span class="p">),</span>
-<span class="p">)</span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">formulation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Formulation</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">pwl_costs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KnuOstWat2018</span><span class="o">.</span><span class="n">PwlCosts</span><span class="p">(),</span><span class="w"></span>
+<span class="w">        </span><span class="n">ramping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">Ramping</span><span class="p">(),</span><span class="w"></span>
+<span class="w">        </span><span class="n">startup_costs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">StartupCosts</span><span class="p">(),</span><span class="w"></span>
+<span class="w">        </span><span class="n">transmission</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ShiftFactorsFormulation</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="n">isf_cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.005</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">lodf_cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.001</span><span class="p">,</span><span class="w"></span>
+<span class="w">        </span><span class="p">),</span><span class="w"></span>
+<span class="w">    </span><span class="p">),</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -330,21 +317,21 @@
 <h3>Generating initial conditions<a class="headerlink" href="#generating-initial-conditions" title="Permalink to this headline">¶</a></h3>
 <p>When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.</p>
 <p>To help with this issue, UC.jl provides a utility function which can generate feasible initial conditions by solving a single-period optimization problem, as shown below:</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="c"># Read original instance</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span>
+<span class="c"># Read original instance</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Generate initial conditions (in-place)</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">generate_initial_conditions!</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">)</span>
+<span class="c"># Generate initial conditions (in-place)</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">generate_initial_conditions!</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Construct and solve optimization model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
-    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-<span class="p">)</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c"># Construct and solve optimization model</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 <div class="admonition warning">
@@ -355,17 +342,17 @@
 <div class="section" id="verifying-solutions">
 <h3>Verifying solutions<a class="headerlink" href="#verifying-solutions" title="Permalink to this headline">¶</a></h3>
 <p>When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the <a class="reference internal" href="../format/"><span class="doc std std-doc">UC.jl data format</span></a>.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">JSON</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">JSON</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="c"># Read instance</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span>
+<span class="c"># Read instance</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Read solution (potentially produced by other packages) </span>
-<span class="n">solution</span> <span class="o">=</span> <span class="n">JSON</span><span class="o">.</span><span class="n">parsefile</span><span class="p">(</span><span class="s">&quot;solution.json&quot;</span><span class="p">)</span>
+<span class="c"># Read solution (potentially produced by other packages) </span><span class="w"></span>
+<span class="n">solution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parsefile</span><span class="p">(</span><span class="s">&quot;solution.json&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Validate solution and print validation errors</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span> <span class="n">solution</span><span class="p">)</span>
+<span class="c"># Validate solution and print validation errors</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="n">solution</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -389,7 +376,7 @@
     <div class="container">
       <p>
         
-            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+            &copy; Copyright 2020-2022, UChicago Argonne, LLC.<br/>
       </p>
     </div>
   </footer>

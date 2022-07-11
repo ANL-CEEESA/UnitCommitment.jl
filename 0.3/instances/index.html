@@ -145,19 +145,6 @@
 
             <!-- Source interaction buttons -->
 
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
-</div>
-
             <!-- Full screen (wrap in <a> to have style consistency -->
 
 <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
@@ -285,7 +272,7 @@
 <li><p><strong>Minimum reserves</strong> were set to a fixed proportion of the total demand.</p></li>
 <li><p><strong>Contingencies</strong> were set to include all N-1 transmission line contingencies that do not generate islands or isolated buses. More specifically, there is one contingency for each transmission line, as long as that transmission line is not a bridge in the network graph.</p></li>
 </ul>
-<p>For each MATPOWER test case, UC.jl provides two variations (<code class="docutils literal notranslate"><span class="pre">2017-02-01</span></code> and <code class="docutils literal notranslate"><span class="pre">2017-08-01</span></code>) corresponding respectively to a winter and to a summer test case.</p>
+<p>For each MATPOWER test case, UC.jl provides 364 variations (<code class="docutils literal notranslate"><span class="pre">2017-01-01</span></code> to <code class="docutils literal notranslate"><span class="pre">2017-12-30</span></code>) corresponding different days of the year.</p>
 <div class="section" id="matpower-uw-pstca">
 <h3>MATPOWER/UW-PSTCA<a class="headerlink" href="#matpower-uw-pstca" title="Permalink to this headline">¶</a></h3>
 <p>A variety of smaller IEEE test cases, <a class="reference external" href="http://labs.ece.uw.edu/pstca/">compiled by University of Washington</a>, corresponding mostly to small portions of the American Electric Power System in the 1960s.</p>
@@ -300,35 +287,35 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case14/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case14/2017-01-01</span></code></p></td>
 <td><p>14</p></td>
 <td><p>5</p></td>
 <td><p>20</p></td>
 <td><p>19</p></td>
 <td><p>[MTPWR, PSTCA]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case30/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case30/2017-01-01</span></code></p></td>
 <td><p>30</p></td>
 <td><p>6</p></td>
 <td><p>41</p></td>
 <td><p>38</p></td>
 <td><p>[MTPWR, PSTCA]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case57/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case57/2017-01-01</span></code></p></td>
 <td><p>57</p></td>
 <td><p>7</p></td>
 <td><p>80</p></td>
 <td><p>79</p></td>
 <td><p>[MTPWR, PSTCA]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case118/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case118/2017-01-01</span></code></p></td>
 <td><p>118</p></td>
 <td><p>54</p></td>
 <td><p>186</p></td>
 <td><p>177</p></td>
 <td><p>[MTPWR, PSTCA]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case300/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case300/2017-01-01</span></code></p></td>
 <td><p>300</p></td>
 <td><p>69</p></td>
 <td><p>411</p></td>
@@ -352,56 +339,56 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2383wp/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2383wp/2017-01-01</span></code></p></td>
 <td><p>2383</p></td>
 <td><p>323</p></td>
 <td><p>2896</p></td>
 <td><p>2240</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2736sp/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2736sp/2017-01-01</span></code></p></td>
 <td><p>2736</p></td>
 <td><p>289</p></td>
 <td><p>3504</p></td>
 <td><p>3159</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2737sop/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2737sop/2017-01-01</span></code></p></td>
 <td><p>2737</p></td>
 <td><p>267</p></td>
 <td><p>3506</p></td>
 <td><p>3161</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2746wop/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2746wop/2017-01-01</span></code></p></td>
 <td><p>2746</p></td>
 <td><p>443</p></td>
 <td><p>3514</p></td>
 <td><p>3155</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2746wp/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2746wp/2017-01-01</span></code></p></td>
 <td><p>2746</p></td>
 <td><p>457</p></td>
 <td><p>3514</p></td>
 <td><p>3156</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3012wp/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3012wp/2017-01-01</span></code></p></td>
 <td><p>3012</p></td>
 <td><p>496</p></td>
 <td><p>3572</p></td>
 <td><p>2854</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3120sp/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3120sp/2017-01-01</span></code></p></td>
 <td><p>3120</p></td>
 <td><p>483</p></td>
 <td><p>3693</p></td>
 <td><p>2950</p></td>
 <td><p>[MTPWR]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3375wp/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case3375wp/2017-01-01</span></code></p></td>
 <td><p>3374</p></td>
 <td><p>590</p></td>
 <td><p>4161</p></td>
@@ -425,35 +412,35 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case89pegase/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case89pegase/2017-01-01</span></code></p></td>
 <td><p>89</p></td>
 <td><p>12</p></td>
 <td><p>210</p></td>
 <td><p>192</p></td>
 <td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1354pegase/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1354pegase/2017-01-01</span></code></p></td>
 <td><p>1354</p></td>
 <td><p>260</p></td>
 <td><p>1991</p></td>
 <td><p>1288</p></td>
 <td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2869pegase/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2869pegase/2017-01-01</span></code></p></td>
 <td><p>2869</p></td>
 <td><p>510</p></td>
 <td><p>4582</p></td>
 <td><p>3579</p></td>
 <td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case9241pegase/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case9241pegase/2017-01-01</span></code></p></td>
 <td><p>9241</p></td>
 <td><p>1445</p></td>
 <td><p>16049</p></td>
 <td><p>13932</p></td>
 <td><p>[JoFlMa16, FlPaCa13, MTPWR]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case13659pegase/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case13659pegase/2017-01-01</span></code></p></td>
 <td><p>13659</p></td>
 <td><p>4092</p></td>
 <td><p>20467</p></td>
@@ -477,56 +464,56 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1888rte/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1888rte/2017-01-01</span></code></p></td>
 <td><p>1888</p></td>
 <td><p>296</p></td>
 <td><p>2531</p></td>
 <td><p>1484</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1951rte/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case1951rte/2017-01-01</span></code></p></td>
 <td><p>1951</p></td>
 <td><p>390</p></td>
 <td><p>2596</p></td>
 <td><p>1497</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2848rte/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2848rte/2017-01-01</span></code></p></td>
 <td><p>2848</p></td>
 <td><p>544</p></td>
 <td><p>3776</p></td>
 <td><p>2242</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2868rte/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case2868rte/2017-01-01</span></code></p></td>
 <td><p>2868</p></td>
 <td><p>596</p></td>
 <td><p>3808</p></td>
 <td><p>2260</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6468rte/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6468rte/2017-01-01</span></code></p></td>
 <td><p>6468</p></td>
 <td><p>1262</p></td>
 <td><p>9000</p></td>
 <td><p>6094</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6470rte/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6470rte/2017-01-01</span></code></p></td>
 <td><p>6470</p></td>
 <td><p>1306</p></td>
 <td><p>9005</p></td>
 <td><p>6085</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6495rte/2017-02-01</span></code></p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6495rte/2017-01-01</span></code></p></td>
 <td><p>6495</p></td>
 <td><p>1352</p></td>
 <td><p>9019</p></td>
 <td><p>6060</p></td>
 <td><p>[MTPWR, JoFlMa16]</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6515rte/2017-02-01</span></code></p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">matpower/case6515rte/2017-01-01</span></code></p></td>
 <td><p>6515</p></td>
 <td><p>1368</p></td>
 <td><p>9037</p></td>
@@ -1751,7 +1738,7 @@
 <div class="section" id="references">
 <h2><span class="sectnum">3.5.</span> References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
-<li><p>[UCJL] <strong>Alinson S. Xavier, Aleksandr M. Kazachkov, Feng Qiu.</strong> “UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment”. Zenodo (2020). <a class="reference external" href="https://doi.org/10.5281/zenodo.4269874">DOI: 10.5281/zenodo.4269874</a></p></li>
+<li><p>[UCJL] <strong>Alinson S. Xavier, Aleksandr M. Kazachkov, Ogün Yurdakul, Feng Qiu.</strong> “UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment”. Zenodo (2020). <a class="reference external" href="https://doi.org/10.5281/zenodo.4269874">DOI: 10.5281/zenodo.4269874</a></p></li>
 <li><p>[KnOsWa20] <strong>Bernard Knueven, James Ostrowski and Jean-Paul Watson.</strong> “On Mixed-Integer Programming Formulations for the Unit Commitment Problem”. INFORMS Journal on Computing (2020). <a class="reference external" href="https://doi.org/10.1287/ijoc.2019.0944">DOI: 10.1287/ijoc.2019.0944</a></p></li>
 <li><p>[KrHiOn12] <strong>Eric Krall, Michael Higgins and Richard P. O’Neill.</strong> “RTO unit commitment test system.” Federal Energy Regulatory Commission. Available at: <a class="reference external" href="https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1">https://www.ferc.gov/industries-data/electric/power-sales-and-markets/increasing-efficiency-through-improved-software-1</a> (Accessed: Nov 14, 2020)</p></li>
 <li><p>[BaBlEh19] <strong>Clayton Barrows, Aaron Bloom, Ali Ehlen, Jussi Ikaheimo, Jennie Jorgenson, Dheepak Krishnamurthy, Jessica Lau et al.</strong> “The IEEE Reliability Test System: A Proposed 2019 Update.” IEEE Transactions on Power Systems (2019). <a class="reference external" href="https://doi.org/10.1109/TPWRS.2019.2925557">DOI: 10.1109/TPWRS.2019.2925557</a></p></li>
@@ -1788,7 +1775,7 @@ actions”, Power Systems, IEEE Trans. on, (28)4:4909-4917, 2013.
     <div class="container">
       <p>
         
-            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+            &copy; Copyright 2020-2022, UChicago Argonne, LLC.<br/>
       </p>
     </div>
   </footer>

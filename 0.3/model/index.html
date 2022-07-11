@@ -146,19 +146,6 @@
 
             <!-- Source interaction buttons -->
 
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn"
-        aria-label="Connect with source repository"><i class="fab fa-github"></i></button>
-    <div class="dropdown-buttons sourcebuttons">
-        <a class="repository-button"
-            href="https://github.com/ANL-CEEESA/UnitCommitment.jl/"><button type="button" class="btn btn-secondary topbarbtn"
-                data-toggle="tooltip" data-placement="left" title="Source repository"><i
-                    class="fab fa-github"></i>repository</button></a>
-        
-        
-    </div>
-</div>
-
             <!-- Full screen (wrap in <a> to have style consistency -->
 
 <a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
@@ -453,124 +440,124 @@
 <div class="section" id="accessing-decision-variables">
 <h3>Accessing decision variables<a class="headerlink" href="#accessing-decision-variables" title="Permalink to this headline">¶</a></h3>
 <p>After building a model using <code class="docutils literal notranslate"><span class="pre">UnitCommitment.build_model</span></code>, it is possible to obtain a reference to the decision variables by calling <code class="docutils literal notranslate"><span class="pre">model[:varname][index]</span></code>. For example, <code class="docutils literal notranslate"><span class="pre">model[:is_on][&quot;g1&quot;,1]</span></code> returns a direct reference to the JuMP variable indicating whether generator named “g1” is on at time 1. The script below illustrates how to build a model, solve it and display the solution without using the function <code class="docutils literal notranslate"><span class="pre">UnitCommitment.solution</span></code>.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
-<span class="k">using</span> <span class="n">Printf</span>
-<span class="k">using</span> <span class="n">JuMP</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">Printf</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">JuMP</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="c"># Load benchmark instance</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
+<span class="c"># Load benchmark instance</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Build JuMP model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
-    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># Build JuMP model</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># Solve the model</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c"># Solve the model</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Display commitment status</span>
-<span class="k">for</span> <span class="n">g</span> <span class="kp">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">units</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="kp">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">instance</span><span class="o">.</span><span class="n">time</span>
-        <span class="nd">@printf</span><span class="p">(</span>
-            <span class="s">&quot;</span><span class="si">%-10s</span><span class="s"> </span><span class="si">%5d</span><span class="s"> </span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%5.1f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-            <span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">t</span><span class="p">,</span>
-            <span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">is_on</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">]),</span>
-            <span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">switch_on</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">]),</span>
-            <span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">switch_off</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">t</span><span class="p">]),</span>
-        <span class="p">)</span>
-    <span class="k">end</span>
-<span class="k">end</span>
+<span class="c"># Display commitment status</span><span class="w"></span>
+<span class="k">for</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span><span class="n">units</span><span class="w"></span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">instance</span><span class="o">.</span><span class="n">time</span><span class="w"></span>
+<span class="w">        </span><span class="nd">@printf</span><span class="p">(</span><span class="w"></span>
+<span class="w">            </span><span class="s">&quot;</span><span class="si">%-10s</span><span class="s"> </span><span class="si">%5d</span><span class="s"> </span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%5.1f</span><span class="s"> </span><span class="si">%5.1f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">t</span><span class="p">,</span><span class="w"></span>
+<span class="w">            </span><span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">]),</span><span class="w"></span>
+<span class="w">            </span><span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="ss">:switch_on</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">]),</span><span class="w"></span>
+<span class="w">            </span><span class="n">value</span><span class="p">(</span><span class="n">model</span><span class="p">[</span><span class="ss">:switch_off</span><span class="p">][</span><span class="n">g</span><span class="o">.</span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">]),</span><span class="w"></span>
+<span class="w">        </span><span class="p">)</span><span class="w"></span>
+<span class="w">    </span><span class="k">end</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="fixing-variables-modifying-objective-function-and-adding-constraints">
 <h3>Fixing variables, modifying objective function and adding constraints<a class="headerlink" href="#fixing-variables-modifying-objective-function-and-adding-constraints" title="Permalink to this headline">¶</a></h3>
 <p>Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it. The script below shows how can this be accomplished. For more information on modifying an existing model, <a class="reference external" href="https://jump.dev/JuMP.jl/stable/manual/variables/">see the JuMP documentation</a>.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
-<span class="k">using</span> <span class="n">JuMP</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">JuMP</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="c"># Load benchmark instance</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
+<span class="c"># Load benchmark instance</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Construct JuMP model</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
-    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># Construct JuMP model</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># Fix a decision variable to 1.0</span>
-<span class="n">JuMP</span><span class="o">.</span><span class="n">fix</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">is_on</span><span class="p">][</span><span class="s">&quot;g1&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
-    <span class="mf">1.0</span><span class="p">,</span>
-    <span class="n">force</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># Fix a decision variable to 1.0</span><span class="w"></span>
+<span class="n">JuMP</span><span class="o">.</span><span class="n">fix</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="s">&quot;g1&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="mf">1.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">force</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># Change the objective function</span>
-<span class="n">JuMP</span><span class="o">.</span><span class="n">set_objective_coefficient</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">,</span>
-    <span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">switch_on</span><span class="p">][</span><span class="s">&quot;g2&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span>
-    <span class="mf">1000.0</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># Change the objective function</span><span class="w"></span>
+<span class="n">JuMP</span><span class="o">.</span><span class="n">set_objective_coefficient</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">model</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">model</span><span class="p">[</span><span class="ss">:switch_on</span><span class="p">][</span><span class="s">&quot;g2&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span><span class="w"></span>
+<span class="w">    </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># Create a new constraint</span>
-<span class="nd">@constraint</span><span class="p">(</span>
-    <span class="n">model</span><span class="p">,</span>
-    <span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">is_on</span><span class="p">][</span><span class="s">&quot;g3&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">is_on</span><span class="p">][</span><span class="s">&quot;g4&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># Create a new constraint</span><span class="w"></span>
+<span class="nd">@constraint</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">model</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="s">&quot;g3&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">model</span><span class="p">[</span><span class="ss">:is_on</span><span class="p">][</span><span class="s">&quot;g4&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># Solve the model</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c"># Solve the model</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="adding-new-component-to-a-bus">
 <h3>Adding new component to a bus<a class="headerlink" href="#adding-new-component-to-a-bus" title="Permalink to this headline">¶</a></h3>
 <p>The following snippet shows how to add a new grid component to a particular bus. For each time step, we create decision variables for the new grid component, add these variables to the objective function, then attach the component to a particular bus by modifying some existing model constraints.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span> <span class="n">Cbc</span>
-<span class="k">using</span> <span class="n">JuMP</span>
-<span class="k">using</span> <span class="n">UnitCommitment</span>
+<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">JuMP</span><span class="w"></span>
+<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
 
-<span class="c"># Load instance and build base model</span>
-<span class="n">instance</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span>
-<span class="n">model</span> <span class="o">=</span> <span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span>
-    <span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span>
-    <span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="c"># Load instance and build base model</span><span class="w"></span>
+<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">)</span><span class="w"></span>
+<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
+<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
+<span class="p">)</span><span class="w"></span>
 
-<span class="c"># Get the number of time steps in the original instance</span>
-<span class="n">T</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">time</span>
+<span class="c"># Get the number of time steps in the original instance</span><span class="w"></span>
+<span class="n">T</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instance</span><span class="o">.</span><span class="n">time</span><span class="w"></span>
 
-<span class="c"># Create decision variables for the new grid component.</span>
-<span class="c"># In this example, we assume that the new component can</span>
-<span class="c"># inject up to 10 MW of power at each time step, so we</span>
-<span class="c"># create new continuous variables 0 ≤ x[t] ≤ 10.</span>
-<span class="nd">@variable</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="n">T</span><span class="p">],</span> <span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">upper_bound</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="c"># Create decision variables for the new grid component.</span><span class="w"></span>
+<span class="c"># In this example, we assume that the new component can</span><span class="w"></span>
+<span class="c"># inject up to 10 MW of power at each time step, so we</span><span class="w"></span>
+<span class="c"># create new continuous variables 0 ≤ x[t] ≤ 10.</span><span class="w"></span>
+<span class="nd">@variable</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="o">:</span><span class="n">T</span><span class="p">],</span><span class="w"> </span><span class="n">lower_bound</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="n">upper_bound</span><span class="o">=</span><span class="mf">10.0</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># For each time step</span>
-<span class="k">for</span> <span class="n">t</span> <span class="kp">in</span> <span class="mi">1</span><span class="o">:</span><span class="n">T</span>
+<span class="c"># For each time step</span><span class="w"></span>
+<span class="k">for</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="mi">1</span><span class="o">:</span><span class="n">T</span><span class="w"></span>
 
-    <span class="c"># Add production costs to the objective function.</span>
-    <span class="c"># In this example, we assume a cost of $5/MW.</span>
-    <span class="n">set_objective_coefficient</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="mf">5.0</span><span class="p">)</span>
+<span class="w">    </span><span class="c"># Add production costs to the objective function.</span><span class="w"></span>
+<span class="w">    </span><span class="c"># In this example, we assume a cost of $5/MW.</span><span class="w"></span>
+<span class="w">    </span><span class="n">set_objective_coefficient</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="w"> </span><span class="mf">5.0</span><span class="p">)</span><span class="w"></span>
 
-    <span class="c"># Attach the new component to bus b1, by modifying the</span>
-    <span class="c"># constraint `eq_net_injection`.</span>
-    <span class="n">set_normalized_coefficient</span><span class="p">(</span>
-        <span class="n">model</span><span class="p">[</span><span class="o">:</span><span class="n">eq_net_injection</span><span class="p">][</span><span class="s">&quot;b1&quot;</span><span class="p">,</span> <span class="n">t</span><span class="p">],</span>
-        <span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span>
-        <span class="mf">1.0</span><span class="p">,</span>
-    <span class="p">)</span>
-<span class="k">end</span>
+<span class="w">    </span><span class="c"># Attach the new component to bus b1, by modifying the</span><span class="w"></span>
+<span class="w">    </span><span class="c"># constraint `eq_net_injection`.</span><span class="w"></span>
+<span class="w">    </span><span class="n">set_normalized_coefficient</span><span class="p">(</span><span class="w"></span>
+<span class="w">        </span><span class="n">model</span><span class="p">[</span><span class="ss">:eq_net_injection</span><span class="p">][</span><span class="s">&quot;b1&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">t</span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="w"></span>
+<span class="w">        </span><span class="mf">1.0</span><span class="p">,</span><span class="w"></span>
+<span class="w">    </span><span class="p">)</span><span class="w"></span>
+<span class="k">end</span><span class="w"></span>
 
-<span class="c"># Solve the model</span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+<span class="c"># Solve the model</span><span class="w"></span>
+<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
 
-<span class="c"># Show optimal values for the x variables</span>
-<span class="nd">@show</span> <span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="c"># Show optimal values for the x variables</span><span class="w"></span>
+<span class="nd">@show</span><span class="w"> </span><span class="n">value</span><span class="o">.</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -599,7 +586,7 @@
     <div class="container">
       <p>
         
-            &copy; Copyright 2020-2021, UChicago Argonne, LLC.<br/>
+            &copy; Copyright 2020-2022, UChicago Argonne, LLC.<br/>
       </p>
     </div>
   </footer>
