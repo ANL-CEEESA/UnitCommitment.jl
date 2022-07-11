@@ -21,6 +21,7 @@
 ### Authors
 * **Alinson S. Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
+* **Ogün Yurdakul** (Technische Universität Berlin)
 * **Feng Qiu** (Argonne National Laboratory)
 
 ### Acknowledgments
@@ -35,7 +36,7 @@
 
 If you use UnitCommitment.jl in your research (instances, models or algorithms), we kindly request that you cite the package as follows:
 
-* **Alinson S. Xavier, Aleksandr M. Kazachkov, Feng Qiu**, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
+* **Alinson S. Xavier, Aleksandr M. Kazachkov, Ogün Yurdakul, Feng Qiu**, "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment". Zenodo (2020). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874).
 
 If you use the instances, we additionally request that you cite the original sources, as described in the [instances page](instances.md).
 

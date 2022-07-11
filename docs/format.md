@@ -24,7 +24,7 @@ Instances are specified by JSON files containing the following main sections:
 * Reserves
 * Contingencies
 
-Each section is described in detail below. For a complete example, see [case14](https://github.com/ANL-CEEESA/UnitCommitment.jl/tree/dev/instances/matpower/case14).
+Each section is described in detail below.
 
 ### Parameters
 
