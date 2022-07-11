@@ -72,14 +72,12 @@ function _add_flexiramp_reserve_eqs!(model::JuMP.Model)::Nothing
             # Eq. (17) in Wang & Hobbs (2016)
             eq_min_upflexiramp[r.name, t] = @constraint(
                 model,
-                sum(model[:upflexiramp][r.name, g.name, t] for g in r.units) +
-                model[:upflexiramp_shortfall][r.name, t] >= r.amount[t]
+                sum(model[:upflexiramp][r.name, g.name, t] for g in r.units) + model[:upflexiramp_shortfall][r.name, t] >= r.amount[t]
             )
             # Eq. (18) in Wang & Hobbs (2016)
             eq_min_dwflexiramp[r.name, t] = @constraint(
                 model,
-                sum(model[:dwflexiramp][r.name, g.name, t] for g in r.units) +
-                model[:dwflexiramp_shortfall][r.name, t] >= r.amount[t]
+                sum(model[:dwflexiramp][r.name, g.name, t] for g in r.units) + model[:dwflexiramp_shortfall][r.name, t] >= r.amount[t]
             )
 
             # Account for flexiramp shortfall contribution to objective

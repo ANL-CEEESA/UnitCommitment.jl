@@ -15,7 +15,8 @@ function solution(model::JuMP.Model)::OrderedDict
             value(model[:is_on][g.name, t]) * g.min_power_cost[t] + sum(
                 Float64[
                     value(model[:segprod][g.name, t, k]) *
-                    g.cost_segments[k].cost[t] for k in 1:length(g.cost_segments)
+                    g.cost_segments[k].cost[t] for
+                    k in 1:length(g.cost_segments)
                 ],
             ) for t in 1:T
         ]
@@ -24,7 +25,8 @@ function solution(model::JuMP.Model)::OrderedDict
         return [
             value(model[:is_on][g.name, t]) * g.min_power[t] + sum(
                 Float64[
-                    value(model[:segprod][g.name, t, k]) for k in 1:length(g.cost_segments)
+                    value(model[:segprod][g.name, t, k]) for
+                    k in 1:length(g.cost_segments)
                 ],
             ) for t in 1:T
         ]
@@ -61,42 +63,44 @@ function solution(model::JuMP.Model)::OrderedDict
     sol["Spinning reserve (MW)"] = OrderedDict(
         r.name => OrderedDict(
             g.name => [
-                value(model[:reserve][r.name, g.name, t]) for t in 1:instance.time
+                value(model[:reserve][r.name, g.name, t]) for
+                t in 1:instance.time
             ] for g in r.units
         ) for r in instance.reserves if r.type == "spinning"
     )
     sol["Spinning reserve shortfall (MW)"] = OrderedDict(
         r.name => [
-            value(model[:reserve_shortfall][r.name, t]) for t in 1:instance.time
+            value(model[:reserve_shortfall][r.name, t]) for
+            t in 1:instance.time
         ] for r in instance.reserves if r.type == "spinning"
     )
     sol["Up-flexiramp (MW)"] = OrderedDict(
         r.name => OrderedDict(
             g.name => [
-                value(model[:upflexiramp][r.name, g.name, t])
-                for t in 1:instance.time
+                value(model[:upflexiramp][r.name, g.name, t]) for
+                t in 1:instance.time
             ] for g in r.units
         ) for r in instance.reserves if r.type == "flexiramp"
     )
     sol["Up-flexiramp shortfall (MW)"] = OrderedDict(
         r.name => [
-            value(model[:upflexiramp_shortfall][r.name, t])
-            for t in 1:instance.time
-         ] for r in instance.reserves if r.type == "flexiramp"
+            value(model[:upflexiramp_shortfall][r.name, t]) for
+            t in 1:instance.time
+        ] for r in instance.reserves if r.type == "flexiramp"
     )
     sol["Down-flexiramp (MW)"] = OrderedDict(
         r.name => OrderedDict(
             g.name => [
-                value(model[:dwflexiramp][r.name, g.name, t])
-                for t in 1:instance.time
+                value(model[:dwflexiramp][r.name, g.name, t]) for
+                t in 1:instance.time
             ] for g in r.units
         ) for r in instance.reserves if r.type == "flexiramp"
     )
     sol["Down-flexiramp shortfall (MW)"] = OrderedDict(
         r.name => [
-            value(model[:upflexiramp_shortfall][r.name, t])
-            for t in 1:instance.time
-         ] for r in instance.reserves if r.type == "flexiramp"
+            value(model[:upflexiramp_shortfall][r.name, t]) for
+            t in 1:instance.time
+        ] for r in instance.reserves if r.type == "flexiramp"
     )
     return sol
 end

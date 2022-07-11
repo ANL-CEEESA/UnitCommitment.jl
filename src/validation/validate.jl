@@ -49,8 +49,8 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
         spinning_reserves = [r for r in unit.reserves if r.type == "spinning"]
         if !isempty(spinning_reserves)
             reserve += sum(
-                solution["Spinning reserve (MW)"][r.name][unit.name]
-                for r in spinning_reserves
+                solution["Spinning reserve (MW)"][r.name][unit.name] for
+                r in spinning_reserves
             )
         end
         actual_production_cost = solution["Production cost (\$)"][unit.name]
@@ -109,7 +109,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
             for r in instance.reserves
                 if r.type == "spinning"
                     if unit ∉ r.units &&
-                    (unit in keys(solution["Spinning reserve (MW)"][r.name]))
+                       (unit in keys(solution["Spinning reserve (MW)"][r.name]))
                         @error @sprintf(
                             "Unit %s is not eligible to provide reserve %s",
                             unit.name,
@@ -308,14 +308,16 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
         ps_load = 0
         if length(instance.price_sensitive_loads) > 0
             ps_load = sum(
-                solution["Price-sensitive loads (MW)"][ps.name][t] for ps in instance.price_sensitive_loads
+                solution["Price-sensitive loads (MW)"][ps.name][t] for
+                ps in instance.price_sensitive_loads
             )
         end
         production =
             sum(solution["Production (MW)"][g.name][t] for g in instance.units)
         if "Load curtail (MW)" in keys(solution)
             load_curtail = sum(
-                solution["Load curtail (MW)"][b.name][t] for b in instance.buses
+                solution["Load curtail (MW)"][b.name][t] for
+                b in instance.buses
             )
         end
         balance = fixed_load - load_curtail - production + ps_load
@@ -337,9 +339,11 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
         for r in instance.reserves
             if r.type == "spinning"
                 provided = sum(
-                    solution["Spinning reserve (MW)"][r.name][g.name][t] for g in r.units
+                    solution["Spinning reserve (MW)"][r.name][g.name][t] for
+                    g in r.units
                 )
-                shortfall = solution["Spinning reserve shortfall (MW)"][r.name][t]
+                shortfall =
+                    solution["Spinning reserve shortfall (MW)"][r.name][t]
                 required = r.amount[t]
 
                 if provided + shortfall < required - tol
@@ -354,7 +358,8 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 end
             elseif r.type == "flexiramp"
                 upflexiramp = sum(
-                    solution["Up-flexiramp (MW)"][r.name][g.name][t] for g in r.units
+                    solution["Up-flexiramp (MW)"][r.name][g.name][t] for
+                    g in r.units
                 )
                 upflexiramp_shortfall =
                     solution["Up-flexiramp shortfall (MW)"][r.name][t]
@@ -371,9 +376,11 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 end
 
                 dwflexiramp = sum(
-                    solution["Down-flexiramp (MW)"][r.name][g.name][t] for g in r.units
+                    solution["Down-flexiramp (MW)"][r.name][g.name][t] for
+                    g in r.units
                 )
-                dwflexiramp_shortfall = solution["Down-flexiramp shortfall (MW)"][r.name][t]
+                dwflexiramp_shortfall =
+                    solution["Down-flexiramp shortfall (MW)"][r.name][t]
 
                 if dwflexiramp + dwflexiramp_shortfall < r.amount[t] - tol
                     @error @sprintf(

@@ -75,8 +75,10 @@ function _add_flexiramp_reserve_vars!(model::JuMP.Model, g::Unit)::Nothing
             upflexiramp[r.name, g.name, t] = @variable(model) # up-flexiramp, ur_{it} in Wang & Hobbs (2016)
             dwflexiramp[r.name, g.name, t] = @variable(model) # down-flexiramp, dr_{it} in Wang & Hobbs (2016)
             if (r.name, t) ∉ keys(upflexiramp_shortfall)
-                upflexiramp_shortfall[r.name, t] = @variable(model, lower_bound = 0)
-                dwflexiramp_shortfall[r.name, t] = @variable(model, lower_bound = 0)
+                upflexiramp_shortfall[r.name, t] =
+                    @variable(model, lower_bound = 0)
+                dwflexiramp_shortfall[r.name, t] =
+                    @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
                     set_upper_bound(upflexiramp_shortfall[r.name, t], 0.0)
                     set_upper_bound(dwflexiramp_shortfall[r.name, t], 0.0)
@@ -204,14 +206,16 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
                 eq_min_uptime[g.name, 0] = @constraint(
                     model,
                     sum(
-                        switch_off[g.name, i] for i in 1:(g.min_uptime-g.initial_status) if i <= T
+                        switch_off[g.name, i] for
+                        i in 1:(g.min_uptime-g.initial_status) if i <= T
                     ) == 0
                 )
             else
                 eq_min_downtime[g.name, 0] = @constraint(
                     model,
                     sum(
-                        switch_on[g.name, i] for i in 1:(g.min_downtime+g.initial_status) if i <= T
+                        switch_on[g.name, i] for
+                        i in 1:(g.min_downtime+g.initial_status) if i <= T
                     ) == 0
                 )
             end

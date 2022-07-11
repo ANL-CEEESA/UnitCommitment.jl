@@ -20,7 +20,7 @@ import UnitCommitment:
 
 function _test(
     formulation::Formulation;
-    instances=["test/case14"],
+    instances = ["test/case14"],
     dump::Bool = false,
 )::Nothing
     for instance_name in instances

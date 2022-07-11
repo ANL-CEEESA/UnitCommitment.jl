@@ -30,7 +30,9 @@ function _add_ramp_eqs!(
     end
     for r in g.reserves
         if r.type !== "flexiramp"
-            error("This formulation only supports flexiramp reserves, not $(r.type)")
+            error(
+                "This formulation only supports flexiramp reserves, not $(r.type)",
+            )
         end
         rn = r.name
         for t in 1:model[:instance].time
@@ -110,7 +112,8 @@ function _add_ramp_eqs!(
                 ) # Eq. (24) in Wang & Hobbs (2016)
                 @constraint(
                     model,
-                    -RD * is_on[gn, t+1] - SD * (is_on[gn, t] - is_on[gn, t+1]) -
+                    -RD * is_on[gn, t+1] -
+                    SD * (is_on[gn, t] - is_on[gn, t+1]) -
                     maxp[t] * (1 - is_on[gn, t]) <= upflexiramp[rn, gn, t]
                 ) # first inequality of Eq. (26) in Wang & Hobbs (2016)
                 @constraint(
@@ -137,8 +140,14 @@ function _add_ramp_eqs!(
                     -maxp[t] * is_on[gn, t] + minp[t] * is_on[gn, t+1] <=
                     upflexiramp[rn, gn, t]
                 ) # first inequality of Eq. (28) in Wang & Hobbs (2016)
-                @constraint(model, upflexiramp[rn, gn, t] <= maxp[t] * is_on[gn, t+1]) # second inequality of Eq. (28) in Wang & Hobbs (2016)
-                @constraint(model, -maxp[t] * is_on[gn, t+1] <= dwflexiramp[rn, gn, t]) # first inequality of Eq. (29) in Wang & Hobbs (2016)
+                @constraint(
+                    model,
+                    upflexiramp[rn, gn, t] <= maxp[t] * is_on[gn, t+1]
+                ) # second inequality of Eq. (28) in Wang & Hobbs (2016)
+                @constraint(
+                    model,
+                    -maxp[t] * is_on[gn, t+1] <= dwflexiramp[rn, gn, t]
+                ) # first inequality of Eq. (29) in Wang & Hobbs (2016)
                 @constraint(
                     model,
                     dwflexiramp[rn, gn, t] <=
