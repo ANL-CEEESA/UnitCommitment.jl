@@ -9,7 +9,7 @@ suffix: .
 Instances
 =========
 
-UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with `UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md).
+UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with `UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md). Instance files can also be [directly downloaded from our website](https://axavier.org/UnitCommitment.jl/0.3/instances/).
 
 ```{warning}
 The instances included in UC.jl are still under development and may change in the future. If you use these instances in your research, for reproducibility, you should specify what version of UC.jl they came from.
