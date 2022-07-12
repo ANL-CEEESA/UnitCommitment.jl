@@ -5,7 +5,7 @@
 using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
 @testset "slice" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     modified = UnitCommitment.slice(instance, 1:2)
 
     # Should update all time-dependent fields

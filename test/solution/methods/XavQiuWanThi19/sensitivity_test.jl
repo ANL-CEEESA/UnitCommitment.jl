@@ -5,7 +5,7 @@
 using UnitCommitment, Test, LinearAlgebra
 
 @testset "_susceptance_matrix" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     actual = UnitCommitment._susceptance_matrix(instance.lines)
     @test size(actual) == (20, 20)
     expected = Diagonal([
@@ -34,7 +34,7 @@ using UnitCommitment, Test, LinearAlgebra
 end
 
 @testset "_reduced_incidence_matrix" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     actual = UnitCommitment._reduced_incidence_matrix(
         lines = instance.lines,
         buses = instance.buses,
@@ -81,7 +81,7 @@ end
 end
 
 @testset "_injection_shift_factors" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     actual = UnitCommitment._injection_shift_factors(
         lines = instance.lines,
         buses = instance.buses,
@@ -112,7 +112,7 @@ end
 end
 
 @testset "_line_outage_factors" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     isf_before = UnitCommitment._injection_shift_factors(
         lines = instance.lines,
         buses = instance.buses,

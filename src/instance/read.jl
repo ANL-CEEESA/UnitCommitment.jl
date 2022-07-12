@@ -80,6 +80,7 @@ function _read_json(path::String)::OrderedDict
 end
 
 function _from_json(json; repair = true)
+    _migrate(json)
     units = Unit[]
     buses = Bus[]
     contingencies = Contingency[]

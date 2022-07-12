@@ -24,7 +24,9 @@ Instances are specified by JSON files containing the following main sections:
 * Reserves
 * Contingencies
 
-Each section is described in detail below.
+Each section is described in detail below. See [case118/2017-01-01.json.gz][example] for a complete example.
+
+[example]: https://axavier.org/UnitCommitment.jl/0.3/instances/matpower/case118/2017-01-01.json.gz
 
 ### Parameters
 
@@ -303,3 +305,4 @@ Current limitations
 * Only N-1 transmission contingencies are supported. Generator contingencies are not currently supported.
 * Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
 * Flexible ramping products can only be acquired under the `WanHob2016` formulation, which does not support spinning reserves. 
+

@@ -20,6 +20,7 @@ include("model/formulations/WanHob2016/structs.jl")
 
 include("import/egret.jl")
 include("instance/read.jl")
+include("instance/migrate.jl")
 include("model/build.jl")
 include("model/formulations/ArrCon2000/ramp.jl")
 include("model/formulations/base/bus.jl")

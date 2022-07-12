@@ -6,7 +6,7 @@ using UnitCommitment, Test, LinearAlgebra
 import UnitCommitment: _Violation, _offer, _query
 
 @testset "find_violations" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     for line in instance.lines, t in 1:instance.time
         line.normal_flow_limit[t] = 1.0
         line.emergency_flow_limit[t] = 1.0

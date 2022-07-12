@@ -5,7 +5,7 @@
 using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
 @testset "read_benchmark" begin
-    instance = UnitCommitment.read_benchmark("test/case14")
+    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
 
     @test length(instance.lines) == 20
     @test length(instance.buses) == 14
@@ -112,7 +112,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 end
 
 @testset "read_benchmark sub-hourly" begin
-    instance = UnitCommitment.read_benchmark("test/case14-sub-hourly")
+    instance = UnitCommitment.read("$FIXTURES/case14-sub-hourly.json.gz")
     @test instance.time == 4
     unit = instance.units[1]
     @test unit.name == "g1"

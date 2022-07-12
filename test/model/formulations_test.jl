@@ -20,11 +20,11 @@ import UnitCommitment:
 
 function _test(
     formulation::Formulation;
-    instances = ["test/case14"],
+    instances = ["case14"],
     dump::Bool = false,
 )::Nothing
     for instance_name in instances
-        instance = UnitCommitment.read_benchmark(instance_name)
+        instance = UnitCommitment.read("$(FIXTURES)/$(instance_name).json.gz")
         model = UnitCommitment.build_model(
             instance = instance,
             formulation = formulation,
@@ -78,7 +78,7 @@ end
     @testset "WanHob2016" begin
         _test(
             Formulation(ramping = WanHob2016.Ramping()),
-            instances = ["test/case14-flex"],
+            instances = ["case14-flex"],
         )
     end
 end

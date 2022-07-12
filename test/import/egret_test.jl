@@ -4,12 +4,9 @@
 
 using UnitCommitment
 
-basedir = @__DIR__
-
 @testset "read_egret_solution" begin
-    solution = UnitCommitment.read_egret_solution(
-        "$basedir/../fixtures/egret_output.json.gz",
-    )
+    solution =
+        UnitCommitment.read_egret_solution("$FIXTURES/egret_output.json.gz")
     for attr in ["Is on", "Production (MW)", "Production cost (\$)"]
         @test attr in keys(solution)
         @test "115_STEAM_1" in keys(solution[attr])

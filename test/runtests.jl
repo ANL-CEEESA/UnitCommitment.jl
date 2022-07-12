@@ -8,6 +8,8 @@ using UnitCommitment
 push!(Base.LOAD_PATH, @__DIR__)
 UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
 
+FIXTURES = "$(@__DIR__)/fixtures"
+
 @testset "UnitCommitment" begin
     include("usage.jl")
     @testset "import" begin
@@ -15,6 +17,7 @@ UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
     end
     @testset "instance" begin
         include("instance/read_test.jl")
+        include("instance/migrate_test.jl")
     end
     @testset "model" begin
         include("model/formulations_test.jl")
