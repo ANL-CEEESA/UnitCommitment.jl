@@ -11,15 +11,19 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
-## [Unreleased]
+## [0.3.0] - Unreleased
 ### Added
-- Add multiple reserve products
+- Add support for multiple reserve products and zonal reserves.
+- Add flexiramp reserve products, following WanHob2016's formulation (@oyurdakul, #21).
+- Add 364 variations for each MATPOWER instance, corresponding to each day of the year, bringing the total number of benchmark test cases to 5,971.
 
 ### Changed
-- To support multiple reserve products, the input data format has been modified as follows:
+- To support multiple/zonal reserves, the input data format has been modified as follows:
     - In `Generators`, replace `Provides spinning reserves?` by `Reserve eligibility`
     - In `Parameters`, remove `Reserve shortfall penalty`
     - Revise `Reserves` section
+- To allow new versions of UnitCommitment.jl to read old instance files, a new required field `Version` has been added to the `Parameters` section. To load v0.2 files in v0.3, please add `{"Parameters":{"Version":"0.2"}}` to the file.
+- Benchmark test cases are now downloaded on-the-fly as needed, instead of being stored in our GitHub repository. Test cases can also be directly downloaded from: https://axavier.org/UnitCommitment.jl/
 
 
 ## [0.2.2] - 2021-07-21
