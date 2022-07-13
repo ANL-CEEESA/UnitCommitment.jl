@@ -334,17 +334,22 @@
 </tr>
 </thead>
 <tbody>
-<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">horizon</span> <span class="pre">(h)</span></code></p></td>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Version</span></code></p></td>
+<td class="text-align:left"><p>Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal <code class="docutils literal notranslate"><span class="pre">0.3</span></code>.</p></td>
+<td class="text-align:center"><p>Required</p></td>
+<td class="text-align:center"><p>N</p></td>
+</tr>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">horizon</span> <span class="pre">(h)</span></code></p></td>
 <td class="text-align:left"><p>Length of the planning horizon (in hours).</p></td>
 <td class="text-align:center"><p>Required</p></td>
 <td class="text-align:center"><p>N</p></td>
 </tr>
-<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">step</span> <span class="pre">(min)</span></code></p></td>
+<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Time</span> <span class="pre">step</span> <span class="pre">(min)</span></code></p></td>
 <td class="text-align:left"><p>Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc).</p></td>
 <td class="text-align:center"><p><code class="docutils literal notranslate"><span class="pre">60</span></code></p></td>
 <td class="text-align:center"><p>N</p></td>
 </tr>
-<tr class="row-even"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Power</span> <span class="pre">balance</span> <span class="pre">penalty</span> <span class="pre">($/MW)</span></code></p></td>
+<tr class="row-odd"><td class="text-align:left"><p><code class="docutils literal notranslate"><span class="pre">Power</span> <span class="pre">balance</span> <span class="pre">penalty</span> <span class="pre">($/MW)</span></code></p></td>
 <td class="text-align:left"><p>Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.</p></td>
 <td class="text-align:center"><p><code class="docutils literal notranslate"><span class="pre">1000.0</span></code></p></td>
 <td class="text-align:center"><p>Y</p></td>
@@ -355,6 +360,7 @@
 <h4>Example<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h4>
 <div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="w"></span>
 <span class="w">    </span><span class="nt">&quot;Parameters&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;0.3&quot;</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;Time horizon (h)&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"></span>
 <span class="w">        </span><span class="nt">&quot;Power balance penalty ($/MW)&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">1000.0</span><span class="p">,</span><span class="w"></span>
 <span class="w">    </span><span class="p">}</span><span class="w"></span>
