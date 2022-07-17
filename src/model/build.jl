@@ -9,22 +9,59 @@ import JuMP: value, fix, set_name
     function build_model(;
         instance::UnitCommitmentInstance,
         optimizer = nothing,
+        formulation = Formulation(),
         variable_names::Bool = false,
     )::JuMP.Model
 
 Build the JuMP model corresponding to the given unit commitment instance.
 
 Arguments
-=========
+---------
+
 - `instance`:
     the instance.
 - `optimizer`:
     the optimizer factory that should be attached to this model (e.g. Cbc.Optimizer).
     If not provided, no optimizer will be attached.
+- `formulation`:
+    the MIP formulation to use. By default, uses a formulation that combines
+    modeling components from different publications that provides good
+    performance across a wide variety of instances. An alternative formulation
+    may also be provided.
 - `variable_names`: 
-    If true, set variable and constraint names. Important if the model is going
+    if true, set variable and constraint names. Important if the model is going
     to be exported to an MPS file. For large models, this can take significant
     time, so it's disabled by default.
+
+Examples
+--------
+
+```julia
+# Read benchmark instance
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+
+# Construct model (using state-of-the-art defaults)
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = Cbc.Optimizer,
+)
+
+# Construct model (using customized formulation)
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = Cbc.Optimizer,
+    formulation = Formulation(
+        pwl_costs = KnuOstWat2018.PwlCosts(),
+        ramping = MorLatRam2013.Ramping(),
+        startup_costs = MorLatRam2013.StartupCosts(),
+        transmission = ShiftFactorsFormulation(
+            isf_cutoff = 0.005,
+            lodf_cutoff = 0.001,
+        ),
+    ),
+)
+```
+
 """
 function build_model(;
     instance::UnitCommitmentInstance,

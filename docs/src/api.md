@@ -16,13 +16,15 @@ UnitCommitment.write
 
 ```@docs
 UnitCommitment.slice
-UnitCommitment.randomize!
-generate_initial_conditions!
+UnitCommitment.randomize!(::UnitCommitment.UnitCommitmentInstance)
+UnitCommitment.generate_initial_conditions!
 ```
 
 ## Formulations
 
 ```@docs
+UnitCommitment.Formulation
+UnitCommitment.ShiftFactorsFormulation
 UnitCommitment.ArrCon2000
 UnitCommitment.CarArr2006
 UnitCommitment.DamKucRajAta2016
@@ -36,13 +38,11 @@ UnitCommitment.WanHob2016
 ## Solution Methods
 
 ```@docs
-UnitCommitment.XavQiuWanThi2019
 UnitCommitment.XavQiuWanThi2019.Method
 ```
 
 ## Randomization Methods
 
 ```@docs
-UnitCommitment.XavQiuAhm2021
 UnitCommitment.XavQiuAhm2021.Randomization
 ```

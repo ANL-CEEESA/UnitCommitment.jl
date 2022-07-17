@@ -2,13 +2,6 @@
 # Copyright (C) 2020-2021, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-"""
-Methods described in:
-
-    Xavier, Álinson S., Feng Qiu, and Shabbir Ahmed. "Learning to solve
-    large-scale security-constrained unit commitment problems." INFORMS
-    Journal on Computing 33.2 (2021): 739-756. DOI: 10.1287/ijoc.2020.0976
-"""
 module XavQiuAhm2021
 
 using Distributions
@@ -55,6 +48,13 @@ load profile, as follows:
 The default parameters were obtained based on an analysis of publicly available
 bid and hourly data from PJM, corresponding to the month of January, 2017. For
 more details, see Section 4.2 of the paper.
+
+# References
+
+- **Xavier, Álinson S., Feng Qiu, and Shabbir Ahmed.** *"Learning to solve
+  large-scale security-constrained unit commitment problems."* INFORMS Journal
+  on Computing 33.2 (2021): 739-756. DOI: 10.1287/ijoc.2020.0976
+
 """
 Base.@kwdef struct Randomization
     cost = Uniform(0.95, 1.05)
@@ -209,6 +209,33 @@ function randomize!(
     if method.randomize_load_profile
         XavQiuAhm2021._randomize_load_profile(rng, instance, method)
     end
+    return
+end
+
+"""
+    function randomize!(
+        instance::UnitCommitmentInstance;
+        method = UnitCommitment.XavQiuAhm2021.Randomization();
+        rng = MersenneTwister(),
+    )::Nothing
+
+Randomizes instance parameters according to the provided randomization method.
+
+# Example
+
+```julia
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+UnitCommitment.randomize!(instance)
+model = UnitCommitment.build_model(; instance)
+```
+
+"""
+function randomize!(
+    instance::UnitCommitment.UnitCommitmentInstance;
+    method = XavQiuAhm2021.Randomization(),
+    rng = MersenneTwister(),
+)::Nothing
+    randomize!(instance, method; rng)
     return
 end
 

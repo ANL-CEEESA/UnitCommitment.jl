@@ -13,15 +13,13 @@ const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.3/instances"
 """
     read_benchmark(name::AbstractString)::UnitCommitmentInstance
 
-Read one of the benchmark unit commitment instances included in the package.
-See "Instances" section of the documentation for the entire list of benchmark
-instances available.
+Read one of the benchmark instances included in the package. See
+[Instances](instances.md) for the entire list of benchmark instances available.
 
-Example
--------
-
-    import UnitCommitment
-    instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
+# Example
+```julia
+instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
+```
 """
 function read_benchmark(
     name::AbstractString;
@@ -48,13 +46,13 @@ end
 """
     read(path::AbstractString)::UnitCommitmentInstance
 
-Read a unit commitment instance from a file. The file may be gzipped.
+Read instance from a file. The file may be gzipped.
 
-Example
--------
+# Example
 
-    import UnitCommitment
-    instance = UnitCommitment.read("/path/to/input.json.gz")
+```julia
+instance = UnitCommitment.read("/path/to/input.json.gz")
+```
 """
 function read(path::AbstractString)::UnitCommitmentInstance
     if endswith(path, ".gz")

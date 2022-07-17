@@ -30,7 +30,9 @@ test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
 
         randomize!(
             instance,
-            XavQiuAhm2021.Randomization(randomize_load_profile = false),
+            method = XavQiuAhm2021.Randomization(
+                randomize_load_profile = false,
+            ),
             rng = MersenneTwister(42),
         )
 

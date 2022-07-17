@@ -2,6 +2,18 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    write(filename::AbstractString, solution::AbstractDict)::Nothing
+
+Write the given solution to a JSON file.
+
+# Example
+
+```julia
+solution = UnitCommitment.solution(model)
+UnitCommitment.write("/tmp/output.json", solution)
+```
+"""
 function write(filename::AbstractString, solution::AbstractDict)::Nothing
     open(filename, "w") do file
         return JSON.print(file, solution, 2)

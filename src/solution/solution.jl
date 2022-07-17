@@ -2,6 +2,18 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+"""
+    solution(model::JuMP.Model)::OrderedDict
+
+Extracts the optimal solution from the UC.jl model. The model must be solved beforehand.
+
+# Example
+
+```julia
+UnitCommitment.optimize!(model)
+solution = UnitCommitment.solution(model)
+```
+"""
 function solution(model::JuMP.Model)::OrderedDict
     instance, T = model[:instance], model[:instance].time
     function timeseries(vars, collection)

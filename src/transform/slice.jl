@@ -12,10 +12,11 @@ conditions are also not modified.
 Example
 -------
 
-    # Build a 2-hour UC instance
-    instance = UnitCommitment.read_benchmark("test/case14")
-    modified = UnitCommitment.slice(instance, 1:2)
-
+```julia
+# Build a 2-hour UC instance
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+modified = UnitCommitment.slice(instance, 1:2)
+```
 """
 function slice(
     instance::UnitCommitmentInstance,

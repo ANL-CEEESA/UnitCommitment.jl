@@ -3,9 +3,9 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 """
-    function optimize!(model::JuMP.Model)::Nothing
+    optimize!(model::JuMP.Model)::Nothing
 
-Solve the given unit commitment model. Unlike JuMP.optimize!, this uses more
+Solve the given unit commitment model. Unlike `JuMP.optimize!`, this uses more
 advanced methods to accelerate the solution process and to enforce transmission
 and N-1 security constraints.
 """
