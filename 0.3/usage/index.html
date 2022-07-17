@@ -1,393 +1,70 @@
-
 <!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Usage · UnitCommitment.jl</title><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script><link href="../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">UnitCommitment.jl</a></span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li class="is-active"><a class="tocitem" href>Usage</a><ul class="internal"><li><a class="tocitem" href="#Installation"><span>Installation</span></a></li><li><a class="tocitem" href="#Typical-Usage"><span>Typical Usage</span></a></li><li><a class="tocitem" href="#Advanced-usage"><span>Advanced usage</span></a></li></ul></li><li><a class="tocitem" href="../format/">Data Format</a></li><li><a class="tocitem" href="../instances/">Instances</a></li><li><a class="tocitem" href="../model/">JuMP Model</a></li><li><a class="tocitem" href="../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Usage</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Usage</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/docs/src/usage.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Usage"><a class="docs-heading-anchor" href="#Usage">Usage</a><a id="Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Usage" title="Permalink"></a></h1><h2 id="Installation"><a class="docs-heading-anchor" href="#Installation">Installation</a><a id="Installation-1"></a><a class="docs-heading-anchor-permalink" href="#Installation" title="Permalink"></a></h2><p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.7</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p><pre><code class="language-text hljs">pkg&gt; add UnitCommitment@0.3</code></pre><p>To test that the package has been correctly installed, run:</p><pre><code class="language-text hljs">pkg&gt; test UnitCommitment</code></pre><p>If all tests pass, the package should now be ready to be used by any Julia script on the machine.</p><p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.</p><h2 id="Typical-Usage"><a class="docs-heading-anchor" href="#Typical-Usage">Typical Usage</a><a id="Typical-Usage-1"></a><a class="docs-heading-anchor-permalink" href="#Typical-Usage" title="Permalink"></a></h2><h3 id="Solving-user-provided-instances"><a class="docs-heading-anchor" href="#Solving-user-provided-instances">Solving user-provided instances</a><a id="Solving-user-provided-instances-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-user-provided-instances" title="Permalink"></a></h3><p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See <a href="../format/">Data Format</a> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.</p><pre><code class="language-julia hljs">using Cbc
+using JSON
+using UnitCommitment
 
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>1. Usage &#8212; UnitCommitment.jl&lt;br/&gt;&lt;small&gt;0.3&lt;/small&gt;</title>
-    
-  <link href="../_static/css/theme.css" rel="stylesheet" />
-  <link href="../_static/css/index.c5995385ac14fb8791e8eb36b4908be2.css" rel="stylesheet" />
+# 1. Read instance
+instance = UnitCommitment.read(&quot;/path/to/input.json&quot;)
 
-    
-  <link rel="stylesheet"
-    href="../_static/vendor/fontawesome/5.13.0/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../_static/vendor/fontawesome/5.13.0/webfonts/fa-brands-400.woff2">
+# 2. Construct optimization model
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
 
-    
-      
+# 3. Solve model
+UnitCommitment.optimize!(model)
 
-    
-    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="../_static/sphinx-book-theme.acff12b8f9c144ce68a297486a2fa670.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="../_static/custom.css" />
-    
-  <link rel="preload" as="script" href="../_static/js/index.1c5a1a01449ed65a7b51.js">
+# 4. Write solution to a file
+solution = UnitCommitment.solution(model)
+UnitCommitment.write(&quot;/path/to/output.json&quot;, solution)</code></pre><h3 id="Solving-benchmark-instances"><a class="docs-heading-anchor" href="#Solving-benchmark-instances">Solving benchmark instances</a><a id="Solving-benchmark-instances-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-benchmark-instances" title="Permalink"></a></h3><p>UnitCommitment.jl contains a large number of benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function <code>read_benchmark</code> can be used, as shown below. See <a href="../instances/">Instances</a> for the complete list of available instances.</p><pre><code class="language-julia hljs">using UnitCommitment
+instance = UnitCommitment.read_benchmark(&quot;matpower/case3375wp/2017-02-01&quot;)</code></pre><h2 id="Advanced-usage"><a class="docs-heading-anchor" href="#Advanced-usage">Advanced usage</a><a id="Advanced-usage-1"></a><a class="docs-heading-anchor-permalink" href="#Advanced-usage" title="Permalink"></a></h2><h3 id="Customizing-the-formulation"><a class="docs-heading-anchor" href="#Customizing-the-formulation">Customizing the formulation</a><a id="Customizing-the-formulation-1"></a><a class="docs-heading-anchor-permalink" href="#Customizing-the-formulation" title="Permalink"></a></h3><p>By default, <code>build_model</code> uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.</p><pre><code class="language-julia hljs">using Cbc
+using UnitCommitment
 
-    <script id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
-    <script src="../_static/jquery.js"></script>
-    <script src="../_static/underscore.js"></script>
-    <script src="../_static/doctools.js"></script>
-    <script src="../_static/sphinx-book-theme.12a9622fbb08dcb3a2a40b2c02b83a57.js"></script>
-    <link rel="index" title="Index" href="../genindex/" />
-    <link rel="search" title="Search" href="../search/" />
-    <link rel="next" title="2. Data Format" href="../format/" />
-    <link rel="prev" title="UnitCommitment.jl" href="../" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="docsearch:language" content="en" />
-    
-  </head>
-  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="80">
-    
-    <div class="container-fluid" id="banner"></div>
+import UnitCommitment:
+    Formulation,
+    KnuOstWat2018,
+    MorLatRam2013,
+    ShiftFactorsFormulation
 
-    
+instance = UnitCommitment.read_benchmark(
+    &quot;matpower/case118/2017-02-01&quot;,
+)
 
-    <div class="container-xl">
-      <div class="row">
-          
-<div class="col-12 col-md-3 bd-sidebar site-navigation show" id="site-navigation">
-    
-        <div class="navbar-brand-box">
-    <a class="navbar-brand text-wrap" href="../">
-      
-      
-      <h1 class="site-logo" id="site-title">UnitCommitment.jl<br/><small>0.3</small></h1>
-      
-    </a>
-</div><form class="bd-search d-flex align-items-center" action="../search/" method="get">
-  <i class="icon fas fa-search"></i>
-  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" >
-</form><nav class="bd-links" id="bd-docs-nav" aria-label="Main navigation">
-    <div class="bd-toc-item active">
-        <ul class="current nav bd-sidenav">
- <li class="toctree-l1 current active">
-  <a class="current reference internal" href="#">
-   <span class="sectnum">
-    1.
-   </span>
-   Usage
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../format/">
-   <span class="sectnum">
-    2.
-   </span>
-   Data Format
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../instances/">
-   <span class="sectnum">
-    3.
-   </span>
-   Instances
-  </a>
- </li>
- <li class="toctree-l1">
-  <a class="reference internal" href="../model/">
-   <span class="sectnum">
-    4.
-   </span>
-   JuMP Model
-  </a>
- </li>
-</ul>
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = Cbc.Optimizer,
+    formulation = Formulation(
+        pwl_costs = KnuOstWat2018.PwlCosts(),
+        ramping = MorLatRam2013.Ramping(),
+        startup_costs = MorLatRam2013.StartupCosts(),
+        transmission = ShiftFactorsFormulation(
+            isf_cutoff = 0.005,
+            lodf_cutoff = 0.001,
+        ),
+    ),
+)</code></pre><h3 id="Generating-initial-conditions"><a class="docs-heading-anchor" href="#Generating-initial-conditions">Generating initial conditions</a><a id="Generating-initial-conditions-1"></a><a class="docs-heading-anchor-permalink" href="#Generating-initial-conditions" title="Permalink"></a></h3><p>When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.</p><p>To help with this issue, UC.jl provides a utility function which can generate feasible initial conditions by solving a single-period optimization problem, as shown below:</p><pre><code class="language-julia hljs">using Cbc
+using UnitCommitment
 
-    </div>
-</nav> <!-- To handle the deprecated key -->
+# Read original instance
+instance = UnitCommitment.read(&quot;instance.json&quot;)
 
-</div>
+# Generate initial conditions (in-place)
+UnitCommitment.generate_initial_conditions!(instance, Cbc.Optimizer)
 
+# Construct and solve optimization model
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
+UnitCommitment.optimize!(model)</code></pre><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>The function <code>generate_initial_conditions!</code> may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.</p></div></div><h3 id="Verifying-solutions"><a class="docs-heading-anchor" href="#Verifying-solutions">Verifying solutions</a><a id="Verifying-solutions-1"></a><a class="docs-heading-anchor-permalink" href="#Verifying-solutions" title="Permalink"></a></h3><p>When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the <a href="../format/">UC.jl data format</a>.</p><pre><code class="language-julia hljs">using JSON
+using UnitCommitment
 
-          
+# Read instance
+instance = UnitCommitment.read(&quot;instance.json&quot;)
 
+# Read solution (potentially produced by other packages) 
+solution = JSON.parsefile(&quot;solution.json&quot;)
 
-          
-<main class="col py-md-3 pl-md-4 bd-content overflow-auto" role="main">
-    
-    <div class="topbar container-xl fixed-top">
-    <div class="topbar-contents row">
-        <div class="col-12 col-md-3 bd-topbar-whitespace site-navigation show"></div>
-        <div class="col pl-md-4 topbar-main">
-            
-            <button id="navbar-toggler" class="navbar-toggler ml-0" type="button" data-toggle="collapse"
-                data-toggle="tooltip" data-placement="bottom" data-target=".site-navigation" aria-controls="navbar-menu"
-                aria-expanded="true" aria-label="Toggle navigation" aria-controls="site-navigation"
-                title="Toggle navigation" data-toggle="tooltip" data-placement="left">
-                <i class="fas fa-bars"></i>
-                <i class="fas fa-arrow-left"></i>
-                <i class="fas fa-arrow-up"></i>
-            </button>
-            
-            
-<div class="dropdown-buttons-trigger">
-    <button id="dropdown-buttons-trigger" class="btn btn-secondary topbarbtn" aria-label="Download this page"><i
-            class="fas fa-download"></i></button>
-
-    <div class="dropdown-buttons">
-        <!-- ipynb file if we had a myst markdown file -->
-        
-        <!-- Download raw file -->
-        <a class="dropdown-buttons" href="../_sources/usage.md.txt"><button type="button"
-                class="btn btn-secondary topbarbtn" title="Download source file" data-toggle="tooltip"
-                data-placement="left">.md</button></a>
-        <!-- Download PDF via print -->
-        <button type="button" id="download-print" class="btn btn-secondary topbarbtn" title="Print to PDF"
-            onClick="window.print()" data-toggle="tooltip" data-placement="left">.pdf</button>
-    </div>
-</div>
-
-            <!-- Source interaction buttons -->
-
-            <!-- Full screen (wrap in <a> to have style consistency -->
-
-<a class="full-screen-button"><button type="button" class="btn btn-secondary topbarbtn" data-toggle="tooltip"
-        data-placement="bottom" onclick="toggleFullScreen()" aria-label="Fullscreen mode"
-        title="Fullscreen mode"><i
-            class="fas fa-expand"></i></button></a>
-
-            <!-- Launch buttons -->
-
-        </div>
-
-        <!-- Table of contents -->
-        <div class="d-none d-md-block col-md-2 bd-toc show">
-            
-            <div class="tocsection onthispage pt-5 pb-3">
-                <i class="fas fa-list"></i> Contents
-            </div>
-            <nav id="bd-toc-nav">
-                <ul class="visible nav section-nav flex-column">
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#installation">
-   <span class="sectnum">
-    1.1.
-   </span>
-   Installation
-  </a>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#typical-usage">
-   <span class="sectnum">
-    1.2.
-   </span>
-   Typical Usage
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#solving-user-provided-instances">
-     Solving user-provided instances
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#solving-benchmark-instances">
-     Solving benchmark instances
-    </a>
-   </li>
-  </ul>
- </li>
- <li class="toc-h2 nav-item toc-entry">
-  <a class="reference internal nav-link" href="#advanced-usage">
-   <span class="sectnum">
-    1.3.
-   </span>
-   Advanced usage
-  </a>
-  <ul class="nav section-nav flex-column">
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#customizing-the-formulation">
-     Customizing the formulation
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#generating-initial-conditions">
-     Generating initial conditions
-    </a>
-   </li>
-   <li class="toc-h3 nav-item toc-entry">
-    <a class="reference internal nav-link" href="#verifying-solutions">
-     Verifying solutions
-    </a>
-   </li>
-  </ul>
- </li>
-</ul>
-
-            </nav>
-        </div>
-    </div>
-</div>
-    <div id="main-content" class="row">
-        <div class="col-12 col-md-9 pl-md-3 pr-md-0">
-        
-              <div>
-                
-  <div class="section" id="usage">
-<h1><span class="sectnum">1.</span> Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installation">
-<h2><span class="sectnum">1.1.</span> Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
-<p>UnitCommitment.jl was tested and developed with <a class="reference external" href="https://julialang.org/">Julia 1.7</a>. To install Julia, please follow the <a class="reference external" href="https://julialang.org/downloads/">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code class="docutils literal notranslate"><span class="pre">]</span></code> to open the package manager, then type:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pkg&gt; add UnitCommitment@0.3
-</pre></div>
-</div>
-<p>To test that the package has been correctly installed, run:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>pkg&gt; test UnitCommitment
-</pre></div>
-</div>
-<p>If all tests pass, the package should now be ready to be used by any Julia script on the machine.</p>
-<p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a class="reference external" href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a class="reference external" href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a class="reference external" href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.</p>
-</div>
-<div class="section" id="typical-usage">
-<h2><span class="sectnum">1.2.</span> Typical Usage<a class="headerlink" href="#typical-usage" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="solving-user-provided-instances">
-<h3>Solving user-provided instances<a class="headerlink" href="#solving-user-provided-instances" title="Permalink to this headline">¶</a></h3>
-<p>The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See <a class="reference internal" href="../format/"><span class="doc std std-doc">Data Format</span></a> for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="n">JSON</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
-
-<span class="c"># 1. Read instance</span><span class="w"></span>
-<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;/path/to/input.json&quot;</span><span class="p">)</span><span class="w"></span>
-
-<span class="c"># 2. Construct optimization model</span><span class="w"></span>
-<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
-
-<span class="c"># 3. Solve model</span><span class="w"></span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
-
-<span class="c"># 4. Write solution to a file</span><span class="w"></span>
-<span class="n">solution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">solution</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s">&quot;/path/to/output.json&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">solution</span><span class="p">)</span><span class="w"></span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="solving-benchmark-instances">
-<h3>Solving benchmark instances<a class="headerlink" href="#solving-benchmark-instances" title="Permalink to this headline">¶</a></h3>
-<p>UnitCommitment.jl contains a large number of benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function <code class="docutils literal notranslate"><span class="pre">read_benchmark</span></code> can be used, as shown below. See <a class="reference internal" href="../instances/"><span class="doc std std-doc">Instances</span></a> for the complete list of available instances.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
-<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="s">&quot;matpower/case3375wp/2017-02-01&quot;</span><span class="p">)</span><span class="w"></span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="section" id="advanced-usage">
-<h2><span class="sectnum">1.3.</span> Advanced usage<a class="headerlink" href="#advanced-usage" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="customizing-the-formulation">
-<h3>Customizing the formulation<a class="headerlink" href="#customizing-the-formulation" title="Permalink to this headline">¶</a></h3>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">build_model</span></code> uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
-
-<span class="k">import</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">:</span><span class="w"></span>
-<span class="w">    </span><span class="n">Formulation</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">KnuOstWat2018</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">MorLatRam2013</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">ShiftFactorsFormulation</span><span class="w"></span>
-
-<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read_benchmark</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="s">&quot;matpower/case118/2017-02-01&quot;</span><span class="p">,</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
-
-<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">optimizer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">formulation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Formulation</span><span class="p">(</span><span class="w"></span>
-<span class="w">        </span><span class="n">pwl_costs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KnuOstWat2018</span><span class="o">.</span><span class="n">PwlCosts</span><span class="p">(),</span><span class="w"></span>
-<span class="w">        </span><span class="n">ramping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">Ramping</span><span class="p">(),</span><span class="w"></span>
-<span class="w">        </span><span class="n">startup_costs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MorLatRam2013</span><span class="o">.</span><span class="n">StartupCosts</span><span class="p">(),</span><span class="w"></span>
-<span class="w">        </span><span class="n">transmission</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ShiftFactorsFormulation</span><span class="p">(</span><span class="w"></span>
-<span class="w">            </span><span class="n">isf_cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.005</span><span class="p">,</span><span class="w"></span>
-<span class="w">            </span><span class="n">lodf_cutoff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.001</span><span class="p">,</span><span class="w"></span>
-<span class="w">        </span><span class="p">),</span><span class="w"></span>
-<span class="w">    </span><span class="p">),</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
-</pre></div>
-</div>
-</div>
-<div class="section" id="generating-initial-conditions">
-<h3>Generating initial conditions<a class="headerlink" href="#generating-initial-conditions" title="Permalink to this headline">¶</a></h3>
-<p>When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.</p>
-<p>To help with this issue, UC.jl provides a utility function which can generate feasible initial conditions by solving a single-period optimization problem, as shown below:</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">Cbc</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
-
-<span class="c"># Read original instance</span><span class="w"></span>
-<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span><span class="w"></span>
-
-<span class="c"># Generate initial conditions (in-place)</span><span class="w"></span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">generate_initial_conditions!</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">)</span><span class="w"></span>
-
-<span class="c"># Construct and solve optimization model</span><span class="w"></span>
-<span class="n">model</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">build_model</span><span class="p">(</span><span class="w"></span>
-<span class="w">    </span><span class="n">instance</span><span class="o">=</span><span class="n">instance</span><span class="p">,</span><span class="w"></span>
-<span class="w">    </span><span class="n">optimizer</span><span class="o">=</span><span class="n">Cbc</span><span class="o">.</span><span class="n">Optimizer</span><span class="p">,</span><span class="w"></span>
-<span class="p">)</span><span class="w"></span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">optimize!</span><span class="p">(</span><span class="n">model</span><span class="p">)</span><span class="w"></span>
-</pre></div>
-</div>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>The function <code class="docutils literal notranslate"><span class="pre">generate_initial_conditions!</span></code> may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.</p>
-</div>
-</div>
-<div class="section" id="verifying-solutions">
-<h3>Verifying solutions<a class="headerlink" href="#verifying-solutions" title="Permalink to this headline">¶</a></h3>
-<p>When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the <a class="reference internal" href="../format/"><span class="doc std std-doc">UC.jl data format</span></a>.</p>
-<div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="k">using</span><span class="w"> </span><span class="n">JSON</span><span class="w"></span>
-<span class="k">using</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="w"></span>
-
-<span class="c"># Read instance</span><span class="w"></span>
-<span class="n">instance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UnitCommitment</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s">&quot;instance.json&quot;</span><span class="p">)</span><span class="w"></span>
-
-<span class="c"># Read solution (potentially produced by other packages) </span><span class="w"></span>
-<span class="n">solution</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">JSON</span><span class="o">.</span><span class="n">parsefile</span><span class="p">(</span><span class="s">&quot;solution.json&quot;</span><span class="p">)</span><span class="w"></span>
-
-<span class="c"># Validate solution and print validation errors</span><span class="w"></span>
-<span class="n">UnitCommitment</span><span class="o">.</span><span class="n">validate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="w"> </span><span class="n">solution</span><span class="p">)</span><span class="w"></span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-
-
-              </div>
-              
-        
-        <div class='prev-next-bottom'>
-            
-    <a class='left-prev' id="prev-link" href="../" title="previous page">UnitCommitment.jl</a>
-    <a class='right-next' id="next-link" href="../format/" title="next page"><span class="sectnum">2.</span> Data Format</a>
-
-        </div>
-        
-        </div>
-    </div>
-    <footer class="footer mt-5 mt-md-0">
-    <div class="container">
-      <p>
-        
-            &copy; Copyright 2020-2022, UChicago Argonne, LLC.<br/>
-      </p>
-    </div>
-  </footer>
-</main>
-
-
-      </div>
-    </div>
-  
-  <script src="../_static/js/index.1c5a1a01449ed65a7b51.js"></script>
-
-  
-  </body>
-</html>
+# Validate solution and print validation errors
+UnitCommitment.validate(instance, solution)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../">« Home</a><a class="docs-footer-nextpage" href="../format/">Data Format »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.21 on <span class="colophon-date" title="Sunday 17 July 2022 14:42">Sunday 17 July 2022</span>. Using Julia version 1.7.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
