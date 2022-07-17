@@ -8,8 +8,8 @@ clean:
 	rm -rfv build Manifest.toml test/Manifest.toml deps/formatter/build deps/formatter/Manifest.toml
 
 docs:
-	cd docs; make clean; make dirhtml
-	rsync -avP --delete-after docs/_build/dirhtml/ ../docs/$(VERSION)/
+	cd docs; julia --project=. make.jl; cd ..
+	rsync -avP --delete-after docs/build/ ../docs/$(VERSION)/
 	
 format:
 	cd deps/formatter; ../../juliaw format.jl

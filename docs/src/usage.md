@@ -1,11 +1,3 @@
-```{sectnum}
----
-start: 1
-depth: 2
-suffix: .
----
-```
-
 Usage
 =====
 
@@ -126,9 +118,9 @@ model = UnitCommitment.build_model(
 UnitCommitment.optimize!(model)
 ```
 
-```{warning}
-The function `generate_initial_conditions!` may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.
-```
+!!! warning
+
+    The function `generate_initial_conditions!` may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.
     
 ### Verifying solutions
 

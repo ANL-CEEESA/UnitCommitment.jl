@@ -4,6 +4,7 @@
 
 """
 Formulation described in:
+
     B. Wang and B. F. Hobbs, "Real-Time Markets for Flexiramp: A Stochastic 
     Unit Commitment-Based Analysis," in IEEE Transactions on Power Systems, 
     vol. 31, no. 2, pp. 846-860, March 2016, doi: 10.1109/TPWRS.2015.2411268.

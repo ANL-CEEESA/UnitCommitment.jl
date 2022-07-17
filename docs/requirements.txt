@@ -1,4 +1,0 @@
-Sphinx==3.5.4
-sphinx-book-theme==0.1.0
-myst-parser==0.14.0
-Jinja2==3.0.2

@@ -1,19 +1,11 @@
-```{sectnum}
----
-start: 3
-depth: 2
-suffix: .
----
-```
-
 Instances
 =========
 
 UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a [common data format](format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with `UnitCommitment.read_benchmark(name)`, as explained in the [usage section](usage.md). Instance files can also be [directly downloaded from our website](https://axavier.org/UnitCommitment.jl/0.3/instances/).
 
-```{warning}
-The instances included in UC.jl are still under development and may change in the future. If you use these instances in your research, for reproducibility, you should specify what version of UC.jl they came from.
-```
+!!! warning
+
+    The instances included in UC.jl are still under development and may change in the future. If you use these instances in your research, for reproducibility, you should specify what version of UC.jl they came from.
 
 
 MATPOWER
@@ -33,7 +25,7 @@ Because most MATPOWER test cases were originally designed for power flow studies
 
 * **Contingencies** were set to include all N-1 transmission line contingencies that do not generate islands or isolated buses. More specifically, there is one contingency for each transmission line, as long as that transmission line is not a bridge in the network graph.
 
-For each MATPOWER test case, UC.jl provides 364 variations (`2017-01-01` to `2017-12-30`) corresponding different days of the year.
+For each MATPOWER test case, UC.jl provides 365 variations (`2017-01-01` to `2017-12-31`) corresponding different days of the year.
 
 ### MATPOWER/UW-PSTCA
 
@@ -296,14 +288,9 @@ References
 
 * [BaBlEh19] **Clayton Barrows, Aaron Bloom, Ali Ehlen, Jussi Ikaheimo, Jennie Jorgenson, Dheepak Krishnamurthy, Jessica Lau et al.** "The IEEE Reliability Test System: A Proposed 2019 Update." IEEE Transactions on Power Systems (2019). [DOI: 10.1109/TPWRS.2019.2925557](https://doi.org/10.1109/TPWRS.2019.2925557)
 
-* [JoFlMa16] **C. Josz, S. Fliscounakis, J. Maeght, and P. Panciatici.** "AC Power Flow
-Data in MATPOWER and QCQP Format: iTesla, RTE Snapshots, and PEGASE". [ArXiv (2016)](https://arxiv.org/abs/1603.01533).
+* [JoFlMa16] **C. Josz, S. Fliscounakis, J. Maeght, and P. Panciatici.** "AC Power Flow Data in MATPOWER and QCQP Format: iTesla, RTE Snapshots, and PEGASE". [ArXiv (2016)](https://arxiv.org/abs/1603.01533).
 
-* [FlPaCa13] **S. Fliscounakis, P. Panciatici, F. Capitanescu, and L. Wehenkel.**
-"Contingency ranking with respect to overloads in very large power
-systems taking into account uncertainty, preventive and corrective
-actions", Power Systems, IEEE Trans. on, (28)4:4909-4917, 2013.
-[DOI: 10.1109/TPWRS.2013.2251015](https://doi.org/10.1109/TPWRS.2013.2251015)
+* [FlPaCa13] **S. Fliscounakis, P. Panciatici, F. Capitanescu, and L. Wehenkel.** "Contingency ranking with respect to overloads in very large power systems taking into account uncertainty, preventive and corrective actions", Power Systems, IEEE Trans. on, (28)4:4909-4917, 2013. [DOI: 10.1109/TPWRS.2013.2251015](https://doi.org/10.1109/TPWRS.2013.2251015)
 
 * [MTPWR] **D. Zimmerman, C. E. Murillo-Sandnchez and R. J. Thomas.** "Matpower:  Steady-state  operations,  planning,  and  analysis  tools  forpower systems research and education", IEEE Transactions on PowerSystems, vol. 26, no. 1, pp. 12 –19, Feb. 2011. [DOI: 10.1109/TPWRS.2010.2051168](https://doi.org/10.1109/TPWRS.2010.2051168)
 

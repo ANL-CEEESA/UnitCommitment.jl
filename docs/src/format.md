@@ -1,32 +1,20 @@
-```{sectnum}
----
-start: 2
-depth: 2
-suffix: .
----
-```
-
-
 Data Format
 ===========
-
 
 Input Data Format
 -----------------
 
 Instances are specified by JSON files containing the following main sections:
 
-* Parameters
-* Buses
-* Generators
-* Price-sensitive loads
-* Transmission lines
-* Reserves
-* Contingencies
+* [Parameters](#Parameters)
+* [Buses](#Buses)
+* [Generators](#Generators)
+* [Price-sensitive loads](#Price-sensitive-loads)
+* [Transmission lines](#Transmission-lines)
+* [Reserves](#Reserves)
+* [Contingencies](#Contingencies)
 
-Each section is described in detail below. See [case118/2017-01-01.json.gz][example] for a complete example.
-
-[example]: https://axavier.org/UnitCommitment.jl/0.3/instances/matpower/case118/2017-01-01.json.gz
+Each section is described in detail below. See [case118/2017-01-01.json.gz](https://axavier.org/UnitCommitment.jl/0.3/instances/matpower/case118/2017-01-01.json.gz) for a complete example.
 
 ### Parameters
 
@@ -46,7 +34,7 @@ This section describes system-wide parameters, such as power balance penalty, an
     "Parameters": {
         "Version": "0.3",
         "Time horizon (h)": 4,
-        "Power balance penalty ($/MW)": 1000.0,
+        "Power balance penalty ($/MW)": 1000.0
     }
 }
 ```
@@ -105,11 +93,13 @@ This section describes all generators in the system, including thermal units, re
 Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs \$1400, \$1600, \$2200 and \$2400 to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, `Production cost curve (MW)` should be set to `[100, 110, 130, 135]`, and `Production cost curve ($)`  should be set to `[1400, 1600, 2200, 2400]`.
 Note that this curve also specifies the production limits. Specifically, the first point identifies the minimum power output when the unit is operational, while the last point identifies the maximum power output.
 
+```@raw html
 <center>
-    <img src="../_static/cost_curve.png" style="max-width: 500px"/>
+    <img src="../assets/cost_curve.png" style="max-width: 500px"/>
     <div><b>Figure 1.</b> Piecewise-linear production cost curve.</div>
     <br/>
 </center>
+```
 
 #### Additional remarks:
 
@@ -173,7 +163,7 @@ This section describes components in the system which may increase or reduce the
 }
 ```
 
-### Transmission Lines
+### Transmission lines
 
 This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.
 

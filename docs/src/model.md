@@ -1,11 +1,3 @@
-```{sectnum}
----
-start: 4
-depth: 2
-suffix: .
----
-```
-
 JuMP Model
 ==========
 
@@ -17,7 +9,7 @@ Decision variables
 ### Generators
 
 Name | Symbol | Description | Unit
------|:--------:|-------------|:------:
+:-----|:--------:|:-------------|:------:
 `is_on[g,t]` | $u_{g}(t)$ | True if generator `g` is on at time `t`. | Binary
 `switch_on[g,t]` | $v_{g}(t)$ | True is generator `g` switches on at time `t`. | Binary
 `switch_off[g,t]` | $w_{g}(t)$ | True if generator `g` switches off at time `t`. | Binary
@@ -30,7 +22,7 @@ Name | Symbol | Description | Unit
 ### Buses
 
 Name | Symbol | Description | Unit
------|:------:|-------------|:------:
+:-----|:------:|:-------------|:------:
 `net_injection[b,t]` | $n_b(t)$ | Net injection at bus `b` at time `t`. | MW
 `curtail[b,t]` | $s^+_b(t)$ | Amount of load curtailed at bus `b` at time `t` | MW
 
@@ -38,69 +30,24 @@ Name | Symbol | Description | Unit
 ### Price-sensitive loads
 
 Name | Symbol | Description | Unit
------|:------:|-------------|:------:
+:-----|:------:|:-------------|:------:
 `loads[s,t]` | $d_{s}(t)$ | Amount of power served to price-sensitive load `s` at time `t`. | MW
 
 ### Transmission lines
 
 Name | Symbol | Description | Unit
------|:------:|-------------|:------:
+:-----|:------:|:-------------|:------:
 `flow[l,t]` | $f_l(t)$ | Power flow on line `l` at time `t`. | MW
 `overflow[l,t]` | $f^+_l(t)$ | Amount of flow above the limit for line `l` at time `t`. | MW
 
-```{warning}
+!!! warning
 
-Since transmission and N-1 security constraints are enforced in a lazy way, most of the `flow[l,t]` variables are never added to the model. Accessing `model[:flow][l,t]` without first checking that the variable exists will likely generate an error.
-```
+    Since transmission and N-1 security constraints are enforced in a lazy way, most of the `flow[l,t]` variables are never added to the model. Accessing `model[:flow][l,t]` without first checking that the variable exists will likely generate an error.
 
 Objective function
 ------------------
 
-$$
-\begin{align}
-    \text{minimize} \;\; &
-        \sum_{t \in \mathcal{T}}
-          \sum_{g \in \mathcal{G}}
-          C^\text{min}_g(t) u_g(t) \\
-    &
-        + \sum_{t \in \mathcal{T}}
-          \sum_{g \in \mathcal{G}}
-          \sum_{g \in \mathcal{K}_g}
-          C^k_g(t) p^k_g(t) \\
-    &
-        + \sum_{t \in \mathcal{T}}
-          \sum_{g \in \mathcal{G}}
-          \sum_{s \in \mathcal{S}_g}
-          C^s_{g}(t) \delta^s_g(t) \\
-    &
-        + \sum_{t \in \mathcal{T}}
-          \sum_{l \in \mathcal{L}}
-          C^\text{overflow}_{l}(t) f^+_l(t) \\
-    &
-        + \sum_{t \in \mathcal{T}}
-           \sum_{b \in \mathcal{B}}
-           C^\text{curtail}(t) s^+_b(t) \\
-    &
-        - \sum_{t \in \mathcal{T}}
-           \sum_{s \in \mathcal{PS}}
-           R_{s}(t) d_{s}(t) \\
-          
-\end{align}
-$$
-where
-- $\mathcal{B}$ is the set of buses
-- $\mathcal{G}$ is the set of generators
-- $\mathcal{L}$ is the set of transmission lines
-- $\mathcal{PS}$ is the set of price-sensitive loads
-- $\mathcal{S}_g$ is the set of start-up categories for generator $g$
-- $\mathcal{T}$ is the set of time steps
-- $C^\text{curtail}(t)$ is the curtailment penalty (in \$/MW)
-- $C^\text{min}_g(t)$ is the cost of keeping generator $g$ on and producing at minimum power during time $t$ (in \$)
-- $C^\text{overflow}_{l}(t)$ is the flow limit penalty for line $l$ at time $t$ (in \$/MW)
-- $C^k_g(t)$ is the cost for generator $g$ to produce 1 MW of power at time $t$ under piecewise linear segment $k$
-- $C^s_{g}(t)$ is the cost of starting up generator $g$ at time $t$ under start-up category $s$ (in \$)
-- $R_{s}(t)$ is the revenue obtained from serving price-sensitive load $s$ at time $t$ (in \$/MW)
-
+TODO
 
 Constraints
 -----------
