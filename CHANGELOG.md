@@ -11,11 +11,11 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
-## [0.3.0] - Unreleased
+## [0.3.0] - 2022-07-18
 ### Added
 - Add support for multiple reserve products and zonal reserves.
 - Add flexiramp reserve products, following WanHob2016's formulation (@oyurdakul, #21).
-- Add 364 variations for each MATPOWER instance, corresponding to each day of the year, bringing the total number of benchmark test cases to 5,971.
+- Add 365 variations for each MATPOWER instance, corresponding to each day of the year.
 
 ### Changed
 - To support multiple/zonal reserves, the input data format has been modified as follows:
