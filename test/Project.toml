@@ -1,5 +1,6 @@
 [deps]
 Cbc = "9961bab8-2fa3-5c5a-9d89-47fab24efd76"
+Clp = "e2554f3b-3117-50c0-817c-e040a3ddf72d"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"

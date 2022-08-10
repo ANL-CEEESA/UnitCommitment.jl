@@ -54,6 +54,8 @@ include("transform/slice.jl")
 include("transform/randomize/XavQiuAhm2021.jl")
 include("utils/log.jl")
 include("utils/benchmark.jl")
+include("utils/lmp.jl")
+include("utils/aelmp.jl")
 include("validation/repair.jl")
 include("validation/validate.jl")
 
