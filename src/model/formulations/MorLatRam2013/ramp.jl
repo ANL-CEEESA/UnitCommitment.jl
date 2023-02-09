@@ -8,6 +8,7 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::MorLatRam2013.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
+    sc::UnitCommitmentScenario
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -22,7 +23,7 @@ function _add_ramp_eqs!(
     gn = g.name
     eq_ramp_down = _init(model, :eq_ramp_down)
     eq_ramp_up = _init(model, :eq_str_ramp_up)
-    reserve = _total_reserves(model, g)
+    reserve = _total_reserves(model, g, sc)
 
     # Gar1962.ProdVars
     prod_above = model[:prod_above]
@@ -39,10 +40,10 @@ function _add_ramp_eqs!(
         # Ramp up limit
         if t == 1
             if is_initially_on
-                eq_ramp_up[gn, t] = @constraint(
+                eq_ramp_up[sc.name, gn, t] = @constraint(
                     model,
                     g.min_power[t] +
-                    prod_above[gn, t] +
+                    prod_above[sc.name, gn, t] +
                     (RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0) <=
                     g.initial_power + RU
                 )
@@ -58,13 +59,13 @@ function _add_ramp_eqs!(
                 SU = g.startup_limit
                 max_prod_this_period =
                     g.min_power[t] * is_on[gn, t] +
-                    prod_above[gn, t] +
+                    prod_above[sc.name, gn, t] +
                     (
                         RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ?
                         reserve[t] : 0.0
                     )
                 min_prod_last_period =
-                    g.min_power[t-1] * is_on[gn, t-1] + prod_above[gn, t-1]
+                    g.min_power[t-1] * is_on[gn, t-1] + prod_above[sc.name, gn, t-1]
                 eq_ramp_up[gn, t] = @constraint(
                     model,
                     max_prod_this_period - min_prod_last_period <=
@@ -74,11 +75,11 @@ function _add_ramp_eqs!(
                 # Equation (26) in Kneuven et al. (2020)
                 # TODO: what if RU < SU? places too stringent upper bound
                 # prod_above[gn, t] when starting up, and creates diff with (24).
-                eq_ramp_up[gn, t] = @constraint(
+                eq_ramp_up[sc.name, gn, t] = @constraint(
                     model,
-                    prod_above[gn, t] +
+                    prod_above[sc.name, gn, t] +
                     (RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0) -
-                    prod_above[gn, t-1] <= RU
+                    prod_above[sc.name, gn, t-1] <= RU
                 )
             end
         end
@@ -90,9 +91,9 @@ function _add_ramp_eqs!(
                 #        min_power + RD < initial_power < SD
                 #      then the generator should be able to shut down at time t = 1,
                 #      but the constraint below will force the unit to produce power
-                eq_ramp_down[gn, t] = @constraint(
+                eq_ramp_down[sc.name, gn, t] = @constraint(
                     model,
-                    g.initial_power - (g.min_power[t] + prod_above[gn, t]) <= RD
+                    g.initial_power - (g.min_power[t] + prod_above[sc.name, gn, t]) <= RD
                 )
             end
         else
@@ -102,13 +103,13 @@ function _add_ramp_eqs!(
                 SD = g.shutdown_limit
                 max_prod_last_period =
                     g.min_power[t-1] * is_on[gn, t-1] +
-                    prod_above[gn, t-1] +
+                    prod_above[sc.name, gn, t-1] +
                     (
                         RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN ?
                         reserve[t-1] : 0.0
                     )
                 min_prod_this_period =
-                    g.min_power[t] * is_on[gn, t] + prod_above[gn, t]
+                    g.min_power[t] * is_on[gn, t] + prod_above[sc.name, gn, t]
                 eq_ramp_down[gn, t] = @constraint(
                     model,
                     max_prod_last_period - min_prod_this_period <=
@@ -118,11 +119,11 @@ function _add_ramp_eqs!(
                 # Equation (27) in Kneuven et al. (2020)
                 # TODO: Similar to above, what to do if shutting down in time t
                 # and RD < SD? There is a difference with (25).
-                eq_ramp_down[gn, t] = @constraint(
+                eq_ramp_down[sc.name, gn, t] = @constraint(
                     model,
-                    prod_above[gn, t-1] +
+                    prod_above[sc.name, gn, t-1] +
                     (RESERVES_WHEN_RAMP_DOWN ? reserve[t-1] : 0.0) -
-                    prod_above[gn, t] <= RD
+                    prod_above[sc.name, gn, t] <= RD
                 )
             end
         end

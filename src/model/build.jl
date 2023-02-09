@@ -77,20 +77,28 @@ function build_model(;
         end
         model[:obj] = AffExpr()
         model[:instance] = instance
-        _setup_transmission(model, formulation.transmission)
-        for l in instance.lines
-            _add_transmission_line!(model, l, formulation.transmission)
+        for g in instance.scenarios[1].units
+            _add_unit_first_stage!(model, g, formulation)
         end
-        for b in instance.buses
-            _add_bus!(model, b)
+        for scenario in instance.scenarios
+            @info "Building scenario $(scenario.name) with" * 
+                "probability $(scenario.probability)"
+            _setup_transmission(model, formulation.transmission, scenario)
+            for l in scenario.lines
+                _add_transmission_line!(model, l, formulation.transmission, 
+                    scenario)
+            end
+            for b in scenario.buses
+                _add_bus!(model, b, scenario)
+            end
+            for ps in scenario.price_sensitive_loads
+                _add_price_sensitive_load!(model, ps, scenario)
+            end
+            for g in scenario.units
+                _add_unit_second_stage!(model, g, formulation, scenario)
+            end
+            _add_system_wide_eqs!(model, scenario)
         end
-        for g in instance.units
-            _add_unit!(model, g, formulation)
-        end
-        for ps in instance.price_sensitive_loads
-            _add_price_sensitive_load!(model, ps)
-        end
-        _add_system_wide_eqs!(model)
         @objective(model, Min, model[:obj])
     end
     @info @sprintf("Built model in %.2f seconds", time_model)

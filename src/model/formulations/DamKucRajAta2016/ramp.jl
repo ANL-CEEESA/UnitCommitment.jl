@@ -8,6 +8,7 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::DamKucRajAta2016.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
+    sc::UnitCommitmentScenario
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -23,7 +24,7 @@ function _add_ramp_eqs!(
     gn = g.name
     eq_str_ramp_down = _init(model, :eq_str_ramp_down)
     eq_str_ramp_up = _init(model, :eq_str_ramp_up)
-    reserve = _total_reserves(model, g)
+    reserve = _total_reserves(model, g, sc)
 
     # Gar1962.ProdVars
     prod_above = model[:prod_above]
@@ -48,15 +49,15 @@ function _add_ramp_eqs!(
         # end
 
         max_prod_this_period =
-            prod_above[gn, t] +
+            prod_above[sc.name, gn, t] +
             (RESERVES_WHEN_START_UP || RESERVES_WHEN_RAMP_UP ? reserve[t] : 0.0)
         min_prod_last_period = 0.0
         if t > 1 && time_invariant
-            min_prod_last_period = prod_above[gn, t-1]
+            min_prod_last_period = prod_above[sc.name, gn, t-1]
 
             # Equation (35) in Kneuven et al. (2020)
             # Sparser version of (24)
-            eq_str_ramp_up[gn, t] = @constraint(
+            eq_str_ramp_up[sc.name, gn, t] = @constraint(
                 model,
                 max_prod_this_period - min_prod_last_period <=
                 (SU - g.min_power[t] - RU) * switch_on[gn, t] +
@@ -65,7 +66,7 @@ function _add_ramp_eqs!(
         elseif (t == 1 && is_initially_on) || (t > 1 && !time_invariant)
             if t > 1
                 min_prod_last_period =
-                    prod_above[gn, t-1] + g.min_power[t-1] * is_on[gn, t-1]
+                    prod_above[sc.name, gn, t-1] + g.min_power[t-1] * is_on[gn, t-1]
             else
                 min_prod_last_period = max(g.initial_power, 0.0)
             end
@@ -76,7 +77,7 @@ function _add_ramp_eqs!(
 
             # Modified version of equation (35) in Kneuven et al. (2020)
             # Equivalent to (24)
-            eq_str_ramp_up[gn, t] = @constraint(
+            eq_str_ramp_up[sc.name, gn, t] = @constraint(
                 model,
                 max_prod_this_period - min_prod_last_period <=
                 (SU - RU) * switch_on[gn, t] + RU * is_on[gn, t]
@@ -88,7 +89,7 @@ function _add_ramp_eqs!(
                 t > 1 && (RESERVES_WHEN_SHUT_DOWN || RESERVES_WHEN_RAMP_DOWN) ?
                 reserve[t-1] : 0.0
             )
-        min_prod_this_period = prod_above[gn, t]
+        min_prod_this_period = prod_above[sc.name, gn, t]
         on_last_period = 0.0
         if t > 1
             on_last_period = is_on[gn, t-1]
@@ -98,7 +99,7 @@ function _add_ramp_eqs!(
 
         if t > 1 && time_invariant
             # Equation (36) in Kneuven et al. (2020)
-            eq_str_ramp_down[gn, t] = @constraint(
+            eq_str_ramp_down[sc.name, gn, t] = @constraint(
                 model,
                 max_prod_last_period - min_prod_this_period <=
                 (SD - g.min_power[t] - RD) * switch_off[gn, t] +
@@ -110,7 +111,7 @@ function _add_ramp_eqs!(
 
             # Modified version of equation (36) in Kneuven et al. (2020)
             # Equivalent to (25)
-            eq_str_ramp_down[gn, t] = @constraint(
+            eq_str_ramp_down[sc.name, gn, t] = @constraint(
                 model,
                 max_prod_last_period - min_prod_this_period <=
                 (SD - RD) * switch_off[gn, t] + RD * on_last_period

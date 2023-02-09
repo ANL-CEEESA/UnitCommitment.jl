@@ -5,13 +5,15 @@
 function _enforce_transmission(
     model::JuMP.Model,
     violations::Vector{_Violation},
+    sc::UnitCommitmentScenario
 )::Nothing
     for v in violations
         _enforce_transmission(
             model = model,
+            sc = sc,
             violation = v,
-            isf = model[:isf],
-            lodf = model[:lodf],
+            isf = sc.isf,
+            lodf = sc.lodf,
         )
     end
     return
@@ -19,6 +21,7 @@ end
 
 function _enforce_transmission(;
     model::JuMP.Model,
+    sc::UnitCommitmentScenario,
     violation::_Violation,
     isf::Matrix{Float64},
     lodf::Matrix{Float64},
@@ -51,7 +54,7 @@ function _enforce_transmission(;
     t = violation.time
     flow = @variable(model, base_name = "flow[$fm,$t]")
 
-    v = overflow[violation.monitored_line.name, violation.time]
+    v = overflow[sc.name, violation.monitored_line.name, violation.time]
     @constraint(model, flow <= limit + v)
     @constraint(model, -flow <= limit + v)
 
@@ -59,23 +62,23 @@ function _enforce_transmission(;
         @constraint(
             model,
             flow == sum(
-                net_injection[b.name, violation.time] *
+                net_injection[sc.name, b.name, violation.time] *
                 isf[violation.monitored_line.offset, b.offset] for
-                b in instance.buses if b.offset > 0
+                b in sc.buses if b.offset > 0
             )
         )
     else
         @constraint(
             model,
             flow == sum(
-                net_injection[b.name, violation.time] * (
+                net_injection[sc.name, b.name, violation.time] * (
                     isf[violation.monitored_line.offset, b.offset] + (
                         lodf[
                             violation.monitored_line.offset,
                             violation.outage_line.offset,
                         ] * isf[violation.outage_line.offset, b.offset]
                     )
-                ) for b in instance.buses if b.offset > 0
+                ) for b in sc.buses if b.offset > 0
             )
         )
     end

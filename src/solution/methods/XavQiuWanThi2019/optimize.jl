@@ -10,43 +10,47 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
         JuMP.set_optimizer_attribute(model, "MIPGap", gap)
         @info @sprintf("MIP gap tolerance set to %f", gap)
     end
-    initial_time = time()
-    large_gap = false
-    has_transmission = (length(model[:isf]) > 0)
-    if has_transmission && method.two_phase_gap
-        set_gap(1e-2)
-        large_gap = true
-    end
-    while true
-        time_elapsed = time() - initial_time
-        time_remaining = method.time_limit - time_elapsed
-        if time_remaining < 0
-            @info "Time limit exceeded"
-            break
+    for scenario in model[:instance].scenarios
+        large_gap = false
+        has_transmission = (length(scenario.isf) > 0)
+        if has_transmission && method.two_phase_gap
+            set_gap(1e-2)
+            large_gap = true
         end
-        @info @sprintf(
-            "Setting MILP time limit to %.2f seconds",
-            time_remaining
-        )
-        JuMP.set_time_limit_sec(model, time_remaining)
-        @info "Solving MILP..."
         JuMP.optimize!(model)
-        has_transmission || break
-        violations = _find_violations(
-            model,
-            max_per_line = method.max_violations_per_line,
-            max_per_period = method.max_violations_per_period,
-        )
-        if isempty(violations)
-            @info "No violations found"
-            if large_gap
-                large_gap = false
-                set_gap(method.gap_limit)
-            else
+        while true
+            initial_time = time()
+            time_elapsed = time() - initial_time
+            time_remaining = method.time_limit - time_elapsed
+            if time_remaining < 0
+                @info "Time limit exceeded"
                 break
             end
-        else
-            _enforce_transmission(model, violations)
+            @info @sprintf(
+                "Setting MILP time limit to %.2f seconds",
+                time_remaining
+            )
+            JuMP.set_time_limit_sec(model, time_remaining)
+            @info "Solving MILP..."
+            JuMP.optimize!(model)
+            has_transmission || break
+            violations = _find_violations(
+                model,
+                scenario,
+                max_per_line = method.max_violations_per_line,
+                max_per_period = method.max_violations_per_period,
+            )
+            if isempty(violations)
+                @info "No violations found"
+                if large_gap
+                    large_gap = false
+                    set_gap(method.gap_limit)
+                else
+                    break
+                end
+            else
+                _enforce_transmission(model, violations, scenario)
+            end
         end
     end
     return

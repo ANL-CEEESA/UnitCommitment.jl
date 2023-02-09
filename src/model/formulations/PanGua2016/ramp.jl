@@ -8,11 +8,12 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::PanGua2016.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
+    sc::UnitCommitmentScenario
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_SHUT_DOWN = true
     gn = g.name
-    reserve = _total_reserves(model, g)
+    reserve = _total_reserves(model, g, sc)
     eq_str_prod_limit = _init(model, :eq_str_prod_limit)
     eq_prod_limit_ramp_up_extra_period =
         _init(model, :eq_prod_limit_ramp_up_extra_period)
@@ -52,9 +53,9 @@ function _add_ramp_eqs!(
             # Generalization of (20)
             # Necessary that if any of the switch_on = 1 in the sum,
             # then switch_off[gn, t+1] = 0
-            eq_str_prod_limit[gn, t] = @constraint(
+            eq_str_prod_limit[sc.name, gn, t] = @constraint(
                 model,
-                prod_above[gn, t] +
+                prod_above[sc.name, gn, t] +
                 g.min_power[t] * is_on[gn, t] +
                 reserve[t] <=
                 Pbar * is_on[gn, t] -
@@ -67,9 +68,9 @@ function _add_ramp_eqs!(
             if UT - 2 < TRU
                 # Equation (40) in Kneuven et al. (2020)
                 # Covers an additional time period of the ramp-up trajectory, compared to (38)
-                eq_prod_limit_ramp_up_extra_period[gn, t] = @constraint(
+                eq_prod_limit_ramp_up_extra_period[sc.name, gn, t] = @constraint(
                     model,
-                    prod_above[gn, t] +
+                    prod_above[sc.name, gn, t] +
                     g.min_power[t] * is_on[gn, t] +
                     reserve[t] <=
                     Pbar * is_on[gn, t] - sum(
@@ -84,9 +85,9 @@ function _add_ramp_eqs!(
             if KSD > 0
                 KSU = min(TRU, UT - 2 - KSD, t - 1)
                 # Equation (41) in Kneuven et al. (2020)
-                eq_prod_limit_shutdown_trajectory[gn, t] = @constraint(
+                eq_prod_limit_shutdown_trajectory[sc.name, gn, t] = @constraint(
                     model,
-                    prod_above[gn, t] +
+                    prod_above[sc.name, gn, t] +
                     g.min_power[t] * is_on[gn, t] +
                     (RESERVES_WHEN_SHUT_DOWN ? reserve[t] : 0.0) <=
                     Pbar * is_on[gn, t] - sum(

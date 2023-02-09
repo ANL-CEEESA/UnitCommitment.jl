@@ -5,32 +5,34 @@
 import Base.Threads: @threads
 
 function _find_violations(
-    model::JuMP.Model;
+    model::JuMP.Model,
+    sc::UnitCommitmentScenario;
     max_per_line::Int,
     max_per_period::Int,
 )
     instance = model[:instance]
     net_injection = model[:net_injection]
     overflow = model[:overflow]
-    length(instance.buses) > 1 || return []
+    length(sc.buses) > 1 || return []
     violations = []
     @info "Verifying transmission limits..."
     time_screening = @elapsed begin
-        non_slack_buses = [b for b in instance.buses if b.offset > 0]
+        non_slack_buses = [b for b in sc.buses if b.offset > 0]
         net_injection_values = [
-            value(net_injection[b.name, t]) for b in non_slack_buses,
+            value(net_injection[sc.name, b.name, t]) for b in non_slack_buses,
             t in 1:instance.time
         ]
         overflow_values = [
-            value(overflow[lm.name, t]) for lm in instance.lines,
+            value(overflow[sc.name, lm.name, t]) for lm in sc.lines,
             t in 1:instance.time
         ]
         violations = UnitCommitment._find_violations(
             instance = instance,
+            sc = sc,
             net_injections = net_injection_values,
             overflow = overflow_values,
-            isf = model[:isf],
-            lodf = model[:lodf],
+            isf = sc.isf,
+            lodf = sc.lodf,
             max_per_line = max_per_line,
             max_per_period = max_per_period,
         )
@@ -64,15 +66,16 @@ matrix, where L is the number of transmission lines.
 """
 function _find_violations(;
     instance::UnitCommitmentInstance,
+    sc::UnitCommitmentScenario,
     net_injections::Array{Float64,2},
     overflow::Array{Float64,2},
     isf::Array{Float64,2},
     lodf::Array{Float64,2},
     max_per_line::Int,
-    max_per_period::Int,
+    max_per_period::Int
 )::Array{_Violation,1}
-    B = length(instance.buses) - 1
-    L = length(instance.lines)
+    B = length(sc.buses) - 1
+    L = length(sc.lines)
     T = instance.time
     K = nthreads()
 
@@ -94,16 +97,16 @@ function _find_violations(;
 
     normal_limits::Array{Float64,2} = [
         l.normal_flow_limit[t] + overflow[l.offset, t] for
-        l in instance.lines, t in 1:T
+        l in sc.lines, t in 1:T
     ]
 
     emergency_limits::Array{Float64,2} = [
         l.emergency_flow_limit[t] + overflow[l.offset, t] for
-        l in instance.lines, t in 1:T
+        l in sc.lines, t in 1:T
     ]
 
     is_vulnerable::Array{Bool} = zeros(Bool, L)
-    for c in instance.contingencies
+    for c in sc.contingencies
         is_vulnerable[c.lines[1].offset] = true
     end
 
@@ -111,7 +114,7 @@ function _find_violations(;
         k = threadid()
 
         # Pre-contingency flows
-        pre_flow[:, k] = isf * net_injections[:, t]
+        pre_flow[:, k] = isf * net_injections[ :, t]
 
         # Post-contingency flows
         for lc in 1:L, lm in 1:L
@@ -144,7 +147,7 @@ function _find_violations(;
                     filters[t],
                     _Violation(
                         time = t,
-                        monitored_line = instance.lines[lm],
+                        monitored_line = sc.lines[lm],
                         outage_line = nothing,
                         amount = pre_v[lm, k],
                     ),
@@ -159,8 +162,8 @@ function _find_violations(;
                     filters[t],
                     _Violation(
                         time = t,
-                        monitored_line = instance.lines[lm],
-                        outage_line = instance.lines[lc],
+                        monitored_line = sc.lines[lm],
+                        outage_line = sc.lines[lc],
                         amount = post_v[lm, lc, k],
                     ),
                 )

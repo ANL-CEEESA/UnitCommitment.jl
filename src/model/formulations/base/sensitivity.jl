@@ -18,7 +18,7 @@ function _injection_shift_factors(;
     lines::Array{TransmissionLine},
 )
     susceptance = _susceptance_matrix(lines)
-    incidence = _reduced_incidence_matrix(lines = lines, buses = buses)
+    incidence = _reduced_incidence_matrix(buses = buses, lines = lines)
     laplacian = transpose(incidence) * susceptance * incidence
     isf = susceptance * incidence * inv(Array(laplacian))
     return isf

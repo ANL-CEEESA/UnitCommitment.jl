@@ -356,7 +356,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                         required,
                     )
                 end
-            elseif r.type == "flexiramp"
+            elseif r.type == "up-frp"
                 upflexiramp = sum(
                     solution["Up-flexiramp (MW)"][r.name][g.name][t] for
                     g in r.units
@@ -374,7 +374,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                     )
                     err_count += 1
                 end
-
+            elseif r.type == "down-frp"
                 dwflexiramp = sum(
                     solution["Down-flexiramp (MW)"][r.name][g.name][t] for
                     g in r.units

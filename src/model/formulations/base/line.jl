@@ -6,14 +6,15 @@ function _add_transmission_line!(
     model::JuMP.Model,
     lm::TransmissionLine,
     f::ShiftFactorsFormulation,
+    sc::UnitCommitmentScenario
 )::Nothing
     overflow = _init(model, :overflow)
     for t in 1:model[:instance].time
-        overflow[lm.name, t] = @variable(model, lower_bound = 0)
+        overflow[sc.name, lm.name, t] = @variable(model, lower_bound = 0)
         add_to_expression!(
             model[:obj],
-            overflow[lm.name, t],
-            lm.flow_limit_penalty[t],
+            overflow[sc.name, lm.name, t],
+            lm.flow_limit_penalty[t] * sc.probability,
         )
     end
     return
@@ -22,27 +23,28 @@ end
 function _setup_transmission(
     model::JuMP.Model,
     formulation::ShiftFactorsFormulation,
+    scenario::UnitCommitmentScenario
 )::Nothing
     instance = model[:instance]
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf
-    if length(instance.buses) == 1
+    if length(scenario.buses) == 1
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
     elseif isf === nothing
         @info "Computing injection shift factors..."
         time_isf = @elapsed begin
             isf = UnitCommitment._injection_shift_factors(
-                lines = instance.lines,
-                buses = instance.buses,
+                lines = scenario.lines,
+                buses = scenario.buses,
             )
         end
         @info @sprintf("Computed ISF in %.2f seconds", time_isf)
         @info "Computing line outage factors..."
         time_lodf = @elapsed begin
             lodf = UnitCommitment._line_outage_factors(
-                lines = instance.lines,
-                buses = instance.buses,
+                lines = scenario.lines,
+                buses = scenario.buses,
                 isf = isf,
             )
         end
@@ -55,7 +57,7 @@ function _setup_transmission(
         isf[abs.(isf).<formulation.isf_cutoff] .= 0
         lodf[abs.(lodf).<formulation.lodf_cutoff] .= 0
     end
-    model[:isf] = isf
-    model[:lodf] = lodf
+    scenario.isf = isf
+    scenario.lodf = lodf
     return
 end

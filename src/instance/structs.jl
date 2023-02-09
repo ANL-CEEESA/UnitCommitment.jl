@@ -73,7 +73,9 @@ mutable struct PriceSensitiveLoad
     revenue::Vector{Float64}
 end
 
-Base.@kwdef mutable struct UnitCommitmentInstance
+Base.@kwdef mutable struct UnitCommitmentScenario
+    name::String
+    probability::Float64
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
     contingencies_by_name::Dict{AbstractString,Contingency}
@@ -85,23 +87,34 @@ Base.@kwdef mutable struct UnitCommitmentInstance
     price_sensitive_loads::Vector{PriceSensitiveLoad}
     reserves::Vector{Reserve}
     reserves_by_name::Dict{AbstractString,Reserve}
-    shortfall_penalty::Vector{Float64}
-    flexiramp_shortfall_penalty::Vector{Float64}
-    time::Int
+    # shortfall_penalty::Vector{Float64}
+    # flexiramp_shortfall_penalty::Vector{Float64}
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}
+    time::Int
+    isf::Array{Float64,2}
+    lodf::Array{Float64,2}
+end
+
+Base.@kwdef mutable struct UnitCommitmentInstance
+    time::Int
+    scenarios::Vector{UnitCommitmentScenario}
 end
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "UnitCommitmentInstance(")
-    print(io, "$(length(instance.units)) units, ")
-    print(io, "$(length(instance.buses)) buses, ")
-    print(io, "$(length(instance.lines)) lines, ")
-    print(io, "$(length(instance.contingencies)) contingencies, ")
-    print(
-        io,
-        "$(length(instance.price_sensitive_loads)) price sensitive loads, ",
-    )
+    print(io, "$(length(instance.scenarios)) scenarios: ")
+    for scenario in instance.scenarios
+        print(io, "Scenario $(scenario.name): ")
+        print(io, "$(length(scenario.units)) units, ")
+        print(io, "$(length(scenario.buses)) buses, ")
+        print(io, "$(length(scenario.lines)) lines, ")
+        print(io, "$(length(scenario.contingencies)) contingencies, ")
+        print(
+            io,
+            "$(length(scenario.price_sensitive_loads)) price sensitive loads, ",
+        )
+    end
     print(io, "$(instance.time) time steps")
     print(io, ")")
     return
