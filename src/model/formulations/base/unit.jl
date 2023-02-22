@@ -2,7 +2,13 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_unit_first_stage!(model::JuMP.Model, g::Unit, formulation::Formulation)
+# Function for adding variables, constraints, and objective function terms
+# related to the binary commitment, startup and shutdown decisions of units
+function _add_unit_commitment!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::Formulation,
+)
     if !all(g.must_run) && any(g.must_run)
         error("Partially must-run units are not currently supported")
     end
@@ -21,24 +27,30 @@ function _add_unit_first_stage!(model::JuMP.Model, g::Unit, formulation::Formula
     return
 end
 
-function _add_unit_second_stage!(model::JuMP.Model, g::Unit, formulation::Formulation,
-    scenario::UnitCommitmentScenario)
+# Function for adding variables, constraints, and objective function terms
+# related to the continuous dispatch decisions of units
+function _add_unit_dispatch!(
+    model::JuMP.Model,
+    g::Unit,
+    formulation::Formulation,
+    sc::UnitCommitmentScenario,
+)
 
     # Variables
-    _add_production_vars!(model, g, formulation.prod_vars, scenario) 
-    _add_spinning_reserve_vars!(model, g, scenario)
-    _add_flexiramp_reserve_vars!(model, g, scenario)
+    _add_production_vars!(model, g, formulation.prod_vars, sc)
+    _add_spinning_reserve_vars!(model, g, sc)
+    _add_flexiramp_reserve_vars!(model, g, sc)
 
     # Constraints and objective function
-    _add_net_injection_eqs!(model, g, scenario)
-    _add_production_limit_eqs!(model, g, formulation.prod_vars, scenario)
+    _add_net_injection_eqs!(model, g, sc)
+    _add_production_limit_eqs!(model, g, formulation.prod_vars, sc)
     _add_production_piecewise_linear_eqs!(
         model,
         g,
         formulation.prod_vars,
         formulation.pwl_costs,
         formulation.status_vars,
-        scenario
+        sc,
     )
     _add_ramp_eqs!(
         model,
@@ -46,62 +58,29 @@ function _add_unit_second_stage!(model::JuMP.Model, g::Unit, formulation::Formul
         formulation.prod_vars,
         formulation.ramping,
         formulation.status_vars,
-        scenario
+        sc,
     )
-    _add_startup_shutdown_limit_eqs!(model, g, scenario)
+    _add_startup_shutdown_limit_eqs!(model, g, sc)
     return
 end
 
-# function _add_unit!(model::JuMP.Model, g::Unit, formulation::Formulation)
-#     if !all(g.must_run) && any(g.must_run)
-#         error("Partially must-run units are not currently supported")
-#     end
-#     if g.initial_power === nothing || g.initial_status === nothing
-#         error("Initial conditions for $(g.name) must be provided")
-#     end
-
-#     # Variables
-#     _add_production_vars!(model, g, formulation.prod_vars)
-#     _add_spinning_reserve_vars!(model, g)
-#     _add_flexiramp_reserve_vars!(model, g)
-#     _add_startup_shutdown_vars!(model, g)
-#     _add_status_vars!(model, g, formulation.status_vars)
-
-#     # Constraints and objective function
-#     _add_min_uptime_downtime_eqs!(model, g)
-#     _add_net_injection_eqs!(model, g)
-#     _add_production_limit_eqs!(model, g, formulation.prod_vars)
-#     _add_production_piecewise_linear_eqs!(
-#         model,
-#         g,
-#         formulation.prod_vars,
-#         formulation.pwl_costs,
-#         formulation.status_vars,
-#     )
-#     _add_ramp_eqs!(
-#         model,
-#         g,
-#         formulation.prod_vars,
-#         formulation.ramping,
-#         formulation.status_vars,
-#     )
-#     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
-#     _add_startup_shutdown_limit_eqs!(model, g)
-#     _add_status_eqs!(model, g, formulation.status_vars)
-#     return
-# end
-
 _is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
-function _add_spinning_reserve_vars!(model::JuMP.Model, g::Unit, sc::UnitCommitmentScenario)::Nothing
+function _add_spinning_reserve_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    sc::UnitCommitmentScenario,
+)::Nothing
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall)
     for r in g.reserves
         r.type == "spinning" || continue
         for t in 1:model[:instance].time
-            reserve[sc.name, r.name, g.name, t] = @variable(model, lower_bound = 0)
+            reserve[sc.name, r.name, g.name, t] =
+                @variable(model, lower_bound = 0)
             if (sc.name, r.name, t) ∉ keys(reserve_shortfall)
-                reserve_shortfall[sc.name, r.name, t] = @variable(model, lower_bound = 0)
+                reserve_shortfall[sc.name, r.name, t] =
+                    @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
                     set_upper_bound(reserve_shortfall[sc.name, r.name, t], 0.0)
                 end
@@ -111,35 +90,37 @@ function _add_spinning_reserve_vars!(model::JuMP.Model, g::Unit, sc::UnitCommitm
     return
 end
 
-function _add_flexiramp_reserve_vars!(model::JuMP.Model, g::Unit, sc::UnitCommitmentScenario)::Nothing
+function _add_flexiramp_reserve_vars!(
+    model::JuMP.Model,
+    g::Unit,
+    sc::UnitCommitmentScenario,
+)::Nothing
     upflexiramp = _init(model, :upflexiramp)
     upflexiramp_shortfall = _init(model, :upflexiramp_shortfall)
     mfg = _init(model, :mfg)
     dwflexiramp = _init(model, :dwflexiramp)
     dwflexiramp_shortfall = _init(model, :dwflexiramp_shortfall)
-    for r in g.reserves
-        if r.type == "up-frp"
-            for t in 1:model[:instance].time
-                # maximum feasible generation, \bar{g_{its}} in Wang & Hobbs (2016)
-                mfg[sc.name, r.name, g.name, t] = @variable(model, lower_bound = 0)
-                upflexiramp[sc.name, r.name, g.name, t] = @variable(model) # up-flexiramp, ur_{it} in Wang & Hobbs (2016)
-                if (sc.name, r.name, t) ∉ keys(upflexiramp_shortfall)
-                    upflexiramp_shortfall[sc.name, r.name, t] =
-                        @variable(model, lower_bound = 0)
-                    if r.shortfall_penalty < 0
-                        set_upper_bound(upflexiramp_shortfall[sc.name, r.name, t], 0.0)
-                    end
-                end
-            end
-        elseif r.type == "down-frp"
-            for t in 1:model[:instance].time
-                dwflexiramp[sc.name, r.name, g.name, t] = @variable(model) # down-flexiramp, dr_{it} in Wang & Hobbs (2016)
-                if (sc.name, r.name, t) ∉ keys(dwflexiramp_shortfall)
-                    dwflexiramp_shortfall[sc.name, r.name, t] =
-                        @variable(model, lower_bound = 0)
-                    if r.shortfall_penalty < 0
-                        set_upper_bound(dwflexiramp_shortfall[sc.name, r.name, t], 0.0)
-                    end
+    for t in 1:model[:instance].time
+        # maximum feasible generation, \bar{g_{its}} in Wang & Hobbs (2016)
+        mfg[sc.name, g.name, t] = @variable(model, lower_bound = 0)
+        for r in g.reserves
+            r.type == "flexiramp" || continue
+            upflexiramp[sc.name, r.name, g.name, t] = @variable(model) # up-flexiramp, ur_{it} in Wang & Hobbs (2016)
+            dwflexiramp[sc.name, r.name, g.name, t] = @variable(model) # down-flexiramp, dr_{it} in Wang & Hobbs (2016)
+            if (sc.name, r.name, t) ∉ keys(upflexiramp_shortfall)
+                upflexiramp_shortfall[sc.name, r.name, t] =
+                    @variable(model, lower_bound = 0)
+                dwflexiramp_shortfall[sc.name, r.name, t] =
+                    @variable(model, lower_bound = 0)
+                if r.shortfall_penalty < 0
+                    set_upper_bound(
+                        upflexiramp_shortfall[sc.name, r.name, t],
+                        0.0,
+                    )
+                    set_upper_bound(
+                        dwflexiramp_shortfall[sc.name, r.name, t],
+                        0.0,
+                    )
                 end
             end
         end
@@ -157,7 +138,11 @@ function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
     return
 end
 
-function _add_startup_shutdown_limit_eqs!(model::JuMP.Model, g::Unit, sc::UnitCommitmentScenario)::Nothing
+function _add_startup_shutdown_limit_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    sc::UnitCommitmentScenario,
+)::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
     eq_startup_limit = _init(model, :eq_startup_limit)
     is_on = model[:is_on]
@@ -196,7 +181,7 @@ function _add_ramp_eqs!(
     model::JuMP.Model,
     g::Unit,
     formulation::RampingFormulation,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     prod_above = model[:prod_above]
     reserve = _total_reserves(model, g, sc)
@@ -282,7 +267,11 @@ function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
     end
 end
 
-function _add_net_injection_eqs!(model::JuMP.Model, g::Unit, sc::UnitCommitmentScenario)::Nothing
+function _add_net_injection_eqs!(
+    model::JuMP.Model,
+    g::Unit,
+    sc::UnitCommitmentScenario,
+)::Nothing
     expr_net_injection = model[:expr_net_injection]
     for t in 1:model[:instance].time
         # Add to net injection expression
@@ -305,7 +294,10 @@ function _total_reserves(model, g, sc)::Vector
     spinning_reserves = [r for r in g.reserves if r.type == "spinning"]
     if !isempty(spinning_reserves)
         reserve += [
-            sum(model[:reserve][sc.name, r.name, g.name, t] for r in spinning_reserves) for t in 1:model[:instance].time
+            sum(
+                model[:reserve][sc.name, r.name, g.name, t] for
+                r in spinning_reserves
+            ) for t in 1:model[:instance].time
         ]
     end
     return reserve

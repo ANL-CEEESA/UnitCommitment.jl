@@ -8,7 +8,7 @@ function _add_production_piecewise_linear_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_pwl_costs::CarArr2006.PwlCosts,
     formulation_status_vars::StatusVarsFormulation,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     eq_prod_above_def = _init(model, :eq_prod_above_def)
     eq_segprod_limit = _init(model, :eq_segprod_limit)
@@ -34,13 +34,17 @@ function _add_production_piecewise_linear_eqs!(
 
             # Also add this as an explicit upper bound on segprod to make the
             # solver's work a bit easier
-            set_upper_bound(segprod[sc.name, gn, t, k], g.cost_segments[k].mw[t])
+            set_upper_bound(
+                segprod[sc.name, gn, t, k],
+                g.cost_segments[k].mw[t],
+            )
 
             # Definition of production
             # Equation (43) in Kneuven et al. (2020)
             eq_prod_above_def[sc.name, gn, t] = @constraint(
                 model,
-                prod_above[sc.name, gn, t] == sum(segprod[sc.name, gn, t, k] for k in 1:K)
+                prod_above[sc.name, gn, t] ==
+                sum(segprod[sc.name, gn, t, k] for k in 1:K)
             )
 
             # Objective function

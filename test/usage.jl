@@ -6,8 +6,13 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON
 
 @testset "usage" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
-    for line in instance.lines, t in 1:4
-        line.normal_flow_limit[t] = 10.0
+    for sc in instance.scenarios
+        sc.power_balance_penalty = [100000 for _ in 1:instance.time]
+    end
+    for sc in instance.scenarios
+        for line in sc.lines, t in 1:4
+            line.normal_flow_limit[t] = 10.0
+        end
     end
     optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
     model = UnitCommitment.build_model(

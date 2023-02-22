@@ -44,25 +44,6 @@ function read_benchmark(
     return UnitCommitment.read(filename)
 end
 
-function read_scenarios(path::AbstractString)::UnitCommitmentInstance
-    scenario_paths = glob("*.json", path)
-    scenarios = Vector{UnitCommitmentScenario}()
-    total_number_of_scenarios = length(scenario_paths)
-    for (scenario_index, scenario_path) in enumerate(scenario_paths)
-        scenario = read_scenario(scenario_path, 
-            total_number_of_scenarios = total_number_of_scenarios, 
-            scenario_index = scenario_index)
-        push!(scenarios, scenario)
-    end
-    instance = UnitCommitmentInstance(
-        time = scenarios[1].time,
-        scenarios = scenarios
-    )
-    abs(sum(scenario.probability for scenario in instance.scenarios) - 1.0) <= 0.01 || 
-        error("scenario probabilities do not add up to one")
-    return instance
-end
-
 """
     read(path::AbstractString)::UnitCommitmentInstance
 
@@ -74,33 +55,54 @@ Read instance from a file. The file may be gzipped.
 instance = UnitCommitment.read("/path/to/input.json.gz")
 ```
 """
-function read_scenario(path::AbstractString; total_number_of_scenarios = 1, scenario_index = 1)::UnitCommitmentScenario
-    if endswith(path, ".gz")
-        return _read(gzopen(path),total_number_of_scenarios, scenario_index)
-    else
-        return _read(open(path), total_number_of_scenarios, scenario_index)
-    end
+
+function _repair_scenario_name_and_probability(
+    sc::UnitCommitmentScenario,
+    path::String,
+    number_of_scenarios::Int,
+)::UnitCommitmentScenario
+    sc.name !== nothing || (sc.name = first(split(last(split(path, "/")), ".")))
+    sc.probability !== nothing || (sc.probability = (1 / number_of_scenarios))
+    return sc
 end
 
-function read(path::AbstractString; total_number_of_scenarios = 1, scenario_index = 1)::UnitCommitmentInstance
-    if endswith(path, ".gz")
-        scenario =  _read(gzopen(path),total_number_of_scenarios, scenario_index)
-    else
-        scenario =  _read(open(path), total_number_of_scenarios, scenario_index)
-    end
-    instance = UnitCommitmentInstance(
-        time = scenario.time,
+function read(path)::UnitCommitmentInstance
+    scenarios = Vector{UnitCommitmentScenario}()
+    if (endswith(path, ".gz") || endswith(path, ".json"))
+        endswith(path, ".gz") ? (scenario = _read(gzopen(path))) :
+        (scenario = _read(open(path)))
+        scenario = _repair_scenario_name_and_probability(scenario, "s1", 1)
         scenarios = [scenario]
-    )
+    elseif typeof(path) == Vector{String}
+        number_of_scenarios = length(paths)
+        for scenario_path in path
+            if endswith(scenario_path, ".gz")
+                scenario = _read(gzopen(scenario_path))
+            elseif endswith(scenario_path, ".json")
+                scenario = _read(open(scenario_path))
+            else
+                error("Unsupported input format")
+            end
+            scenario = _repair_scenario_name_and_probability(
+                scenario,
+                scenario_path,
+                number_of_scenarios,
+            )
+            push!(scenarios, scenario)
+        end
+    else
+        error("Unsupported input format")
+    end
+
+    instance =
+        UnitCommitmentInstance(time = scenarios[1].time, scenarios = scenarios)
     return instance
 end
 
-function _read(file::IO, total_number_of_scenarios::Int, scenario_index::Int)::UnitCommitmentScenario
+function _read(file::IO)::UnitCommitmentScenario
     return _from_json(
         JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing)),
-        total_number_of_scenarios, 
-        scenario_index
-        )
+    )
 end
 
 function _read_json(path::String)::OrderedDict
@@ -112,7 +114,7 @@ function _read_json(path::String)::OrderedDict
     return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
 end
 
-function _from_json(json, total_number_of_scenarios::Int, scenario_index::Int; repair = true)::UnitCommitmentScenario
+function _from_json(json; repair = true)::UnitCommitmentScenario
     _migrate(json)
     units = Unit[]
     buses = Bus[]
@@ -136,18 +138,8 @@ function _from_json(json, total_number_of_scenarios::Int, scenario_index::Int; r
         error("Time step $time_step is not a divisor of 60")
     time_multiplier = 60 ÷ time_step
     T = time_horizon * time_multiplier
-    #####
     probability = json["Parameters"]["Scenario probability"]
-    if probability === nothing 
-        probability = (1 / total_number_of_scenarios)
-    end
     scenario_name = json["Parameters"]["Scenario name"]
-    if scenario_name === nothing
-        scenario_name = "s$(scenario_index)"
-    end
-   
-    ######
-
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
     name_to_unit = Dict{String,Unit}()
@@ -163,15 +155,6 @@ function _from_json(json, total_number_of_scenarios::Int, scenario_index::Int; r
     power_balance_penalty = timeseries(
         json["Parameters"]["Power balance penalty (\$/MW)"],
         default = [1000.0 for t in 1:T],
-    )
-    # Penalty price for shortage in meeting system-wide flexiramp requirements
-    flexiramp_shortfall_penalty = timeseries(
-        json["Parameters"]["Flexiramp penalty (\$/MW)"],
-        default = [500.0 for t in 1:T],
-    )
-    shortfall_penalty = timeseries(
-        json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
-        default = [-1.0 for t in 1:T],
     )
 
     # Read buses
@@ -368,13 +351,11 @@ function _from_json(json, total_number_of_scenarios::Int, scenario_index::Int; r
         price_sensitive_loads = loads,
         reserves = reserves,
         reserves_by_name = name_to_reserve,
-        # shortfall_penalty = shortfall_penalty,
-        # flexiramp_shortfall_penalty = flexiramp_shortfall_penalty,
         time = T,
         units_by_name = Dict(g.name => g for g in units),
         units = units,
         isf = spzeros(Float64, length(lines), length(buses) - 1),
-        lodf = spzeros(Float64, length(lines), length(lines))
+        lodf = spzeros(Float64, length(lines), length(lines)),
     )
     if repair
         UnitCommitment.repair!(scenario)

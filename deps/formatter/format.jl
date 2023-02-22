@@ -1,4 +1,5 @@
 using JuliaFormatter
+print(pwd())
 format(
     [
         "../../src", 

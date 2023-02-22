@@ -78,26 +78,25 @@ function build_model(;
         model[:obj] = AffExpr()
         model[:instance] = instance
         for g in instance.scenarios[1].units
-            _add_unit_first_stage!(model, g, formulation)
+            _add_unit_commitment!(model, g, formulation)
         end
-        for scenario in instance.scenarios
-            @info "Building scenario $(scenario.name) with" * 
-                "probability $(scenario.probability)"
-            _setup_transmission(model, formulation.transmission, scenario)
-            for l in scenario.lines
-                _add_transmission_line!(model, l, formulation.transmission, 
-                    scenario)
+        for sc in instance.scenarios
+            @info "Building scenario $(sc.name) with" *
+                  "probability $(sc.probability)"
+            _setup_transmission(formulation.transmission, sc)
+            for l in sc.lines
+                _add_transmission_line!(model, l, formulation.transmission, sc)
             end
-            for b in scenario.buses
-                _add_bus!(model, b, scenario)
+            for b in sc.buses
+                _add_bus!(model, b, sc)
             end
-            for ps in scenario.price_sensitive_loads
-                _add_price_sensitive_load!(model, ps, scenario)
+            for ps in sc.price_sensitive_loads
+                _add_price_sensitive_load!(model, ps, sc)
             end
-            for g in scenario.units
-                _add_unit_second_stage!(model, g, formulation, scenario)
+            for g in sc.units
+                _add_unit_dispatch!(model, g, formulation, sc)
             end
-            _add_system_wide_eqs!(model, scenario)
+            _add_system_wide_eqs!(model, sc)
         end
         @objective(model, Min, model[:obj])
     end

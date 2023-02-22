@@ -8,7 +8,7 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::PanGua2016.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_SHUT_DOWN = true
@@ -68,16 +68,17 @@ function _add_ramp_eqs!(
             if UT - 2 < TRU
                 # Equation (40) in Kneuven et al. (2020)
                 # Covers an additional time period of the ramp-up trajectory, compared to (38)
-                eq_prod_limit_ramp_up_extra_period[sc.name, gn, t] = @constraint(
-                    model,
-                    prod_above[sc.name, gn, t] +
-                    g.min_power[t] * is_on[gn, t] +
-                    reserve[t] <=
-                    Pbar * is_on[gn, t] - sum(
-                        (Pbar - (SU + i * RU)) * switch_on[gn, t-i] for
-                        i in 0:min(UT - 1, TRU, t - 1)
+                eq_prod_limit_ramp_up_extra_period[sc.name, gn, t] =
+                    @constraint(
+                        model,
+                        prod_above[sc.name, gn, t] +
+                        g.min_power[t] * is_on[gn, t] +
+                        reserve[t] <=
+                        Pbar * is_on[gn, t] - sum(
+                            (Pbar - (SU + i * RU)) * switch_on[gn, t-i] for
+                            i in 0:min(UT - 1, TRU, t - 1)
+                        )
                     )
-                )
             end
 
             # Add in shutdown trajectory if KSD >= 0 (else this is dominated by (38))

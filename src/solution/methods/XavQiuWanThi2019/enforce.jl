@@ -5,7 +5,7 @@
 function _enforce_transmission(
     model::JuMP.Model,
     violations::Vector{_Violation},
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     for v in violations
         _enforce_transmission(

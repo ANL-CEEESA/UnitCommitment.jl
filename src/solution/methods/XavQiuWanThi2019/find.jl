@@ -19,8 +19,8 @@ function _find_violations(
     time_screening = @elapsed begin
         non_slack_buses = [b for b in sc.buses if b.offset > 0]
         net_injection_values = [
-            value(net_injection[sc.name, b.name, t]) for b in non_slack_buses,
-            t in 1:instance.time
+            value(net_injection[sc.name, b.name, t]) for
+            b in non_slack_buses, t in 1:instance.time
         ]
         overflow_values = [
             value(overflow[sc.name, lm.name, t]) for lm in sc.lines,
@@ -72,7 +72,7 @@ function _find_violations(;
     isf::Array{Float64,2},
     lodf::Array{Float64,2},
     max_per_line::Int,
-    max_per_period::Int
+    max_per_period::Int,
 )::Array{_Violation,1}
     B = length(sc.buses) - 1
     L = length(sc.lines)
@@ -96,13 +96,13 @@ function _find_violations(;
     post_v::Array{Float64} = zeros(L, L, K)          # post_v[lm, lc, thread]
 
     normal_limits::Array{Float64,2} = [
-        l.normal_flow_limit[t] + overflow[l.offset, t] for
-        l in sc.lines, t in 1:T
+        l.normal_flow_limit[t] + overflow[l.offset, t] for l in sc.lines,
+        t in 1:T
     ]
 
     emergency_limits::Array{Float64,2} = [
-        l.emergency_flow_limit[t] + overflow[l.offset, t] for
-        l in sc.lines, t in 1:T
+        l.emergency_flow_limit[t] + overflow[l.offset, t] for l in sc.lines,
+        t in 1:T
     ]
 
     is_vulnerable::Array{Bool} = zeros(Bool, L)
@@ -114,7 +114,7 @@ function _find_violations(;
         k = threadid()
 
         # Pre-contingency flows
-        pre_flow[:, k] = isf * net_injections[ :, t]
+        pre_flow[:, k] = isf * net_injections[:, t]
 
         # Post-contingency flows
         for lc in 1:L, lm in 1:L

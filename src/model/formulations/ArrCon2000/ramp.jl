@@ -8,7 +8,7 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::ArrCon2000.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -74,7 +74,8 @@ function _add_ramp_eqs!(
                 #      but the constraint below will force the unit to produce power
                 eq_ramp_down[sc.name, gn, t] = @constraint(
                     model,
-                    g.initial_power - (g.min_power[t] + prod_above[sc.name, gn, t]) <= RD
+                    g.initial_power -
+                    (g.min_power[t] + prod_above[sc.name, gn, t]) <= RD
                 )
             end
         else

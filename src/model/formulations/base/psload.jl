@@ -5,7 +5,7 @@
 function _add_price_sensitive_load!(
     model::JuMP.Model,
     ps::PriceSensitiveLoad,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     loads = _init(model, :loads)
     net_injection = _init(model, :expr_net_injection)
@@ -15,8 +15,11 @@ function _add_price_sensitive_load!(
             @variable(model, lower_bound = 0, upper_bound = ps.demand[t])
 
         # Objective function terms
-        add_to_expression!(model[:obj], loads[ps.name, t], 
-            -ps.revenue[t] * sc.probability)
+        add_to_expression!(
+            model[:obj],
+            loads[sc.name, ps.name, t],
+            -ps.revenue[t] * sc.probability,
+        )
 
         # Net injection
         add_to_expression!(

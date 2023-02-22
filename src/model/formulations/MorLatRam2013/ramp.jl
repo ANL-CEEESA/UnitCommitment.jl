@@ -8,7 +8,7 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::MorLatRam2013.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -65,7 +65,8 @@ function _add_ramp_eqs!(
                         reserve[t] : 0.0
                     )
                 min_prod_last_period =
-                    g.min_power[t-1] * is_on[gn, t-1] + prod_above[sc.name, gn, t-1]
+                    g.min_power[t-1] * is_on[gn, t-1] +
+                    prod_above[sc.name, gn, t-1]
                 eq_ramp_up[gn, t] = @constraint(
                     model,
                     max_prod_this_period - min_prod_last_period <=
@@ -93,7 +94,8 @@ function _add_ramp_eqs!(
                 #      but the constraint below will force the unit to produce power
                 eq_ramp_down[sc.name, gn, t] = @constraint(
                     model,
-                    g.initial_power - (g.min_power[t] + prod_above[sc.name, gn, t]) <= RD
+                    g.initial_power -
+                    (g.min_power[t] + prod_above[sc.name, gn, t]) <= RD
                 )
             end
         else

@@ -8,7 +8,7 @@ function _add_ramp_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_ramping::DamKucRajAta2016.Ramping,
     formulation_status_vars::Gar1962.StatusVars,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     # TODO: Move upper case constants to model[:instance]
     RESERVES_WHEN_START_UP = true
@@ -66,7 +66,8 @@ function _add_ramp_eqs!(
         elseif (t == 1 && is_initially_on) || (t > 1 && !time_invariant)
             if t > 1
                 min_prod_last_period =
-                    prod_above[sc.name, gn, t-1] + g.min_power[t-1] * is_on[gn, t-1]
+                    prod_above[sc.name, gn, t-1] +
+                    g.min_power[t-1] * is_on[gn, t-1]
             else
                 min_prod_last_period = max(g.initial_power, 0.0)
             end

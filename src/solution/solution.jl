@@ -16,17 +16,21 @@ solution = UnitCommitment.solution(model)
 """
 function solution(model::JuMP.Model)::OrderedDict
     instance, T = model[:instance], model[:instance].time
-    function timeseries_first_stage(vars, collection)
-        return OrderedDict(
-            b.name => [round(value(vars[b.name, t]), digits = 5) for t in 1:T]
-            for b in collection
-        )
-    end
-    function timeseries_second_stage(vars, collection, sc)
-        return OrderedDict(
-            b.name => [round(value(vars[sc.name, b.name, t]), digits = 5) for t in 1:T]
-            for b in collection
-        )
+    function timeseries(vars, collection; sc = nothing)
+        if sc === nothing
+            return OrderedDict(
+                b.name =>
+                    [round(value(vars[b.name, t]), digits = 5) for t in 1:T] for
+                b in collection
+            )
+        else
+            return OrderedDict(
+                b.name => [
+                    round(value(vars[sc.name, b.name, t]), digits = 5) for
+                    t in 1:T
+                ] for b in collection
+            )
+        end
     end
     function production_cost(g, sc)
         return [
@@ -67,24 +71,25 @@ function solution(model::JuMP.Model)::OrderedDict
             OrderedDict(g.name => production_cost(g, sc) for g in sc.units)
         sol[sc.name]["Startup cost (\$)"] =
             OrderedDict(g.name => startup_cost(g, sc) for g in sc.units)
-        sol[sc.name]["Is on"] = timeseries_first_stage(model[:is_on], sc.units)
-        sol[sc.name]["Switch on"] = timeseries_first_stage(model[:switch_on], sc.units)
-        sol[sc.name]["Switch off"] = timeseries_first_stage(model[:switch_off], sc.units)
+        sol[sc.name]["Is on"] = timeseries(model[:is_on], sc.units)
+        sol[sc.name]["Switch on"] = timeseries(model[:switch_on], sc.units)
+        sol[sc.name]["Switch off"] = timeseries(model[:switch_off], sc.units)
         sol[sc.name]["Net injection (MW)"] =
-            timeseries_second_stage(model[:net_injection], sc.buses, sc)
-        sol[sc.name]["Load curtail (MW)"] = timeseries_second_stage(model[:curtail], sc.buses, sc)
+            timeseries(model[:net_injection], sc.buses, sc = sc)
+        sol[sc.name]["Load curtail (MW)"] =
+            timeseries(model[:curtail], sc.buses, sc = sc)
         if !isempty(sc.lines)
-            sol[sc.name]["Line overflow (MW)"] = timeseries_second_stage(model[:overflow], sc.lines, sc)
+            sol[sc.name]["Line overflow (MW)"] =
+                timeseries(model[:overflow], sc.lines, sc = sc)
         end
         if !isempty(sc.price_sensitive_loads)
             sol[sc.name]["Price-sensitive loads (MW)"] =
-                timeseries_second_stage(model[:loads], sc.price_sensitive_loads, sc)
+                timeseries(model[:loads], sc.price_sensitive_loads, sc = sc)
         end
         sol[sc.name]["Spinning reserve (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
-                    value(model[:reserve][sc.name, r.name, g.name, t]) for
-                    t in 1:instance.time
+                    value(model[:reserve][sc.name, r.name, g.name, t]) for t in 1:instance.time
                 ] for g in r.units
             ) for r in sc.reserves if r.type == "spinning"
         )
@@ -97,32 +102,31 @@ function solution(model::JuMP.Model)::OrderedDict
         sol[sc.name]["Up-flexiramp (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
-                    value(model[:upflexiramp][sc.name, r.name, g.name, t]) for
-                    t in 1:instance.time
+                    value(model[:upflexiramp][sc.name, r.name, g.name, t]) for t in 1:instance.time
                 ] for g in r.units
-            ) for r in sc.reserves if r.type == "up-frp"
+            ) for r in sc.reserves if r.type == "flexiramp"
         )
         sol[sc.name]["Up-flexiramp shortfall (MW)"] = OrderedDict(
             r.name => [
-                value(model[:upflexiramp_shortfall][sc.name, r.name, t]) for
-                t in 1:instance.time
-            ] for r in sc.reserves if r.type == "up-frp"
+                value(model[:upflexiramp_shortfall][sc.name, r.name, t]) for t in 1:instance.time
+            ] for r in sc.reserves if r.type == "flexiramp"
         )
         sol[sc.name]["Down-flexiramp (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
-                    value(model[:dwflexiramp][sc.name, r.name, g.name, t]) for
-                    t in 1:instance.time
+                    value(model[:dwflexiramp][sc.name, r.name, g.name, t]) for t in 1:instance.time
                 ] for g in r.units
-            ) for r in sc.reserves if r.type == "down-frp"
+            ) for r in sc.reserves if r.type == "flexiramp"
         )
         sol[sc.name]["Down-flexiramp shortfall (MW)"] = OrderedDict(
             r.name => [
-                value(model[:dwflexiramp_shortfall][sc.name, r.name, t]) for
-                t in 1:instance.time
-            ] for r in sc.reserves if r.type == "down-frp"
+                value(model[:dwflexiramp_shortfall][sc.name, r.name, t]) for t in 1:instance.time
+            ] for r in sc.reserves if r.type == "flexiramp"
         )
     end
-    length(keys(sol)) > 1 ? nothing : sol = Dict(sol_key => sol_val for scen_key in keys(sol) for (sol_key, sol_val) in sol[scen_key])
-    return sol
+    if length(instance.scenarios) == 1
+        return first(values(sol))
+    else
+        return sol
+    end
 end

@@ -6,7 +6,7 @@ function _add_transmission_line!(
     model::JuMP.Model,
     lm::TransmissionLine,
     f::ShiftFactorsFormulation,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     overflow = _init(model, :overflow)
     for t in 1:model[:instance].time
@@ -21,30 +21,28 @@ function _add_transmission_line!(
 end
 
 function _setup_transmission(
-    model::JuMP.Model,
     formulation::ShiftFactorsFormulation,
-    scenario::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
-    instance = model[:instance]
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf
-    if length(scenario.buses) == 1
+    if length(sc.buses) == 1
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
     elseif isf === nothing
         @info "Computing injection shift factors..."
         time_isf = @elapsed begin
             isf = UnitCommitment._injection_shift_factors(
-                lines = scenario.lines,
-                buses = scenario.buses,
+                buses = sc.buses,
+                lines = sc.lines,
             )
         end
         @info @sprintf("Computed ISF in %.2f seconds", time_isf)
         @info "Computing line outage factors..."
         time_lodf = @elapsed begin
             lodf = UnitCommitment._line_outage_factors(
-                lines = scenario.lines,
-                buses = scenario.buses,
+                buses = sc.buses,
+                lines = sc.lines,
                 isf = isf,
             )
         end
@@ -57,7 +55,7 @@ function _setup_transmission(
         isf[abs.(isf).<formulation.isf_cutoff] .= 0
         lodf[abs.(lodf).<formulation.lodf_cutoff] .= 0
     end
-    scenario.isf = isf
-    scenario.lodf = lodf
+    sc.isf = isf
+    sc.lodf = lodf
     return
 end

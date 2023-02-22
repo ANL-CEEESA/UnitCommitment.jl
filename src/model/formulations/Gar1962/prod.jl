@@ -6,7 +6,7 @@ function _add_production_vars!(
     model::JuMP.Model,
     g::Unit,
     formulation_prod_vars::Gar1962.ProdVars,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     prod_above = _init(model, :prod_above)
     segprod = _init(model, :segprod)
@@ -23,7 +23,7 @@ function _add_production_limit_eqs!(
     model::JuMP.Model,
     g::Unit,
     formulation_prod_vars::Gar1962.ProdVars,
-    sc::UnitCommitmentScenario
+    sc::UnitCommitmentScenario,
 )::Nothing
     eq_prod_limit = _init(model, :eq_prod_limit)
     is_on = model[:is_on]
@@ -33,10 +33,6 @@ function _add_production_limit_eqs!(
     for t in 1:model[:instance].time
         # Objective function terms for production costs
         # Part of (69) of Kneuven et al. (2020) as C^R_g * u_g(t) term
-
-        ### Moving this term to another function
-        # add_to_expression!(model[:obj], is_on[gn, t], g.min_power_cost[t])
-        ###
 
         # Production limit
         # Equation (18) in Kneuven et al. (2020)
@@ -49,7 +45,8 @@ function _add_production_limit_eqs!(
         end
         eq_prod_limit[sc.name, gn, t] = @constraint(
             model,
-            prod_above[sc.name, gn, t] + reserve[t] <= power_diff * is_on[gn, t]
+            prod_above[sc.name, gn, t] + reserve[t] <=
+            power_diff * is_on[gn, t]
         )
     end
 end

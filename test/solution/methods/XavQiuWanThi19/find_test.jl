@@ -7,29 +7,32 @@ import UnitCommitment: _Violation, _offer, _query
 
 @testset "find_violations" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
-    for line in instance.lines, t in 1:instance.time
-        line.normal_flow_limit[t] = 1.0
-        line.emergency_flow_limit[t] = 1.0
+    for sc in instance.scenarios
+        for line in sc.lines, t in 1:instance.time
+            line.normal_flow_limit[t] = 1.0
+            line.emergency_flow_limit[t] = 1.0
+        end
+        isf = UnitCommitment._injection_shift_factors(
+            lines = sc.lines,
+            buses = sc.buses,
+        )
+        lodf = UnitCommitment._line_outage_factors(
+            lines = sc.lines,
+            buses = sc.buses,
+            isf = isf,
+        )
+        inj = [1000.0 for b in 1:13, t in 1:instance.time]
+        overflow = [0.0 for l in sc.lines, t in 1:instance.time]
+        violations = UnitCommitment._find_violations(
+            instance = instance,
+            sc = sc,
+            net_injections = inj,
+            overflow = overflow,
+            isf = isf,
+            lodf = lodf,
+            max_per_line = 1,
+            max_per_period = 5,
+        )
+        @test length(violations) == 20
     end
-    isf = UnitCommitment._injection_shift_factors(
-        lines = instance.lines,
-        buses = instance.buses,
-    )
-    lodf = UnitCommitment._line_outage_factors(
-        lines = instance.lines,
-        buses = instance.buses,
-        isf = isf,
-    )
-    inj = [1000.0 for b in 1:13, t in 1:instance.time]
-    overflow = [0.0 for l in instance.lines, t in 1:instance.time]
-    violations = UnitCommitment._find_violations(
-        instance = instance,
-        net_injections = inj,
-        overflow = overflow,
-        isf = isf,
-        lodf = lodf,
-        max_per_line = 1,
-        max_per_period = 5,
-    )
-    @test length(violations) == 20
 end

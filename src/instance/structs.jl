@@ -74,8 +74,8 @@ mutable struct PriceSensitiveLoad
 end
 
 Base.@kwdef mutable struct UnitCommitmentScenario
-    name::String
-    probability::Float64
+    name::Any
+    probability::Any
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
     contingencies_by_name::Dict{AbstractString,Contingency}
@@ -87,8 +87,6 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     price_sensitive_loads::Vector{PriceSensitiveLoad}
     reserves::Vector{Reserve}
     reserves_by_name::Dict{AbstractString,Reserve}
-    # shortfall_penalty::Vector{Float64}
-    # flexiramp_shortfall_penalty::Vector{Float64}
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}
     time::Int
@@ -104,16 +102,13 @@ end
 function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.scenarios)) scenarios: ")
-    for scenario in instance.scenarios
-        print(io, "Scenario $(scenario.name): ")
-        print(io, "$(length(scenario.units)) units, ")
-        print(io, "$(length(scenario.buses)) buses, ")
-        print(io, "$(length(scenario.lines)) lines, ")
-        print(io, "$(length(scenario.contingencies)) contingencies, ")
-        print(
-            io,
-            "$(length(scenario.price_sensitive_loads)) price sensitive loads, ",
-        )
+    for sc in instance.scenarios
+        print(io, "Scenario $(sc.name): ")
+        print(io, "$(length(sc.units)) units, ")
+        print(io, "$(length(sc.buses)) buses, ")
+        print(io, "$(length(sc.lines)) lines, ")
+        print(io, "$(length(sc.contingencies)) contingencies, ")
+        print(io, "$(length(sc.price_sensitive_loads)) price sensitive loads, ")
     end
     print(io, "$(instance.time) time steps")
     print(io, ")")

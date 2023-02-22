@@ -10,9 +10,9 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
         JuMP.set_optimizer_attribute(model, "MIPGap", gap)
         @info @sprintf("MIP gap tolerance set to %f", gap)
     end
-    for scenario in model[:instance].scenarios
+    for sc in model[:instance].scenarios
         large_gap = false
-        has_transmission = (length(scenario.isf) > 0)
+        has_transmission = (length(sc.isf) > 0)
         if has_transmission && method.two_phase_gap
             set_gap(1e-2)
             large_gap = true
@@ -36,7 +36,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
             has_transmission || break
             violations = _find_violations(
                 model,
-                scenario,
+                sc,
                 max_per_line = method.max_violations_per_line,
                 max_per_period = method.max_violations_per_period,
             )
@@ -49,7 +49,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
                     break
                 end
             else
-                _enforce_transmission(model, violations, scenario)
+                _enforce_transmission(model, violations, sc)
             end
         end
     end

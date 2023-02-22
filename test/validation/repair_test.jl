@@ -16,8 +16,10 @@ end
         json = parse_case14()
         json["Generators"]["g1"]["Production cost curve (MW)"] = [100, 150, 200]
         json["Generators"]["g1"]["Production cost curve (\$)"] = [10, 25, 30]
-        instance = UnitCommitment._from_json(json, repair = false)
-        @test UnitCommitment.repair!(instance) == 4
+        sc = UnitCommitment._from_json(json, repair = false)
+        sc.name = "s1"
+        sc.probability = 1.0
+        @test UnitCommitment.repair!(sc) == 4
     end
 
     @testset "Startup limit must be greater than Pmin" begin
@@ -25,15 +27,15 @@ end
         json["Generators"]["g1"]["Production cost curve (MW)"] = [100, 150]
         json["Generators"]["g1"]["Production cost curve (\$)"] = [100, 150]
         json["Generators"]["g1"]["Startup limit (MW)"] = 80
-        instance = UnitCommitment._from_json(json, repair = false)
-        @test UnitCommitment.repair!(instance) == 1
+        sc = UnitCommitment._from_json(json, repair = false)
+        @test UnitCommitment.repair!(sc) == 1
     end
 
     @testset "Startup costs and delays must be increasing" begin
         json = parse_case14()
         json["Generators"]["g1"]["Startup costs (\$)"] = [300, 200, 100]
         json["Generators"]["g1"]["Startup delays (h)"] = [8, 4, 2]
-        instance = UnitCommitment._from_json(json, repair = false)
-        @test UnitCommitment.repair!(instance) == 4
+        sc = UnitCommitment._from_json(json, repair = false)
+        @test UnitCommitment.repair!(sc) == 4
     end
 end
