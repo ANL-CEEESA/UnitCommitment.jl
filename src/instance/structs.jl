@@ -30,9 +30,9 @@ end
 
 mutable struct Unit
     name::String
-    bus::Bus
+    bus::Bus 
     max_power::Vector{Float64}
-    min_power::Vector{Float64}
+    min_power::Vector{Float64}  
     must_run::Vector{Bool}
     min_power_cost::Vector{Float64}
     cost_segments::Vector{CostSegment}
@@ -74,8 +74,8 @@ mutable struct PriceSensitiveLoad
 end
 
 Base.@kwdef mutable struct UnitCommitmentScenario
-    name::Any
-    probability::Any
+    name::String
+    probability::Union{Float64,Nothing}
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
     contingencies_by_name::Dict{AbstractString,Contingency}

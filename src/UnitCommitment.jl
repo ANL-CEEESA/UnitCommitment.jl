@@ -4,6 +4,10 @@
 
 module UnitCommitment
 
+function hello()
+    @show "Hello 2"
+end
+
 using Base: String
 include("instance/structs.jl")
 include("model/formulations/base/structs.jl")

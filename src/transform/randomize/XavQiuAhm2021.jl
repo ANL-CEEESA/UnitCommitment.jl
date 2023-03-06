@@ -200,14 +200,14 @@ function randomize!(
     rng = MersenneTwister(),
 )::Nothing
     for sc in instance.scenarios
-        randomize!(sc; method, rng)
+        randomize!(sc, method; rng)
     end
     return
 end
 
 function randomize!(
-    sc::UnitCommitment.UnitCommitmentScenario;
-    method::XavQiuAhm2021.Randomization,
+    sc::UnitCommitment.UnitCommitmentScenario,
+    method::XavQiuAhm2021.Randomization;
     rng = MersenneTwister(),
 )::Nothing
     if method.randomize_costs

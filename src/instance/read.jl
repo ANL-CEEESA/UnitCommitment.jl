@@ -57,46 +57,63 @@ instance = UnitCommitment.read("/path/to/input.json.gz")
 """
 
 function _repair_scenario_name_and_probability(
-    sc::UnitCommitmentScenario,
-    path::String,
-    number_of_scenarios::Int,
-)::UnitCommitmentScenario
-    sc.name !== nothing || (sc.name = first(split(last(split(path, "/")), ".")))
-    sc.probability !== nothing || (sc.probability = (1 / number_of_scenarios))
-    return sc
-end
-
-function read(path)::UnitCommitmentInstance
-    scenarios = Vector{UnitCommitmentScenario}()
-    if (endswith(path, ".gz") || endswith(path, ".json"))
-        endswith(path, ".gz") ? (scenario = _read(gzopen(path))) :
-        (scenario = _read(open(path)))
-        scenario = _repair_scenario_name_and_probability(scenario, "s1", 1)
-        scenarios = [scenario]
-    elseif typeof(path) == Vector{String}
-        number_of_scenarios = length(paths)
-        for scenario_path in path
-            if endswith(scenario_path, ".gz")
-                scenario = _read(gzopen(scenario_path))
-            elseif endswith(scenario_path, ".json")
-                scenario = _read(open(scenario_path))
-            else
-                error("Unsupported input format")
+    scenarios::Vector{UnitCommitmentScenario},
+    path::Vector{String}
+)::Vector{UnitCommitmentScenario}
+    number_of_scenarios = length(scenarios)
+    probs = [sc.probability for sc in scenarios]
+    total_weight = number_of_scenarios
+    if Float64 in typeof.(probs)
+        try 
+            total_weight = sum(probs)
+        catch e
+            if isa(e, MethodError)
+                error("If any of the scenarios is assigned a weight, then all scenarios must be assigned weights.") 
             end
-            scenario = _repair_scenario_name_and_probability(
-                scenario,
-                scenario_path,
-                number_of_scenarios,
-            )
-            push!(scenarios, scenario)
         end
     else
-        error("Unsupported input format")
+        [sc.probability = 1 for sc in scenarios]
     end
 
+    for (sc_path, sc) in zip(path, scenarios)
+        sc.name !== "" || (sc.name = first(split(last(split(sc_path, "/")), ".")))
+        sc.probability = (sc.probability / total_weight)
+    end
+    return scenarios
+end
+
+function read(path::String)::UnitCommitmentInstance
+    scenarios = Vector{UnitCommitmentScenario}()
+    scenario = _read_scenario(path)
+    scenario.name = "s1"
+    scenario.probability = 1.0 
+    scenarios = [scenario]
+    instance =
+        UnitCommitmentInstance(time = scenario.time, scenarios = scenarios)
+    return instance
+end
+
+function read(path::Vector{String})::UnitCommitmentInstance
+    scenarios = Vector{UnitCommitmentScenario}()
+    for scenario_path in path
+        scenario = _read_scenario(scenario_path)
+        push!(scenarios, scenario)
+    end
+    scenarios = _repair_scenario_name_and_probability(scenarios, path)
     instance =
         UnitCommitmentInstance(time = scenarios[1].time, scenarios = scenarios)
     return instance
+end
+
+function _read_scenario(path::String)::UnitCommitmentScenario
+    if endswith(path, ".gz")
+        scenario = _read(gzopen(path))
+    elseif endswith(path, ".json")
+        scenario = _read(open(path))
+    else
+        error("Unsupported input format")
+    end
+    return scenario
 end
 
 function _read(file::IO)::UnitCommitmentScenario
@@ -138,8 +155,10 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         error("Time step $time_step is not a divisor of 60")
     time_multiplier = 60 ÷ time_step
     T = time_horizon * time_multiplier
-    probability = json["Parameters"]["Scenario probability"]
+    probability = nothing
+    probability = json["Parameters"]["Scenario weight"]
     scenario_name = json["Parameters"]["Scenario name"]
+    scenario_name !== nothing || (scenario_name = "")
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
     name_to_unit = Dict{String,Unit}()

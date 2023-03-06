@@ -81,7 +81,7 @@ function build_model(;
             _add_unit_commitment!(model, g, formulation)
         end
         for sc in instance.scenarios
-            @info "Building scenario $(sc.name) with" *
+            @info "Building scenario $(sc.name) with " *
                   "probability $(sc.probability)"
             _setup_transmission(formulation.transmission, sc)
             for l in sc.lines
