@@ -58,17 +58,19 @@ instance = UnitCommitment.read("/path/to/input.json.gz")
 
 function _repair_scenario_name_and_probability(
     scenarios::Vector{UnitCommitmentScenario},
-    path::Vector{String}
+    path::Vector{String},
 )::Vector{UnitCommitmentScenario}
     number_of_scenarios = length(scenarios)
     probs = [sc.probability for sc in scenarios]
     total_weight = number_of_scenarios
     if Float64 in typeof.(probs)
-        try 
+        try
             total_weight = sum(probs)
         catch e
             if isa(e, MethodError)
-                error("If any of the scenarios is assigned a weight, then all scenarios must be assigned weights.") 
+                error(
+                    "If any of the scenarios is assigned a weight, then all scenarios must be assigned weights.",
+                )
             end
         end
     else
@@ -76,7 +78,8 @@ function _repair_scenario_name_and_probability(
     end
 
     for (sc_path, sc) in zip(path, scenarios)
-        sc.name !== "" || (sc.name = first(split(last(split(sc_path, "/")), ".")))
+        sc.name !== "" ||
+            (sc.name = first(split(last(split(sc_path, "/")), ".")))
         sc.probability = (sc.probability / total_weight)
     end
     return scenarios
@@ -86,7 +89,7 @@ function read(path::String)::UnitCommitmentInstance
     scenarios = Vector{UnitCommitmentScenario}()
     scenario = _read_scenario(path)
     scenario.name = "s1"
-    scenario.probability = 1.0 
+    scenario.probability = 1.0
     scenarios = [scenario]
     instance =
         UnitCommitmentInstance(time = scenario.time, scenarios = scenarios)
