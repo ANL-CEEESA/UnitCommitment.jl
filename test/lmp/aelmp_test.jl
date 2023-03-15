@@ -21,7 +21,7 @@ import UnitCommitment:
     # policy 1: allow offlines; consider startups
     aelmp_1 = UnitCommitment.compute_lmp(
         model, 
-        AELMP.Method(),
+        AELMP(),
         optimizer=HiGHS.Optimizer
     )
     @test aelmp_1["B1", 1] ≈ 231.7 atol = 0.1
@@ -29,7 +29,7 @@ import UnitCommitment:
     # policy 2: do not allow offlines; but consider startups
     aelmp_2 = UnitCommitment.compute_lmp(
         model, 
-        AELMP.Method(
+        AELMP(
             allow_offline_participation=false,
             consider_startup_costs=true
         ),

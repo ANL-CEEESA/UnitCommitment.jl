@@ -18,8 +18,6 @@ include("model/formulations/MorLatRam2013/structs.jl")
 include("model/formulations/PanGua2016/structs.jl")
 include("solution/methods/XavQiuWanThi2019/structs.jl")
 include("model/formulations/WanHob2016/structs.jl")
-include("lmp/lmp/structs.jl")
-include("lmp/aelmp/structs.jl")
 
 include("import/egret.jl")
 include("instance/read.jl")
@@ -59,7 +57,7 @@ include("utils/log.jl")
 include("utils/benchmark.jl")
 include("validation/repair.jl")
 include("validation/validate.jl")
-include("lmp/lmp/compute.jl")
-include("lmp/aelmp/compute.jl")
+include("lmp/conventional.jl")
+include("lmp/aelmp.jl")
 
 end

@@ -3,8 +3,7 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using UnitCommitment, Cbc, HiGHS, JuMP
-import UnitCommitment:
-    LMP
+import UnitCommitment: ConventionalLMP
 
 function solve_lmp_testcase(path::String)
     instance = UnitCommitment.read(path)
@@ -13,13 +12,11 @@ function solve_lmp_testcase(path::String)
         optimizer = Cbc.Optimizer,
         variable_names = true,
     )
-    # set silent, solve the UC
     JuMP.set_silent(model)
     UnitCommitment.optimize!(model)
-    # get the lmp
     lmp = UnitCommitment.compute_lmp(
         model,
-        LMP.Method(),
+        ConventionalLMP(),
         optimizer=HiGHS.Optimizer,
     )
     return lmp

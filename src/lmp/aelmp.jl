@@ -3,21 +3,26 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using JuMP
+
 """
     function compute_lmp(
         model::JuMP.Model,
-        method::AELMP.Method;
+        method::AELMP;
         optimizer = nothing,
     )
 
 Calculates the approximate extended locational marginal prices of the given unit commitment instance.
-The AELPM does the following three things:
-1. It removes the minimum generation requirement for each generator
-2. It averages the start-up cost over the offer blocks for each generator
-3. It relaxes all the binary constraints and integrality
-Returns a dictionary of AELMPs. Each key is usually a tuple of "Bus name" and time index.
 
-NOTE: this approximation method is not fully developed. The implementation is based on MISO Phase I only.
+The AELPM does the following three things:
+
+    1. It sets the minimum power output of each generator to zero
+    2. It averages the start-up cost over the offer blocks for each generator
+    3. It relaxes all integrality constraints
+
+Returns a dictionary mapping `(bus_name, time)` to the marginal price.
+
+WARNING: This approximation method is not fully developed. The implementation is based on MISO Phase I only.
+
 1. It only supports Fast Start resources. More specifically, the minimum up/down time has to be zero.
 2. The method does NOT support time series of start-up costs.
 3. The method can only calculate for the first time slot if allow_offline_participation=false.
@@ -29,7 +34,7 @@ Arguments
     the UnitCommitment model, must be solved before calling this function if offline participation is not allowed.
 
 - `method`:
-    the AELMP method, must be specified.
+    the AELMP method.
 
 - `optimizer`:
     the optimizer for solving the LP problem.
@@ -38,60 +43,77 @@ Examples
 --------
 
 ```julia
-
 using UnitCommitment
-using Cbc
 using HiGHS
 
-import UnitCommitment:
-    AELMP
+import UnitCommitment: AELMP
 
 # Read benchmark instance
-instance = UnitCommitment.read("instance.json")
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
 
-# Construct model (using state-of-the-art defaults)
+# Build the model
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
-    variable_names = true,
+    optimizer = HiGHS.Optimizer,
 )
 
-# Get the AELMP with the default policy: 
-#   1. Offline generators are allowed to participate in pricing
-#   2. Start-up costs are considered.
-# DO NOT use Cbc as the optimizer here. Cbc does not support dual values.
-my_aelmp_default = UnitCommitment.compute_lmp(
-    model, # pre-solving is optional if allowing offline participation
-    AELMP.Method(),
-    optimizer = HiGHS.Optimizer
-)
-
-# Get the AELMPs with an alternative policy
-#   1. Offline generators are NOT allowed to participate in pricing
-#   2. Start-up costs are considered.
-# UC model must be solved first if offline generators are NOT allowed
+# Optimize the model
 UnitCommitment.optimize!(model)
 
-# then call the AELMP method
-my_aelmp_alt = UnitCommitment.compute_lmp(
-    model, # pre-solving is required here
-    AELMP.Method(
-        allow_offline_participation=false,
-        consider_startup_costs=true
+# Compute the AELMPs
+aelmp = UnitCommitment.compute_lmp(
+    model,
+    AELMP(
+        allow_offline_participation = false,
+        consider_startup_costs = true
     ),
     optimizer = HiGHS.Optimizer
 )
 
-# Accessing the 'my_aelmp_alt' dictionary
+# Access the AELMPs
 # Example: "b1" is the bus name, 1 is the first time slot
-@show my_aelmp_alt["b1", 1]
-
+@show aelmp["b1", 1]
 ```
-
 """
+function compute_lmp(
+    model::JuMP.Model,
+    method::AELMP;
+    optimizer,
+)::OrderedDict{Tuple{String,Int},Float64}
+    @info "Calculating the AELMP..."
+    @info "Building the approximation model..."
+    instance = deepcopy(model[:instance])
+    _preset_aelmp_parameters!(method, model)
+    _modify_instance!(instance, model, method)
+
+    # prepare the result dictionary and solve the model 
+    elmp = OrderedDict()
+    @info "Solving the approximation model."
+    approx_model = build_model(instance=instance, variable_names=true)
+
+    # relax the binary constraint, and relax integrality
+    for v in all_variables(approx_model)
+        if is_binary(v)
+            unset_binary(v)
+        end
+    end
+    relax_integrality(approx_model)
+    set_optimizer(approx_model, optimizer)
+
+    # solve the model 
+    set_silent(approx_model)
+    optimize!(approx_model)
+
+    # access the dual values
+    @info "Getting dual values (AELMPs)."
+    for (key, val) in approx_model[:eq_net_injection]
+        elmp[key] = dual(val)
+    end
+    return elmp
+end
 
 function _preset_aelmp_parameters!(
-    method::AELMP.Method,
+    method::AELMP,
     model::JuMP.Model
 )
     # this function corrects the allow_offline_participation parameter to match the model status
@@ -125,7 +147,7 @@ end
 function _modify_instance!(
     instance::UnitCommitmentInstance,
     model::JuMP.Model,
-    method::AELMP.Method
+    method::AELMP
 )
     # this function modifies the instance units (generators)
     # 1. remove (if NOT allowing) the offline generators
@@ -182,50 +204,4 @@ function _modify_instance!(
         ### END FIXME
     end
     instance.units_by_name = Dict(g.name => g for g in instance.units)
-end
-
-function compute_lmp(
-    model::JuMP.Model,
-    method::AELMP.Method;
-    optimizer = nothing
-)
-    # Error if a linear optimizer is not specified
-    if isnothing(optimizer)
-        @error "Please supply a linear optimizer."
-        return nothing
-    end
-
-    @info "Calculating the AELMP..."
-    @info "Building the approximation model..."
-    # get the instance and make a deep copy 
-    instance = deepcopy(model[:instance])
-    # preset the method to match the model status (solved, unsolved, not supplied)
-    _preset_aelmp_parameters!(method, model)
-    # modify the instance (generator)
-    _modify_instance!(instance, model, method)
-
-    # prepare the result dictionary and solve the model 
-    elmp = OrderedDict()
-    @info "Solving the approximation model."
-    approx_model = build_model(instance=instance, variable_names=true)
-
-    # relax the binary constraint, and relax integrality
-    for v in all_variables(approx_model)
-        if is_binary(v)
-            unset_binary(v)
-        end
-    end
-    relax_integrality(approx_model)
-    set_optimizer(approx_model, optimizer)
-
-    # solve the model 
-    # set_silent(approx_model)
-    optimize!(approx_model)
-
-    # access the dual values
-    @info "Getting dual values (AELMPs)."
-    for (key, val) in approx_model[:eq_net_injection]
-        elmp[key] = dual(val)
-    end
-    return elmp
 end

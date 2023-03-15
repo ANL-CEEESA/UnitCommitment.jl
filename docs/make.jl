@@ -1,4 +1,4 @@
-using Documenter, UnitCommitment
+using Documenter, UnitCommitment, JuMP
 
 makedocs(
     sitename="UnitCommitment.jl",
