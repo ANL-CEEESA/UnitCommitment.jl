@@ -24,8 +24,8 @@ Returns a dictionary mapping `(bus_name, time)` to the marginal price.
 WARNING: This approximation method is not fully developed. The implementation is based on MISO Phase I only.
 
 1. It only supports Fast Start resources. More specifically, the minimum up/down time has to be zero.
-2. The method does NOT support time series of start-up costs.
-3. The method can only calculate for the first time slot if allow_offline_participation=false.
+2. The method does NOT support time-varying start-up costs.
+3. AELMPs are only calculated for the first time period if offline participation is not allowed.
 
 Arguments
 ---------
@@ -80,10 +80,9 @@ function compute_lmp(
     method::AELMP;
     optimizer,
 )::OrderedDict{Tuple{String,Int},Float64}
-    @info "Calculating the AELMP..."
     @info "Building the approximation model..."
     instance = deepcopy(model[:instance])
-    _preset_aelmp_parameters!(method, model)
+    _aelmp_check_parameters(method, model)
     _modify_instance!(instance, model, method)
 
     # prepare the result dictionary and solve the model 
@@ -112,35 +111,15 @@ function compute_lmp(
     return elmp
 end
 
-function _preset_aelmp_parameters!(
+function _aelmp_check_parameters(
     method::AELMP,
     model::JuMP.Model
 )
-    # this function corrects the allow_offline_participation parameter to match the model status
     # CHECK: model must be solved if allow_offline_participation=false
-    if method.allow_offline_participation # do nothing
-        @info "Offline generators are allowed to participate in pricing."
-    else
-        if isnothing(model)
-            @warn "No UC model is detected. A solved UC model is required if allow_offline_participation == false."
-            @warn "Setting parameter allow_offline_participation = true"
-            method.allow_offline_participation = true # and do nothing else
-        elseif !has_values(model)
-            @warn "The UC model has no solution. A solved UC model is required if allow_offline_participation == false."
-            @warn "Setting parameter allow_offline_participation = true"
-            method.allow_offline_participation = true # and do nothing else
-        else
-            # the inputs are correct
-            @info "Offline generators are NOT allowed to participate in pricing."
-            @info "Offline generators will be removed for the approximation."
+    if !method.allow_offline_participation
+        if isnothing(model) || !has_values(model)
+            error("A solved UC model is required if allow_offline_participation=false.")
         end
-    end
-
-    # CHECK: start up cost consideration
-    if method.consider_startup_costs
-        @info "Startup costs are considered."
-    else 
-        @info "Startup costs are NOT considered."
     end
 end
 
