@@ -64,20 +64,12 @@ function compute_lmp(
     ::ConventionalLMP;
     optimizer,
 )::OrderedDict{Tuple{String,Int},Float64}
-    # Validate model, the UC model must be solved beforehand
     if !has_values(model)
-        @error "The UC model must be solved before calculating the LMPs."
-        @error "The LMPs are NOT calculated."
-        return nothing
+        error("The UC model must be solved before calculating the LMPs.")
     end
-
-    # Prepare the LMP result dictionary
     lmp = OrderedDict()
 
-    # Calculate LMPs
-    # Fix all binary variables to their optimal values and relax integrality
-    @info "Calculating LMPs..."
-    @info "Fixing all binary variables to their optimal values and relax integrality."
+    @info "Fixing binary variables and relaxing integrality..."
     vals = Dict(v => value(v) for v in all_variables(model))
     for v in all_variables(model)
         if is_binary(v)
@@ -85,21 +77,16 @@ function compute_lmp(
             fix(v, vals[v])
         end
     end
-    # fix!(model, model[:solution])
     relax_integrality(model)
     set_optimizer(model, optimizer)
 
-    # Solve the LP
     @info "Solving the LP..."
     JuMP.optimize!(model)
     
-    # Obtain dual values (LMPs) and store into the LMP dictionary
     @info "Getting dual values (LMPs)..."
     for (key, val) in model[:eq_net_injection]
         lmp[key] = dual(val)
     end
 
-    # Return the LMP dictionary
-    @info "Calculation completed."
     return lmp
 end
