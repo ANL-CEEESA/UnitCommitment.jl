@@ -82,7 +82,7 @@ function compute_lmp(
 
     @info "Solving the LP..."
     JuMP.optimize!(model)
-    
+
     @info "Getting dual values (LMPs)..."
     for (key, val) in model[:eq_net_injection]
         lmp[key] = dual(val)

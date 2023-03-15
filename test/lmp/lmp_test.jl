@@ -17,7 +17,7 @@ function solve_lmp_testcase(path::String)
     lmp = UnitCommitment.compute_lmp(
         model,
         ConventionalLMP(),
-        optimizer=HiGHS.Optimizer,
+        optimizer = HiGHS.Optimizer,
     )
     return lmp
 end

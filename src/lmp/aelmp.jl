@@ -88,7 +88,7 @@ function compute_lmp(
     # prepare the result dictionary and solve the model 
     elmp = OrderedDict()
     @info "Solving the approximation model."
-    approx_model = build_model(instance=instance, variable_names=true)
+    approx_model = build_model(instance = instance, variable_names = true)
 
     # relax the binary constraint, and relax integrality
     for v in all_variables(approx_model)
@@ -111,14 +111,13 @@ function compute_lmp(
     return elmp
 end
 
-function _aelmp_check_parameters(
-    method::AELMP,
-    model::JuMP.Model
-)
+function _aelmp_check_parameters(method::AELMP, model::JuMP.Model)
     # CHECK: model must be solved if allow_offline_participation=false
     if !method.allow_offline_participation
         if isnothing(model) || !has_values(model)
-            error("A solved UC model is required if allow_offline_participation=false.")
+            error(
+                "A solved UC model is required if allow_offline_participation=false.",
+            )
         end
     end
 end
@@ -126,7 +125,7 @@ end
 function _modify_instance!(
     instance::UnitCommitmentInstance,
     model::JuMP.Model,
-    method::AELMP
+    method::AELMP,
 )
     # this function modifies the instance units (generators)
     # 1. remove (if NOT allowing) the offline generators
@@ -152,10 +151,14 @@ function _modify_instance!(
         # min_power & min_costs are vectors with dimension T
         if unit.min_power[1] != 0
             first_cost_segment = unit.cost_segments[1]
-            pushfirst!(unit.cost_segments, CostSegment(
-                ones(size(first_cost_segment.mw)) * unit.min_power[1],
-                ones(size(first_cost_segment.cost)) * unit.min_power_cost[1] / unit.min_power[1]
-            ))
+            pushfirst!(
+                unit.cost_segments,
+                CostSegment(
+                    ones(size(first_cost_segment.mw)) * unit.min_power[1],
+                    ones(size(first_cost_segment.cost)) *
+                    unit.min_power_cost[1] / unit.min_power[1],
+                ),
+            )
             unit.min_power = zeros(size(first_cost_segment.mw))
             unit.min_power_cost = zeros(size(first_cost_segment.cost))
         end
@@ -175,12 +178,13 @@ function _modify_instance!(
         # 4. other adjustments...
         ### FIXME in the future
         # MISO Phase I: can ONLY solve fast-starts, force all startup time to be 0
-        unit.startup_categories = StartupCategory[StartupCategory(0, first_startup_cost)]
+        unit.startup_categories =
+            StartupCategory[StartupCategory(0, first_startup_cost)]
         unit.initial_status = -100
         unit.initial_power = 0
         unit.min_uptime = 0
         unit.min_downtime = 0
         ### END FIXME
     end
-    instance.units_by_name = Dict(g.name => g for g in instance.units)
+    return instance.units_by_name = Dict(g.name => g for g in instance.units)
 end

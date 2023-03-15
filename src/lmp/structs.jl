@@ -22,7 +22,7 @@ Arguments
 - `consider_startup_costs`: 
     If true, the start-up costs are averaged over each unit production; otherwise the production costs stay the same.
 """
-Base.@kwdef struct AELMP <: PricingMethod 
+Base.@kwdef struct AELMP <: PricingMethod
     allow_offline_participation::Bool = true
     consider_startup_costs::Bool = true
 end
