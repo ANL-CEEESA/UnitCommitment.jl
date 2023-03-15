@@ -20,6 +20,7 @@ Depth = 3
 * **Alinson S. Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
 * **Ogün Yurdakul** (Technische Universität Berlin)
+* **Jun He** (Purdue University)
 * **Feng Qiu** (Argonne National Laboratory)
 
 ## Acknowledgments
