@@ -7,7 +7,6 @@ using JSON
 using DataStructures
 using GZip
 import Base: getindex, time
-using Glob
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.3/instances"
 
