@@ -12,10 +12,15 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
     end
     initial_time = time()
     large_gap = false
-    has_transmission = (length(model[:isf]) > 0)
-    if has_transmission && method.two_phase_gap
-        set_gap(1e-2)
-        large_gap = true
+    has_transmission = false
+    for sc in model[:instance].scenarios
+        if length(sc.isf) > 0
+            has_transmission = true
+        end
+        if has_transmission && method.two_phase_gap
+            set_gap(1e-2)
+            large_gap = true
+        end
     end
     while true
         time_elapsed = time() - initial_time
@@ -31,13 +36,41 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
         JuMP.set_time_limit_sec(model, time_remaining)
         @info "Solving MILP..."
         JuMP.optimize!(model)
+
         has_transmission || break
-        violations = _find_violations(
-            model,
-            max_per_line = method.max_violations_per_line,
-            max_per_period = method.max_violations_per_period,
+
+        @info "Verifying transmission limits..."
+        time_screening = @elapsed begin
+            violations = []
+            for sc in model[:instance].scenarios
+                push!(
+                    violations,
+                    _find_violations(
+                        model,
+                        sc,
+                        max_per_line = method.max_violations_per_line,
+                        max_per_period = method.max_violations_per_period,
+                    ),
+                )
+            end
+        end
+        @info @sprintf(
+            "Verified transmission limits in %.2f seconds",
+            time_screening
         )
-        if isempty(violations)
+
+        violations_found = false
+        for v in violations
+            if !isempty(v)
+                violations_found = true
+            end
+        end
+
+        if violations_found
+            for (i, v) in enumerate(violations)
+                _enforce_transmission(model, v, model[:instance].scenarios[i])
+            end
+        else
             @info "No violations found"
             if large_gap
                 large_gap = false
@@ -45,8 +78,6 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
             else
                 break
             end
-        else
-            _enforce_transmission(model, violations)
         end
     end
     return

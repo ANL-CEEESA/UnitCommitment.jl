@@ -43,26 +43,76 @@ function read_benchmark(
     return UnitCommitment.read(filename)
 end
 
+function _repair_scenario_names_and_probabilities!(
+    scenarios::Vector{UnitCommitmentScenario},
+    path::Vector{String},
+)::Nothing
+    total_weight = sum([sc.probability for sc in scenarios])
+    for (sc_path, sc) in zip(path, scenarios)
+        sc.name !== "" ||
+            (sc.name = first(split(last(split(sc_path, "/")), ".")))
+        sc.probability = (sc.probability / total_weight)
+    end
+    return
+end
+
 """
     read(path::AbstractString)::UnitCommitmentInstance
 
-Read instance from a file. The file may be gzipped.
+Read a deterministic test case from the given file. The file may be gzipped.
 
 # Example
 
 ```julia
-instance = UnitCommitment.read("/path/to/input.json.gz")
+instance = UnitCommitment.read("s1.json.gz")
 ```
 """
-function read(path::AbstractString)::UnitCommitmentInstance
-    if endswith(path, ".gz")
-        return _read(gzopen(path))
-    else
-        return _read(open(path))
-    end
+function read(path::String)::UnitCommitmentInstance
+    scenarios = Vector{UnitCommitmentScenario}()
+    scenario = _read_scenario(path)
+    scenario.name = "s1"
+    scenario.probability = 1.0
+    scenarios = [scenario]
+    instance =
+        UnitCommitmentInstance(time = scenario.time, scenarios = scenarios)
+    return instance
 end
 
-function _read(file::IO)::UnitCommitmentInstance
+"""
+    read(path::Vector{String})::UnitCommitmentInstance
+
+Read a stochastic unit commitment instance from the given files. Each file
+describes a scenario. The files may be gzipped.
+
+# Example
+
+```julia
+instance = UnitCommitment.read(["s1.json.gz", "s2.json.gz"])
+```
+"""
+function read(paths::Vector{String})::UnitCommitmentInstance
+    scenarios = UnitCommitmentScenario[]
+    for p in paths
+        push!(scenarios, _read_scenario(p))
+    end
+    _repair_scenario_names_and_probabilities!(scenarios, paths)
+    instance =
+        UnitCommitmentInstance(time = scenarios[1].time, scenarios = scenarios)
+    return instance
+end
+
+function _read_scenario(path::String)::UnitCommitmentScenario
+    if endswith(path, ".gz")
+        scenario = _read(gzopen(path))
+    elseif endswith(path, ".json")
+        scenario = _read(open(path))
+    else
+        error("Unsupported input format")
+    end
+    return scenario
+end
+
+function _read(file::IO)::UnitCommitmentScenario
     return _from_json(
         JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing)),
     )
@@ -77,7 +127,7 @@ function _read_json(path::String)::OrderedDict
     return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
 end
 
-function _from_json(json; repair = true)
+function _from_json(json; repair = true)::UnitCommitmentScenario
     _migrate(json)
     units = Unit[]
     buses = Bus[]
@@ -102,6 +152,11 @@ function _from_json(json; repair = true)
     time_multiplier = 60 ÷ time_step
     T = time_horizon * time_multiplier
 
+    probability = json["Parameters"]["Scenario weight"]
+    probability !== nothing || (probability = 1)
+    scenario_name = json["Parameters"]["Scenario name"]
+    scenario_name !== nothing || (scenario_name = "")
+
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
     name_to_unit = Dict{String,Unit}()
@@ -117,15 +172,6 @@ function _from_json(json; repair = true)
     power_balance_penalty = timeseries(
         json["Parameters"]["Power balance penalty (\$/MW)"],
         default = [1000.0 for t in 1:T],
-    )
-    # Penalty price for shortage in meeting system-wide flexiramp requirements
-    flexiramp_shortfall_penalty = timeseries(
-        json["Parameters"]["Flexiramp penalty (\$/MW)"],
-        default = [500.0 for t in 1:T],
-    )
-    shortfall_penalty = timeseries(
-        json["Parameters"]["Reserve shortfall penalty (\$/MW)"],
-        default = [-1.0 for t in 1:T],
     )
 
     # Read buses
@@ -308,7 +354,9 @@ function _from_json(json; repair = true)
         end
     end
 
-    instance = UnitCommitmentInstance(
+    scenario = UnitCommitmentScenario(
+        name = scenario_name,
+        probability = probability,
         buses_by_name = Dict(b.name => b for b in buses),
         buses = buses,
         contingencies_by_name = Dict(c.name => c for c in contingencies),
@@ -320,14 +368,14 @@ function _from_json(json; repair = true)
         price_sensitive_loads = loads,
         reserves = reserves,
         reserves_by_name = name_to_reserve,
-        shortfall_penalty = shortfall_penalty,
-        flexiramp_shortfall_penalty = flexiramp_shortfall_penalty,
         time = T,
         units_by_name = Dict(g.name => g for g in units),
         units = units,
+        isf = spzeros(Float64, length(lines), length(buses) - 1),
+        lodf = spzeros(Float64, length(lines), length(lines)),
     )
     if repair
-        UnitCommitment.repair!(instance)
+        UnitCommitment.repair!(scenario)
     end
-    return instance
+    return scenario
 end

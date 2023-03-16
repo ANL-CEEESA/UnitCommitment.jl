@@ -6,6 +6,7 @@ module XavQiuAhm2021
 
 using Distributions
 import ..UnitCommitmentInstance
+import ..UnitCommitmentScenario
 
 """
     struct Randomization
@@ -119,10 +120,10 @@ end
 
 function _randomize_costs(
     rng,
-    instance::UnitCommitmentInstance,
+    sc::UnitCommitmentScenario,
     distribution,
 )::Nothing
-    for unit in instance.units
+    for unit in sc.units
         α = rand(rng, distribution)
         unit.min_power_cost *= α
         for k in unit.cost_segments
@@ -137,17 +138,15 @@ end
 
 function _randomize_load_share(
     rng,
-    instance::UnitCommitmentInstance,
+    sc::UnitCommitmentScenario,
     distribution,
 )::Nothing
-    α = rand(rng, distribution, length(instance.buses))
-    for t in 1:instance.time
-        total = sum(bus.load[t] for bus in instance.buses)
-        den = sum(
-            bus.load[t] / total * α[i] for
-            (i, bus) in enumerate(instance.buses)
-        )
-        for (i, bus) in enumerate(instance.buses)
+    α = rand(rng, distribution, length(sc.buses))
+    for t in 1:sc.time
+        total = sum(bus.load[t] for bus in sc.buses)
+        den =
+            sum(bus.load[t] / total * α[i] for (i, bus) in enumerate(sc.buses))
+        for (i, bus) in enumerate(sc.buses)
             bus.load[t] *= α[i] / den
         end
     end
@@ -156,12 +155,12 @@ end
 
 function _randomize_load_profile(
     rng,
-    instance::UnitCommitmentInstance,
+    sc::UnitCommitmentScenario,
     params::Randomization,
 )::Nothing
     # Generate new system load
     system_load = [1.0]
-    for t in 2:instance.time
+    for t in 2:sc.time
         idx = (t - 1) % length(params.load_profile_mu) + 1
         gamma = rand(
             rng,
@@ -169,14 +168,14 @@ function _randomize_load_profile(
         )
         push!(system_load, system_load[t-1] * gamma)
     end
-    capacity = sum(maximum(u.max_power) for u in instance.units)
+    capacity = sum(maximum(u.max_power) for u in sc.units)
     peak_load = rand(rng, params.peak_load) * capacity
     system_load = system_load ./ maximum(system_load) .* peak_load
 
     # Scale bus loads to match the new system load
-    prev_system_load = sum(b.load for b in instance.buses)
-    for b in instance.buses
-        for t in 1:instance.time
+    prev_system_load = sum(b.load for b in sc.buses)
+    for b in sc.buses
+        for t in 1:sc.time
             b.load[t] *= system_load[t] / prev_system_load[t]
         end
     end
@@ -200,14 +199,25 @@ function randomize!(
     method::XavQiuAhm2021.Randomization;
     rng = MersenneTwister(),
 )::Nothing
+    for sc in instance.scenarios
+        randomize!(sc, method; rng)
+    end
+    return
+end
+
+function randomize!(
+    sc::UnitCommitment.UnitCommitmentScenario,
+    method::XavQiuAhm2021.Randomization;
+    rng = MersenneTwister(),
+)::Nothing
     if method.randomize_costs
-        XavQiuAhm2021._randomize_costs(rng, instance, method.cost)
+        XavQiuAhm2021._randomize_costs(rng, sc, method.cost)
     end
     if method.randomize_load_share
-        XavQiuAhm2021._randomize_load_share(rng, instance, method.load_share)
+        XavQiuAhm2021._randomize_load_share(rng, sc, method.load_share)
     end
     if method.randomize_load_profile
-        XavQiuAhm2021._randomize_load_profile(rng, instance, method)
+        XavQiuAhm2021._randomize_load_profile(rng, sc, method)
     end
     return
 end

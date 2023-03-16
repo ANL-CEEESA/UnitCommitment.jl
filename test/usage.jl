@@ -4,34 +4,59 @@
 
 using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON
 
-@testset "usage" begin
-    instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
-    for line in instance.lines, t in 1:4
-        line.normal_flow_limit[t] = 10.0
+function _set_flow_limits!(instance)
+    for sc in instance.scenarios
+        sc.power_balance_penalty = [100_000 for _ in 1:instance.time]
+        for line in sc.lines, t in 1:4
+            line.normal_flow_limit[t] = 10.0
+        end
     end
-    optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
-    model = UnitCommitment.build_model(
-        instance = instance,
-        optimizer = optimizer,
-        variable_names = true,
-    )
-    @test name(model[:is_on]["g1", 1]) == "is_on[g1,1]"
+end
 
-    # Optimize and retrieve solution
-    UnitCommitment.optimize!(model)
-    solution = UnitCommitment.solution(model)
+@testset "usage" begin
+    @testset "deterministic" begin
+        instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
+        _set_flow_limits!(instance)
+        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+        model = UnitCommitment.build_model(
+            instance = instance,
+            optimizer = optimizer,
+            variable_names = true,
+        )
+        @test name(model[:is_on]["g1", 1]) == "is_on[g1,1]"
 
-    # Write solution to a file
-    filename = tempname()
-    UnitCommitment.write(filename, solution)
-    loaded = JSON.parsefile(filename)
-    @test length(loaded["Is on"]) == 6
+        # Optimize and retrieve solution
+        UnitCommitment.optimize!(model)
+        solution = UnitCommitment.solution(model)
 
-    # Verify solution
-    @test UnitCommitment.validate(instance, solution)
+        # Write solution to a file
+        filename = tempname()
+        UnitCommitment.write(filename, solution)
+        loaded = JSON.parsefile(filename)
+        @test length(loaded["Is on"]) == 6
 
-    # Reoptimize with fixed solution
-    UnitCommitment.fix!(model, solution)
-    UnitCommitment.optimize!(model)
-    @test UnitCommitment.validate(instance, solution)
+        # Verify solution
+        @test UnitCommitment.validate(instance, solution)
+
+        # Reoptimize with fixed solution
+        UnitCommitment.fix!(model, solution)
+        UnitCommitment.optimize!(model)
+        @test UnitCommitment.validate(instance, solution)
+    end
+
+    @testset "stochastic" begin
+        instance = UnitCommitment.read([
+            "$FIXTURES/case14.json.gz",
+            "$FIXTURES/case14.json.gz",
+        ])
+        _set_flow_limits!(instance)
+        @test length(instance.scenarios) == 2
+        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+        model = UnitCommitment.build_model(
+            instance = instance,
+            optimizer = optimizer,
+        )
+        UnitCommitment.optimize!(model)
+        solution = UnitCommitment.solution(model)
+    end
 end
