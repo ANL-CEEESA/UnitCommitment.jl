@@ -43,47 +43,30 @@ function read_benchmark(
     return UnitCommitment.read(filename)
 end
 
-"""
-    read(path::AbstractString)::UnitCommitmentInstance
-
-Read instance from a file. The file may be gzipped.
-
-# Example
-
-```julia
-instance = UnitCommitment.read("/path/to/input.json.gz")
-```
-"""
-
-function _repair_scenario_name_and_probability(
+function _repair_scenario_names_and_probabilities!(
     scenarios::Vector{UnitCommitmentScenario},
     path::Vector{String},
-)::Vector{UnitCommitmentScenario}
-    number_of_scenarios = length(scenarios)
-    probs = [sc.probability for sc in scenarios]
-    total_weight = number_of_scenarios
-    if Float64 in typeof.(probs)
-        try
-            total_weight = sum(probs)
-        catch e
-            if isa(e, MethodError)
-                error(
-                    "If any of the scenarios is assigned a weight, then all scenarios must be assigned weights.",
-                )
-            end
-        end
-    else
-        [sc.probability = 1 for sc in scenarios]
-    end
-
+)::Nothing
+    total_weight = sum([sc.probability for sc in scenarios])
     for (sc_path, sc) in zip(path, scenarios)
         sc.name !== "" ||
             (sc.name = first(split(last(split(sc_path, "/")), ".")))
         sc.probability = (sc.probability / total_weight)
     end
-    return scenarios
+    return
 end
 
+"""
+    read(path::AbstractString)::UnitCommitmentInstance
+
+Read a deterministic test case from the given file. The file may be gzipped.
+
+# Example
+
+```julia
+instance = UnitCommitment.read("s1.json.gz")
+```
+"""
 function read(path::String)::UnitCommitmentInstance
     scenarios = Vector{UnitCommitmentScenario}()
     scenario = _read_scenario(path)
@@ -95,13 +78,24 @@ function read(path::String)::UnitCommitmentInstance
     return instance
 end
 
-function read(path::Vector{String})::UnitCommitmentInstance
-    scenarios = Vector{UnitCommitmentScenario}()
-    for scenario_path in path
-        scenario = _read_scenario(scenario_path)
-        push!(scenarios, scenario)
+"""
+    read(path::Vector{String})::UnitCommitmentInstance
+
+Read a stochastic unit commitment instance from the given files. Each file
+describes a scenario. The files may be gzipped.
+
+# Example
+
+```julia
+instance = UnitCommitment.read(["s1.json.gz", "s2.json.gz"])
+```
+"""
+function read(paths::Vector{String})::UnitCommitmentInstance
+    scenarios = UnitCommitmentScenario[]
+    for p in paths
+        push!(scenarios, _read_scenario(p))
     end
-    scenarios = _repair_scenario_name_and_probability(scenarios, path)
+    _repair_scenario_names_and_probabilities!(scenarios, paths)
     instance =
         UnitCommitmentInstance(time = scenarios[1].time, scenarios = scenarios)
     return instance
@@ -157,10 +151,12 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         error("Time step $time_step is not a divisor of 60")
     time_multiplier = 60 ÷ time_step
     T = time_horizon * time_multiplier
-    probability = nothing
+
     probability = json["Parameters"]["Scenario weight"]
+    probability !== nothing || (probability = 1)
     scenario_name = json["Parameters"]["Scenario name"]
     scenario_name !== nothing || (scenario_name = "")
+
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
     name_to_unit = Dict{String,Unit}()
