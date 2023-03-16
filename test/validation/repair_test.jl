@@ -17,8 +17,6 @@ end
         json["Generators"]["g1"]["Production cost curve (MW)"] = [100, 150, 200]
         json["Generators"]["g1"]["Production cost curve (\$)"] = [10, 25, 30]
         sc = UnitCommitment._from_json(json, repair = false)
-        sc.name = "s1"
-        sc.probability = 1.0
         @test UnitCommitment.repair!(sc) == 4
     end
 

@@ -6,17 +6,17 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
 @testset "read v0.2" begin
     instance = UnitCommitment.read("$FIXTURES/ucjl-0.2.json.gz")
-    for sc in instance.scenarios
-        @test length(sc.reserves_by_name["r1"].amount) == 4
-        @test sc.units_by_name["g2"].reserves[1].name == "r1"
-    end
+    @test length(instance.scenarios) == 1
+    sc = instance.scenarios[1]
+    @test length(sc.reserves_by_name["r1"].amount) == 4
+    @test sc.units_by_name["g2"].reserves[1].name == "r1"
 end
 
 @testset "read v0.3" begin
     instance = UnitCommitment.read("$FIXTURES/ucjl-0.3.json.gz")
-    for sc in instance.scenarios
-        @test length(sc.units) == 6
-        @test length(sc.buses) == 14
-        @test length(sc.lines) == 20
-    end
+    @test length(instance.scenarios) == 1
+    sc = instance.scenarios[1]
+    @test length(sc.units) == 6
+    @test length(sc.buses) == 14
+    @test length(sc.lines) == 20
 end

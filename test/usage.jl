@@ -7,9 +7,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON
 @testset "usage" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
     for sc in instance.scenarios
-        sc.power_balance_penalty = [100000 for _ in 1:instance.time]
-    end
-    for sc in instance.scenarios
+        sc.power_balance_penalty = [100_000 for _ in 1:instance.time]
         for line in sc.lines, t in 1:4
             line.normal_flow_limit[t] = 10.0
         end
