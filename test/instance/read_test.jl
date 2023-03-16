@@ -6,6 +6,12 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
 @testset "read_benchmark" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
+
+    @test repr(instance) == (
+        "UnitCommitmentInstance(1 scenarios, 6 units, 14 buses, " *
+        "20 lines, 19 contingencies, 1 price sensitive loads, 4 time steps)"
+    )
+
     @test length(instance.scenarios) == 1
     sc = instance.scenarios[1]
     @test length(sc.lines) == 20

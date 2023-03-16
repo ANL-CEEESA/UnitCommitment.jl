@@ -74,24 +74,24 @@ mutable struct PriceSensitiveLoad
 end
 
 Base.@kwdef mutable struct UnitCommitmentScenario
-    name::String
-    probability::Union{Float64,Nothing}
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
     contingencies_by_name::Dict{AbstractString,Contingency}
     contingencies::Vector{Contingency}
+    isf::Array{Float64,2}
     lines_by_name::Dict{AbstractString,TransmissionLine}
     lines::Vector{TransmissionLine}
+    lodf::Array{Float64,2}
+    name::String
     power_balance_penalty::Vector{Float64}
     price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}
-    reserves::Vector{Reserve}
+    probability::Float64
     reserves_by_name::Dict{AbstractString,Reserve}
+    reserves::Vector{Reserve}
+    time::Int
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}
-    time::Int
-    isf::Array{Float64,2}
-    lodf::Array{Float64,2}
 end
 
 Base.@kwdef mutable struct UnitCommitmentInstance
@@ -100,16 +100,14 @@ Base.@kwdef mutable struct UnitCommitmentInstance
 end
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)
+    sc = instance.scenarios[1]
     print(io, "UnitCommitmentInstance(")
-    print(io, "$(length(instance.scenarios)) scenarios: ")
-    for sc in instance.scenarios
-        print(io, "Scenario $(sc.name): ")
-        print(io, "$(length(sc.units)) units, ")
-        print(io, "$(length(sc.buses)) buses, ")
-        print(io, "$(length(sc.lines)) lines, ")
-        print(io, "$(length(sc.contingencies)) contingencies, ")
-        print(io, "$(length(sc.price_sensitive_loads)) price sensitive loads, ")
-    end
+    print(io, "$(length(instance.scenarios)) scenarios, ")
+    print(io, "$(length(sc.units)) units, ")
+    print(io, "$(length(sc.buses)) buses, ")
+    print(io, "$(length(sc.lines)) lines, ")
+    print(io, "$(length(sc.contingencies)) contingencies, ")
+    print(io, "$(length(sc.price_sensitive_loads)) price sensitive loads, ")
     print(io, "$(instance.time) time steps")
     print(io, ")")
     return
