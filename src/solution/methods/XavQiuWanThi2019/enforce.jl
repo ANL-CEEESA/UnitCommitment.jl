@@ -34,19 +34,21 @@ function _enforce_transmission(;
     if violation.outage_line === nothing
         limit = violation.monitored_line.normal_flow_limit[violation.time]
         @info @sprintf(
-            "    %8.3f MW overflow in %-5s time %3d (pre-contingency)",
+            "    %8.3f MW overflow in %-5s time %3d (pre-contingency, scenario %s)",
             violation.amount,
             violation.monitored_line.name,
             violation.time,
+            sc.name,
         )
     else
         limit = violation.monitored_line.emergency_flow_limit[violation.time]
         @info @sprintf(
-            "    %8.3f MW overflow in %-5s time %3d (outage: line %s)",
+            "    %8.3f MW overflow in %-5s time %3d (outage: line %s, scenario %s)",
             violation.amount,
             violation.monitored_line.name,
             violation.time,
             violation.outage_line.name,
+            sc.name,
         )
     end
 

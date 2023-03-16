@@ -15,31 +15,25 @@ function _find_violations(
     overflow = model[:overflow]
     length(sc.buses) > 1 || return []
     violations = []
-    @info "Verifying transmission limits..."
-    time_screening = @elapsed begin
-        non_slack_buses = [b for b in sc.buses if b.offset > 0]
-        net_injection_values = [
-            value(net_injection[sc.name, b.name, t]) for
-            b in non_slack_buses, t in 1:instance.time
-        ]
-        overflow_values = [
-            value(overflow[sc.name, lm.name, t]) for lm in sc.lines,
-            t in 1:instance.time
-        ]
-        violations = UnitCommitment._find_violations(
-            instance = instance,
-            sc = sc,
-            net_injections = net_injection_values,
-            overflow = overflow_values,
-            isf = sc.isf,
-            lodf = sc.lodf,
-            max_per_line = max_per_line,
-            max_per_period = max_per_period,
-        )
-    end
-    @info @sprintf(
-        "Verified transmission limits in %.2f seconds",
-        time_screening
+
+    non_slack_buses = [b for b in sc.buses if b.offset > 0]
+    net_injection_values = [
+        value(net_injection[sc.name, b.name, t]) for b in non_slack_buses,
+        t in 1:instance.time
+    ]
+    overflow_values = [
+        value(overflow[sc.name, lm.name, t]) for lm in sc.lines,
+        t in 1:instance.time
+    ]
+    violations = UnitCommitment._find_violations(
+        instance = instance,
+        sc = sc,
+        net_injections = net_injection_values,
+        overflow = overflow_values,
+        isf = sc.isf,
+        lodf = sc.lodf,
+        max_per_line = max_per_line,
+        max_per_period = max_per_period,
     )
     return violations
 end
