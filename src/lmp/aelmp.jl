@@ -8,8 +8,8 @@ using JuMP
     function compute_lmp(
         model::JuMP.Model,
         method::AELMP;
-        optimizer = nothing,
-    )
+        optimizer,
+    )::OrderedDict{Tuple{String,Int},Float64}
 
 Calculates the approximate extended locational marginal prices of the given unit commitment instance.
 
@@ -25,7 +25,7 @@ WARNING: This approximation method is not fully developed. The implementation is
 
 1. It only supports Fast Start resources. More specifically, the minimum up/down time has to be zero.
 2. The method does NOT support time-varying start-up costs.
-3. AELMPs are only calculated for the first time period if offline participation is not allowed.
+3. An asset is considered offline if it is never on throughout all time periods. 
 
 Arguments
 ---------
@@ -82,7 +82,7 @@ function compute_lmp(
 )::OrderedDict{Tuple{String,Int},Float64}
     @info "Building the approximation model..."
     instance = deepcopy(model[:instance])
-    _aelmp_check_parameters(method, model)
+    _aelmp_check_parameters(instance, model, method)
     _modify_instance!(instance, model, method)
 
     # prepare the result dictionary and solve the model 
@@ -111,7 +111,11 @@ function compute_lmp(
     return elmp
 end
 
-function _aelmp_check_parameters(method::AELMP, model::JuMP.Model)
+function _aelmp_check_parameters(
+    instance::UnitCommitmentInstance,
+    model::JuMP.Model,
+    method::AELMP,
+)
     # CHECK: model must be solved if allow_offline_participation=false
     if !method.allow_offline_participation
         if isnothing(model) || !has_values(model)
@@ -119,6 +123,29 @@ function _aelmp_check_parameters(method::AELMP, model::JuMP.Model)
                 "A solved UC model is required if allow_offline_participation=false.",
             )
         end
+    end
+    all_units = instance.units;
+    # CHECK: model cannot handle non-fast-starts (MISO Phase I: can ONLY solve fast-starts)
+    if any(u -> u.min_uptime > 1 || u.min_downtime > 1, all_units) 
+        error(
+            "The minimum up/down time of all generators must be 1. AELMP only supports fast-starts.",
+        )
+    end
+    if any(u -> u.initial_power > 0, all_units)
+        error(
+            "The initial power of all generators must be 0.",
+        )
+    end
+    if any(u -> u.initial_status >= 0, all_units)
+        error(
+            "The initial status of all generators must be negative.",
+        )
+    end
+    # CHECK: model does not support startup costs (in time series)
+    if any(u -> length(u.startup_categories) > 1, all_units)
+        error(
+            "The method does NOT support time-varying start-up costs.",
+        )
     end
 end
 
@@ -128,22 +155,25 @@ function _modify_instance!(
     method::AELMP,
 )
     # this function modifies the instance units (generators)
-    # 1. remove (if NOT allowing) the offline generators
     if !method.allow_offline_participation
+        # 1. remove (if NOT allowing) the offline generators
+        units_to_remove = []
         for unit in instance.units
             # remove based on the solved UC model result
-            # here, only look at the first time slot (TIME-SERIES-NOT-SUPPORTED)
-            if value(model[:is_on][unit.name, 1]) == 0
+            # remove the unit if it is never on
+            if all(t -> value(model[:is_on][unit.name, t]) == 0, instance.time)
                 # unregister from the bus 
                 filter!(x -> x.name != unit.name, unit.bus.units)
                 # unregister from the reserve
                 for r in unit.reserves
                     filter!(x -> x.name != unit.name, r.units)
                 end
+                # append the name to the remove list
+                push!(units_to_remove, unit.name)
             end
         end
-        # unregister the units
-        filter!(x -> value(model[:is_on][x.name, 1]) != 0, instance.units)
+        # unregister the units from the remove list
+        filter!(x -> !(x.name in units_to_remove), instance.units)
     end
 
     for unit in instance.units
@@ -164,7 +194,6 @@ function _modify_instance!(
         end
 
         # 3. average the start-up costs (if considering)
-        # for now, consider first element only (TIME-SERIES-NOT-SUPPORTED)
         # if consider_startup_costs = false, then use the current first_startup_cost
         first_startup_cost = unit.startup_categories[1].cost
         if method.consider_startup_costs
@@ -174,17 +203,8 @@ function _modify_instance!(
             end
             first_startup_cost = 0.0 # zero out the start up cost
         end
-
-        # 4. other adjustments...
-        ### FIXME in the future
-        # MISO Phase I: can ONLY solve fast-starts, force all startup time to be 0
         unit.startup_categories =
-            StartupCategory[StartupCategory(0, first_startup_cost)]
-        unit.initial_status = -100
-        unit.initial_power = 0
-        unit.min_uptime = 0
-        unit.min_downtime = 0
-        ### END FIXME
+            StartupCategory[StartupCategory(0, first_startup_cost)]        
     end
     return instance.units_by_name = Dict(g.name => g for g in instance.units)
 end

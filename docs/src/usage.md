@@ -189,7 +189,7 @@ This method has two configurable parameters: `allow_offline_participation` and `
 
 !!! warning
 
-    This approximation method is still under active research, and has several limitations. The implementation provided in the package is based on MISO Phase I only. It only supports fast start resources. More specifically, the minimum up/down time of all generators must be 1. The method does not support time-varying start-up costs. AELMPs are only calculated for the first time period if offline participation is not allowed.
+    This approximation method is still under active research, and has several limitations. The implementation provided in the package is based on MISO Phase I only. It only supports fast start resources. More specifically, the minimum up/down time of all generators must be 1, the initial power of all generators must be 0, and the initial status of all generators must be negative. The method does not support time-varying start-up costs. If offline participation is not allowed, AELMPs treats an asset to be  offline if it is never on throughout all time periods. 
 
 ```julia
 using UnitCommitment
