@@ -126,14 +126,17 @@ Note that this curve also specifies the production limits. Specifically, the fir
             "Minimum downtime (h)": 4,
             "Minimum uptime (h)": 4,
             "Initial status (h)": 12,
+            "Initial power (MW)": 115,
             "Must run?": false,
-            "Reserve eligibility": ["r1"],
+            "Reserve eligibility": ["r1"]
         },
         "gen2": {
             "Bus": "b5",
             "Production cost curve (MW)": [0.0, [10.0, 8.0, 0.0, 3.0]],
             "Production cost curve ($)": [0.0, 0.0],
-            "Reserve eligibility": ["r1", "r2"],
+            "Initial status (h)": -100,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": ["r1", "r2"]
         }
     }
 }
