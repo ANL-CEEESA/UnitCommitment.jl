@@ -8,6 +8,8 @@ Decision variables
 
 ### Generators
 
+#### Thermal Units
+
 Name | Symbol | Description | Unit
 :-----|:--------:|:-------------|:------:
 `is_on[g,t]` | $u_{g}(t)$ | True if generator `g` is on at time `t`. | Binary
@@ -17,6 +19,13 @@ Name | Symbol | Description | Unit
 `segprod[g,t,k]` | $p^k_g(t)$ | Amount of power from piecewise linear segment `k` produced by generator `g` at time `t`. For example, if cost curve for generator `g` is defined by the points `(100, 1400)`, `(110, 1600)`, `(130, 2200)` and `(135, 2400)`, and if the generator is producing 115 MW of power at time `t`, then `segprod[g,t,:]` equals `[10.0, 5.0, 0.0]`.| MW
 `reserve[r,g,t]` | $r_g(t)$ | Amount of reserve `r` provided by unit `g` at time `t`. | MW
 `startup[g,t,s]` | $\delta^s_g(t)$ | True if generator `g` switches on at time `t` incurring start-up costs from start-up category `s`. | Binary
+
+
+#### Profiled Units
+
+Name | Symbol | Description | Unit
+:-----|:------:|:-------------|:------:
+`profiled_units[s,t]` | $p^{\dagger}_{g}(t)$ | Amount of power produced by profiled unit `g` at time `t`. | MW
 
 
 ### Buses
