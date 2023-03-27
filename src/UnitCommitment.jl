@@ -4,8 +4,6 @@
 
 module UnitCommitment
 
-@info "PU" ##REMOVE ME
-
 include("instance/structs.jl")
 include("model/formulations/base/structs.jl")
 include("solution/structs.jl")
