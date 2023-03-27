@@ -7,6 +7,7 @@ mutable struct Bus
     offset::Int
     load::Vector{Float64}
     units::Vector
+    profiled_units::Vector
     price_sensitive_loads::Vector
 end
 
@@ -46,6 +47,13 @@ mutable struct Unit
     initial_power::Union{Float64,Nothing}
     startup_categories::Vector{StartupCategory}
     reserves::Vector{Reserve}
+end
+
+mutable struct ProfiledUnit
+    name::String
+    bus::Bus
+    capacity::Vector{Float64}
+    cost::Vector{Float64}
 end
 
 mutable struct TransmissionLine
@@ -90,11 +98,14 @@ Base.@kwdef mutable struct UnitCommitmentInstance
     time::Int
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}
+    profiled_units_by_name::Dict{AbstractString,ProfiledUnit}
+    profiled_units::Vector{ProfiledUnit}
 end
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.units)) units, ")
+    print(io, "$(length(instance.profiled_units)) profiled units, ")
     print(io, "$(length(instance.buses)) buses, ")
     print(io, "$(length(instance.lines)) lines, ")
     print(io, "$(length(instance.contingencies)) contingencies, ")

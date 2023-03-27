@@ -85,6 +85,7 @@ function _from_json(json; repair = true)
     lines = TransmissionLine[]
     loads = PriceSensitiveLoad[]
     reserves = Reserve[]
+    profiled_units = ProfiledUnit[]
 
     function scalar(x; default = nothing)
         x !== nothing || return default
@@ -135,6 +136,7 @@ function _from_json(json; repair = true)
             length(buses),
             timeseries(dict["Load (MW)"]),
             Unit[],
+            ProfiledUnit[],
             PriceSensitiveLoad[],
         )
         name_to_bus[bus_name] = bus
@@ -161,90 +163,107 @@ function _from_json(json; repair = true)
 
     # Read units
     for (unit_name, dict) in json["Generators"]
+        # Read and validate unit type
+        unit_type = scalar(dict["Type"], default = nothing)
+        unit_type !== nothing || error("unit $unit_name has no type specified")
         bus = name_to_bus[dict["Bus"]]
 
-        # Read production cost curve
-        K = length(dict["Production cost curve (MW)"])
-        curve_mw = hcat(
-            [timeseries(dict["Production cost curve (MW)"][k]) for k in 1:K]...,
-        )
-        curve_cost = hcat(
-            [timeseries(dict["Production cost curve (\$)"][k]) for k in 1:K]...,
-        )
-        min_power = curve_mw[:, 1]
-        max_power = curve_mw[:, K]
-        min_power_cost = curve_cost[:, 1]
-        segments = CostSegment[]
-        for k in 2:K
-            amount = curve_mw[:, k] - curve_mw[:, k-1]
-            cost = (curve_cost[:, k] - curve_cost[:, k-1]) ./ amount
-            replace!(cost, NaN => 0.0)
-            push!(segments, CostSegment(amount, cost))
-        end
-
-        # Read startup costs
-        startup_delays = scalar(dict["Startup delays (h)"], default = [1])
-        startup_costs = scalar(dict["Startup costs (\$)"], default = [0.0])
-        startup_categories = StartupCategory[]
-        for k in 1:length(startup_delays)
-            push!(
-                startup_categories,
-                StartupCategory(
-                    startup_delays[k] .* time_multiplier,
-                    startup_costs[k],
-                ),
+        if lowercase(unit_type) === "thermal"
+            # Read production cost curve
+            K = length(dict["Production cost curve (MW)"])
+            curve_mw = hcat(
+                [timeseries(dict["Production cost curve (MW)"][k]) for k in 1:K]...,
             )
-        end
-
-        # Read reserve eligibility
-        unit_reserves = Reserve[]
-        if "Reserve eligibility" in keys(dict)
-            unit_reserves =
-                [name_to_reserve[n] for n in dict["Reserve eligibility"]]
-        end
-
-        # Read and validate initial conditions
-        initial_power = scalar(dict["Initial power (MW)"], default = nothing)
-        initial_status = scalar(dict["Initial status (h)"], default = nothing)
-        if initial_power === nothing
-            initial_status === nothing ||
-                error("unit $unit_name has initial status but no initial power")
-        else
-            initial_status !== nothing ||
-                error("unit $unit_name has initial power but no initial status")
-            initial_status != 0 ||
-                error("unit $unit_name has invalid initial status")
-            if initial_status < 0 && initial_power > 1e-3
-                error("unit $unit_name has invalid initial power")
+            curve_cost = hcat(
+                [timeseries(dict["Production cost curve (\$)"][k]) for k in 1:K]...,
+            )
+            min_power = curve_mw[:, 1]
+            max_power = curve_mw[:, K]
+            min_power_cost = curve_cost[:, 1]
+            segments = CostSegment[]
+            for k in 2:K
+                amount = curve_mw[:, k] - curve_mw[:, k-1]
+                cost = (curve_cost[:, k] - curve_cost[:, k-1]) ./ amount
+                replace!(cost, NaN => 0.0)
+                push!(segments, CostSegment(amount, cost))
             end
-            initial_status *= time_multiplier
-        end
 
-        unit = Unit(
-            unit_name,
-            bus,
-            max_power,
-            min_power,
-            timeseries(dict["Must run?"], default = [false for t in 1:T]),
-            min_power_cost,
-            segments,
-            scalar(dict["Minimum uptime (h)"], default = 1) * time_multiplier,
-            scalar(dict["Minimum downtime (h)"], default = 1) * time_multiplier,
-            scalar(dict["Ramp up limit (MW)"], default = 1e6),
-            scalar(dict["Ramp down limit (MW)"], default = 1e6),
-            scalar(dict["Startup limit (MW)"], default = 1e6),
-            scalar(dict["Shutdown limit (MW)"], default = 1e6),
-            initial_status,
-            initial_power,
-            startup_categories,
-            unit_reserves,
-        )
-        push!(bus.units, unit)
-        for r in unit_reserves
-            push!(r.units, unit)
+            # Read startup costs
+            startup_delays = scalar(dict["Startup delays (h)"], default = [1])
+            startup_costs = scalar(dict["Startup costs (\$)"], default = [0.0])
+            startup_categories = StartupCategory[]
+            for k in 1:length(startup_delays)
+                push!(
+                    startup_categories,
+                    StartupCategory(
+                        startup_delays[k] .* time_multiplier,
+                        startup_costs[k],
+                    ),
+                )
+            end
+
+            # Read reserve eligibility
+            unit_reserves = Reserve[]
+            if "Reserve eligibility" in keys(dict)
+                unit_reserves =
+                    [name_to_reserve[n] for n in dict["Reserve eligibility"]]
+            end
+
+            # Read and validate initial conditions
+            initial_power = scalar(dict["Initial power (MW)"], default = nothing)
+            initial_status = scalar(dict["Initial status (h)"], default = nothing)
+            if initial_power === nothing
+                initial_status === nothing ||
+                    error("unit $unit_name has initial status but no initial power")
+            else
+                initial_status !== nothing ||
+                    error("unit $unit_name has initial power but no initial status")
+                initial_status != 0 ||
+                    error("unit $unit_name has invalid initial status")
+                if initial_status < 0 && initial_power > 1e-3
+                    error("unit $unit_name has invalid initial power")
+                end
+                initial_status *= time_multiplier
+            end
+
+            unit = Unit(
+                unit_name,
+                bus,
+                max_power,
+                min_power,
+                timeseries(dict["Must run?"], default = [false for t in 1:T]),
+                min_power_cost,
+                segments,
+                scalar(dict["Minimum uptime (h)"], default = 1) * time_multiplier,
+                scalar(dict["Minimum downtime (h)"], default = 1) * time_multiplier,
+                scalar(dict["Ramp up limit (MW)"], default = 1e6),
+                scalar(dict["Ramp down limit (MW)"], default = 1e6),
+                scalar(dict["Startup limit (MW)"], default = 1e6),
+                scalar(dict["Shutdown limit (MW)"], default = 1e6),
+                initial_status,
+                initial_power,
+                startup_categories,
+                unit_reserves,
+            )
+            push!(bus.units, unit)
+            for r in unit_reserves
+                push!(r.units, unit)
+            end
+            name_to_unit[unit_name] = unit
+            push!(units, unit)
+        elseif lowercase(unit_type) === "profiled"
+            bus = name_to_bus[dict["Bus"]]
+            pu = ProfiledUnit(
+                unit_name,
+                bus,
+                timeseries(dict["Maximum power (MW)"]),
+                timeseries(dict["Cost (\$/MW)"])
+            )
+            push!(bus.profiled_units, pu)
+            push!(profiled_units, pu)
+        else
+            error("unit $unit_name has an invalid type")
         end
-        name_to_unit[unit_name] = unit
-        push!(units, unit)
     end
 
     # Read transmission lines
@@ -325,6 +344,8 @@ function _from_json(json; repair = true)
         time = T,
         units_by_name = Dict(g.name => g for g in units),
         units = units,
+        profiled_units_by_name = Dict(pu.name => pu for pu in profiled_units),
+        profiled_units = profiled_units,
     )
     if repair
         UnitCommitment.repair!(instance)

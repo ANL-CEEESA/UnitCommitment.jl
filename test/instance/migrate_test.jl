@@ -16,3 +16,11 @@ end
     @test length(instance.buses) == 14
     @test length(instance.lines) == 20
 end
+
+@testset "read v0.4" begin
+    instance = UnitCommitment.read("$FIXTURES/ucjl-0.4.json.gz")
+    @test length(instance.units) == 6
+    @test length(instance.buses) == 14
+    @test length(instance.lines) == 20
+    @test length(instance.profiled_units) == 2
+end

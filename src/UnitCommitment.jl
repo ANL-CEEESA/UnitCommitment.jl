@@ -4,6 +4,8 @@
 
 module UnitCommitment
 
+@info "PU" ##REMOVE ME
+
 include("instance/structs.jl")
 include("model/formulations/base/structs.jl")
 include("solution/structs.jl")
@@ -30,6 +32,7 @@ include("model/formulations/base/psload.jl")
 include("model/formulations/base/sensitivity.jl")
 include("model/formulations/base/system.jl")
 include("model/formulations/base/unit.jl")
+include("model/formulations/base/punit.jl")
 include("model/formulations/CarArr2006/pwlcosts.jl")
 include("model/formulations/DamKucRajAta2016/ramp.jl")
 include("model/formulations/Gar1962/pwlcosts.jl")

@@ -90,6 +90,9 @@ function build_model(;
         for ps in instance.price_sensitive_loads
             _add_price_sensitive_load!(model, ps)
         end
+        for pu in instance.profiled_units
+            _add_profiled_unit!(model, pu)
+        end
         _add_system_wide_eqs!(model)
         @objective(model, Min, model[:obj])
     end

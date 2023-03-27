@@ -17,6 +17,7 @@ function _migrate(json)
     end
     version = VersionNumber(version)
     version >= v"0.3" || _migrate_to_v03(json)
+    version >= v"0.4" || _migrate_to_v04(json)
     return
 end
 
@@ -32,6 +33,17 @@ function _migrate_to_v03(json)
         for (gen_name, gen) in json["Generators"]
             if gen["Provides spinning reserves?"] == true
                 gen["Reserve eligibility"] = ["r1"]
+            end
+        end
+    end
+end
+
+function _migrate_to_v04(json)
+    # Migrate thermal units
+    if json["Generators"] !== nothing
+        for (gen_name, gen) in json["Generators"]
+            if gen["Type"] === nothing
+                gen["Type"] = "Thermal"
             end
         end
     end
