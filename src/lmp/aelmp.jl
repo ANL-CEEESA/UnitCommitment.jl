@@ -124,28 +124,22 @@ function _aelmp_check_parameters(
             )
         end
     end
-    all_units = instance.units;
+    all_units = instance.units
     # CHECK: model cannot handle non-fast-starts (MISO Phase I: can ONLY solve fast-starts)
-    if any(u -> u.min_uptime > 1 || u.min_downtime > 1, all_units) 
+    if any(u -> u.min_uptime > 1 || u.min_downtime > 1, all_units)
         error(
             "The minimum up/down time of all generators must be 1. AELMP only supports fast-starts.",
         )
     end
     if any(u -> u.initial_power > 0, all_units)
-        error(
-            "The initial power of all generators must be 0.",
-        )
+        error("The initial power of all generators must be 0.")
     end
     if any(u -> u.initial_status >= 0, all_units)
-        error(
-            "The initial status of all generators must be negative.",
-        )
+        error("The initial status of all generators must be negative.")
     end
     # CHECK: model does not support startup costs (in time series)
     if any(u -> length(u.startup_categories) > 1, all_units)
-        error(
-            "The method does NOT support time-varying start-up costs.",
-        )
+        error("The method does NOT support time-varying start-up costs.")
     end
 end
 
@@ -204,7 +198,7 @@ function _modify_instance!(
             first_startup_cost = 0.0 # zero out the start up cost
         end
         unit.startup_categories =
-            StartupCategory[StartupCategory(0, first_startup_cost)]        
+            StartupCategory[StartupCategory(0, first_startup_cost)]
     end
     return instance.units_by_name = Dict(g.name => g for g in instance.units)
 end
