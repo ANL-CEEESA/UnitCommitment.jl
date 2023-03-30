@@ -8,6 +8,7 @@ function _add_production_piecewise_linear_eqs!(
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_pwl_costs::KnuOstWat2018.PwlCosts,
     formulation_status_vars::Gar1962.StatusVars,
+    sc::UnitCommitmentScenario,
 )::Nothing
     eq_prod_above_def = _init(model, :eq_prod_above_def)
     eq_segprod_limit_a = _init(model, :eq_segprod_limit_a)
@@ -58,27 +59,27 @@ function _add_production_piecewise_linear_eqs!(
 
             if g.min_uptime > 1
                 # Equation (46) in Kneuven et al. (2020)
-                eq_segprod_limit_a[gn, t, k] = @constraint(
+                eq_segprod_limit_a[sc.name, gn, t, k] = @constraint(
                     model,
-                    segprod[gn, t, k] <=
+                    segprod[sc.name, gn, t, k] <=
                     g.cost_segments[k].mw[t] * is_on[gn, t] -
                     Cv * switch_on[gn, t] -
                     (t < T ? Cw * switch_off[gn, t+1] : 0.0)
                 )
             else
                 # Equation (47a)/(48a) in Kneuven et al. (2020)
-                eq_segprod_limit_b[gn, t, k] = @constraint(
+                eq_segprod_limit_b[sc.name, gn, t, k] = @constraint(
                     model,
-                    segprod[gn, t, k] <=
+                    segprod[sc.name, gn, t, k] <=
                     g.cost_segments[k].mw[t] * is_on[gn, t] -
                     Cv * switch_on[gn, t] -
                     (t < T ? max(0, Cv - Cw) * switch_off[gn, t+1] : 0.0)
                 )
 
                 # Equation (47b)/(48b) in Kneuven et al. (2020)
-                eq_segprod_limit_c[gn, t, k] = @constraint(
+                eq_segprod_limit_c[sc.name, gn, t, k] = @constraint(
                     model,
-                    segprod[gn, t, k] <=
+                    segprod[sc.name, gn, t, k] <=
                     g.cost_segments[k].mw[t] * is_on[gn, t] -
                     max(0, Cw - Cv) * switch_on[gn, t] -
                     (t < T ? Cw * switch_off[gn, t+1] : 0.0)
@@ -87,22 +88,26 @@ function _add_production_piecewise_linear_eqs!(
 
             # Definition of production
             # Equation (43) in Kneuven et al. (2020)
-            eq_prod_above_def[gn, t] = @constraint(
+            eq_prod_above_def[sc.name, gn, t] = @constraint(
                 model,
-                prod_above[gn, t] == sum(segprod[gn, t, k] for k in 1:K)
+                prod_above[sc.name, gn, t] ==
+                sum(segprod[sc.name, gn, t, k] for k in 1:K)
             )
 
             # Objective function
             # Equation (44) in Kneuven et al. (2020)
             add_to_expression!(
                 model[:obj],
-                segprod[gn, t, k],
+                segprod[sc.name, gn, t, k],
                 g.cost_segments[k].cost[t],
             )
 
             # Also add an explicit upper bound on segprod to make the solver's
             # work a bit easier
-            set_upper_bound(segprod[gn, t, k], g.cost_segments[k].mw[t])
+            set_upper_bound(
+                segprod[sc.name, gn, t, k],
+                g.cost_segments[k].mw[t],
+            )
         end
     end
 end

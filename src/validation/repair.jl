@@ -3,19 +3,19 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 """
-    repair!(instance)
+    repair!(sc)
 
-Verifies that the given unit commitment instance is valid and automatically
+Verifies that the given unit commitment scenario is valid and automatically
 fixes some validation errors if possible, issuing a warning for each error
 found. If a validation error cannot be automatically fixed, issues an
 exception.
 
 Returns the number of validation errors found.
 """
-function repair!(instance::UnitCommitmentInstance)::Int
+function repair!(sc::UnitCommitmentScenario)::Int
     n_errors = 0
 
-    for g in instance.units
+    for g in sc.units
 
         # Startup costs and delays must be increasing
         for s in 2:length(g.startup_categories)
@@ -38,7 +38,7 @@ function repair!(instance::UnitCommitmentInstance)::Int
             end
         end
 
-        for t in 1:instance.time
+        for t in 1:sc.time
             # Production cost curve should be convex
             for k in 2:length(g.cost_segments)
                 cost = g.cost_segments[k].cost[t]

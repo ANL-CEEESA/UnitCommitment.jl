@@ -7,42 +7,49 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 @testset "read_benchmark" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
 
-    @test length(instance.lines) == 20
-    @test length(instance.buses) == 14
-    @test length(instance.units) == 6
-    @test length(instance.contingencies) == 19
-    @test length(instance.price_sensitive_loads) == 1
+    @test repr(instance) == (
+        "UnitCommitmentInstance(1 scenarios, 6 units, 14 buses, " *
+        "20 lines, 19 contingencies, 1 price sensitive loads, 4 time steps)"
+    )
+
+    @test length(instance.scenarios) == 1
+    sc = instance.scenarios[1]
+    @test length(sc.lines) == 20
+    @test length(sc.buses) == 14
+    @test length(sc.units) == 6
+    @test length(sc.contingencies) == 19
+    @test length(sc.price_sensitive_loads) == 1
     @test instance.time == 4
 
-    @test instance.lines[5].name == "l5"
-    @test instance.lines[5].source.name == "b2"
-    @test instance.lines[5].target.name == "b5"
-    @test instance.lines[5].reactance ≈ 0.17388
-    @test instance.lines[5].susceptance ≈ 10.037550333
-    @test instance.lines[5].normal_flow_limit == [1e8 for t in 1:4]
-    @test instance.lines[5].emergency_flow_limit == [1e8 for t in 1:4]
-    @test instance.lines[5].flow_limit_penalty == [5e3 for t in 1:4]
-    @test instance.lines_by_name["l5"].name == "l5"
+    @test sc.lines[5].name == "l5"
+    @test sc.lines[5].source.name == "b2"
+    @test sc.lines[5].target.name == "b5"
+    @test sc.lines[5].reactance ≈ 0.17388
+    @test sc.lines[5].susceptance ≈ 10.037550333
+    @test sc.lines[5].normal_flow_limit == [1e8 for t in 1:4]
+    @test sc.lines[5].emergency_flow_limit == [1e8 for t in 1:4]
+    @test sc.lines[5].flow_limit_penalty == [5e3 for t in 1:4]
+    @test sc.lines_by_name["l5"].name == "l5"
 
-    @test instance.lines[1].name == "l1"
-    @test instance.lines[1].source.name == "b1"
-    @test instance.lines[1].target.name == "b2"
-    @test instance.lines[1].reactance ≈ 0.059170
-    @test instance.lines[1].susceptance ≈ 29.496860773945
-    @test instance.lines[1].normal_flow_limit == [300.0 for t in 1:4]
-    @test instance.lines[1].emergency_flow_limit == [400.0 for t in 1:4]
-    @test instance.lines[1].flow_limit_penalty == [1e3 for t in 1:4]
+    @test sc.lines[1].name == "l1"
+    @test sc.lines[1].source.name == "b1"
+    @test sc.lines[1].target.name == "b2"
+    @test sc.lines[1].reactance ≈ 0.059170
+    @test sc.lines[1].susceptance ≈ 29.496860773945
+    @test sc.lines[1].normal_flow_limit == [300.0 for t in 1:4]
+    @test sc.lines[1].emergency_flow_limit == [400.0 for t in 1:4]
+    @test sc.lines[1].flow_limit_penalty == [1e3 for t in 1:4]
 
-    @test instance.buses[9].name == "b9"
-    @test instance.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
-    @test instance.buses_by_name["b9"].name == "b9"
+    @test sc.buses[9].name == "b9"
+    @test sc.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
+    @test sc.buses_by_name["b9"].name == "b9"
 
-    @test instance.reserves[1].name == "r1"
-    @test instance.reserves[1].type == "spinning"
-    @test instance.reserves[1].amount == [100.0, 100.0, 100.0, 100.0]
-    @test instance.reserves_by_name["r1"].name == "r1"
+    @test sc.reserves[1].name == "r1"
+    @test sc.reserves[1].type == "spinning"
+    @test sc.reserves[1].amount == [100.0, 100.0, 100.0, 100.0]
+    @test sc.reserves_by_name["r1"].name == "r1"
 
-    unit = instance.units[1]
+    unit = sc.units[1]
     @test unit.name == "g1"
     @test unit.bus.name == "b1"
     @test unit.ramp_up_limit == 1e6
@@ -69,14 +76,14 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.startup_categories[2].cost == 1500.0
     @test unit.startup_categories[3].cost == 2000.0
     @test length(unit.reserves) == 0
-    @test instance.units_by_name["g1"].name == "g1"
+    @test sc.units_by_name["g1"].name == "g1"
 
-    unit = instance.units[2]
+    unit = sc.units[2]
     @test unit.name == "g2"
     @test unit.must_run == [false for t in 1:4]
     @test length(unit.reserves) == 1
 
-    unit = instance.units[3]
+    unit = sc.units[3]
     @test unit.name == "g3"
     @test unit.bus.name == "b3"
     @test unit.ramp_up_limit == 70.0
@@ -98,23 +105,23 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test length(unit.reserves) == 1
     @test unit.reserves[1].name == "r1"
 
-    @test instance.contingencies[1].lines == [instance.lines[1]]
-    @test instance.contingencies[1].units == []
-    @test instance.contingencies[1].name == "c1"
-    @test instance.contingencies_by_name["c1"].name == "c1"
+    @test sc.contingencies[1].lines == [sc.lines[1]]
+    @test sc.contingencies[1].units == []
+    @test sc.contingencies[1].name == "c1"
+    @test sc.contingencies_by_name["c1"].name == "c1"
 
-    load = instance.price_sensitive_loads[1]
+    load = sc.price_sensitive_loads[1]
     @test load.name == "ps1"
     @test load.bus.name == "b3"
     @test load.revenue == [100.0 for t in 1:4]
     @test load.demand == [50.0 for t in 1:4]
-    @test instance.price_sensitive_loads_by_name["ps1"].name == "ps1"
+    @test sc.price_sensitive_loads_by_name["ps1"].name == "ps1"
 end
 
 @testset "read_benchmark sub-hourly" begin
     instance = UnitCommitment.read("$FIXTURES/case14-sub-hourly.json.gz")
     @test instance.time == 4
-    unit = instance.units[1]
+    unit = instance.scenarios[1].units[1]
     @test unit.name == "g1"
     @test unit.min_uptime == 2
     @test unit.min_downtime == 2

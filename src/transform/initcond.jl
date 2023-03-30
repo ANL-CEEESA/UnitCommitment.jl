@@ -5,18 +5,18 @@
 using JuMP
 
 """
-    generate_initial_conditions!(instance, optimizer)
+    generate_initial_conditions!(sc, optimizer)
 
-Generates feasible initial conditions for the given instance, by constructing
+Generates feasible initial conditions for the given scenario, by constructing
 and solving a single-period mixed-integer optimization problem, using the given
-optimizer. The instance is modified in-place.
+optimizer. The scenario is modified in-place.
 """
 function generate_initial_conditions!(
-    instance::UnitCommitmentInstance,
+    sc::UnitCommitmentScenario,
     optimizer,
 )::Nothing
-    G = instance.units
-    B = instance.buses
+    G = sc.units
+    B = sc.buses
     t = 1
     mip = JuMP.Model(optimizer)
 

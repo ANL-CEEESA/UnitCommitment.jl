@@ -20,6 +20,7 @@ function _add_status_vars!(
             switch_on[g.name, t] = @variable(model, binary = true)
             switch_off[g.name, t] = @variable(model, binary = true)
         end
+        add_to_expression!(model[:obj], is_on[g.name, t], g.min_power_cost[t])
     end
     return
 end

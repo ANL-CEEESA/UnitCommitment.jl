@@ -4,6 +4,8 @@
 
 module UnitCommitment
 
+using Base: String
+
 include("instance/structs.jl")
 include("model/formulations/base/structs.jl")
 include("solution/structs.jl")

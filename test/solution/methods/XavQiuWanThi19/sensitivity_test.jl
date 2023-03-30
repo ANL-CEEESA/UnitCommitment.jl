@@ -6,7 +6,8 @@ using UnitCommitment, Test, LinearAlgebra
 
 @testset "_susceptance_matrix" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
-    actual = UnitCommitment._susceptance_matrix(instance.lines)
+    sc = instance.scenarios[1]
+    actual = UnitCommitment._susceptance_matrix(sc.lines)
     @test size(actual) == (20, 20)
     expected = Diagonal([
         29.5,
@@ -35,9 +36,10 @@ end
 
 @testset "_reduced_incidence_matrix" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
+    sc = instance.scenarios[1]
     actual = UnitCommitment._reduced_incidence_matrix(
-        lines = instance.lines,
-        buses = instance.buses,
+        lines = sc.lines,
+        buses = sc.buses,
     )
     @test size(actual) == (20, 13)
     @test actual[1, 1] == -1.0
@@ -82,9 +84,10 @@ end
 
 @testset "_injection_shift_factors" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
+    sc = instance.scenarios[1]
     actual = UnitCommitment._injection_shift_factors(
-        lines = instance.lines,
-        buses = instance.buses,
+        lines = sc.lines,
+        buses = sc.buses,
     )
     @test size(actual) == (20, 13)
     @test round.(actual, digits = 2) == [
@@ -113,25 +116,26 @@ end
 
 @testset "_line_outage_factors" begin
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
+    sc = instance.scenarios[1]
     isf_before = UnitCommitment._injection_shift_factors(
-        lines = instance.lines,
-        buses = instance.buses,
+        lines = sc.lines,
+        buses = sc.buses,
     )
     lodf = UnitCommitment._line_outage_factors(
-        lines = instance.lines,
-        buses = instance.buses,
+        lines = sc.lines,
+        buses = sc.buses,
         isf = isf_before,
     )
-    for contingency in instance.contingencies
+    for contingency in sc.contingencies
         for lc in contingency.lines
             prev_susceptance = lc.susceptance
             lc.susceptance = 0.0
             isf_after = UnitCommitment._injection_shift_factors(
-                lines = instance.lines,
-                buses = instance.buses,
+                lines = sc.lines,
+                buses = sc.buses,
             )
             lc.susceptance = prev_susceptance
-            for lm in instance.lines
+            for lm in sc.lines
                 expected = isf_after[lm.offset, :]
                 actual =
                     isf_before[lm.offset, :] +
