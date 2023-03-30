@@ -2,11 +2,8 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_profiled_unit!(
-    model::JuMP.Model,
-    pu::ProfiledUnit,
-)::Nothing
-    punits = _init(model, :profiled_units)
+function _add_profiled_unit!(model::JuMP.Model, pu::ProfiledUnit)::Nothing
+    punits = _init(model, :prod_profiled)
     net_injection = _init(model, :expr_net_injection)
     for t in 1:model[:instance].time
         # Decision variable

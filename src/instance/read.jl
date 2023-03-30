@@ -172,10 +172,16 @@ function _from_json(json; repair = true)
             # Read production cost curve
             K = length(dict["Production cost curve (MW)"])
             curve_mw = hcat(
-                [timeseries(dict["Production cost curve (MW)"][k]) for k in 1:K]...,
+                [
+                    timeseries(dict["Production cost curve (MW)"][k]) for
+                    k in 1:K
+                ]...,
             )
             curve_cost = hcat(
-                [timeseries(dict["Production cost curve (\$)"][k]) for k in 1:K]...,
+                [
+                    timeseries(dict["Production cost curve (\$)"][k]) for
+                    k in 1:K
+                ]...,
             )
             min_power = curve_mw[:, 1]
             max_power = curve_mw[:, K]
@@ -210,14 +216,18 @@ function _from_json(json; repair = true)
             end
 
             # Read and validate initial conditions
-            initial_power = scalar(dict["Initial power (MW)"], default = nothing)
-            initial_status = scalar(dict["Initial status (h)"], default = nothing)
+            initial_power =
+                scalar(dict["Initial power (MW)"], default = nothing)
+            initial_status =
+                scalar(dict["Initial status (h)"], default = nothing)
             if initial_power === nothing
-                initial_status === nothing ||
-                    error("unit $unit_name has initial status but no initial power")
+                initial_status === nothing || error(
+                    "unit $unit_name has initial status but no initial power",
+                )
             else
-                initial_status !== nothing ||
-                    error("unit $unit_name has initial power but no initial status")
+                initial_status !== nothing || error(
+                    "unit $unit_name has initial power but no initial status",
+                )
                 initial_status != 0 ||
                     error("unit $unit_name has invalid initial status")
                 if initial_status < 0 && initial_power > 1e-3
@@ -234,8 +244,10 @@ function _from_json(json; repair = true)
                 timeseries(dict["Must run?"], default = [false for t in 1:T]),
                 min_power_cost,
                 segments,
-                scalar(dict["Minimum uptime (h)"], default = 1) * time_multiplier,
-                scalar(dict["Minimum downtime (h)"], default = 1) * time_multiplier,
+                scalar(dict["Minimum uptime (h)"], default = 1) *
+                time_multiplier,
+                scalar(dict["Minimum downtime (h)"], default = 1) *
+                time_multiplier,
                 scalar(dict["Ramp up limit (MW)"], default = 1e6),
                 scalar(dict["Ramp down limit (MW)"], default = 1e6),
                 scalar(dict["Startup limit (MW)"], default = 1e6),
@@ -257,7 +269,7 @@ function _from_json(json; repair = true)
                 unit_name,
                 bus,
                 timeseries(dict["Maximum power (MW)"]),
-                timeseries(dict["Cost (\$/MW)"])
+                timeseries(dict["Cost (\$/MW)"]),
             )
             push!(bus.profiled_units, pu)
             push!(profiled_units, pu)
