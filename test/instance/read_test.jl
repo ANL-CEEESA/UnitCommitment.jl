@@ -9,7 +9,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
 
     @test repr(instance) == (
         "UnitCommitmentInstance(1 scenarios, 6 units, 14 buses, " *
-        "20 lines, 19 contingencies, 1 price sensitive loads, 4 time steps)"
+        "20 lines, 19 contingencies, 1 price sensitive loads, 0 profiled units, 4 time steps)"
     )
 
     @test length(instance.scenarios) == 1
@@ -130,4 +130,24 @@ end
     @test unit.startup_categories[2].delay == 4
     @test unit.startup_categories[3].delay == 6
     @test unit.initial_status == -200
+end
+
+@testset "read_benchmark profiled-units" begin
+    instance = UnitCommitment.read("$FIXTURES/case14-profiled.json.gz")
+    sc = instance.scenarios[1]
+    @test length(sc.profiled_units) == 2
+
+    first_pu = sc.profiled_units[1]
+    @test first_pu.name == "g7"
+    @test first_pu.bus.name == "b4"
+    @test first_pu.cost == [100.0 for t in 1:4]
+    @test first_pu.capacity == [100.0 for t in 1:4]
+    @test sc.profiled_units_by_name["g7"].name == "g7"
+
+    second_pu = sc.profiled_units[2]
+    @test second_pu.name == "g8"
+    @test second_pu.bus.name == "b5"
+    @test second_pu.cost == [50.0 for t in 1:4]
+    @test second_pu.capacity == [120.0 for t in 1:4]
+    @test sc.profiled_units_by_name["g8"].name == "g8"
 end

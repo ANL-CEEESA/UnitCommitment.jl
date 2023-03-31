@@ -8,6 +8,7 @@ mutable struct Bus
     load::Vector{Float64}
     units::Vector
     price_sensitive_loads::Vector
+    profiled_units::Vector
 end
 
 mutable struct CostSegment
@@ -73,6 +74,13 @@ mutable struct PriceSensitiveLoad
     revenue::Vector{Float64}
 end
 
+mutable struct ProfiledUnit
+    name::String
+    bus::Bus
+    capacity::Vector{Float64}
+    cost::Vector{Float64}
+end
+
 Base.@kwdef mutable struct UnitCommitmentScenario
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
@@ -92,6 +100,8 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     time::Int
     units_by_name::Dict{AbstractString,Unit}
     units::Vector{Unit}
+    profiled_units_by_name::Dict{AbstractString,ProfiledUnit}
+    profiled_units::Vector{ProfiledUnit}
 end
 
 Base.@kwdef mutable struct UnitCommitmentInstance
@@ -108,6 +118,7 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")
     print(io, "$(length(sc.price_sensitive_loads)) price sensitive loads, ")
+    print(io, "$(length(sc.profiled_units)) profiled units, ")
     print(io, "$(instance.time) time steps")
     print(io, ")")
     return

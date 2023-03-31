@@ -96,6 +96,9 @@ function build_model(;
             for g in sc.units
                 _add_unit_dispatch!(model, g, formulation, sc)
             end
+            for pu in sc.profiled_units
+                _add_profiled_unit!(model, pu, sc)
+            end
             _add_system_wide_eqs!(model, sc)
         end
         @objective(model, Min, model[:obj])
