@@ -38,14 +38,14 @@ end
     # instance 3
     path = "$FIXTURES/lmp_simple_test_3.json.gz"
     lmp = solve_conventional_testcase(path)
-    @test lmp["s1","A", 1] == 50.0
-    @test lmp["s1","B", 1] == 70.0
-    @test lmp["s1","C", 1] == 100.0
+    @test lmp["s1", "A", 1] == 50.0
+    @test lmp["s1", "B", 1] == 70.0
+    @test lmp["s1", "C", 1] == 100.0
 
     # instance 4
     path = "$FIXTURES/lmp_simple_test_4.json.gz"
     lmp = solve_conventional_testcase(path)
-    @test lmp["s1","A", 1] == 50.0
-    @test lmp["s1","B", 1] == 70.0
-    @test lmp["s1","C", 1] == 90.0
+    @test lmp["s1", "A", 1] == 50.0
+    @test lmp["s1", "B", 1] == 70.0
+    @test lmp["s1", "C", 1] == 90.0
 end

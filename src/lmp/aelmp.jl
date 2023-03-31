@@ -120,9 +120,7 @@ function _aelmp_check_parameters(
 )
     # CHECK: model cannot have multiple scenarios
     if length(instance.scenarios) > 1
-        error(
-            "The method does NOT support multiple scenarios.",
-        )
+        error("The method does NOT support multiple scenarios.")
     end
     sc = instance.scenarios[1]
     # CHECK: model must be solved if allow_offline_participation=false
