@@ -26,6 +26,7 @@ WARNING: This approximation method is not fully developed. The implementation is
 1. It only supports Fast Start resources. More specifically, the minimum up/down time has to be zero.
 2. The method does NOT support time-varying start-up costs.
 3. An asset is considered offline if it is never on throughout all time periods. 
+4. The method does NOT support multiple scenarios.
 
 Arguments
 ---------
@@ -71,19 +72,20 @@ aelmp = UnitCommitment.compute_lmp(
 )
 
 # Access the AELMPs
-# Example: "b1" is the bus name, 1 is the first time slot
-@show aelmp["b1", 1]
+# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
+# Note: although scenario is supported, the query still keeps the scenario keys for consistency.
+@show aelmp["s1", "b1", 1]
 ```
 """
 function compute_lmp(
     model::JuMP.Model,
     method::AELMP;
     optimizer,
-)::OrderedDict{Tuple{String,Int},Float64}
+)::OrderedDict{Tuple{String,String,Int},Float64}
     @info "Building the approximation model..."
     instance = deepcopy(model[:instance])
     _aelmp_check_parameters(instance, model, method)
-    _modify_instance!(instance, model, method)
+    _modify_scenario!(instance.scenarios[1], model, method)
 
     # prepare the result dictionary and solve the model 
     elmp = OrderedDict()
@@ -116,6 +118,13 @@ function _aelmp_check_parameters(
     model::JuMP.Model,
     method::AELMP,
 )
+    # CHECK: model cannot have multiple scenarios
+    if length(instance.scenarios) > 1
+        error(
+            "The method does NOT support multiple scenarios.",
+        )
+    end
+    sc = instance.scenarios[1]
     # CHECK: model must be solved if allow_offline_participation=false
     if !method.allow_offline_participation
         if isnothing(model) || !has_values(model)
@@ -124,7 +133,7 @@ function _aelmp_check_parameters(
             )
         end
     end
-    all_units = instance.units
+    all_units = sc.units
     # CHECK: model cannot handle non-fast-starts (MISO Phase I: can ONLY solve fast-starts)
     if any(u -> u.min_uptime > 1 || u.min_downtime > 1, all_units)
         error(
@@ -143,19 +152,19 @@ function _aelmp_check_parameters(
     end
 end
 
-function _modify_instance!(
-    instance::UnitCommitmentInstance,
+function _modify_scenario!(
+    sc::UnitCommitmentScenario,
     model::JuMP.Model,
     method::AELMP,
 )
-    # this function modifies the instance units (generators)
+    # this function modifies the sc units (generators)
     if !method.allow_offline_participation
         # 1. remove (if NOT allowing) the offline generators
         units_to_remove = []
-        for unit in instance.units
+        for unit in sc.units
             # remove based on the solved UC model result
             # remove the unit if it is never on
-            if all(t -> value(model[:is_on][unit.name, t]) == 0, instance.time)
+            if all(t -> value(model[:is_on][unit.name, t]) == 0, sc.time)
                 # unregister from the bus 
                 filter!(x -> x.name != unit.name, unit.bus.units)
                 # unregister from the reserve
@@ -167,10 +176,10 @@ function _modify_instance!(
             end
         end
         # unregister the units from the remove list
-        filter!(x -> !(x.name in units_to_remove), instance.units)
+        filter!(x -> !(x.name in units_to_remove), sc.units)
     end
 
-    for unit in instance.units
+    for unit in sc.units
         # 2. set min generation requirement to 0 by adding 0 to production curve and cost 
         # min_power & min_costs are vectors with dimension T
         if unit.min_power[1] != 0
@@ -200,5 +209,5 @@ function _modify_instance!(
         unit.startup_categories =
             StartupCategory[StartupCategory(0, first_startup_cost)]
     end
-    return instance.units_by_name = Dict(g.name => g for g in instance.units)
+    return sc.units_by_name = Dict(g.name => g for g in sc.units)
 end

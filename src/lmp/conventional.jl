@@ -9,7 +9,7 @@ using JuMP
         model::JuMP.Model,
         method::ConventionalLMP;
         optimizer,
-    )::OrderedDict{Tuple{String,Int},Float64}
+    )::OrderedDict{Tuple{String,String,Int},Float64}
 
 Calculates conventional locational marginal prices of the given unit commitment
 instance. Returns a dictionary mapping `(bus_name, time)` to the marginal price.
@@ -55,15 +55,15 @@ lmp = UnitCommitment.compute_lmp(
 )
 
 # Access the LMPs
-# Example: "b1" is the bus name, 1 is the first time slot
-@show lmp["b1", 1]
+# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
+@show lmp["s1", "b1", 1]
 ```
 """
 function compute_lmp(
     model::JuMP.Model,
     ::ConventionalLMP;
     optimizer,
-)::OrderedDict{Tuple{String,Int},Float64}
+)::OrderedDict{Tuple{String,String,Int},Float64}
     if !has_values(model)
         error("The UC model must be solved before calculating the LMPs.")
     end

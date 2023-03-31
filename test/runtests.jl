@@ -40,7 +40,7 @@ FIXTURES = "$(@__DIR__)/fixtures"
         include("validation/repair_test.jl")
     end
     @testset "lmp" begin
-        include("lmp/lmp_test.jl")
+        include("lmp/conventional_test.jl")
         include("lmp/aelmp_test.jl")
     end
 end

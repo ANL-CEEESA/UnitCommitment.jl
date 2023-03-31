@@ -177,8 +177,8 @@ lmp = UnitCommitment.compute_lmp(
 )
 
 # Access the LMPs
-# Example: "b1" is the bus name, 1 is the first time slot
-@show lmp["b1", 1]
+# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
+@show lmp["s1","b1", 1]
 ```
 
 ### Approximate Extended LMPs
@@ -220,6 +220,7 @@ aelmp = UnitCommitment.compute_lmp(
 )
 
 # Access the AELMPs
-# Example: "b1" is the bus name, 1 is the first time slot
-@show aelmp["b1", 1]
+# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
+# Note: although scenario is supported, the query still keeps the scenario keys for consistency.
+@show aelmp["s1", "b1", 1]
 ```
