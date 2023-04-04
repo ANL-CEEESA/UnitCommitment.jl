@@ -66,10 +66,10 @@ function solution(model::JuMP.Model)::OrderedDict
     for sc in instance.scenarios
         sol[sc.name] = OrderedDict()
         if !isempty(sc.thermal_units)
-            sol[sc.name]["Production (MW)"] = OrderedDict(
+            sol[sc.name]["Thermal production (MW)"] = OrderedDict(
                 g.name => production(g, sc) for g in sc.thermal_units
             )
-            sol[sc.name]["Production cost (\$)"] = OrderedDict(
+            sol[sc.name]["Thermal production cost (\$)"] = OrderedDict(
                 g.name => production_cost(g, sc) for g in sc.thermal_units
             )
             sol[sc.name]["Startup cost (\$)"] = OrderedDict(

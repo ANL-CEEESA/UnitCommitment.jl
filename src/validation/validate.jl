@@ -28,8 +28,8 @@ function validate(
     instance::UnitCommitmentInstance,
     solution::Union{Dict,OrderedDict},
 )::Bool
-    "Production (MW)" ∈ keys(solution) ? solution = Dict("s1" => solution) :
-    nothing
+    "Thermal production (MW)" ∈ keys(solution) ?
+    solution = Dict("s1" => solution) : nothing
     err_count = 0
     err_count += _validate_units(instance, solution)
     err_count += _validate_reserve_and_demand(instance, solution)
@@ -46,7 +46,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
         for unit in sc.thermal_units
-            production = solution[sc.name]["Production (MW)"][unit.name]
+            production = solution[sc.name]["Thermal production (MW)"][unit.name]
             reserve = [0.0 for _ in 1:instance.time]
             spinning_reserves =
                 [r for r in unit.reserves if r.type == "spinning"]
@@ -57,7 +57,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 )
             end
             actual_production_cost =
-                solution[sc.name]["Production cost (\$)"][unit.name]
+                solution[sc.name]["Thermal production cost (\$)"][unit.name]
             actual_startup_cost =
                 solution[sc.name]["Startup cost (\$)"][unit.name]
             is_on = bin(solution[sc.name]["Is on"][unit.name])
@@ -323,7 +323,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 )
             end
             production = sum(
-                solution[sc.name]["Production (MW)"][g.name][t] for
+                solution[sc.name]["Thermal production (MW)"][g.name][t] for
                 g in sc.thermal_units
             )
             if "Load curtail (MW)" in keys(solution)

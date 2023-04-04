@@ -10,8 +10,8 @@ solution. Useful for computing LMPs.
 """
 function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
     instance, T = model[:instance], model[:instance].time
-    "Production (MW)" ∈ keys(solution) ? solution = Dict("s1" => solution) :
-    nothing
+    "Thermal production (MW)" ∈ keys(solution) ?
+    solution = Dict("s1" => solution) : nothing
     is_on = model[:is_on]
     prod_above = model[:prod_above]
     reserve = model[:reserve]
@@ -20,7 +20,7 @@ function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
             for t in 1:T
                 is_on_value = round(solution[sc.name]["Is on"][g.name][t])
                 prod_value = round(
-                    solution[sc.name]["Production (MW)"][g.name][t],
+                    solution[sc.name]["Thermal production (MW)"][g.name][t],
                     digits = 5,
                 )
                 JuMP.fix(is_on[g.name, t], is_on_value, force = true)
