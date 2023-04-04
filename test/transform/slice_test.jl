@@ -13,7 +13,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test modified.time == 2
     @test length(sc.power_balance_penalty) == 2
     @test length(sc.reserves_by_name["r1"].amount) == 2
-    for u in sc.units
+    for u in sc.thermal_units
         @test length(u.max_power) == 2
         @test length(u.min_power) == 2
         @test length(u.must_run) == 2

@@ -123,7 +123,7 @@ function _randomize_costs(
     sc::UnitCommitmentScenario,
     distribution,
 )::Nothing
-    for unit in sc.units
+    for unit in sc.thermal_units
         α = rand(rng, distribution)
         unit.min_power_cost *= α
         for k in unit.cost_segments
@@ -168,7 +168,7 @@ function _randomize_load_profile(
         )
         push!(system_load, system_load[t-1] * gamma)
     end
-    capacity = sum(maximum(u.max_power) for u in sc.units)
+    capacity = sum(maximum(u.max_power) for u in sc.thermal_units)
     peak_load = rand(rng, params.peak_load) * capacity
     system_load = system_load ./ maximum(system_load) .* peak_load
 

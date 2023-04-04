@@ -15,7 +15,7 @@ Returns the number of validation errors found.
 function repair!(sc::UnitCommitmentScenario)::Int
     n_errors = 0
 
-    for g in sc.units
+    for g in sc.thermal_units
 
         # Startup costs and delays must be increasing
         for s in 2:length(g.startup_categories)

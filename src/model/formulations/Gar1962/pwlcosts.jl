@@ -4,7 +4,7 @@
 
 function _add_production_piecewise_linear_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation_prod_vars::Gar1962.ProdVars,
     formulation_pwl_costs::Gar1962.PwlCosts,
     formulation_status_vars::Gar1962.StatusVars,

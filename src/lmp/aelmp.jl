@@ -131,7 +131,7 @@ function _aelmp_check_parameters(
             )
         end
     end
-    all_units = sc.units
+    all_units = sc.thermal_units
     # CHECK: model cannot handle non-fast-starts (MISO Phase I: can ONLY solve fast-starts)
     if any(u -> u.min_uptime > 1 || u.min_downtime > 1, all_units)
         error(
@@ -159,25 +159,25 @@ function _modify_scenario!(
     if !method.allow_offline_participation
         # 1. remove (if NOT allowing) the offline generators
         units_to_remove = []
-        for unit in sc.units
+        for unit in sc.thermal_units
             # remove based on the solved UC model result
             # remove the unit if it is never on
             if all(t -> value(model[:is_on][unit.name, t]) == 0, sc.time)
                 # unregister from the bus 
-                filter!(x -> x.name != unit.name, unit.bus.units)
+                filter!(x -> x.name != unit.name, unit.bus.thermal_units)
                 # unregister from the reserve
                 for r in unit.reserves
-                    filter!(x -> x.name != unit.name, r.units)
+                    filter!(x -> x.name != unit.name, r.thermal_units)
                 end
                 # append the name to the remove list
                 push!(units_to_remove, unit.name)
             end
         end
         # unregister the units from the remove list
-        filter!(x -> !(x.name in units_to_remove), sc.units)
+        filter!(x -> !(x.name in units_to_remove), sc.thermal_units)
     end
 
-    for unit in sc.units
+    for unit in sc.thermal_units
         # 2. set min generation requirement to 0 by adding 0 to production curve and cost 
         # min_power & min_costs are vectors with dimension T
         if unit.min_power[1] != 0
@@ -207,5 +207,6 @@ function _modify_scenario!(
         unit.startup_categories =
             StartupCategory[StartupCategory(0, first_startup_cost)]
     end
-    return sc.units_by_name = Dict(g.name => g for g in sc.units)
+    return sc.thermal_units_by_name =
+        Dict(g.name => g for g in sc.thermal_units)
 end

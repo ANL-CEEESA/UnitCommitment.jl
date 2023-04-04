@@ -21,7 +21,7 @@ test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
     @testset "cost and load share" begin
         sc = get_scenario()
         # Check original costs
-        unit = sc.units[10]
+        unit = sc.thermal_units[10]
         test_approx(unit.min_power_cost[1], 825.023)
         test_approx(unit.cost_segments[1].cost[1], 36.659)
         test_approx(unit.startup_categories[1].cost[1], 7570.42)

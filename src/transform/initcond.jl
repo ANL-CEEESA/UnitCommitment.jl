@@ -15,7 +15,7 @@ function generate_initial_conditions!(
     sc::UnitCommitmentScenario,
     optimizer,
 )::Nothing
-    G = sc.units
+    G = sc.thermal_units
     B = sc.buses
     t = 1
     mip = JuMP.Model(optimizer)

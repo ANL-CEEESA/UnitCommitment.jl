@@ -4,7 +4,7 @@
 
 function _add_ramp_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     ::Gar1962.ProdVars,
     ::WanHob2016.Ramping,
     ::Gar1962.StatusVars,

@@ -129,7 +129,7 @@ end
 
 function _from_json(json; repair = true)::UnitCommitmentScenario
     _migrate(json)
-    units = Unit[]
+    thermal_units = ThermalUnit[]
     buses = Bus[]
     contingencies = Contingency[]
     lines = TransmissionLine[]
@@ -160,7 +160,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
 
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
-    name_to_unit = Dict{String,Unit}()
+    name_to_unit = Dict{String,ThermalUnit}()
     name_to_reserve = Dict{String,Reserve}()
 
     function timeseries(x; default = nothing)
@@ -181,7 +181,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
             bus_name,
             length(buses),
             timeseries(dict["Load (MW)"]),
-            Unit[],
+            ThermalUnit[],
             PriceSensitiveLoad[],
             ProfiledUnit[],
         )
@@ -196,7 +196,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 name = reserve_name,
                 type = lowercase(dict["Type"]),
                 amount = timeseries(dict["Amount (MW)"]),
-                units = [],
+                thermal_units = [],
                 shortfall_penalty = scalar(
                     dict["Shortfall penalty (\$/MW)"],
                     default = -1,
@@ -282,7 +282,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 initial_status *= time_multiplier
             end
 
-            unit = Unit(
+            unit = ThermalUnit(
                 unit_name,
                 bus,
                 max_power,
@@ -303,12 +303,12 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 startup_categories,
                 unit_reserves,
             )
-            push!(bus.units, unit)
+            push!(bus.thermal_units, unit)
             for r in unit_reserves
-                push!(r.units, unit)
+                push!(r.thermal_units, unit)
             end
             name_to_unit[unit_name] = unit
-            push!(units, unit)
+            push!(thermal_units, unit)
         elseif lowercase(unit_type) === "profiled"
             bus = name_to_bus[dict["Bus"]]
             pu = ProfiledUnit(
@@ -355,7 +355,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
     # Read contingencies
     if "Contingencies" in keys(json)
         for (cont_name, dict) in json["Contingencies"]
-            affected_units = Unit[]
+            affected_units = ThermalUnit[]
             affected_lines = TransmissionLine[]
             if "Affected lines" in keys(dict)
                 affected_lines =
@@ -400,8 +400,8 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         reserves = reserves,
         reserves_by_name = name_to_reserve,
         time = T,
-        units_by_name = Dict(g.name => g for g in units),
-        units = units,
+        thermal_units_by_name = Dict(g.name => g for g in thermal_units),
+        thermal_units = thermal_units,
         profiled_units_by_name = Dict(pu.name => pu for pu in profiled_units),
         profiled_units = profiled_units,
         isf = spzeros(Float64, length(lines), length(buses) - 1),

@@ -53,7 +53,7 @@ function _add_spinning_reserve_eqs!(
                 model,
                 sum(
                     model[:reserve][sc.name, r.name, g.name, t] for
-                    g in r.units
+                    g in r.thermal_units
                 ) + model[:reserve_shortfall][sc.name, r.name, t] >=
                 r.amount[t]
             )
@@ -91,7 +91,7 @@ function _add_flexiramp_reserve_eqs!(
                 model,
                 sum(
                     model[:upflexiramp][sc.name, r.name, g.name, t] for
-                    g in r.units
+                    g in r.thermal_units
                 ) + model[:upflexiramp_shortfall][sc.name, r.name, t] >=
                 r.amount[t]
             )
@@ -100,7 +100,7 @@ function _add_flexiramp_reserve_eqs!(
                 model,
                 sum(
                     model[:dwflexiramp][sc.name, r.name, g.name, t] for
-                    g in r.units
+                    g in r.thermal_units
                 ) + model[:dwflexiramp_shortfall][sc.name, r.name, t] >=
                 r.amount[t]
             )

@@ -29,7 +29,7 @@ function slice(
         for r in sc.reserves
             r.amount = r.amount[range]
         end
-        for u in sc.units
+        for u in sc.thermal_units
             u.max_power = u.max_power[range]
             u.min_power = u.min_power[range]
             u.must_run = u.must_run[range]

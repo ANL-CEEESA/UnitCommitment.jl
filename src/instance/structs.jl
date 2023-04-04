@@ -6,7 +6,7 @@ mutable struct Bus
     name::String
     offset::Int
     load::Vector{Float64}
-    units::Vector
+    thermal_units::Vector
     price_sensitive_loads::Vector
     profiled_units::Vector
 end
@@ -25,11 +25,11 @@ Base.@kwdef mutable struct Reserve
     name::String
     type::String
     amount::Vector{Float64}
-    units::Vector
+    thermal_units::Vector
     shortfall_penalty::Float64
 end
 
-mutable struct Unit
+mutable struct ThermalUnit
     name::String
     bus::Bus
     max_power::Vector{Float64}
@@ -64,7 +64,7 @@ end
 mutable struct Contingency
     name::String
     lines::Vector{TransmissionLine}
-    units::Vector{Unit}
+    thermal_units::Vector{ThermalUnit}
 end
 
 mutable struct PriceSensitiveLoad
@@ -95,13 +95,13 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}
     probability::Float64
-    reserves_by_name::Dict{AbstractString,Reserve}
-    reserves::Vector{Reserve}
-    time::Int
-    units_by_name::Dict{AbstractString,Unit}
-    units::Vector{Unit}
     profiled_units_by_name::Dict{AbstractString,ProfiledUnit}
     profiled_units::Vector{ProfiledUnit}
+    reserves_by_name::Dict{AbstractString,Reserve}
+    reserves::Vector{Reserve}
+    thermal_units_by_name::Dict{AbstractString,ThermalUnit}
+    thermal_units::Vector{ThermalUnit}
+    time::Int
 end
 
 Base.@kwdef mutable struct UnitCommitmentInstance
@@ -113,12 +113,12 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     sc = instance.scenarios[1]
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.scenarios)) scenarios, ")
-    print(io, "$(length(sc.units)) units, ")
+    print(io, "$(length(sc.thermal_units)) thermal units, ")
+    print(io, "$(length(sc.profiled_units)) profiled units, ")
     print(io, "$(length(sc.buses)) buses, ")
     print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")
     print(io, "$(length(sc.price_sensitive_loads)) price sensitive loads, ")
-    print(io, "$(length(sc.profiled_units)) profiled units, ")
     print(io, "$(instance.time) time steps")
     print(io, ")")
     return

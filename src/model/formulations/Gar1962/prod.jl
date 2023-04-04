@@ -4,7 +4,7 @@
 
 function _add_production_vars!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation_prod_vars::Gar1962.ProdVars,
     sc::UnitCommitmentScenario,
 )::Nothing
@@ -21,7 +21,7 @@ end
 
 function _add_production_limit_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation_prod_vars::Gar1962.ProdVars,
     sc::UnitCommitmentScenario,
 )::Nothing
