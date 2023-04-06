@@ -314,6 +314,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
             pu = ProfiledUnit(
                 unit_name,
                 bus,
+                timeseries(scalar(dict["Minimum power (MW)"], default = 0.0)),
                 timeseries(dict["Maximum power (MW)"]),
                 timeseries(dict["Cost (\$/MW)"]),
             )

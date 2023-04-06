@@ -12,7 +12,7 @@ function _add_profiled_unit!(
     for t in 1:model[:instance].time
         # Decision variable
         punits[sc.name, pu.name, t] =
-            @variable(model, lower_bound = 0, upper_bound = pu.capacity[t])
+            @variable(model, lower_bound = pu.min_power[t], upper_bound = pu.capacity[t])
 
         # Objective function terms
         add_to_expression!(
