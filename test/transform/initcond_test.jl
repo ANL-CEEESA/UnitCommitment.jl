@@ -10,7 +10,7 @@ using UnitCommitment, Cbc, JuMP
     optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
     sc = instance.scenarios[1]
     # All units should have unknown initial conditions
-    for g in sc.units
+    for g in sc.thermal_units
         @test g.initial_power === nothing
         @test g.initial_status === nothing
     end
@@ -19,7 +19,7 @@ using UnitCommitment, Cbc, JuMP
     UnitCommitment.generate_initial_conditions!(sc, optimizer)
 
     # All units should now have known initial conditions
-    for g in sc.units
+    for g in sc.thermal_units
         @test g.initial_power !== nothing
         @test g.initial_status !== nothing
     end

@@ -58,10 +58,7 @@ using UnitCommitment
 instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 ```
 
-Advanced usage
---------------
-
-### Customizing the formulation
+## Customizing the formulation
 
 By default, `build_model` uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.
 
@@ -94,7 +91,7 @@ model = UnitCommitment.build_model(
 )
 ```
 
-### Generating initial conditions
+## Generating initial conditions
 
 When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.
 
@@ -122,7 +119,7 @@ UnitCommitment.optimize!(model)
 
     The function `generate_initial_conditions!` may return different initial conditions after each call, even if the same instance and the same optimizer is provided. The particular algorithm may also change in a future version of UC.jl. For these reasons, it is recommended that you generate initial conditions exactly once for each instance and store them for later use.
     
-### Verifying solutions
+## Verifying solutions
 
 When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the [UC.jl data format](format.md).
 
@@ -138,4 +135,92 @@ solution = JSON.parsefile("solution.json")
 
 # Validate solution and print validation errors
 UnitCommitment.validate(instance, solution)
+```
+
+## Computing Locational Marginal Prices
+
+Locational marginal prices (LMPs) refer to the cost of supplying electricity at a particular location of the network. Multiple methods for computing LMPs have been proposed in the literature. UnitCommitment.jl implements two commonly-used methods: conventional LMPs and Approximated Extended LMPs (AELMPs). To compute LMPs for a given unit commitment instance, the `compute_lmp` function can be used, as shown in the examples below. The function accepts three arguments -- a solved SCUC model, an LMP method, and a linear optimizer -- and it returns a dictionary mapping `(bus_name, time)` to the marginal price.
+
+
+!!! warning
+
+    Most mixed-integer linear optimizers, such as `HiGHS`, `Gurobi` and `CPLEX` can be used with `compute_lmp`, with the notable exception of `Cbc`, which does not support dual value evaluations. If using `Cbc`, please provide `Clp` as the linear optimizer.
+
+### Conventional LMPs
+
+LMPs are conventionally computed by: (1) solving the SCUC model, (2) fixing all binary variables to their optimal values, and (3) re-solving the resulting linear programming model. In this approach, the LMPs are defined as the dual variables' values associated with the net injection constraints. The example below shows how to compute conventional LMPs for a given unit commitment instance. First, we build and optimize the SCUC model. Then, we call the `compute_lmp` function, providing as the second argument `ConventionalLMP()`.
+
+
+```julia
+using UnitCommitment
+using HiGHS
+
+import UnitCommitment: ConventionalLMP
+
+# Read benchmark instance
+instance = UnitCommitment.read_benchmark("matpower/case118/2018-01-01")
+
+# Build the model
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = HiGHS.Optimizer,
+)
+
+# Optimize the model
+UnitCommitment.optimize!(model)
+
+# Compute the LMPs using the conventional method
+lmp = UnitCommitment.compute_lmp(
+    model,
+    ConventionalLMP(),
+    optimizer = HiGHS.Optimizer,
+)
+
+# Access the LMPs
+# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
+@show lmp["s1","b1", 1]
+```
+
+### Approximate Extended LMPs
+
+Approximate Extended LMPs (AELMPs) are an alternative method to calculate locational marginal prices which attemps to minimize uplift payments. The method internally works by modifying the instance data in three ways: (1) it sets the minimum power output of each generator to zero, (2) it averages the start-up cost over the offer blocks for each generator, and (3) it relaxes all integrality constraints. To compute AELMPs, as shown in the example below, we call `compute_lmp` and provide `AELMP()` as the second argument.
+
+This method has two configurable parameters: `allow_offline_participation` and `consider_startup_costs`. If `allow_offline_participation = true`, then offline generators are allowed to participate in the pricing. If instead `allow_offline_participation = false`, offline generators are not allowed and therefore are excluded from the system. A solved UC model is optional if offline participation is allowed, but is required if not allowed. The method forces offline participation to be allowed if the UC model supplied by the user is not solved. For the second field, If `consider_startup_costs = true`, then start-up costs are integrated and averaged over each unit production; otherwise the production costs stay the same. By default, both fields are set to `true`.
+
+!!! warning
+
+    This approximation method is still under active research, and has several limitations. The implementation provided in the package is based on MISO Phase I only. It only supports fast start resources. More specifically, the minimum up/down time of all generators must be 1, the initial power of all generators must be 0, and the initial status of all generators must be negative. The method does not support time-varying start-up costs. The method does not support multiple scenarios. If offline participation is not allowed, AELMPs treats an asset to be  offline if it is never on throughout all time periods. 
+
+```julia
+using UnitCommitment
+using HiGHS
+
+import UnitCommitment: AELMP
+
+# Read benchmark instance
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+
+# Build the model
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = HiGHS.Optimizer,
+)
+
+# Optimize the model
+UnitCommitment.optimize!(model)
+
+# Compute the AELMPs
+aelmp = UnitCommitment.compute_lmp(
+    model,
+    AELMP(
+        allow_offline_participation = false,
+        consider_startup_costs = true
+    ),
+    optimizer = HiGHS.Optimizer
+)
+
+# Access the AELMPs
+# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
+# Note: although scenario is supported, the query still keeps the scenario keys for consistency.
+@show aelmp["s1", "b1", 1]
 ```

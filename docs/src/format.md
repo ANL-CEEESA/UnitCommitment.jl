@@ -70,11 +70,14 @@ This section describes the characteristics of each bus in the system.
 
 ### Generators
 
-This section describes all generators in the system, including thermal units, renewable units and virtual units.
+This section describes all generators in the system, including thermal units, renewable units and virtual units. Two types of generators can be specified - thermal units and profiled units. A thermal unit consists of different fields, while a profiled unit is a simple generator with only a production capacity and a per-unit cost. 
+
+#### Thermal Units
 
 | Key                       | Description                                      | Default | Time series?
 | :------------------------ | :------------------------------------------------| ------- | :-----------:
 | `Bus`                     | Identifier of the bus where this generator is located (string). | Required | N
+| `Type`                     | Type of the generator (string). For thermal generators, this must be `Thermal`.  | Required | N
 | `Production cost curve (MW)` and `Production cost curve ($)` | Parameters describing the piecewise-linear production costs. See below for more details. | Required | Y
 | `Startup costs ($)` and `Startup delays (h)` | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `00:00` (h:min), then it costs \$300 to start up the generator at any time between `01:00` and `03:59`, and \$400 to start the generator at time `04:00` or any time after that.  The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal `Minimum downtime (h)`. | `[0.0]` and `[1]` | N
 | `Minimum uptime (h)`      | Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time `00:00` (h:min) and `Minimum uptime (h)` is set to 4, then the generator can only shut down at time `04:00`. | `1` | N
@@ -87,6 +90,15 @@ This section describes all generators in the system, including thermal units, re
 | `Initial power (MW)`  | Amount of power the generator at time step `-1`, immediately before the planning horizon starts. | Required | N
 | `Must run?`               | If `true`, the generator should be committed, even if that is not economical (Boolean). | `false` | Y
 | `Reserve eligibility` | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves. | `[]` | N
+
+#### Profiled Units
+
+| Key               | Description                                       | Default  | Time series?
+| :---------------- | :------------------------------------------------ | :------: | :------------:
+| `Bus`             | Identifier of the bus where this generator is located (string). | Required | N
+| `Type`            | Type of the generator (string). For profiled generators, this must be `Profiled`.  | Required | N
+| `Cost ($/MW)`     | Cost incurred for serving each MW of power by this generator. | Required | Y
+| `Maximum Capacity (MW)` | Maximum amount of power to be supplied by this generator. Any amount lower than this may be supplied. | Required | Y
 
 #### Production costs and limits
 
@@ -115,6 +127,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
     "Generators": {
         "gen1": {
             "Bus": "b1",
+            "Type": "Thermal",
             "Production cost curve (MW)": [100.0, 110.0, 130.0, 135.0],
             "Production cost curve ($)": [1400.0, 1600.0, 2200.0, 2400.0],
             "Startup costs ($)": [300.0, 400.0],
@@ -126,14 +139,24 @@ Note that this curve also specifies the production limits. Specifically, the fir
             "Minimum downtime (h)": 4,
             "Minimum uptime (h)": 4,
             "Initial status (h)": 12,
+            "Initial power (MW)": 115,
             "Must run?": false,
-            "Reserve eligibility": ["r1"],
+            "Reserve eligibility": ["r1"]
         },
         "gen2": {
             "Bus": "b5",
+            "Type": "Thermal",
             "Production cost curve (MW)": [0.0, [10.0, 8.0, 0.0, 3.0]],
             "Production cost curve ($)": [0.0, 0.0],
-            "Reserve eligibility": ["r1", "r2"],
+            "Initial status (h)": -100,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": ["r1", "r2"]
+        },
+        "gen3": {
+            "Bus": "b6",
+            "Type": "Profiled",
+            "Maximum power (MW)": 120.0,
+            "Cost ($/MW)": 100.0
         }
     }
 }

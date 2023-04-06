@@ -77,7 +77,7 @@ function build_model(;
         end
         model[:obj] = AffExpr()
         model[:instance] = instance
-        for g in instance.scenarios[1].units
+        for g in instance.scenarios[1].thermal_units
             _add_unit_commitment!(model, g, formulation)
         end
         for sc in instance.scenarios
@@ -93,8 +93,11 @@ function build_model(;
             for ps in sc.price_sensitive_loads
                 _add_price_sensitive_load!(model, ps, sc)
             end
-            for g in sc.units
+            for g in sc.thermal_units
                 _add_unit_dispatch!(model, g, formulation, sc)
+            end
+            for pu in sc.profiled_units
+                _add_profiled_unit!(model, pu, sc)
             end
             _add_system_wide_eqs!(model, sc)
         end

@@ -4,7 +4,7 @@
 
 function _add_startup_cost_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation::MorLatRam2013.StartupCosts,
 )::Nothing
     eq_startup_choose = _init(model, :eq_startup_choose)

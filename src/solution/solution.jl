@@ -65,19 +65,26 @@ function solution(model::JuMP.Model)::OrderedDict
     sol = OrderedDict()
     for sc in instance.scenarios
         sol[sc.name] = OrderedDict()
-        sol[sc.name]["Production (MW)"] =
-            OrderedDict(g.name => production(g, sc) for g in sc.units)
-        sol[sc.name]["Production cost (\$)"] =
-            OrderedDict(g.name => production_cost(g, sc) for g in sc.units)
-        sol[sc.name]["Startup cost (\$)"] =
-            OrderedDict(g.name => startup_cost(g, sc) for g in sc.units)
-        sol[sc.name]["Is on"] = timeseries(model[:is_on], sc.units)
-        sol[sc.name]["Switch on"] = timeseries(model[:switch_on], sc.units)
-        sol[sc.name]["Switch off"] = timeseries(model[:switch_off], sc.units)
-        sol[sc.name]["Net injection (MW)"] =
-            timeseries(model[:net_injection], sc.buses, sc = sc)
-        sol[sc.name]["Load curtail (MW)"] =
-            timeseries(model[:curtail], sc.buses, sc = sc)
+        if !isempty(sc.thermal_units)
+            sol[sc.name]["Thermal production (MW)"] = OrderedDict(
+                g.name => production(g, sc) for g in sc.thermal_units
+            )
+            sol[sc.name]["Thermal production cost (\$)"] = OrderedDict(
+                g.name => production_cost(g, sc) for g in sc.thermal_units
+            )
+            sol[sc.name]["Startup cost (\$)"] = OrderedDict(
+                g.name => startup_cost(g, sc) for g in sc.thermal_units
+            )
+            sol[sc.name]["Is on"] = timeseries(model[:is_on], sc.thermal_units)
+            sol[sc.name]["Switch on"] =
+                timeseries(model[:switch_on], sc.thermal_units)
+            sol[sc.name]["Switch off"] =
+                timeseries(model[:switch_off], sc.thermal_units)
+            sol[sc.name]["Net injection (MW)"] =
+                timeseries(model[:net_injection], sc.buses, sc = sc)
+            sol[sc.name]["Load curtail (MW)"] =
+                timeseries(model[:curtail], sc.buses, sc = sc)
+        end
         if !isempty(sc.lines)
             sol[sc.name]["Line overflow (MW)"] =
                 timeseries(model[:overflow], sc.lines, sc = sc)
@@ -86,11 +93,21 @@ function solution(model::JuMP.Model)::OrderedDict
             sol[sc.name]["Price-sensitive loads (MW)"] =
                 timeseries(model[:loads], sc.price_sensitive_loads, sc = sc)
         end
+        if !isempty(sc.profiled_units)
+            sol[sc.name]["Profiled production (MW)"] =
+                timeseries(model[:prod_profiled], sc.profiled_units, sc = sc)
+            sol[sc.name]["Profiled production cost (\$)"] = OrderedDict(
+                pu.name => [
+                    value(model[:prod_profiled][sc.name, pu.name, t]) *
+                    pu.cost[t] for t in 1:instance.time
+                ] for pu in sc.profiled_units
+            )
+        end
         sol[sc.name]["Spinning reserve (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
                     value(model[:reserve][sc.name, r.name, g.name, t]) for t in 1:instance.time
-                ] for g in r.units
+                ] for g in r.thermal_units
             ) for r in sc.reserves if r.type == "spinning"
         )
         sol[sc.name]["Spinning reserve shortfall (MW)"] = OrderedDict(
@@ -103,7 +120,7 @@ function solution(model::JuMP.Model)::OrderedDict
             r.name => OrderedDict(
                 g.name => [
                     value(model[:upflexiramp][sc.name, r.name, g.name, t]) for t in 1:instance.time
-                ] for g in r.units
+                ] for g in r.thermal_units
             ) for r in sc.reserves if r.type == "flexiramp"
         )
         sol[sc.name]["Up-flexiramp shortfall (MW)"] = OrderedDict(
@@ -115,7 +132,7 @@ function solution(model::JuMP.Model)::OrderedDict
             r.name => OrderedDict(
                 g.name => [
                     value(model[:dwflexiramp][sc.name, r.name, g.name, t]) for t in 1:instance.time
-                ] for g in r.units
+                ] for g in r.thermal_units
             ) for r in sc.reserves if r.type == "flexiramp"
         )
         sol[sc.name]["Down-flexiramp shortfall (MW)"] = OrderedDict(

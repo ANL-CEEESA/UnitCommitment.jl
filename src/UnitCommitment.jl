@@ -9,6 +9,7 @@ using Base: String
 include("instance/structs.jl")
 include("model/formulations/base/structs.jl")
 include("solution/structs.jl")
+include("lmp/structs.jl")
 
 include("model/formulations/ArrCon2000/structs.jl")
 include("model/formulations/CarArr2006/structs.jl")
@@ -31,6 +32,7 @@ include("model/formulations/base/psload.jl")
 include("model/formulations/base/sensitivity.jl")
 include("model/formulations/base/system.jl")
 include("model/formulations/base/unit.jl")
+include("model/formulations/base/punit.jl")
 include("model/formulations/CarArr2006/pwlcosts.jl")
 include("model/formulations/DamKucRajAta2016/ramp.jl")
 include("model/formulations/Gar1962/pwlcosts.jl")
@@ -58,5 +60,7 @@ include("utils/log.jl")
 include("utils/benchmark.jl")
 include("validation/repair.jl")
 include("validation/validate.jl")
+include("lmp/conventional.jl")
+include("lmp/aelmp.jl")
 
 end

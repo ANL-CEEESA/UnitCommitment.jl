@@ -6,7 +6,7 @@
 # related to the binary commitment, startup and shutdown decisions of units
 function _add_unit_commitment!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation::Formulation,
 )
     if !all(g.must_run) && any(g.must_run)
@@ -31,7 +31,7 @@ end
 # related to the continuous dispatch decisions of units
 function _add_unit_dispatch!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation::Formulation,
     sc::UnitCommitmentScenario,
 )
@@ -64,11 +64,11 @@ function _add_unit_dispatch!(
     return
 end
 
-_is_initially_on(g::Unit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
+_is_initially_on(g::ThermalUnit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)
 
 function _add_spinning_reserve_vars!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     sc::UnitCommitmentScenario,
 )::Nothing
     reserve = _init(model, :reserve)
@@ -92,7 +92,7 @@ end
 
 function _add_flexiramp_reserve_vars!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     sc::UnitCommitmentScenario,
 )::Nothing
     upflexiramp = _init(model, :upflexiramp)
@@ -128,7 +128,7 @@ function _add_flexiramp_reserve_vars!(
     return
 end
 
-function _add_startup_shutdown_vars!(model::JuMP.Model, g::Unit)::Nothing
+function _add_startup_shutdown_vars!(model::JuMP.Model, g::ThermalUnit)::Nothing
     startup = _init(model, :startup)
     for t in 1:model[:instance].time
         for s in 1:length(g.startup_categories)
@@ -140,7 +140,7 @@ end
 
 function _add_startup_shutdown_limit_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     sc::UnitCommitmentScenario,
 )::Nothing
     eq_shutdown_limit = _init(model, :eq_shutdown_limit)
@@ -179,7 +179,7 @@ end
 
 function _add_ramp_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation::RampingFormulation,
     sc::UnitCommitmentScenario,
 )::Nothing
@@ -224,7 +224,10 @@ function _add_ramp_eqs!(
     end
 end
 
-function _add_min_uptime_downtime_eqs!(model::JuMP.Model, g::Unit)::Nothing
+function _add_min_uptime_downtime_eqs!(
+    model::JuMP.Model,
+    g::ThermalUnit,
+)::Nothing
     is_on = model[:is_on]
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
@@ -269,7 +272,7 @@ end
 
 function _add_net_injection_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     sc::UnitCommitmentScenario,
 )::Nothing
     expr_net_injection = model[:expr_net_injection]

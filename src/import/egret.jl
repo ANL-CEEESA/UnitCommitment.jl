@@ -18,9 +18,9 @@ function read_egret_solution(path::String)::OrderedDict
 
     solution = OrderedDict()
     is_on = solution["Is on"] = OrderedDict()
-    production = solution["Production (MW)"] = OrderedDict()
+    production = solution["Thermal production (MW)"] = OrderedDict()
     reserve = solution["Reserve (MW)"] = OrderedDict()
-    production_cost = solution["Production cost (\$)"] = OrderedDict()
+    production_cost = solution["Thermal production cost (\$)"] = OrderedDict()
     startup_cost = solution["Startup cost (\$)"] = OrderedDict()
 
     for (gen_name, gen_dict) in egret["elements"]["generator"]

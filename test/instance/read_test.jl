@@ -8,7 +8,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     instance = UnitCommitment.read("$FIXTURES/case14.json.gz")
 
     @test repr(instance) == (
-        "UnitCommitmentInstance(1 scenarios, 6 units, 14 buses, " *
+        "UnitCommitmentInstance(1 scenarios, 6 thermal units, 0 profiled units, 14 buses, " *
         "20 lines, 19 contingencies, 1 price sensitive loads, 4 time steps)"
     )
 
@@ -16,7 +16,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     sc = instance.scenarios[1]
     @test length(sc.lines) == 20
     @test length(sc.buses) == 14
-    @test length(sc.units) == 6
+    @test length(sc.thermal_units) == 6
     @test length(sc.contingencies) == 19
     @test length(sc.price_sensitive_loads) == 1
     @test instance.time == 4
@@ -49,7 +49,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test sc.reserves[1].amount == [100.0, 100.0, 100.0, 100.0]
     @test sc.reserves_by_name["r1"].name == "r1"
 
-    unit = sc.units[1]
+    unit = sc.thermal_units[1]
     @test unit.name == "g1"
     @test unit.bus.name == "b1"
     @test unit.ramp_up_limit == 1e6
@@ -76,14 +76,14 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.startup_categories[2].cost == 1500.0
     @test unit.startup_categories[3].cost == 2000.0
     @test length(unit.reserves) == 0
-    @test sc.units_by_name["g1"].name == "g1"
+    @test sc.thermal_units_by_name["g1"].name == "g1"
 
-    unit = sc.units[2]
+    unit = sc.thermal_units[2]
     @test unit.name == "g2"
     @test unit.must_run == [false for t in 1:4]
     @test length(unit.reserves) == 1
 
-    unit = sc.units[3]
+    unit = sc.thermal_units[3]
     @test unit.name == "g3"
     @test unit.bus.name == "b3"
     @test unit.ramp_up_limit == 70.0
@@ -106,7 +106,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test unit.reserves[1].name == "r1"
 
     @test sc.contingencies[1].lines == [sc.lines[1]]
-    @test sc.contingencies[1].units == []
+    @test sc.contingencies[1].thermal_units == []
     @test sc.contingencies[1].name == "c1"
     @test sc.contingencies_by_name["c1"].name == "c1"
 
@@ -121,7 +121,7 @@ end
 @testset "read_benchmark sub-hourly" begin
     instance = UnitCommitment.read("$FIXTURES/case14-sub-hourly.json.gz")
     @test instance.time == 4
-    unit = instance.scenarios[1].units[1]
+    unit = instance.scenarios[1].thermal_units[1]
     @test unit.name == "g1"
     @test unit.min_uptime == 2
     @test unit.min_downtime == 2
@@ -130,4 +130,24 @@ end
     @test unit.startup_categories[2].delay == 4
     @test unit.startup_categories[3].delay == 6
     @test unit.initial_status == -200
+end
+
+@testset "read_benchmark profiled-units" begin
+    instance = UnitCommitment.read("$FIXTURES/case14-profiled.json.gz")
+    sc = instance.scenarios[1]
+    @test length(sc.profiled_units) == 2
+
+    first_pu = sc.profiled_units[1]
+    @test first_pu.name == "g7"
+    @test first_pu.bus.name == "b4"
+    @test first_pu.cost == [100.0 for t in 1:4]
+    @test first_pu.capacity == [100.0 for t in 1:4]
+    @test sc.profiled_units_by_name["g7"].name == "g7"
+
+    second_pu = sc.profiled_units[2]
+    @test second_pu.name == "g8"
+    @test second_pu.bus.name == "b5"
+    @test second_pu.cost == [50.0 for t in 1:4]
+    @test second_pu.capacity == [120.0 for t in 1:4]
+    @test sc.profiled_units_by_name["g8"].name == "g8"
 end

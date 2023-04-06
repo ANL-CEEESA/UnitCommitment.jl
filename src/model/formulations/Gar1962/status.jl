@@ -4,7 +4,7 @@
 
 function _add_status_vars!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation_status_vars::Gar1962.StatusVars,
 )::Nothing
     is_on = _init(model, :is_on)
@@ -27,7 +27,7 @@ end
 
 function _add_status_eqs!(
     model::JuMP.Model,
-    g::Unit,
+    g::ThermalUnit,
     formulation_status_vars::Gar1962.StatusVars,
 )::Nothing
     eq_binary_link = _init(model, :eq_binary_link)

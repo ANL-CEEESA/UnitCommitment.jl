@@ -28,8 +28,8 @@ function validate(
     instance::UnitCommitmentInstance,
     solution::Union{Dict,OrderedDict},
 )::Bool
-    "Production (MW)" ∈ keys(solution) ? solution = Dict("s1" => solution) :
-    nothing
+    "Thermal production (MW)" ∈ keys(solution) ?
+    solution = Dict("s1" => solution) : nothing
     err_count = 0
     err_count += _validate_units(instance, solution)
     err_count += _validate_reserve_and_demand(instance, solution)
@@ -45,8 +45,8 @@ end
 function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
-        for unit in sc.units
-            production = solution[sc.name]["Production (MW)"][unit.name]
+        for unit in sc.thermal_units
+            production = solution[sc.name]["Thermal production (MW)"][unit.name]
             reserve = [0.0 for _ in 1:instance.time]
             spinning_reserves =
                 [r for r in unit.reserves if r.type == "spinning"]
@@ -57,7 +57,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 )
             end
             actual_production_cost =
-                solution[sc.name]["Production cost (\$)"][unit.name]
+                solution[sc.name]["Thermal production cost (\$)"][unit.name]
             actual_startup_cost =
                 solution[sc.name]["Startup cost (\$)"][unit.name]
             is_on = bin(solution[sc.name]["Is on"][unit.name])
@@ -114,7 +114,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 # Verify reserve eligibility
                 for r in sc.reserves
                     if r.type == "spinning"
-                        if unit ∉ r.units && (
+                        if unit ∉ r.thermal_units && (
                             unit in keys(
                                 solution[sc.name]["Spinning reserve (MW)"][r.name],
                             )
@@ -323,8 +323,8 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 )
             end
             production = sum(
-                solution[sc.name]["Production (MW)"][g.name][t] for
-                g in sc.units
+                solution[sc.name]["Thermal production (MW)"][g.name][t] for
+                g in sc.thermal_units
             )
             if "Load curtail (MW)" in keys(solution)
                 load_curtail = sum(
@@ -352,7 +352,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 if r.type == "spinning"
                     provided = sum(
                         solution[sc.name]["Spinning reserve (MW)"][r.name][g.name][t]
-                        for g in r.units
+                        for g in r.thermal_units
                     )
                     shortfall =
                         solution[sc.name]["Spinning reserve shortfall (MW)"][r.name][t]
@@ -371,7 +371,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                 elseif r.type == "flexiramp"
                     upflexiramp = sum(
                         solution[sc.name]["Up-flexiramp (MW)"][r.name][g.name][t]
-                        for g in r.units
+                        for g in r.thermal_units
                     )
                     upflexiramp_shortfall =
                         solution[sc.name]["Up-flexiramp shortfall (MW)"][r.name][t]
@@ -389,7 +389,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
 
                     dwflexiramp = sum(
                         solution[sc.name]["Down-flexiramp (MW)"][r.name][g.name][t]
-                        for g in r.units
+                        for g in r.thermal_units
                     )
                     dwflexiramp_shortfall =
                         solution[sc.name]["Down-flexiramp shortfall (MW)"][r.name][t]

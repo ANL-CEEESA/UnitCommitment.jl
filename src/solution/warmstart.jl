@@ -5,7 +5,7 @@
 function set_warm_start!(model::JuMP.Model, solution::AbstractDict)::Nothing
     instance, T = model[:instance], model[:instance].time
     is_on = model[:is_on]
-    for g in instance.units
+    for g in instance.thermal_units
         for t in 1:T
             JuMP.set_start_value(is_on[g.name, t], solution["Is on"][g.name][t])
             JuMP.set_start_value(
