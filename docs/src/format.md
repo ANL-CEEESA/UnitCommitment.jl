@@ -98,7 +98,8 @@ This section describes all generators in the system, including thermal units, re
 | `Bus`             | Identifier of the bus where this generator is located (string). | Required | N
 | `Type`            | Type of the generator (string). For profiled generators, this must be `Profiled`.  | Required | N
 | `Cost ($/MW)`     | Cost incurred for serving each MW of power by this generator. | Required | Y
-| `Maximum Capacity (MW)` | Maximum amount of power to be supplied by this generator. Any amount lower than this may be supplied. | Required | Y
+| `Minimum power (MW)` | Minimum amount of power to be supplied by this generator. Any amount greater than this may be supplied. | `0.0` | Y
+| `Maximum power (MW)` | Maximum amount of power to be supplied by this generator. Any amount lower than this may be supplied. | Required | Y
 
 #### Production costs and limits
 
@@ -155,6 +156,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
         "gen3": {
             "Bus": "b6",
             "Type": "Profiled",
+            "Minimum power (MW)": 10.0,
             "Maximum power (MW)": 120.0,
             "Cost ($/MW)": 100.0
         }
