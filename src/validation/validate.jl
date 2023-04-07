@@ -305,6 +305,35 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 end
             end
         end
+        for pu in sc.profiled_units
+            production = solution[sc.name]["Profiled production (MW)"][pu.name]
+
+            for t in 1:instance.time
+                # Unit must produce at least its minimum power
+                if production[t] < pu.min_power[t] - tol
+                    @error @sprintf(
+                        "Profiled unit %s produces below its minimum limit at time %d (%.2f < %.2f)",
+                        pu.name,
+                        t,
+                        production[t],
+                        pu.min_power[t]
+                    )
+                    err_count += 1
+                end
+
+                # Unit must produce at most its maximum power
+                if production[t] > pu.capacity[t] + tol
+                    @error @sprintf(
+                        "Profiled unit %s produces above its maximum limit at time %d (%.2f > %.2f)",
+                        pu.name,
+                        t,
+                        production[t],
+                        pu.capacity[t]
+                    )
+                    err_count += 1
+                end
+            end
+        end
     end
     return err_count
 end
@@ -316,16 +345,25 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
             load_curtail = 0
             fixed_load = sum(b.load[t] for b in sc.buses)
             ps_load = 0
+            production = 0
             if length(sc.price_sensitive_loads) > 0
                 ps_load = sum(
                     solution[sc.name]["Price-sensitive loads (MW)"][ps.name][t]
                     for ps in sc.price_sensitive_loads
                 )
             end
-            production = sum(
-                solution[sc.name]["Thermal production (MW)"][g.name][t] for
-                g in sc.thermal_units
-            )
+            if length(sc.thermal_units) > 0
+                production = sum(
+                    solution[sc.name]["Thermal production (MW)"][g.name][t]
+                    for g in sc.thermal_units
+                )
+            end
+            if length(sc.profiled_units) > 0
+                production += sum(
+                    solution[sc.name]["Profiled production (MW)"][pu.name][t]
+                    for pu in sc.profiled_units
+                )
+            end
             if "Load curtail (MW)" in keys(solution)
                 load_curtail = sum(
                     solution[sc.name]["Load curtail (MW)"][b.name][t] for

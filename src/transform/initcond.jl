@@ -17,24 +17,29 @@ function generate_initial_conditions!(
 )::Nothing
     G = sc.thermal_units
     B = sc.buses
+    PU = sc.profiled_units
     t = 1
     mip = JuMP.Model(optimizer)
 
     # Decision variables
     @variable(mip, x[G], Bin)
     @variable(mip, p[G] >= 0)
+    @variable(mip, pu[PU])
 
     # Constraint: Minimum power
     @constraint(mip, min_power[g in G], p[g] >= g.min_power[t] * x[g])
+    @constraint(mip, pu_min_power[k in PU], pu[k] >= k.min_power[t])
 
     # Constraint: Maximum power
     @constraint(mip, max_power[g in G], p[g] <= g.max_power[t] * x[g])
+    @constraint(mip, pu_max_power[k in PU], pu[k] <= k.capacity[t])
 
     # Constraint: Production equals demand
     @constraint(
         mip,
         power_balance,
-        sum(b.load[t] for b in B) == sum(p[g] for g in G)
+        sum(b.load[t] for b in B) ==
+        sum(p[g] for g in G) + sum(pu[k] for k in PU)
     )
 
     # Constraint: Must run
@@ -58,7 +63,12 @@ function generate_initial_conditions!(
             return c / mw
         end
     end
-    @objective(mip, Min, sum(p[g] * cost_slope(g) for g in G))
+    @objective(
+        mip,
+        Min,
+        sum(p[g] * cost_slope(g) for g in G) +
+        sum(pu[k] * k.cost[t] for k in PU)
+    )
 
     JuMP.optimize!(mip)
 

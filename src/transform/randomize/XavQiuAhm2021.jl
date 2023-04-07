@@ -133,6 +133,10 @@ function _randomize_costs(
             s.cost *= α
         end
     end
+    for pu in sc.profiled_units
+        α = rand(rng, distribution)
+        pu.cost *= α
+    end
     return
 end
 

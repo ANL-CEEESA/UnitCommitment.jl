@@ -62,4 +62,22 @@ test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
         @test round.(system_load(sc), digits = 1)[1:8] ≈
               [4854.7, 4849.2, 4732.7, 4848.2, 4948.4, 5231.1, 5874.8, 5934.8]
     end
+
+    @testset "profiled unit cost" begin
+        sc =
+            UnitCommitment.read("$FIXTURES/case14-profiled.json.gz").scenarios[1]
+        # Check original costs
+        pu1 = sc.profiled_units[1]
+        pu2 = sc.profiled_units[2]
+        test_approx(pu1.cost[1], 100.0)
+        test_approx(pu2.cost[1], 50.0)
+        randomize!(
+            sc,
+            XavQiuAhm2021.Randomization(randomize_load_profile = false),
+            rng = MersenneTwister(42),
+        )
+        # Check randomized costs
+        test_approx(pu1.cost[1], 98.039)
+        test_approx(pu2.cost[1], 48.385)
+    end
 end
