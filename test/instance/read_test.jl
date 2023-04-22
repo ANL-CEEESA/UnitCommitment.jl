@@ -153,3 +153,14 @@ end
     @test second_pu.capacity == [120.0 for t in 1:4]
     @test sc.profiled_units_by_name["g8"].name == "g8"
 end
+
+@testset "read_benchmark commitmemt-status" begin
+    instance = UnitCommitment.read("$FIXTURES/case14-fixed-status.json.gz")
+    sc = instance.scenarios[1]
+
+    @test sc.thermal_units[1].commitment_status == [nothing for t in 1:4]
+    @test sc.thermal_units[2].commitment_status == [true for t in 1:4]
+    @test sc.thermal_units[4].commitment_status == [false for t in 1:4]
+    @test sc.thermal_units[6].commitment_status ==
+          [false, nothing, true, nothing]
+end

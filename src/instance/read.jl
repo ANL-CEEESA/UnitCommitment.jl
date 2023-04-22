@@ -282,6 +282,12 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 initial_status *= time_multiplier
             end
 
+            # Read commitment status 
+            commitment_status = scalar(
+                dict["Commitment status"],
+                default = Vector{Union{Bool,Nothing}}(nothing, T),
+            )
+
             unit = ThermalUnit(
                 unit_name,
                 bus,
@@ -302,6 +308,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 initial_power,
                 startup_categories,
                 unit_reserves,
+                commitment_status,
             )
             push!(bus.thermal_units, unit)
             for r in unit_reserves

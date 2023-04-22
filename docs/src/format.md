@@ -90,6 +90,7 @@ This section describes all generators in the system, including thermal units, re
 | `Initial power (MW)`  | Amount of power the generator at time step `-1`, immediately before the planning horizon starts. | Required | N
 | `Must run?`               | If `true`, the generator should be committed, even if that is not economical (Boolean). | `false` | Y
 | `Reserve eligibility` | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves. | `[]` | N
+| `Commitment status` | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be commited at that time period; if `false`, the generator must not be commited at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values. | `[null]` | Y
 
 #### Profiled Units
 
@@ -151,7 +152,8 @@ Note that this curve also specifies the production limits. Specifically, the fir
             "Production cost curve ($)": [0.0, 0.0],
             "Initial status (h)": -100,
             "Initial power (MW)": 0,
-            "Reserve eligibility": ["r1", "r2"]
+            "Reserve eligibility": ["r1", "r2"],
+            "Commitment status": [true, false, null, true]
         },
         "gen3": {
             "Bus": "b6",
