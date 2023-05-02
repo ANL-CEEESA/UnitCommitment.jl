@@ -99,7 +99,7 @@ function _add_production_piecewise_linear_eqs!(
             add_to_expression!(
                 model[:obj],
                 segprod[sc.name, gn, t, k],
-                g.cost_segments[k].cost[t],
+                sc.probability * g.cost_segments[k].cost[t],
             )
 
             # Also add an explicit upper bound on segprod to make the solver's
