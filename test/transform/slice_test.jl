@@ -44,3 +44,23 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
         variable_names = true,
     )
 end
+
+@testset "slice profiled units" begin
+    instance = UnitCommitment.read("$FIXTURES/case14-profiled.json.gz")
+    modified = UnitCommitment.slice(instance, 1:2)
+    sc = modified.scenarios[1]
+
+    # Should update all time-dependent fields
+    for pu in sc.profiled_units
+        @test length(pu.max_power) == 2
+        @test length(pu.min_power) == 2
+    end
+
+    # Should be able to build model without errors
+    optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+    model = UnitCommitment.build_model(
+        instance = modified,
+        optimizer = optimizer,
+        variable_names = true,
+    )
+end

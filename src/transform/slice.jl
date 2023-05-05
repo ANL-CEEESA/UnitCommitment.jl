@@ -39,6 +39,11 @@ function slice(
                 s.cost = s.cost[range]
             end
         end
+        for pu in sc.profiled_units
+            pu.max_power = pu.max_power[range]
+            pu.min_power = pu.min_power[range]
+            pu.cost = pu.cost[range]
+        end
         for b in sc.buses
             b.load = b.load[range]
         end
