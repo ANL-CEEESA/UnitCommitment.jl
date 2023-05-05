@@ -32,7 +32,7 @@ function generate_initial_conditions!(
 
     # Constraint: Maximum power
     @constraint(mip, max_power[g in G], p[g] <= g.max_power[t] * x[g])
-    @constraint(mip, pu_max_power[k in PU], pu[k] <= k.capacity[t])
+    @constraint(mip, pu_max_power[k in PU], pu[k] <= k.max_power[t])
 
     # Constraint: Production equals demand
     @constraint(

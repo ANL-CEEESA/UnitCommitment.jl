@@ -322,13 +322,13 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 end
 
                 # Unit must produce at most its maximum power
-                if production[t] > pu.capacity[t] + tol
+                if production[t] > pu.max_power[t] + tol
                     @error @sprintf(
                         "Profiled unit %s produces above its maximum limit at time %d (%.2f > %.2f)",
                         pu.name,
                         t,
                         production[t],
-                        pu.capacity[t]
+                        pu.max_power[t]
                     )
                     err_count += 1
                 end

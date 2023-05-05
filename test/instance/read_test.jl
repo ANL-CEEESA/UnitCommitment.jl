@@ -142,7 +142,7 @@ end
     @test first_pu.bus.name == "b4"
     @test first_pu.cost == [100.0 for t in 1:4]
     @test first_pu.min_power == [60.0 for t in 1:4]
-    @test first_pu.capacity == [100.0 for t in 1:4]
+    @test first_pu.max_power == [100.0 for t in 1:4]
     @test sc.profiled_units_by_name["g7"].name == "g7"
 
     second_pu = sc.profiled_units[2]
@@ -150,7 +150,7 @@ end
     @test second_pu.bus.name == "b5"
     @test second_pu.cost == [50.0 for t in 1:4]
     @test second_pu.min_power == [0.0 for t in 1:4]
-    @test second_pu.capacity == [120.0 for t in 1:4]
+    @test second_pu.max_power == [120.0 for t in 1:4]
     @test sc.profiled_units_by_name["g8"].name == "g8"
 end
 

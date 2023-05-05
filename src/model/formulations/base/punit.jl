@@ -14,7 +14,7 @@ function _add_profiled_unit!(
         punits[sc.name, pu.name, t] = @variable(
             model,
             lower_bound = pu.min_power[t],
-            upper_bound = pu.capacity[t]
+            upper_bound = pu.max_power[t]
         )
 
         # Objective function terms

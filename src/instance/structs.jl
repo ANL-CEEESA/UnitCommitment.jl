@@ -79,7 +79,7 @@ mutable struct ProfiledUnit
     name::String
     bus::Bus
     min_power::Vector{Float64}
-    capacity::Vector{Float64}
+    max_power::Vector{Float64}
     cost::Vector{Float64}
 end
 
