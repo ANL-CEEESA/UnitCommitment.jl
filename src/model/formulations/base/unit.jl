@@ -271,10 +271,7 @@ function _add_min_uptime_downtime_eqs!(
     end
 end
 
-function _add_commitment_status_eqs!(
-    model::JuMP.Model,
-    g::ThermalUnit,
-)::Nothing
+function _add_commitment_status_eqs!(model::JuMP.Model, g::ThermalUnit)::Nothing
     is_on = model[:is_on]
     T = model[:instance].time
     eq_commitment_status = _init(model, :eq_commitment_status)
