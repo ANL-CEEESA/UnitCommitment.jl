@@ -28,6 +28,13 @@ FIXTURES = "$(@__DIR__)/fixtures"
             include("solution/methods/XavQiuWanThi19/find_test.jl")
             include("solution/methods/XavQiuWanThi19/sensitivity_test.jl")
         end
+        @testset "TimeDecomposition" begin
+            include("solution/methods/TimeDecomposition/initial_status_test.jl")
+            include(
+                "solution/methods/TimeDecomposition/update_solution_test.jl",
+            )
+            include("solution/methods/TimeDecomposition/optimize_test.jl")
+        end
     end
     @testset "transform" begin
         include("transform/initcond_test.jl")
