@@ -233,6 +233,10 @@ The `optimize!` function takes three parameters: a unit commitment instance, a `
 
 The code snippet below illustrates an example of solving an instance by decomposing the model into multiple 36-hour sub-problems using the `XavQiuWanThi2019` method. Each sub-problem advances 24 hours at a time. The first sub-problem covers time steps 1 to 36, the second covers time steps 25 to 60, the third covers time steps 49 to 84, and so on. The initial power levels and statuses of the second and subsequent sub-problems are set based on the results of the first 24 hours from each of their immediate prior sub-problems. In essence, this approach addresses the complexity of solving a large problem by tackling it in 24-hour intervals, while incorporating an additional 12-hour buffer to mitigate the closing window effect for each sub-problem.
 
+!!! warning
+
+    Specifying `TimeDecomposition` as the value of the `inner_method` field of another `TimeDecomposition` causes errors when calling the `optimize!` function due to the different argument structures between the two `optimize!` functions.
+
 
 ```julia
 using UnitCommitment, Cbc
