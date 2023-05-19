@@ -70,7 +70,10 @@ This section describes the characteristics of each bus in the system.
 
 ### Generators
 
-This section describes all generators in the system, including thermal units, renewable units and virtual units. Two types of generators can be specified - thermal units and profiled units. A thermal unit consists of different fields, while a profiled unit is a simple generator with only a production capacity and a per-unit cost. 
+This section describes all generators in the system. Two types of units can be specified:
+
+- **Thermal units:** Units that produce power by converting heat into electrical energy, such as coal and oil power plants. These units use a more complex model, with binary decision variables, and various constraints to enforce ramp rates and minimum up/down time.
+- **Profiled units:** Simplified model for units that do not require the constraints mentioned above, only a maximum and minimum power output for each time period. Typically used for renewables and hydro.
 
 #### Thermal Units
 
@@ -90,7 +93,7 @@ This section describes all generators in the system, including thermal units, re
 | `Initial power (MW)`  | Amount of power the generator at time step `-1`, immediately before the planning horizon starts. | Required | N
 | `Must run?`               | If `true`, the generator should be committed, even if that is not economical (Boolean). | `false` | Y
 | `Reserve eligibility` | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves. | `[]` | N
-| `Commitment status` | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be commited at that time period; if `false`, the generator must not be commited at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values. | `[null]` | Y
+| `Commitment status` | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be commited at that time period; if `false`, the generator must not be commited at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values. | `null` | Y
 
 #### Profiled Units
 
@@ -99,8 +102,8 @@ This section describes all generators in the system, including thermal units, re
 | `Bus`             | Identifier of the bus where this generator is located (string). | Required | N
 | `Type`            | Type of the generator (string). For profiled generators, this must be `Profiled`.  | Required | N
 | `Cost ($/MW)`     | Cost incurred for serving each MW of power by this generator. | Required | Y
-| `Minimum power (MW)` | Minimum amount of power to be supplied by this generator. Any amount greater than this may be supplied. | `0.0` | Y
-| `Maximum power (MW)` | Maximum amount of power to be supplied by this generator. Any amount lower than this may be supplied. | Required | Y
+| `Minimum power (MW)` | Minimum amount of power this generator may supply. | `0.0` | Y
+| `Maximum power (MW)` | Maximum amount of power this generator may supply. | Required | Y
 
 #### Production costs and limits
 

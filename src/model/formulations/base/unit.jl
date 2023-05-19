@@ -24,6 +24,7 @@ function _add_unit_commitment!(
     _add_min_uptime_downtime_eqs!(model, g)
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
     _add_status_eqs!(model, g, formulation.status_vars)
+    _add_commitment_status_eqs!(model, g)
     return
 end
 
@@ -61,7 +62,6 @@ function _add_unit_dispatch!(
         sc,
     )
     _add_startup_shutdown_limit_eqs!(model, g, sc)
-    _add_commitment_status_eqs!(model, g, sc)
     return
 end
 
@@ -274,15 +274,13 @@ end
 function _add_commitment_status_eqs!(
     model::JuMP.Model,
     g::ThermalUnit,
-    sc::UnitCommitmentScenario,
 )::Nothing
     is_on = model[:is_on]
     T = model[:instance].time
     eq_commitment_status = _init(model, :eq_commitment_status)
     for t in 1:T
-        # Fix commitment status
         if g.commitment_status[t] !== nothing
-            eq_commitment_status[sc.name, g.name, t] = @constraint(
+            eq_commitment_status[g.name, t] = @constraint(
                 model,
                 is_on[g.name, t] == (g.commitment_status[t] ? 1.0 : 0.0)
             )
