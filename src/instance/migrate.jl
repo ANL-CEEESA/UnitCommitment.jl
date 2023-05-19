@@ -31,7 +31,7 @@ function _migrate_to_v03(json)
         json["Reserves"]["r1"]["Type"] = "spinning"
         json["Reserves"]["r1"]["Amount (MW)"] = amount
         for (gen_name, gen) in json["Generators"]
-            if gen["Provides spinning reserves?"] == true
+            if gen["Provides spinning reserves?"] !== false
                 gen["Reserve eligibility"] = ["r1"]
             end
         end
