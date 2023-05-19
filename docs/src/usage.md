@@ -224,3 +224,34 @@ aelmp = UnitCommitment.compute_lmp(
 # Note: although scenario is supported, the query still keeps the scenario keys for consistency.
 @show aelmp["s1", "b1", 1]
 ```
+
+## Time Decomposition Method
+
+When solving a unit commitment instance with a dense time slot structure, computational complexity can become a significant challenge. For instance, if the instance contains hourly data for an entire year (8760 hours), solving such a model can require a substantial amount of computational power. To address this issue, UC.jl provides a time_decomposition method within the `optimize!` function. This method decomposes the problem into multiple sub-problems, solving them sequentially.
+
+The `optimize!` function takes three parameters: a unit commitment instance, a `TimeDecomposition` method, and an optimizer. It returns a solution dictionary. The `TimeDecomposition` method itself requires four arguments: `time_window`, `time_increment`, `inner_method`, and `formulation`. These arguments define the time window for each sub-problem, the time increment to move to the next sub-problem, the method used to solve each sub-problem, and the formulation employed, respectively.
+
+The code snippet below illustrates an example of solving an instance by decomposing the model into multiple 36-hour sub-problems using the `XavQiuWanThi2019` method. Each sub-problem advances 24 hours at a time. The first sub-problem covers time steps 1 to 36, the second covers time steps 25 to 60, the third covers time steps 49 to 84, and so on. The initial power levels and statuses of the second and subsequent sub-problems are set based on the results of the first 24 hours from each of their immediate prior sub-problems. In essence, this approach addresses the complexity of solving a large problem by tackling it in 24-hour intervals, while incorporating an additional 12-hour buffer to mitigate the closing window effect for each sub-problem.
+
+
+```julia
+using UnitCommitment, Cbc
+
+import UnitCommitment: 
+    TimeDecomposition,
+    Formulation,
+    XavQiuWanThi2019
+
+instance = UnitCommitment.read("instance.json")
+
+solution = UnitCommitment.optimize!(
+    instance,
+    TimeDecomposition(
+        time_window = 36,  # solve 36h problems
+        time_increment = 24,  # advance by 24h each time
+        inner_method = XavQiuWanThi2019.Method(),
+        formulation = Formulation(),
+    ),
+    optimizer=Cbc.Optimizer
+)
+```
