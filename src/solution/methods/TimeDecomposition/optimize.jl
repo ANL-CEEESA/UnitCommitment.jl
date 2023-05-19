@@ -89,6 +89,16 @@ function optimize!(
     return solution
 end
 
+"""
+    _set_initial_status!(
+        instance::UnitCommitmentInstance,
+        solution::OrderedDict,
+        time_increment::Int,
+    )
+
+Set the thermal units' initial power levels and statuses based on the first bunch of time slots 
+specified by time_increment in the solution dictionary.
+"""
 function _set_initial_status!(
     instance::UnitCommitmentInstance,
     solution::OrderedDict,
@@ -114,6 +124,16 @@ function _set_initial_status!(
     end
 end
 
+"""
+    _determine_initial_status(
+        prev_initial_status::Union{Float64,Int},
+        status_sequence::Vector{Float64},
+        time_increment::Int,
+    )::Union{Float64,Int}
+
+Determines a thermal unit's initial status based on its previous initial status, and
+the on/off statuses in first bunch of time slots. 
+"""
 function _determine_initial_status(
     prev_initial_status::Union{Float64,Int},
     status_sequence::Vector{Float64},
@@ -140,6 +160,19 @@ function _determine_initial_status(
     return on_status + off_status
 end
 
+"""
+    _update_solution!(
+        solution::OrderedDict,
+        sub_solution::OrderedDict,
+        time_increment::Int,
+    )
+
+Updates the solution (of each scenario) by concatenating the first bunch of 
+time slots of the newly generated sub-solution to the end of the final solution dictionary.
+This function traverses through the dictionary keys, finds the vector and finally
+does the concatenation. For now, the function is hardcoded to traverse at most 3 layers
+of depth until it finds a vector object.
+"""
 function _update_solution!(
     solution::OrderedDict,
     sub_solution::OrderedDict,
