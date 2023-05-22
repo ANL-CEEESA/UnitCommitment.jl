@@ -25,7 +25,7 @@ Typical Usage
 
 ### Solving user-provided instances
 
-The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.
+The first step to use UC.jl is to construct a JSON file that describes each scenario of your unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) construct the instance using scenario files; (2) build the optimization model; (3) run the optimization; and (4) extract the optimal solution. 
 
 ```julia
 using Cbc
@@ -33,7 +33,7 @@ using JSON
 using UnitCommitment
 
 # 1. Read instance
-instance = UnitCommitment.read("/path/to/input.json")
+instance = UnitCommitment.read(["/path/to/s1.json", "/path/to/s2.json"])
 
 # 2. Construct optimization model
 model = UnitCommitment.build_model(
@@ -48,6 +48,15 @@ UnitCommitment.optimize!(model)
 solution = UnitCommitment.solution(model)
 UnitCommitment.write("/path/to/output.json", solution)
 ```
+
+The above lines of code can also be used for solving the deterministic Security-Constrained Unit Commitment (SCUC) problem, which will create an instance based on a single scenario. The unit commitment instance for SCUC can alternatively be constructed as
+
+```julia
+# 1. Read instance
+instance = UnitCommitment.read("/path/to/input.json")
+```
+
+
 
 ### Solving benchmark instances
 
@@ -136,6 +145,80 @@ solution = JSON.parsefile("solution.json")
 # Validate solution and print validation errors
 UnitCommitment.validate(instance, solution)
 ```
+## Modeling and Solving the SUC Problem
+
+To model the SUC problem, UC.jl supports reading scenario files at a specified directory using the `Glob` package. For instance, in order to construct a SUC instance using all JSON files at a given directory, where each JSON file describes one scenario, the following line of code can be used:
+
+```julia
+instance = UnitCommitment.read(glob("*.json", "/path/to/scenarios/"))
+```
+
+Alternatively, the specific vector of scenario files can also be passed as follows:
+```julia
+instance = UnitCommitment.read(["/path/to/s1.json", "/path/to/s2.json"]))
+```
+
+## Solving the SUC Problem
+
+We next lay out the alternative methods supported by UC.jl for solving the SUC problem.
+
+## Solving the Extensive Form of the SUC Problem
+
+By default, UC.jl solves the extensive form of the SUC problem. 
+
+```julia
+UnitCommitment.optimize!(model)
+solution = UnitCommitment.solution(model)
+UnitCommitment.write("/path/to/output.json", solution)
+```
+
+Note that the created `solution` dictionary will include both the optimal first-stage decisions, as well as the optimal second-stage decisions under all scenarios.
+
+## Solving the SUC Problem Using Progressive Hedging
+
+Importantly, UC.jl further provides the option of solving the SUC problem using the progressive hedging (PH) algorithm, which is an algorithm closely related to the alternating direction method of multipliers (ADMM). To that end, the package supports solving the PH subproblem associated with each scenario in parallel in a separate Julia process, where the communication among the Julia processes is provided using the Message Passing Interface or MPI. 
+
+The solve the SUC problem using Progressive Hedging, you may run the following line of code, which will create `NUM_OF_PROCS` processes where each process executes the `ph.jl` file. 
+
+```julia
+using MPI
+const FILENAME = "ph.jl"
+const NUM_OF_PROCS = 5
+
+mpiexec(exe -> run(`$exe -n $NUM_OF_PROCS $(Base.julia_cmd()) $FILENAME`))
+```
+
+#### **`ph.jl`**
+```julia
+using MPI: MPI_Info
+using Gurobi, MPI, UnitCommitment, Glob
+import UnitCommitment: ProgressiveHedging
+
+MPI.Init()
+ph = ProgressiveHedging.Method()
+instance = UnitCommitment.read(
+    glob("*.json", "/path/to/scenarios/"),
+    ph
+)
+model = UnitCommitment.build_model(
+        instance = instance,
+        optimizer = Gurobi.Optimizer,
+    )
+UnitCommitment.optimize!(model, ph)
+solution = UnitCommitment.solution(model, ph)
+MPI.Finalize()
+```
+
+Observe that the `read`, `build_model`, and `solution` methods take the `ph` object as an argument, which is of type `Progressive Hedging`. 
+
+The subproblem solved within each Julia process deduces the number of scenarios it needs to model using the total number of scenarios and the total number of processes. For instance, if `glob("*.json", "/path/to/scenarios/")` returns a vector of 15 scenario file paths and `NUM_OF_PROCS = 5`, then each subproblem will model and solve 3 scenarios. If the total number of scenarios is not divisible by `NUM_OF_PROCS`, then the read method will throw an error.
+
+The `solution(model, ph)` method gathers the optimal solution of all processes and returns a dictionary that contains all optimal first-stage decisions as well as all optimal second-stage decisions evaluated for each scenario. 
+
+!!! warning
+
+    Currently, PH can handle only equiprobable scenarios. Further, `solution(model, ph)` can only handle cases where only one scenario is modeled in each process.
+
 
 ## Computing Locational Marginal Prices
 

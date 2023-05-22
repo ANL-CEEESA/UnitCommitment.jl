@@ -4,7 +4,7 @@ Data Format
 Input Data Format
 -----------------
 
-Instances are specified by JSON files containing the following main sections:
+To create the JuMP model for a two-stage security constrained unit commitment (SUC) problem, UC.jl creates an instance that is composed of one or multiple scenarios. For each scenario, UC.jl expects a JSON file that describes the parameters of the problem, as well as the weight and the name of each respective scenario. Note that the input data format required for modeling the deterministic security-constrained unit commitment (SCUC) problem also follows the format mapped out below, as SCUC is treated by the package as the special case of the SUC problem with one scenario. The requisite input data format contains the following fields:
 
 * [Parameters](#Parameters)
 * [Buses](#Buses)
@@ -26,6 +26,8 @@ This section describes system-wide parameters, such as power balance penalty, an
 | `Time horizon (h)` | Length of the planning horizon (in hours). | Required | N
 | `Time step (min)` | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc). | `60` | N
 | `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged. | `1000.0` | Y
+| `Scenario name` | Name of the scenario. | `s1` | N
+| `Scenario weight` | Weight of the scenario. The scenario weight can be any positive real number, that is, it does not have to be between zero and one. The package normalizes the weights to ensure that the probability of all scenarios sum up to one. | one divided by the total number of scenarios | N
 
 
 #### Example
@@ -34,7 +36,9 @@ This section describes system-wide parameters, such as power balance penalty, an
     "Parameters": {
         "Version": "0.3",
         "Time horizon (h)": 4,
-        "Power balance penalty ($/MW)": 1000.0
+        "Power balance penalty ($/MW)": 1000.0,
+        "Scenario name": "s1",
+        "Scenario weight": 0.5
     }
 }
 ```
