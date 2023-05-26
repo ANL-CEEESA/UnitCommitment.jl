@@ -1,4 +1,4 @@
-using Cbc
+using HiGHS
 using MPI
 using JuMP
 using UnitCommitment
@@ -9,29 +9,32 @@ function fixture(path::String)::String
     return "$basedir/../../../../fixtures/$path"
 end
 
-# 1. Initialize MPI
+# Initialize MPI
 MPI.Init()
 
-# 2. Configure progressive hedging method
+# Configure progressive hedging method
 ph = UnitCommitment.ProgressiveHedging()
 
-# 3. Read problem instance
+# Read problem instance
 instance = UnitCommitment.read(
     [fixture("case14.json.gz"), fixture("case14.json.gz")],
     ph,
 )
 
-# 4. Build JuMP model
+# Build JuMP model
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = optimizer_with_attributes(Cbc.Optimizer, "LogLevel" => 0),
+    optimizer = optimizer_with_attributes(
+        HiGHS.Optimizer,
+        MOI.Silent() => true,
+    ),
 )
 
-# 5. Run the decentralized optimization algorithm
+# Run the decentralized optimization algorithm
 UnitCommitment.optimize!(model, ph)
 
-# 6. Fetch the solution
+# Fetch the solution
 solution = UnitCommitment.solution(model, ph)
 
-# 7. Close MPI
+# Close MPI
 MPI.Finalize()

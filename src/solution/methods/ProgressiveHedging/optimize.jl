@@ -6,106 +6,95 @@ using TimerOutputs
 import JuMP
 const to = TimerOutput()
 
-function optimize!(model::JuMP.Model, method::ProgressiveHedging)::FinalResult
+function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
     mpi = MpiInfo(MPI.COMM_WORLD)
-    iterations = Array{IterationInfo,1}(undef, 0)
-    if method.consensus_vars === nothing
-        method.consensus_vars =
-            [var for var in all_variables(model) if is_binary(var)]
+    iterations = PHIterationInfo[]
+    consensus_vars = [var for var in all_variables(model) if is_binary(var)]
+    nvars = length(consensus_vars)
+    weights = ones(nvars)
+    if method.initial_weights !== nothing
+        weights = copy(method.initial_weights)
     end
-    nvars = length(method.consensus_vars)
-    if method.weights === nothing
-        method.weights = [1.0 for _ in 1:nvars]
+    target = zeros(nvars)
+    if method.initial_target !== nothing
+        target = copy(method.initial_target)
     end
-    if method.initial_global_consensus_vals === nothing
-        method.initial_global_consensus_vals = [0.0 for _ in 1:nvars]
-    end
-
-    ph_sp_params = SpParams(
+    params = PHSubProblemParams(
         ρ = method.ρ,
-        λ = [method.λ_default for _ in 1:nvars],
-        global_consensus_vals = method.initial_global_consensus_vals,
+        λ = [method.λ for _ in 1:nvars],
+        target = target,
     )
-    ph_subproblem =
-        SubProblem(model, model[:obj], method.consensus_vars, method.weights)
-    set_optimizer_attribute(model, "Threads", method.num_of_threads)
+    sp = PHSubProblem(model, model[:obj], consensus_vars, weights)
     while true
-        it_time = @elapsed begin
-            solution = solve_subproblem(ph_subproblem, ph_sp_params)
+        iteration_time = @elapsed begin
+            solution = solve_subproblem(sp, params, method.inner_method)
             MPI.Barrier(mpi.comm)
             global_obj = compute_global_objective(mpi, solution)
-            global_consensus_vals = compute_global_consensus(mpi, solution)
-            update_λ_and_residuals!(
-                solution,
-                ph_sp_params,
-                global_consensus_vals,
-            )
+            target = compute_target(mpi, solution)
+            update_λ_and_residuals!(solution, params, target)
             global_infeas = compute_global_infeasibility(solution, mpi)
             global_residual = compute_global_residual(mpi, solution)
-            if has_numerical_issues(global_consensus_vals)
+            if has_numerical_issues(target)
                 break
             end
         end
-        total_elapsed_time = compute_total_elapsed_time(it_time, iterations)
-        it = IterationInfo(
-            it_num = length(iterations) + 1,
-            sp_consensus_vals = solution.consensus_vals,
-            global_consensus_vals = global_consensus_vals,
-            sp_obj = solution.obj,
-            global_obj = global_obj,
-            it_time = it_time,
-            total_elapsed_time = total_elapsed_time,
-            global_residual = global_residual,
+        total_elapsed_time =
+            compute_total_elapsed_time(iteration_time, iterations)
+        current_iteration = PHIterationInfo(
             global_infeas = global_infeas,
+            global_obj = global_obj,
+            global_residual = global_residual,
+            iteration_number = length(iterations) + 1,
+            iteration_time = iteration_time,
+            sp_vals = solution.vals,
+            sp_obj = solution.obj,
+            target = target,
+            total_elapsed_time = total_elapsed_time,
         )
-        iterations = [iterations; it]
-        print_progress(mpi, it, method.print_interval)
-        if should_stop(mpi, iterations, method.termination_criteria)
+        push!(iterations, current_iteration)
+        print_progress(mpi, current_iteration, method.print_interval)
+        if should_stop(mpi, iterations, method.termination)
             break
         end
     end
-
-    return FinalResult(
-        last(iterations).global_obj,
-        last(iterations).sp_consensus_vals,
-        last(iterations).global_infeas,
-        last(iterations).it_num,
-        last(iterations).total_elapsed_time,
-    )
+    return
 end
 
 function compute_total_elapsed_time(
-    it_time::Float64,
-    iterations::Array{IterationInfo,1},
+    iteration_time::Float64,
+    iterations::Array{PHIterationInfo,1},
 )::Float64
     length(iterations) > 0 ?
     current_total_time = last(iterations).total_elapsed_time :
     current_total_time = 0
-    return current_total_time + it_time
+    return current_total_time + iteration_time
 end
 
-function compute_global_objective(mpi::MpiInfo, s::SpSolution)::Float64
+function compute_global_objective(
+    mpi::MpiInfo,
+    s::PhSubProblemSolution,
+)::Float64
     global_obj = MPI.Allreduce(s.obj, MPI.SUM, mpi.comm)
     global_obj /= mpi.nprocs
     return global_obj
 end
 
-function compute_global_consensus(mpi::MpiInfo, s::SpSolution)::Array{Float64,1}
-    sp_consensus_vals = s.consensus_vals
-    global_consensus_vals = MPI.Allreduce(sp_consensus_vals, MPI.SUM, mpi.comm)
-    global_consensus_vals = global_consensus_vals / mpi.nprocs
-    return global_consensus_vals
+function compute_target(mpi::MpiInfo, s::PhSubProblemSolution)::Array{Float64,1}
+    sp_vals = s.vals
+    target = MPI.Allreduce(sp_vals, MPI.SUM, mpi.comm)
+    target = target / mpi.nprocs
+    return target
 end
 
-function compute_global_residual(mpi::MpiInfo, s::SpSolution)::Float64
-    n_vars = length(s.consensus_vals)
+function compute_global_residual(mpi::MpiInfo, s::PhSubProblemSolution)::Float64
+    n_vars = length(s.vals)
     local_residual_sum = abs.(s.residuals)
     global_residual_sum = MPI.Allreduce(local_residual_sum, MPI.SUM, mpi.comm)
     return sum(global_residual_sum) / n_vars
 end
 
 function compute_global_infeasibility(
-    solution::SpSolution,
+    solution::PhSubProblemSolution,
     mpi::MpiInfo,
 )::Float64
     local_infeasibility = norm(solution.residuals)
@@ -113,9 +102,13 @@ function compute_global_infeasibility(
     return global_infeas
 end
 
-function solve_subproblem(sp::SubProblem, ph_sp_params::SpParams)::SpSolution
+function solve_subproblem(
+    sp::PHSubProblem,
+    params::PHSubProblemParams,
+    method::SolutionMethod,
+)::PhSubProblemSolution
     G = length(sp.consensus_vars)
-    if norm(ph_sp_params.λ) < 1e-3
+    if norm(params.λ) < 1e-3
         @objective(sp.mip, Min, sp.obj)
     else
         @objective(
@@ -124,40 +117,31 @@ function solve_subproblem(sp::SubProblem, ph_sp_params::SpParams)::SpSolution
             sp.obj +
             sum(
                 sp.weights[g] *
-                ph_sp_params.λ[g] *
-                (sp.consensus_vars[g] - ph_sp_params.global_consensus_vals[g])
-                for g in 1:G
+                params.λ[g] *
+                (sp.consensus_vars[g] - params.target[g]) for g in 1:G
             ) +
-            (ph_sp_params.ρ / 2) * sum(
-                sp.weights[g] *
-                (
-                    sp.consensus_vars[g] -
-                    ph_sp_params.global_consensus_vals[g]
-                )^2 for g in 1:G
+            (params.ρ / 2) * sum(
+                sp.weights[g] * (sp.consensus_vars[g] - params.target[g])^2 for
+                g in 1:G
             )
         )
     end
-    optimize!(sp.mip, XavQiuWanThi2019.Method())
+    optimize!(sp.mip, method)
     obj = objective_value(sp.mip)
-    sp_consensus_vals = value.(sp.consensus_vars)
-    return SpSolution(
-        obj = obj,
-        consensus_vals = sp_consensus_vals,
-        residuals = zeros(G),
-    )
+    sp_vals = value.(sp.consensus_vars)
+    return PhSubProblemSolution(obj = obj, vals = sp_vals, residuals = zeros(G))
 end
 
 function update_λ_and_residuals!(
-    solution::SpSolution,
-    ph_sp_params::SpParams,
-    global_consensus_vals::Array{Float64,1},
+    solution::PhSubProblemSolution,
+    params::PHSubProblemParams,
+    target::Array{Float64,1},
 )::Nothing
-    n_vars = length(solution.consensus_vals)
-    ph_sp_params.global_consensus_vals = global_consensus_vals
+    n_vars = length(solution.vals)
+    params.target = target
     for n in 1:n_vars
-        solution.residuals[n] =
-            solution.consensus_vals[n] - ph_sp_params.global_consensus_vals[n]
-        ph_sp_params.λ[n] += ph_sp_params.ρ * solution.residuals[n]
+        solution.residuals[n] = solution.vals[n] - params.target[n]
+        params.λ[n] += params.ρ * solution.residuals[n]
     end
 end
 
@@ -179,22 +163,22 @@ end
 
 function print_progress(
     mpi::MpiInfo,
-    iteration::IterationInfo,
+    iteration::PHIterationInfo,
     print_interval,
 )::Nothing
     if !mpi.root
         return
     end
-    if iteration.it_num % print_interval != 0
+    if iteration.iteration_number % print_interval != 0
         return
     end
     @info @sprintf(
-        "Current iteration %8d %20.6e %20.6e %12.2f %% %8.2f %8.2f",
-        iteration.it_num,
+        "%8d %20.6e %20.6e %12.2f %% %8.2f %8.2f",
+        iteration.iteration_number,
         iteration.global_obj,
         iteration.global_infeas,
         iteration.global_residual * 100,
-        iteration.it_time,
+        iteration.iteration_time,
         iteration.total_elapsed_time
     )
 end
@@ -209,21 +193,21 @@ end
 
 function should_stop(
     mpi::MpiInfo,
-    iterations::Array{IterationInfo,1},
-    criteria::TerminationCriteria,
+    iterations::Array{PHIterationInfo,1},
+    termination::PHTermination,
 )::Bool
-    if length(iterations) >= criteria.max_iterations
+    if length(iterations) >= termination.max_iterations
         if mpi.root
             @info "Iteration limit reached. Stopping."
         end
         return true
     end
 
-    if length(iterations) < criteria.min_iterations
+    if length(iterations) < termination.min_iterations
         return false
     end
 
-    if last(iterations).total_elapsed_time > criteria.max_time
+    if last(iterations).total_elapsed_time > termination.max_time
         if mpi.root
             @info "Time limit reached. Stopping."
         end
@@ -233,9 +217,9 @@ function should_stop(
     curr_it = last(iterations)
     prev_it = iterations[length(iterations)-1]
 
-    if curr_it.global_infeas < criteria.min_feasibility
+    if curr_it.global_infeas < termination.min_feasibility
         obj_change = abs(prev_it.global_obj - curr_it.global_obj)
-        if obj_change < criteria.min_improvement
+        if obj_change < termination.min_improvement
             if mpi.root
                 @info "Feasibility limit reached. Stopping."
             end
