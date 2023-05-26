@@ -1,57 +1,69 @@
 JuMP Model
 ==========
 
-In this page, we describe the JuMP optimization model produced by the function `UnitCommitment.build_model`. A detailed understanding of this model is not necessary if you are just interested in using the package to solve some standard unit commitment cases, but it may be useful, for example, if you need to solve a slightly different problem, with additional variables and constraints. The notation in this page generally follows [KnOsWa20].
+In this page, we describe the JuMP optimization model produced by the function `build_model`. A detailed understanding of this model is not necessary if you are just interested in using the package to solve some standard unit commitment cases, but it may be useful, for example, if you need to solve a slightly different problem, with additional variables and constraints. The notation in this page generally follows [KnOsWa20].
 
 Decision variables
 ------------------
 
+UC.jl models the security-constrained unit commitment problem as a two-stage stochastic program. In this approach, some of the decision variables are *first-stage decisions*, which are taken before the uncertainty is realized and must therefore be the same across all scenarios, while the remaining variables are *second-stage decisions*, which can attain a different values in each scenario. In the current version of the package, all binary variables (which model commitment decisions of thermal units) are first-stage decisions and all continuous variables are second-stage decisions.
+
+!!! note
+
+    UC.jl treats deterministic SCUC instances as a special case of the stochastic problem in which there is only one scenario, named `"s1"` by default. To access second-stage decisions, therefore, you must provide this scenario name as the value for `sn`. For example, `model[:prod_above]["s1", g, t]`. 
+
 ### Generators
+
+In this section, we describe the decision variables associated with the generators, which include both thermal units (e.g., natural gas-fired power plant) and profiled units (e.g., wind turbine). 
 
 #### Thermal Units
 
-Name | Symbol | Description | Unit
-:-----|:--------:|:-------------|:------:
-`is_on[g,t]` | $u_{g}(t)$ | True if generator `g` is on at time `t`. | Binary
-`switch_on[g,t]` | $v_{g}(t)$ | True is generator `g` switches on at time `t`. | Binary
-`switch_off[g,t]` | $w_{g}(t)$ | True if generator `g` switches off at time `t`. | Binary
-`prod_above[g,t]` |$p'_{g}(t)$ | Amount of power produced by generator `g` above its minimum power output at time `t`. For example, if the minimum power of generator `g` is 100 MW and `g` is producing 115 MW of power at time `t`, then `prod_above[g,t]` equals `15.0`. | MW
-`segprod[g,t,k]` | $p^k_g(t)$ | Amount of power from piecewise linear segment `k` produced by generator `g` at time `t`. For example, if cost curve for generator `g` is defined by the points `(100, 1400)`, `(110, 1600)`, `(130, 2200)` and `(135, 2400)`, and if the generator is producing 115 MW of power at time `t`, then `segprod[g,t,:]` equals `[10.0, 5.0, 0.0]`.| MW
-`reserve[r,g,t]` | $r_g(t)$ | Amount of reserve `r` provided by unit `g` at time `t`. | MW
-`startup[g,t,s]` | $\delta^s_g(t)$ | True if generator `g` switches on at time `t` incurring start-up costs from start-up category `s`. | Binary
+Name |  Description | Unit | Stage
+:-----|:-------------|:------: | :------:
+`is_on[g,t]` | True if generator `g` is on at time `t`. | Binary | 1
+`switch_on[g,t]` | True is generator `g` switches on at time `t`. | Binary| 1
+`switch_off[g,t]` | True if generator `g` switches off at time `t`. | Binary| 1
+`startup[g,t,s]` | True if generator `g` switches on at time `t` incurring start-up costs from start-up category `s`. | Binary| 1
+`prod_above[sn,g,t]` | Amount of power produced by generator `g` above its minimum power output at time `t` in scenario `sn`. For example, if the minimum power of generator `g` is 100 MW and `g` is producing 115 MW of power at time `t` in scenario `sn`, then `prod_above[sn,g,t]` equals `15.0`. | MW | 2
+`segprod[sn,g,t,k]` | Amount of power from piecewise linear segment `k` produced by generator `g` at time `t` in scenario `sn`. For example, if cost curve for generator `g` is defined by the points `(100, 1400)`, `(110, 1600)`, `(130, 2200)` and `(135, 2400)`, and if the generator is producing 115 MW of power at time `t` in scenario `sn`, then `segprod[sn,g,t,:]` equals `[10.0, 5.0, 0.0]`.| MW | 2
+`reserve[sn,r,g,t]` | Amount of reserve `r` provided by unit `g` at time `t` in scenario `sn`. | MW | 2
 
+!!! warning
+
+    The first-stage decision variables of the JuMP model are `is_on[g,t]`, `switch_on[g,t]`, `switch_off[g,t]`, and `startup[g,t,s]`. As such, the dictionaries corresponding to these variables do not include the scenario index in their keys. In contrast, all other variables of the created JuMP model are allowed to obtain a different value in each scenario and are thus modeled as second-stage decision variables. Accordingly, the dictionaries of all second-stage decision variables have the scenario index in their keys. This is true even if the model is created to solve the deterministic SCUC, in which case the default scenario index `s1` is included in the dictionary key.
+    
 
 #### Profiled Units
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`prod_profiled[s,t]` | $p^{\dagger}_{g}(t)$ | Amount of power produced by profiled unit `g` at time `t`. | MW
+Name | Description | Unit | Stage
+:-----|:-------------|:------: | :------:
+`prod_profiled[s,t]` | Amount of power produced by profiled unit `g` at time `t`. | MW | 2
 
 
 ### Buses
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`net_injection[b,t]` | $n_b(t)$ | Net injection at bus `b` at time `t`. | MW
-`curtail[b,t]` | $s^+_b(t)$ | Amount of load curtailed at bus `b` at time `t` | MW
+Name | Description | Unit | Stage
+:-----|:-------------|:------:| :------:
+`net_injection[sn,b,t]` | Net injection at bus `b` at time `t` in scenario `sn`. | MW | 2
+`curtail[sn,b,t]` | Amount of load curtailed at bus `b` at time `t` in scenario `sn`. | MW | 2
 
 
 ### Price-sensitive loads
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`loads[s,t]` | $d_{s}(t)$ | Amount of power served to price-sensitive load `s` at time `t`. | MW
+Name |  Description | Unit | Stage
+:-----|:-------------|:------:| :------:
+`loads[sn,s,t]` | Amount of power served to price-sensitive load `s` at time `t` in scenario `sn`. | MW | 2
 
 ### Transmission lines
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`flow[l,t]` | $f_l(t)$ | Power flow on line `l` at time `t`. | MW
-`overflow[l,t]` | $f^+_l(t)$ | Amount of flow above the limit for line `l` at time `t`. | MW
+Name |  Description | Unit | Stage 
+:-----|:-------------|:------:| :------:
+`flow[sn,l,t]` |  Power flow on line `l` at time `t` in scenario `sn`. | MW | 2
+`overflow[sn,l,t]` | Amount of flow above the limit for line `l` at time `t` in scenario `sn`. | MW | 2
 
 !!! warning
 
-    Since transmission and N-1 security constraints are enforced in a lazy way, most of the `flow[l,t]` variables are never added to the model. Accessing `model[:flow][l,t]` without first checking that the variable exists will likely generate an error.
+    Since transmission and N-1 security constraints are enforced in a lazy way, most of the `flow[l,t]` variables are never added to the model. Accessing `model[:flow][sn,l,t]` without first checking that the variable exists will likely generate an error.
 
 Objective function
 ------------------
@@ -106,7 +118,12 @@ end
 
 ### Fixing variables, modifying objective function and adding constraints
 
-Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it. The script below shows how can this be accomplished. For more information on modifying an existing model, [see the JuMP documentation](https://jump.dev/JuMP.jl/stable/manual/variables/).
+Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it. 
+!!! warning
+
+    It is important to take into account the stage of the decision variables in modifying the optimization model. In changing a deterministic SCUC model, modifying the second-stage decision variables requires adding the term `s1`, which is the default scenario name assigned to the second-stage decision variables in the SCUC model. For an SUC model, the package permits the modification of the second-stage decision variables individually for each scenario. 
+
+The script below shows how the JuMP model can be modified after it is created. For more information on modifying an existing model, [see the JuMP documentation](https://jump.dev/JuMP.jl/stable/manual/variables/).
 
 ```julia
 using Cbc
@@ -122,10 +139,26 @@ model = UnitCommitment.build_model(
     optimizer=Cbc.Optimizer,
 )
 
-# Fix a decision variable to 1.0
+# Fix the commitment status of the generator "g1" in time period 1 to 1.0
 JuMP.fix(
     model[:is_on]["g1",1],
     1.0,
+    force=true,
+)
+
+# Fix the production level of the generator "g1" above its minimum level in time period 1 and 
+# in scenario "s1" to 20.0 MW. Observe that the three-tuple dictionary key involves the scenario 
+# index "s1", as production above minimum is a second-stage decision variable.
+JuMP.fix(
+    model[:prod_above]["s1", "g1", 1],
+    20.0,
+    force=true,
+)
+
+# Enforce the curtailment of 20.0 MW of load at bus "b2" in time period 4 in scenario "s1".
+JuMP.fix(
+    curtail["s1", "b2", 4] =
+    20.0,
     force=true,
 )
 
@@ -178,10 +211,10 @@ for t in 1:T
     # In this example, we assume a cost of $5/MW.
     set_objective_coefficient(model, x[t], 5.0)
 
-    # Attach the new component to bus b1, by modifying the
+    # Attach the new component to bus b1 in scenario s1, by modifying the
     # constraint `eq_net_injection`.
     set_normalized_coefficient(
-        model[:eq_net_injection]["b1", t],
+        model[:eq_net_injection]["s1", "b1", t],
         x[t],
         1.0,
     )
