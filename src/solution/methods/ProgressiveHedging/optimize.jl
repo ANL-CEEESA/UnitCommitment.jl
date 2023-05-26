@@ -6,12 +6,9 @@ using TimerOutputs
 import JuMP
 const to = TimerOutput()
 
-function optimize!(
-    model::JuMP.Model,
-    method::ProgressiveHedging.Method,
-)::ProgressiveHedging.FinalResult
-    mpi = ProgressiveHedging.MpiInfo(MPI.COMM_WORLD)
-    iterations = Array{ProgressiveHedging.IterationInfo,1}(undef, 0)
+function optimize!(model::JuMP.Model, method::ProgressiveHedging)::FinalResult
+    mpi = MpiInfo(MPI.COMM_WORLD)
+    iterations = Array{IterationInfo,1}(undef, 0)
     if method.consensus_vars === nothing
         method.consensus_vars =
             [var for var in all_variables(model) if is_binary(var)]
@@ -24,17 +21,13 @@ function optimize!(
         method.initial_global_consensus_vals = [0.0 for _ in 1:nvars]
     end
 
-    ph_sp_params = ProgressiveHedging.SpParams(
+    ph_sp_params = SpParams(
         ρ = method.ρ,
         λ = [method.λ_default for _ in 1:nvars],
         global_consensus_vals = method.initial_global_consensus_vals,
     )
-    ph_subproblem = ProgressiveHedging.SubProblem(
-        model,
-        model[:obj],
-        method.consensus_vars,
-        method.weights,
-    )
+    ph_subproblem =
+        SubProblem(model, model[:obj], method.consensus_vars, method.weights)
     set_optimizer_attribute(model, "Threads", method.num_of_threads)
     while true
         it_time = @elapsed begin
@@ -54,7 +47,7 @@ function optimize!(
             end
         end
         total_elapsed_time = compute_total_elapsed_time(it_time, iterations)
-        it = ProgressiveHedging.IterationInfo(
+        it = IterationInfo(
             it_num = length(iterations) + 1,
             sp_consensus_vals = solution.consensus_vals,
             global_consensus_vals = global_consensus_vals,
@@ -72,7 +65,7 @@ function optimize!(
         end
     end
 
-    return ProgressiveHedging.FinalResult(
+    return FinalResult(
         last(iterations).global_obj,
         last(iterations).sp_consensus_vals,
         last(iterations).global_infeas,
@@ -83,7 +76,7 @@ end
 
 function compute_total_elapsed_time(
     it_time::Float64,
-    iterations::Array{ProgressiveHedging.IterationInfo,1},
+    iterations::Array{IterationInfo,1},
 )::Float64
     length(iterations) > 0 ?
     current_total_time = last(iterations).total_elapsed_time :
@@ -91,29 +84,20 @@ function compute_total_elapsed_time(
     return current_total_time + it_time
 end
 
-function compute_global_objective(
-    mpi::ProgressiveHedging.MpiInfo,
-    s::ProgressiveHedging.SpSolution,
-)::Float64
+function compute_global_objective(mpi::MpiInfo, s::SpSolution)::Float64
     global_obj = MPI.Allreduce(s.obj, MPI.SUM, mpi.comm)
     global_obj /= mpi.nprocs
     return global_obj
 end
 
-function compute_global_consensus(
-    mpi::ProgressiveHedging.MpiInfo,
-    s::ProgressiveHedging.SpSolution,
-)::Array{Float64,1}
+function compute_global_consensus(mpi::MpiInfo, s::SpSolution)::Array{Float64,1}
     sp_consensus_vals = s.consensus_vals
     global_consensus_vals = MPI.Allreduce(sp_consensus_vals, MPI.SUM, mpi.comm)
     global_consensus_vals = global_consensus_vals / mpi.nprocs
     return global_consensus_vals
 end
 
-function compute_global_residual(
-    mpi::ProgressiveHedging.MpiInfo,
-    s::ProgressiveHedging.SpSolution,
-)::Float64
+function compute_global_residual(mpi::MpiInfo, s::SpSolution)::Float64
     n_vars = length(s.consensus_vals)
     local_residual_sum = abs.(s.residuals)
     global_residual_sum = MPI.Allreduce(local_residual_sum, MPI.SUM, mpi.comm)
@@ -121,18 +105,15 @@ function compute_global_residual(
 end
 
 function compute_global_infeasibility(
-    solution::ProgressiveHedging.SpSolution,
-    mpi::ProgressiveHedging.MpiInfo,
+    solution::SpSolution,
+    mpi::MpiInfo,
 )::Float64
     local_infeasibility = norm(solution.residuals)
     global_infeas = MPI.Allreduce(local_infeasibility, MPI.SUM, mpi.comm)
     return global_infeas
 end
 
-function solve_subproblem(
-    sp::ProgressiveHedging.SubProblem,
-    ph_sp_params::ProgressiveHedging.SpParams,
-)::ProgressiveHedging.SpSolution
+function solve_subproblem(sp::SubProblem, ph_sp_params::SpParams)::SpSolution
     G = length(sp.consensus_vars)
     if norm(ph_sp_params.λ) < 1e-3
         @objective(sp.mip, Min, sp.obj)
@@ -159,7 +140,7 @@ function solve_subproblem(
     optimize!(sp.mip, XavQiuWanThi2019.Method())
     obj = objective_value(sp.mip)
     sp_consensus_vals = value.(sp.consensus_vars)
-    return ProgressiveHedging.SpSolution(
+    return SpSolution(
         obj = obj,
         consensus_vals = sp_consensus_vals,
         residuals = zeros(G),
@@ -167,8 +148,8 @@ function solve_subproblem(
 end
 
 function update_λ_and_residuals!(
-    solution::ProgressiveHedging.SpSolution,
-    ph_sp_params::ProgressiveHedging.SpParams,
+    solution::SpSolution,
+    ph_sp_params::SpParams,
     global_consensus_vals::Array{Float64,1},
 )::Nothing
     n_vars = length(solution.consensus_vals)
@@ -180,7 +161,7 @@ function update_λ_and_residuals!(
     end
 end
 
-function print_header(mpi::ProgressiveHedging.MpiInfo)::Nothing
+function print_header(mpi::MpiInfo)::Nothing
     if !mpi.root
         return
     end
@@ -197,8 +178,8 @@ function print_header(mpi::ProgressiveHedging.MpiInfo)::Nothing
 end
 
 function print_progress(
-    mpi::ProgressiveHedging.MpiInfo,
-    iteration::ProgressiveHedging.IterationInfo,
+    mpi::MpiInfo,
+    iteration::IterationInfo,
     print_interval,
 )::Nothing
     if !mpi.root
@@ -227,9 +208,9 @@ function has_numerical_issues(target::Array{Float64,1})::Bool
 end
 
 function should_stop(
-    mpi::ProgressiveHedging.MpiInfo,
-    iterations::Array{ProgressiveHedging.IterationInfo,1},
-    criteria::ProgressiveHedging.TerminationCriteria,
+    mpi::MpiInfo,
+    iterations::Array{IterationInfo,1},
+    criteria::TerminationCriteria,
 )::Bool
     if length(iterations) >= criteria.max_iterations
         if mpi.root

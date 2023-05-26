@@ -4,10 +4,10 @@
 
 function read(
     paths::Vector{String},
-    method::ProgressiveHedging.Method,
+    ::ProgressiveHedging,
 )::UnitCommitmentInstance
     comm = MPI.COMM_WORLD
-    mpi = ProgressiveHedging.MpiInfo(comm)
+    mpi = MpiInfo(comm)
     (length(paths) % mpi.nprocs == 0) || error(
         "Number of processes $(mpi.nprocs) is not a divisor of $(length(paths))",
     )

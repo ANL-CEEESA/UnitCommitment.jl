@@ -5,12 +5,9 @@
 using MPI, DataStructures
 const FIRST_STAGE_VARS = ["Is on", "Switch on", "Switch off"]
 
-function solution(
-    model::JuMP.Model,
-    method::ProgressiveHedging.Method,
-)::OrderedDict
+function solution(model::JuMP.Model, method::ProgressiveHedging)::OrderedDict
     comm = MPI.COMM_WORLD
-    mpi = ProgressiveHedging.MpiInfo(comm)
+    mpi = MpiInfo(comm)
     sp_solution = UnitCommitment.solution(model)
     gather_solution = OrderedDict()
     for (solution_key, dict) in sp_solution

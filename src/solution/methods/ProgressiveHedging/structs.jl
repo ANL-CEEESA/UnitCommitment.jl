@@ -2,9 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-module ProgressiveHedging
 using JuMP, MPI, TimerOutputs
-import ..SolutionMethod
 
 mutable struct TerminationCriteria
     max_iterations::Int
@@ -42,7 +40,7 @@ Base.@kwdef mutable struct IterationInfo
     global_infeas::Float64
 end
 
-mutable struct Method <: SolutionMethod
+mutable struct ProgressiveHedging <: SolutionMethod
     consensus_vars::Union{Array{VariableRef,1},Nothing}
     weights::Union{Array{Float64,1},Nothing}
     initial_global_consensus_vals::Union{Array{Float64,1},Nothing}
@@ -52,7 +50,7 @@ mutable struct Method <: SolutionMethod
     print_interval::Int
     termination_criteria::TerminationCriteria
 
-    function Method(;
+    function ProgressiveHedging(;
         consensus_vars::Union{Array{VariableRef,1},Nothing} = nothing,
         weights::Union{Array{Float64,1},Nothing} = nothing,
         initial_global_consensus_vals::Union{Array{Float64,1},Nothing} = nothing,
@@ -125,6 +123,4 @@ Base.@kwdef struct Callbacks
     before_solve_subproblem::Any
     after_solve_subproblem::Any
     after_iteration::Any
-end
-
 end

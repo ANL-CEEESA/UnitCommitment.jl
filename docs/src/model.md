@@ -1,15 +1,16 @@
 JuMP Model
 ==========
 
-In this page, we describe the JuMP optimization model produced by the function `UnitCommitment.build_model`. A detailed understanding of this model is not necessary if you are just interested in using the package to solve some standard unit commitment cases, but it may be useful, for example, if you need to solve a slightly different problem, with additional variables and constraints. The notation in this page generally follows [KnOsWa20].
+In this page, we describe the JuMP optimization model produced by the function `build_model`. A detailed understanding of this model is not necessary if you are just interested in using the package to solve some standard unit commitment cases, but it may be useful, for example, if you need to solve a slightly different problem, with additional variables and constraints. The notation in this page generally follows [KnOsWa20].
 
 Decision variables
 ------------------
-In this section, we describe the decision variables of the JuMP model produced by the function `UnitCommitment.build_model`. 
 
-Recall that the UC.jl package allows for modeling and solving the SUC problem, wherein a broad range problem parameters can vary across user-defined scenarios. To facilitate the modeling of the SUC problem, some of the decision variables of the JuMP model are modeled as first-stage decisions, which are here-and-now decisions taken before the uncertainty is realized and thus are the same across all scenarios. As laid out below, the first-stage decisions relate primarily to the binary decisions of the generators. 
+UC.jl models the security-constrained unit commitment problem as a two-stage stochastic program. In this approach, some of the decision variables are *first-stage decisions*, which are taken before the uncertainty is realized and must therefore be the same across all scenarios, while the remaining variables are *second-stage decisions*, which can attain a different values in each scenario. In the current version of the package, all binary variables (which model commitment decisions of thermal units) are first-stage decisions and all continuous variables are second-stage decisions.
 
-In contrast, most of the decision variables of the JuMP model are second-stage decisions that can attain a different value in each scenario. Accordingly, the second-stage decision variables described below are indexed by the term `sn`. The term `sn` is preserved even if the package is used to model and solve the deterministic security-constrained unit commitment (SCUC) problem, which is currently treated by the package as the special case of the SUC model with only one scenario, having the default scenario index `"s1"`.
+!!! note
+
+    UC.jl treats deterministic SCUC instances as a special case of the stochastic problem in which there is only one scenario, named `"s1"` by default. To access second-stage decisions, therefore, you must provide this scenario name as the value for `sn`. For example, `model[:prod_above]["s1", g, t]`. 
 
 ### Generators
 
@@ -17,15 +18,15 @@ In this section, we describe the decision variables associated with the generato
 
 #### Thermal Units
 
-Name | Symbol | Description | Unit
-:-----|:--------:|:-------------|:------:
-`is_on[g,t]` | $u_{g}(t)$ | True if generator `g` is on at time `t`. | Binary
-`switch_on[g,t]` | $v_{g}(t)$ | True is generator `g` switches on at time `t`. | Binary
-`switch_off[g,t]` | $w_{g}(t)$ | True if generator `g` switches off at time `t`. | Binary
-`startup[g,t,s]` | $\delta^s_g(t)$ | True if generator `g` switches on at time `t` incurring start-up costs from start-up category `s`. | Binary
-`prod_above[sn,g,t]` |$p'_{g}(t)$ | Amount of power produced by generator `g` above its minimum power output at time `t` in scenario `sn`. For example, if the minimum power of generator `g` is 100 MW and `g` is producing 115 MW of power at time `t` in scenario `sn`, then `prod_above[sn,g,t]` equals `15.0`. | MW
-`segprod[sn,g,t,k]` | $p^k_g(t)$ | Amount of power from piecewise linear segment `k` produced by generator `g` at time `t` in scenario `sn`. For example, if cost curve for generator `g` is defined by the points `(100, 1400)`, `(110, 1600)`, `(130, 2200)` and `(135, 2400)`, and if the generator is producing 115 MW of power at time `t` in scenario `sn`, then `segprod[sn,g,t,:]` equals `[10.0, 5.0, 0.0]`.| MW
-`reserve[sn,r,g,t]` | $r_g(t)$ | Amount of reserve `r` provided by unit `g` at time `t` in scenario `sn`. | MW
+Name |  Description | Unit | Stage
+:-----|:-------------|:------: | :------:
+`is_on[g,t]` | True if generator `g` is on at time `t`. | Binary | 1
+`switch_on[g,t]` | True is generator `g` switches on at time `t`. | Binary| 1
+`switch_off[g,t]` | True if generator `g` switches off at time `t`. | Binary| 1
+`startup[g,t,s]` | True if generator `g` switches on at time `t` incurring start-up costs from start-up category `s`. | Binary| 1
+`prod_above[sn,g,t]` | Amount of power produced by generator `g` above its minimum power output at time `t` in scenario `sn`. For example, if the minimum power of generator `g` is 100 MW and `g` is producing 115 MW of power at time `t` in scenario `sn`, then `prod_above[sn,g,t]` equals `15.0`. | MW | 2
+`segprod[sn,g,t,k]` | Amount of power from piecewise linear segment `k` produced by generator `g` at time `t` in scenario `sn`. For example, if cost curve for generator `g` is defined by the points `(100, 1400)`, `(110, 1600)`, `(130, 2200)` and `(135, 2400)`, and if the generator is producing 115 MW of power at time `t` in scenario `sn`, then `segprod[sn,g,t,:]` equals `[10.0, 5.0, 0.0]`.| MW | 2
+`reserve[sn,r,g,t]` | Amount of reserve `r` provided by unit `g` at time `t` in scenario `sn`. | MW | 2
 
 !!! warning
 
@@ -34,31 +35,31 @@ Name | Symbol | Description | Unit
 
 #### Profiled Units
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`prod_profiled[s,t]` | $p^{\dagger}_{g}(t)$ | Amount of power produced by profiled unit `g` at time `t`. | MW
+Name | Description | Unit | Stage
+:-----|:-------------|:------: | :------:
+`prod_profiled[s,t]` | Amount of power produced by profiled unit `g` at time `t`. | MW | 2
 
 
 ### Buses
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`net_injection[sn,b,t]` | $n_b(t)$ | Net injection at bus `b` at time `t` in scenario `sn`. | MW
-`curtail[sn,b,t]` | $s^+_b(t)$ | Amount of load curtailed at bus `b` at time `t` in scenario `sn`. | MW
+Name | Description | Unit | Stage
+:-----|:-------------|:------:| :------:
+`net_injection[sn,b,t]` | Net injection at bus `b` at time `t` in scenario `sn`. | MW | 2
+`curtail[sn,b,t]` | Amount of load curtailed at bus `b` at time `t` in scenario `sn`. | MW | 2
 
 
 ### Price-sensitive loads
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`loads[sn,s,t]` | $d_{s}(t)$ | Amount of power served to price-sensitive load `s` at time `t` in scenario `sn`. | MW
+Name |  Description | Unit | Stage
+:-----|:-------------|:------:| :------:
+`loads[sn,s,t]` | Amount of power served to price-sensitive load `s` at time `t` in scenario `sn`. | MW | 2
 
 ### Transmission lines
 
-Name | Symbol | Description | Unit
-:-----|:------:|:-------------|:------:
-`flow[sn,l,t]` | $f_l(t)$ | Power flow on line `l` at time `t` in scenario `sn`. | MW
-`overflow[sn,l,t]` | $f^+_l(t)$ | Amount of flow above the limit for line `l` at time `t` in scenario `sn`. | MW
+Name |  Description | Unit | Stage 
+:-----|:-------------|:------:| :------:
+`flow[sn,l,t]` |  Power flow on line `l` at time `t` in scenario `sn`. | MW | 2
+`overflow[sn,l,t]` | Amount of flow above the limit for line `l` at time `t` in scenario `sn`. | MW | 2
 
 !!! warning
 
@@ -148,20 +149,18 @@ JuMP.fix(
 # Fix the production level of the generator "g1" above its minimum level in time period 1 and 
 # in scenario "s1" to 20.0 MW. Observe that the three-tuple dictionary key involves the scenario 
 # index "s1", as production above minimum is a second-stage decision variable.
-
 JuMP.fix(
     model[:prod_above]["s1", "g1", 1],
     20.0,
     force=true,
 )
 
-# Enforce the curtailment of 20.0 MW of load at bus "b2" in time period 4 in scenario "s10".
+# Enforce the curtailment of 20.0 MW of load at bus "b2" in time period 4 in scenario "s1".
 JuMP.fix(
-    curtail["s10", "b2", 4] =
+    curtail["s1", "b2", 4] =
     20.0,
     force=true,
 )
-
 
 # Change the objective function
 JuMP.set_objective_coefficient(
