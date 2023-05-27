@@ -20,6 +20,7 @@ using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
     @test length(sc.contingencies) == 19
     @test length(sc.price_sensitive_loads) == 1
     @test instance.time == 4
+    @test sc.time_step == 60
 
     @test sc.lines[5].name == "l5"
     @test sc.lines[5].source.name == "b2"

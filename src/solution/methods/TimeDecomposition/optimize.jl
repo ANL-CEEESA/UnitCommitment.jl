@@ -47,7 +47,6 @@ function optimize!(
     # get instance total length
     T = instance.time
     solution = OrderedDict()
-    iter = 0
     if length(instance.scenarios) > 1
         for sc in instance.scenarios
             solution[sc.name] = OrderedDict()
@@ -55,10 +54,6 @@ function optimize!(
     end
     # for each iteration, time increment by method.time_increment
     for t_start in 1:method.time_increment:T
-        # set the initial status
-        if iter > 0
-            _set_initial_status!(instance, solution, method.time_increment)
-        end
         t_end = t_start + method.time_window - 1
         # if t_end exceed total T
         t_end = t_end > T ? T : t_end
@@ -84,7 +79,8 @@ function optimize!(
                 )
             end
         end
-        iter += 1 # increment iteration counter
+        # set the initial status for the next sub-problem
+        _set_initial_status!(instance, solution, method.time_increment)
     end
     return solution
 end
@@ -96,7 +92,7 @@ end
         time_increment::Int,
     )
 
-Set the thermal units' initial power levels and statuses based on the first bunch of time slots 
+Set the thermal units' initial power levels and statuses based on the last bunch of time slots 
 specified by time_increment in the solution dictionary.
 """
 function _set_initial_status!(
@@ -114,11 +110,10 @@ function _set_initial_status!(
                     solution[sc.name]["Thermal production (MW)"][thermal_unit.name]
                 is_on = solution[sc.name]["Is on"][thermal_unit.name]
             end
-            thermal_unit.initial_power = prod[time_increment]
+            thermal_unit.initial_power = prod[end]
             thermal_unit.initial_status = _determine_initial_status(
                 thermal_unit.initial_status,
-                is_on,
-                time_increment,
+                is_on[end-time_increment+1:end],
             )
         end
     end
@@ -128,16 +123,14 @@ end
     _determine_initial_status(
         prev_initial_status::Union{Float64,Int},
         status_sequence::Vector{Float64},
-        time_increment::Int,
     )::Union{Float64,Int}
 
 Determines a thermal unit's initial status based on its previous initial status, and
-the on/off statuses in first bunch of time slots. 
+the on/off statuses in the last operation.
 """
 function _determine_initial_status(
     prev_initial_status::Union{Float64,Int},
     status_sequence::Vector{Float64},
-    time_increment::Int,
 )::Union{Float64,Int}
     # initialize the two flags
     on_status = prev_initial_status
@@ -147,8 +140,8 @@ function _determine_initial_status(
     # if the on_status < 0, set it to 1.0
     # at each time if the unit is off, reset on_status, decrement off_status
     # if the off_status > 0, set it to -1.0
-    for t in 1:time_increment
-        if status_sequence[t] == 1.0
+    for status in status_sequence
+        if status == 1.0
             on_status = on_status < 0.0 ? 1.0 : on_status + 1.0
             off_status = 0.0
         else

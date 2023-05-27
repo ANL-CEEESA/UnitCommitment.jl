@@ -104,6 +104,7 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     thermal_units_by_name::Dict{AbstractString,ThermalUnit}
     thermal_units::Vector{ThermalUnit}
     time::Int
+    time_step::Int
 end
 
 Base.@kwdef mutable struct UnitCommitmentInstance
