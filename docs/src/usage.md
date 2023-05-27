@@ -4,28 +4,24 @@ Usage
 Installation
 ------------
 
-UnitCommitment.jl was tested and developed with [Julia 1.7](https://julialang.org/). To install Julia, please follow the [installation guide on the official Julia website](https://julialang.org/downloads/). To install UnitCommitment.jl, run the Julia interpreter, type `]` to open the package manager, then type:
+UnitCommitment.jl was tested and developed with [Julia 1.9](https://julialang.org/). To install Julia, please follow the [installation guide on the official Julia website](https://julialang.org/downloads/). To install UnitCommitment.jl, run the Julia interpreter, type `]` to open the package manager, then type:
 
 ```text
-pkg> add UnitCommitment@0.3
+pkg> add UnitCommitment@0.4
 ```
 
-To test that the package has been correctly installed, run:
-
-```text
-pkg> test UnitCommitment
-```
-
-If all tests pass, the package should now be ready to be used by any Julia script on the machine.
-
-To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.
+To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [HiGHS](https://github.com/jump-dev/HiGHS.jl), [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.
 
 Typical Usage
 -------------
 
 ### Solving user-provided instances
 
-The first step to use UC.jl is to construct a JSON file describing your unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the instance from file; (2) construct the optimization model; (3) run the optimization; and (4) extract the optimal solution.
+The first step to use UC.jl is to construct JSON files that describe each scenario of your stochastic unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the scenario files; (2) build the optimization model; (3) run the optimization; and (4) extract the optimal solution.
+
+!!! note
+
+> By default, UC.jl uses the extensive form to solve the problem. For a more advanced solution method, see below. 
 
 ```julia
 using Cbc
@@ -33,7 +29,7 @@ using JSON
 using UnitCommitment
 
 # 1. Read instance
-instance = UnitCommitment.read("/path/to/input.json")
+instance = UnitCommitment.read(["/path/to/s1.json", "/path/to/s2.json"])
 
 # 2. Construct optimization model
 model = UnitCommitment.build_model(
@@ -49,12 +45,24 @@ solution = UnitCommitment.solution(model)
 UnitCommitment.write("/path/to/output.json", solution)
 ```
 
-### Solving benchmark instances
-
-UnitCommitment.jl contains a large number of benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used, as shown below. See [Instances](instances.md) for the complete list of available instances.
+To read all files in a given folder, the [Glob](https://github.com/vtjnash/Glob.jl) package can be used:
 
 ```julia
-using UnitCommitment
+using Glob
+instance = UnitCommitment.read(glob("*.json", "/path/to/scenarios/"))
+```
+
+To solve deterministic instances, a single scenario file may be provided.
+
+```julia
+instance = UnitCommitment.read("/path/to/s1.json")
+```
+
+### Solving benchmark instances
+
+UnitCommitment.jl contains a large number of deterministic benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used, as shown below. See [Instances](instances.md) for the complete list of available instances.
+
+```julia
 instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 ```
 
@@ -136,6 +144,56 @@ solution = JSON.parsefile("solution.json")
 # Validate solution and print validation errors
 UnitCommitment.validate(instance, solution)
 ```
+
+## Progressive Hedging
+
+By default, UC.jl uses the Extensive Form (EF) when solving stochastic instances. This approach involves constructing a single JuMP model that contains data and decision variables for all scenarios. Although EF has optimality guarantees and performs well with small test cases, it can become computationally intractable for large instances or substantial number of scenarios.
+
+Progressive Hedging (PH) is an alternative (heuristic) solution method provided by UC.jl in which the problem is decomposed into smaller scenario-based subproblems, which are then solved in parallel in separate Julia processes, potentially across multiple machines. Quadratic penalty terms are used to enforce convergence of first-stage decision variables. The method is closely related to the Alternative Direction Method of Multipliers (ADMM) and can handle larger instances, although it is not guaranteed to converge to the optimal solution. Our implementation of PH relies on Message Passing Interface (MPI) for communication. We refer to [MPI.jl Documentation](https://github.com/JuliaParallel/MPI.jl) for more details on installing MPI.
+
+The following example shows how to solve SCUC instances using progressive hedging. The script should be saved in a file, say `ph.jl`, and executed using `mpiexec -n <num-scenarios> julia ph.jl`.
+
+
+```julia
+using Cbc
+using MPI
+using UnitCommitment
+using Glob
+
+# 1. Initialize MPI
+MPI.Init()
+
+# 2. Configure progressive hedging method
+ph = UnitCommitment.ProgressiveHedging()
+
+# 3. Read problem instance
+instance = UnitCommitment.read(["s1.json", "s2.json"], ph)
+
+# 4. Build JuMP model
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = Cbc.Optimizer,
+)
+
+# 5. Run the decentralized optimization algorithm
+UnitCommitment.optimize!(model, ph)
+
+# 6. Fetch the solution
+solution = UnitCommitment.solution(model, ph)
+
+# 7. Close MPI
+MPI.Finalize()
+```
+
+When using PH, the model can be customized as usual, with a different formulations or additional user-provided constraints. Note that `read`, in this case, takes `ph` as an argument. This allows each Julia process to read only the instance files that are relevant to it. Similarly, the `solution` function gathers the optimal solution of each processes and returns a combined dictionary. 
+
+Each process solves a sub-problem with $\frac{s}{p}$ scenarios, where $s$ is the total number of scenarios and $p$ is the number of MPI processes. For instance, if we have 15 scenario files and 5 processes, then each process will solve a JuMP model that contains data for 3 scenarios. If the total number of scenarios is not divisible by the number of processes, then an error will be thrown.
+
+
+!!! warning
+
+    Currently, PH can handle only equiprobable scenarios. Further, `solution(model, ph)` can only handle cases where only one scenario is modeled in each process.
+
 
 ## Computing Locational Marginal Prices
 
