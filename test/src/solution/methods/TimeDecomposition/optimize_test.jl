@@ -2,8 +2,8 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, DataStructures, Cbc
-import UnitCommitment: TimeDecomposition, XavQiuWanThi2019, Formulation
+using UnitCommitment, DataStructures, Cbc, HiGHS
+import UnitCommitment: TimeDecomposition, ConventionalLMP
 
 function solution_methods_TimeDecomposition_optimize_test()
     @testset "optimize_time_decomposition" begin
@@ -11,12 +11,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         instance = UnitCommitment.read(fixture("case14.json.gz"))
         solution = UnitCommitment.optimize!(
             instance,
-            TimeDecomposition(
-                time_window = 3,
-                time_increment = 2,
-                inner_method = XavQiuWanThi2019.Method(),
-                formulation = Formulation(),
-            ),
+            TimeDecomposition(time_window = 3, time_increment = 2),
             optimizer = optimizer_with_attributes(
                 Cbc.Optimizer,
                 "logLevel" => 0,
@@ -26,6 +21,41 @@ function solution_methods_TimeDecomposition_optimize_test()
         @test length(solution["Is on"]["g2"]) == 4
         @test length(solution["Spinning reserve (MW)"]["r1"]["g2"]) == 4
 
+        # read one scenario with after_build and after_optimize
+        function after_build(model, instance)
+            @constraint(
+                model,
+                model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,
+            )
+        end
+
+        lmps = []
+        function after_optimize(solution, model, instance)
+            lmp = UnitCommitment.compute_lmp(
+                model,
+                ConventionalLMP(),
+                optimizer = HiGHS.Optimizer,
+            )
+            return push!(lmps, lmp)
+        end
+
+        instance = UnitCommitment.read(fixture("case14-profiled.json.gz"))
+        solution = UnitCommitment.optimize!(
+            instance,
+            TimeDecomposition(time_window = 3, time_increment = 2),
+            optimizer = optimizer_with_attributes(
+                Cbc.Optimizer,
+                "logLevel" => 0,
+            ),
+            after_build = after_build,
+            after_optimize = after_optimize,
+        )
+        @test length(lmps) == 2
+        @test lmps[1]["s1", "b1", 1] == 50.0
+        @test lmps[2]["s1", "b10", 2] ≈ 38.04 atol = 0.1
+        @test solution["Is on"]["g3"][1] == 1.0
+        @test solution["Is on"]["g4"][1] == 0.0
+
         # read multiple scenarios
         instance = UnitCommitment.read([
             fixture("case14.json.gz"),
@@ -33,12 +63,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         ])
         solution = UnitCommitment.optimize!(
             instance,
-            TimeDecomposition(
-                time_window = 3,
-                time_increment = 2,
-                inner_method = XavQiuWanThi2019.Method(),
-                formulation = Formulation(),
-            ),
+            TimeDecomposition(time_window = 3, time_increment = 2),
             optimizer = optimizer_with_attributes(
                 Cbc.Optimizer,
                 "logLevel" => 0,

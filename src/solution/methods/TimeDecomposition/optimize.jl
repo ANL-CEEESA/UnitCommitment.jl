@@ -7,22 +7,64 @@
         instance::UnitCommitmentInstance, 
         method::TimeDecomposition;
         optimizer,
+        after_build = nothing,
+        after_optimize = nothing,
     )::OrderedDict
 
 Solve the given unit commitment instance with time decomposition. 
 The model solves each sub-problem of a given time length specified by method.time_window,
-and proceeds to the next sub-problem by incrementing the time length of method.time_increment.
+and proceeds to the next sub-problem by incrementing the time length of `method.time_increment`.
+
+Arguments
+---------
+
+- `instance`:
+    the UnitCommitment instance.
+
+- `method`:
+    the `TimeDecomposition` method.
+
+- `optimizer`:
+    the optimizer for solving the problem.
+
+- `after_build`:
+    a user-defined function that allows modifying the model after building,
+    must have 2 arguments `model` and `instance` in order.
+
+- `after_optimize`:
+    a user-defined function that allows handling additional steps after optimizing,
+    must have 3 arguments `solution`, `model` and `instance` in order.
+
 
 Examples
 --------
 
 ```julia
-using UnitCommitment, Cbc
+using UnitCommitment, JuMP, Cbc, HiGHS
 
 import UnitCommitment: 
     TimeDecomposition,
-    Formulation,
-    XavQiuWanThi2019
+    ConventionalLMP,
+    XavQiuWanThi2019,
+    Formulation
+
+# specifying the after_build and after_optimize functions
+function after_build(model, instance)
+    @constraint(
+        model,
+        model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,
+    )
+end
+
+lmps = []
+function after_optimize(solution, model, instance)
+    lmp = UnitCommitment.compute_lmp(
+        model,
+        ConventionalLMP(),
+        optimizer = HiGHS.Optimizer,
+    )
+    return push!(lmps, lmp)
+end
 
 # assume the instance is given as a 120h problem
 instance = UnitCommitment.read("instance.json")
@@ -35,7 +77,9 @@ solution = UnitCommitment.optimize!(
         inner_method = XavQiuWanThi2019.Method(),
         formulation = Formulation(),
     ),
-    optimizer=Cbc.Optimizer
+    optimizer = Cbc.Optimizer,
+    after_build = after_build,
+    after_optimize = after_optimize,
 )
 """
 
@@ -43,6 +87,8 @@ function optimize!(
     instance::UnitCommitmentInstance,
     method::TimeDecomposition;
     optimizer,
+    after_build = nothing,
+    after_optimize = nothing,
 )::OrderedDict
     # get instance total length
     T = instance.time
@@ -58,16 +104,26 @@ function optimize!(
         # if t_end exceed total T
         t_end = t_end > T ? T : t_end
         # slice the model 
-        modified = UnitCommitment.slice(instance, t_start:t_end)
-        # solve the model 
-        model = UnitCommitment.build_model(
-            instance = modified,
+        @info "Solving the sub-problem of time $t_start to $t_end..."
+        sub_instance = UnitCommitment.slice(instance, t_start:t_end)
+        # build and optimize the model 
+        sub_model = UnitCommitment.build_model(
+            instance = sub_instance,
             optimizer = optimizer,
             formulation = method.formulation,
         )
-        UnitCommitment.optimize!(model, method.inner_method)
+        if after_build !== nothing
+            @info "Calling after build..."
+            after_build(sub_model, sub_instance)
+        end
+        UnitCommitment.optimize!(sub_model, method.inner_method)
         # get the result of each time period
-        sub_solution = UnitCommitment.solution(model)
+        sub_solution = UnitCommitment.solution(sub_model)
+        if after_optimize !== nothing
+            @info "Calling after optimize..."
+            after_optimize(sub_solution, sub_model, sub_instance)
+        end
+        # merge solution 
         if length(instance.scenarios) == 1
             _update_solution!(solution, sub_solution, method.time_increment)
         else
