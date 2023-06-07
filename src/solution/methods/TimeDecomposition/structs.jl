@@ -8,8 +8,8 @@ import ..Formulation
     mutable struct TimeDecomposition <: SolutionMethod
         time_window::Int
         time_increment::Int
-        inner_method::SolutionMethod
-        formulation::Formulation
+        inner_method::SolutionMethod = XavQiuWanThi2019.Method()
+        formulation::Formulation = Formulation()
     end
 
 Time decomposition method to solve a problem with moving time window.
@@ -30,6 +30,6 @@ Fields
 Base.@kwdef mutable struct TimeDecomposition <: SolutionMethod
     time_window::Int
     time_increment::Int
-    inner_method::SolutionMethod
-    formulation::Formulation
+    inner_method::SolutionMethod = XavQiuWanThi2019.Method()
+    formulation::Formulation = Formulation()
 end
