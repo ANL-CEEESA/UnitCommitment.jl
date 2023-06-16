@@ -22,6 +22,7 @@ include("transform/randomize/XavQiuAhm2021_test.jl")
 include("validation/repair_test.jl")
 include("lmp/conventional_test.jl")
 include("lmp/aelmp_test.jl")
+include("market/market_test.jl")
 
 basedir = dirname(@__FILE__)
 
@@ -51,6 +52,8 @@ function runtests()
         validation_repair_test()
         lmp_conventional_test()
         lmp_aelmp_test()
+        simple_market_test()
+        stochastic_market_test()
     end
     return
 end

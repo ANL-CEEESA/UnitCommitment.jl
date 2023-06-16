@@ -10,6 +10,7 @@ include("instance/structs.jl")
 include("model/formulations/base/structs.jl")
 include("solution/structs.jl")
 include("lmp/structs.jl")
+include("market/structs.jl")
 
 include("model/formulations/ArrCon2000/structs.jl")
 include("model/formulations/CarArr2006/structs.jl")
@@ -68,5 +69,6 @@ include("validation/repair.jl")
 include("validation/validate.jl")
 include("lmp/conventional.jl")
 include("lmp/aelmp.jl")
+include("market/market.jl")
 
 end
