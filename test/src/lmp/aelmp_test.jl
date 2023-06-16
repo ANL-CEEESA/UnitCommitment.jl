@@ -12,7 +12,10 @@ function lmp_aelmp_test()
         instance = UnitCommitment.read(path)
         model = UnitCommitment.build_model(
             instance = instance,
-            optimizer = Cbc.Optimizer,
+            optimizer = optimizer_with_attributes(
+                Cbc.Optimizer,
+                "logLevel" => 0,
+            ),
             variable_names = true,
         )
         JuMP.set_silent(model)
@@ -22,7 +25,10 @@ function lmp_aelmp_test()
         aelmp_1 = UnitCommitment.compute_lmp(
             model,
             AELMP(),
-            optimizer = HiGHS.Optimizer,
+            optimizer = optimizer_with_attributes(
+                HiGHS.Optimizer,
+                "log_to_console" => false,
+            ),
         )
         @test aelmp_1["s1", "B1", 1] ≈ 231.7 atol = 0.1
 
@@ -33,7 +39,10 @@ function lmp_aelmp_test()
                 allow_offline_participation = false,
                 consider_startup_costs = true,
             ),
-            optimizer = HiGHS.Optimizer,
+            optimizer = optimizer_with_attributes(
+                HiGHS.Optimizer,
+                "log_to_console" => false,
+            ),
         )
         @test aelmp_2["s1", "B1", 1] ≈ 274.3 atol = 0.1
     end
