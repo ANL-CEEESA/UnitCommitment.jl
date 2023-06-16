@@ -337,3 +337,32 @@ solution = UnitCommitment.optimize!(
     after_optimize = after_optimize,
 )
 ```
+
+## Day-ahead (DA) Market to Real-time (RT) Markets
+The UC.jl package offers a comprehensive set of functions for solving marketing problems. The primary function, `solve_market`, facilitates the solution of day-ahead (DA) markets, which can be either deterministic or stochastic in nature. Subsequently, it sequentially maps the commitment status obtained from the DA market to all the real-time (RT) markets, which are deterministic instances. It is essential to ensure that the time span of the DA market encompasses all the RT markets, and the file paths for the RT markets must be specified in chronological order. Each RT market should represent a single time slot, and it is recommended to include a few additional time slots to mitigate the closing window effect.
+
+The `solve_market` function accepts several parameters, including the file path (or a list of file paths in the case of stochastic markets) for the DA market, a list of file paths for the RT markets, the market settings specified by the `MarketSettings` structure, and an optimizer. The `MarketSettings` structure itself requires three optional arguments: `inner_method`, `lmp_method`, and `formulation`. If the computation of Locational Marginal Prices (LMPs) is not desired, the `lmp_method` can be set to `nothing`. Additional optional parameters include a linear programming optimizer for solving LMPs (if a different optimizer than the required one is desired), callback functions `after_build_da` and `after_optimize_da`, which are invoked after the construction and optimization of the DA market, and callback functions `after_build_rt` and `after_optimize_rt`, which are invoked after the construction and optimization of each RT market. It is crucial to note that the `after_build` function requires its two arguments to consistently correspond to `model` and `instance`, while the `after_optimize` function requires its three arguments to consistently correspond to `solution`, `model`, and `instance`.
+
+As an illustrative example, suppose the DA market predicts hourly data for a 24-hour period, while the RT markets represent 5-minute intervals. In this scenario, each RT market file corresponds to a specific 5-minute interval, with the first RT market representing the initial 5 minutes, the second RT market representing the subsequent 5 minutes, and so on. Consequently, there should be 12 RT market files for each hour. To mitigate the closing window effect, except for the last few RT markets, each RT market should contain three time slots, resulting in a total time span of 15 minutes. However, only the first time slot is considered in the final solution. The last two RT markets should only contain 2 and 1 time slot(s), respectively, to ensure that the total time covered by all RT markets does not exceed the time span of the DA market. The code snippet below demonstrates a simplified example of how to utilize the `solve_market` function. Please note that it only serves as a simplified example and may require further customization based on the specific requirements of your use case.
+
+```julia
+using UnitCommitment, Cbc, HiGHS
+
+import UnitCommitment: 
+    MarketSettings,
+    XavQiuWanThi2019,
+    ConventionalLMP,
+    Formulation
+
+solution = UnitCommitment.solve_market(
+    "da_instance.json",
+    ["rt_instance_1.json", "rt_instance_2.json", "rt_instance_3.json"],
+    MarketSettings(
+        inner_method = XavQiuWanThi2019.Method(),
+        lmp_method = ConventionalLMP(),
+        formulation = Formulation(),
+    ),
+    optimizer = Cbc.Optimizer,
+    lp_optimizer = HiGHS.Optimizer,
+)
+```
