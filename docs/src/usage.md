@@ -194,6 +194,53 @@ Each process solves a sub-problem with $\frac{s}{p}$ scenarios, where $s$ is the
 
     Currently, PH can handle only equiprobable scenarios. Further, `solution(model, ph)` can only handle cases where only one scenario is modeled in each process.
 
+## Benchmarking Solution Methods
+
+The package has a built-in function that serves to compare the performance of the supported solution methods (currently including the extensive form and progressive hedging) in solving different benchmark instances. The following example shows how the built-in `run_ph_benchmark` function can be used to evaluate the performance of the supported solution methods.
+
+```julia
+using CSV
+using UnitCommitment
+
+# The date of observation used in creating scenarios.
+# Can be used to generate scenarios based on different underlying conditions,
+# such as different seasons or days of the week.
+const DATE = "2017-01-01" 
+
+# A dictionary specifying the test systems used for benchmarking.
+# For each test system, SUC models with several scenario numbers can be constructed. 
+# For each test system and scenario number, the creation of the scenarios and the 
+# solution of the SUC problem can be repeated multiple times, specified by "number of runs".
+const BENCHMARK_CASES = Dict(
+    "case14" => 
+        Dict(
+        "scenario numbers" => [4, 6],
+        "number of runs" => 3
+        ),
+    "case118" => 
+        Dict(
+        "scenario numbers" => [2, 4],
+        "number of runs" => 2
+        ),
+)
+
+# 1. Run benchmark implementations, retrieve the results
+benchmark_results = UnitCommitment.run_ph_benchmark(BENCHMARK_CASES, date = DATE)
+
+# 2. Create a data frame that reports the benchmark results in detail
+detailed_table = UnitCommitment.fetch_ph_benchmark_detailed_df(benchmark_results)
+
+# 3. Write the data frame to a CSV file
+CSV.write("detailed_table.csv", detailed_table)
+
+# 4. Create a data frame that summarizes the benchmark results
+summary_table = UnitCommitment.fetch_ph_benchmark_summary_df(benchmark_results)
+
+# 5. Write the data frame to a CSV file
+CSV.write("summary_table.csv", summary_table)
+
+```
+
 
 ## Computing Locational Marginal Prices
 

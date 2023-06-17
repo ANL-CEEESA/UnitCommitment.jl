@@ -58,6 +58,12 @@ Base.@kwdef mutable struct PHSubProblemParams
     target::Array{Float64,1}
 end
 
+Base.@kwdef mutable struct PHFinalResult
+    obj::Float64
+    vals::Array{Float64,1}
+    wallclock_time::Float64
+end
+
 struct MpiInfo
     comm::Any
     rank::Int
