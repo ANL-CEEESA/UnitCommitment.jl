@@ -34,7 +34,10 @@ function solution_methods_TimeDecomposition_optimize_test()
             lmp = UnitCommitment.compute_lmp(
                 model,
                 ConventionalLMP(),
-                optimizer = HiGHS.Optimizer,
+                optimizer = optimizer_with_attributes(
+                    HiGHS.Optimizer,
+                    "log_to_console" => false,
+                ),
             )
             return push!(lmps, lmp)
         end
