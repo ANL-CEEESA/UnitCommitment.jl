@@ -571,7 +571,10 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                     b in sc.buses
                 )
             end
-            balance = fixed_load - load_curtail - production + ps_load + storage_charge - storage_discharge
+            balance =
+                fixed_load - load_curtail - production +
+                ps_load +
+                storage_charge - storage_discharge
 
             # Verify that production equals demand
             if abs(balance) > tol
