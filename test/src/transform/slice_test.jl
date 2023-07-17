@@ -65,4 +65,34 @@ function transform_slice_test()
             variable_names = true,
         )
     end
+
+    @testset "slice storage units" begin
+        instance = UnitCommitment.read(fixture("case14-storage.json.gz"))
+        modified = UnitCommitment.slice(instance, 2:4)
+        sc = modified.scenarios[1]
+
+        # Should update all time-dependent fields
+        for su in sc.storage_units
+            @test length(su.min_level) == 3
+            @test length(su.max_level) == 3
+            @test length(su.simultaneous_charge_and_discharge) == 3
+            @test length(su.charge_cost) == 3
+            @test length(su.discharge_cost) == 3
+            @test length(su.charge_efficiency) == 3
+            @test length(su.discharge_efficiency) == 3
+            @test length(su.loss_factor) == 3
+            @test length(su.min_charge_rate) == 3
+            @test length(su.max_charge_rate) == 3
+            @test length(su.min_discharge_rate) == 3
+            @test length(su.max_discharge_rate) == 3
+        end
+
+        # Should be able to build model without errors
+        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+        model = UnitCommitment.build_model(
+            instance = modified,
+            optimizer = optimizer,
+            variable_names = true,
+        )
+    end
 end

@@ -102,5 +102,28 @@ function transform_randomize_XavQiuAhm2021_test()
             test_approx(pu1.cost[1], 98.039)
             test_approx(pu2.cost[1], 48.385)
         end
+
+        @testset "storage unit cost" begin
+            sc = UnitCommitment.read(
+                fixture("case14-storage.json.gz"),
+            ).scenarios[1]
+            # Check original costs
+            su1 = sc.storage_units[1]
+            su3 = sc.storage_units[3]
+            test_approx(su1.charge_cost[4], 2.0)
+            test_approx(su1.discharge_cost[1], 2.5)
+            test_approx(su3.charge_cost[2], 2.1)
+            test_approx(su3.discharge_cost[3], 1.2)
+            randomize!(
+                sc,
+                XavQiuAhm2021.Randomization(randomize_load_profile = false),
+                rng = MersenneTwister(42),
+            )
+            # Check randomized costs
+            test_approx(su1.charge_cost[4], 1.961)
+            test_approx(su1.discharge_cost[1], 2.451)
+            test_approx(su3.charge_cost[2], 2.196)
+            test_approx(su3.discharge_cost[3], 1.255)
+        end
     end
 end
