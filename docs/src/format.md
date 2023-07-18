@@ -9,6 +9,7 @@ An instance of the stochastic security-constrained unit commitment (SCUC) proble
 * [Parameters](#Parameters)
 * [Buses](#Buses)
 * [Generators](#Generators)
+* [Storage units](#Storage-units)
 * [Price-sensitive loads](#Price-sensitive-loads)
 * [Transmission lines](#Transmission-lines)
 * [Reserves](#Reserves)
@@ -168,6 +169,81 @@ Note that this curve also specifies the production limits. Specifically, the fir
             "Minimum power (MW)": 10.0,
             "Maximum power (MW)": 120.0,
             "Cost ($/MW)": 100.0
+        }
+    }
+}
+```
+
+### Storage units
+
+This section describes energy storage units in the system which charge and discharge power. The storage units consume power while charging, and generate power while discharging. 
+
+| Key               | Description                                       | Default  | Time series? | Uncertain?
+| :---------------- | :------------------------------------------------ | :------: | :------------: | :----: 
+| `Bus`             | Bus where the storage unit is located. Multiple storage units may be placed at the same bus. | Required | No | Yes
+| `Minimum level (MWh)`  | Minimum of energy level this storage unit may contain. | `0.0` | Yes | Yes
+| `Maximum level (MWh)`  | Maximum of energy level this storage unit may contain. | Required | Yes | Yes
+| `Allow simultaneous charging and discharging`  | If `false`, the storage unit is not allowed to charge and discharge at the same time (Boolean). | `true` | Yes | Yes
+| `Charge cost ($/MW)`  | Cost incurred for charging each MW of power into this storage unit. | Required | Yes | Yes
+| `Discharge cost ($/MW)`  | Cost incurred for discharging each MW of power from this storage unit. | Required | Yes | Yes
+| `Charge efficiency`  | Efficiency rate to charge power into this storage unit. This value must be greater than or equal to `0.0`, and less than or equal to `1.0`. | `1.0` | Yes | Yes
+| `Discharge efficiency`  | Efficiency rate to discharge power from this storage unit. This value must be greater than or equal to `0.0`, and less than or equal to `1.0`. | `1.0` | Yes | Yes
+| `Loss factor`  | The energy dissipation rate of this storage unit. This value must be greater than or equal to `0.0`, and less than or equal to `1.0`. | `0.0` | Yes | Yes
+| `Minimum charge rate (MW)`  | Minimum amount of power rate this storage unit may charge. | `0.0` | Yes | Yes
+| `Maximum charge rate (MW)`  | Maximum amount of power rate this storage unit may charge. | Required | Yes | Yes
+| `Minimum discharge rate (MW)`  | Minimum amount of power rate this storage unit may discharge. | `0.0` | Yes | Yes
+| `Maximum discharge rate (MW)`  | Maximum amount of power rate this storage unit may discharge. | Required | Yes | Yes
+| `Initial level (MWh)`  | Amount of energy this storage unit at time step `-1`, immediately before the planning horizon starts. | `0.0` | No | Yes
+| `Last period minimum level (MWh)`  | Minimum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Minimum level (MWh)`. | `Minimum level (MWh)` | No | Yes
+| `Last period maximum level (MWh)`  | Maximum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Maximum level (MWh)`. | `Maximum level (MWh)` | No | Yes
+
+#### Example
+```json
+{
+    "Storage units": {
+        "su1": {
+            "Bus": "b2",
+            "Maximum level (MWh)": 100.0,
+            "Charge cost ($/MW)": 2.0,
+            "Discharge cost ($/MW)": 2.5,
+            "Maximum charge rate (MW)": 10.0,
+            "Maximum discharge rate (MW)": 8.0
+        },
+        "su2": {
+            "Bus": "b2",
+            "Minimum level (MWh)": 10.0,
+            "Maximum level (MWh)": 100.0,
+            "Allow simultaneous charging and discharging": false,
+            "Charge cost ($/MW)": 3.0,
+            "Discharge cost ($/MW)": 3.5,
+            "Charge efficiency": 0.8,
+            "Discharge efficiency": 0.85,
+            "Loss factor": 0.01,
+            "Minimum charge rate (MW)": 5.0,
+            "Maximum charge rate (MW)": 10.0,
+            "Minimum discharge rate (MW)": 2.0,
+            "Maximum discharge rate (MW)": 10.0,
+            "Initial level (MWh)": 70.0,
+            "Last period minimum level (MWh)": 80.0,
+            "Last period maximum level (MWh)": 85.0
+        },
+        "su3": {
+            "Bus": "b9",
+            "Minimum level (MWh)": [10.0, 11.0, 12.0, 13.0],
+            "Maximum level (MWh)": [100.0, 110.0, 120.0, 130.0],
+            "Allow simultaneous charging and discharging": [false, false, true, true],
+            "Charge cost ($/MW)": [2.0, 2.1, 2.2, 2.3],
+            "Discharge cost ($/MW)": [1.0, 1.1, 1.2, 1.3],
+            "Charge efficiency": [0.8, 0.81, 0.82, 0.82],
+            "Discharge efficiency": [0.85, 0.86, 0.87, 0.88],
+            "Loss factor": [0.01, 0.01, 0.02, 0.02],
+            "Minimum charge rate (MW)": [5.0, 5.1, 5.2, 5.3],
+            "Maximum charge rate (MW)": [10.0, 10.1, 10.2, 10.3],
+            "Minimum discharge rate (MW)": [4.0, 4.1, 4.2, 4.3],
+            "Maximum discharge rate (MW)": [8.0, 8.1, 8.2, 8.3],
+            "Initial level (MWh)": 20.0,
+            "Last period minimum level (MWh)": 21.0,
+            "Last period maximum level (MWh)": 22.0
         }
     }
 }
