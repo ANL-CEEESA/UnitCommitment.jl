@@ -142,16 +142,28 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         return x
     end
 
-    time_horizon = json["Parameters"]["Time (h)"]
+    time_horizon = json["Parameters"]["Time horizon (min)"]
     if time_horizon === nothing
-        time_horizon = json["Parameters"]["Time horizon (h)"]
+        time_horizon = json["Parameters"]["Time (h)"]
+        if time_horizon === nothing
+            time_horizon = json["Parameters"]["Time horizon (h)"]
+        end
+        if time_horizon !== nothing
+            time_horizon *= 60
+        end
     end
-    time_horizon !== nothing || error("Missing parameter: Time horizon (h)")
+    time_horizon !== nothing || error("Missing parameter: Time horizon (min)")
+    isinteger(time_horizon) ||
+        error("Time horizon must be an integer in minutes")
+    time_horizon = Int(time_horizon)
     time_step = scalar(json["Parameters"]["Time step (min)"], default = 60)
     (60 % time_step == 0) ||
         error("Time step $time_step is not a divisor of 60")
+    (time_horizon % time_step == 0) || error(
+        "Time step $time_step is not a divisor of time horizon $time_horizon",
+    )
     time_multiplier = 60 ÷ time_step
-    T = time_horizon * time_multiplier
+    T = time_horizon ÷ time_step
 
     probability = json["Parameters"]["Scenario weight"]
     probability !== nothing || (probability = 1)
@@ -408,6 +420,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         reserves = reserves,
         reserves_by_name = name_to_reserve,
         time = T,
+        time_step = time_step,
         thermal_units_by_name = Dict(g.name => g for g in thermal_units),
         thermal_units = thermal_units,
         profiled_units_by_name = Dict(pu.name => pu for pu in profiled_units),

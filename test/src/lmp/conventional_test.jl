@@ -3,13 +3,12 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using UnitCommitment, Cbc, HiGHS, JuMP
-import UnitCommitment: ConventionalLMP
 
 function solve_conventional_testcase(path::String)
     instance = UnitCommitment.read(path)
     model = UnitCommitment.build_model(
         instance = instance,
-        optimizer = Cbc.Optimizer,
+        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0),
         variable_names = true,
     )
     JuMP.set_silent(model)
@@ -17,7 +16,10 @@ function solve_conventional_testcase(path::String)
     lmp = UnitCommitment.compute_lmp(
         model,
         ConventionalLMP(),
-        optimizer = HiGHS.Optimizer,
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        ),
     )
     return lmp
 end
