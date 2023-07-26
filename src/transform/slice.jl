@@ -56,6 +56,21 @@ function slice(
             ps.demand = ps.demand[range]
             ps.revenue = ps.revenue[range]
         end
+        for su in sc.storage_units
+            su.min_level = su.min_level[range]
+            su.max_level = su.max_level[range]
+            su.simultaneous_charge_and_discharge =
+                su.simultaneous_charge_and_discharge[range]
+            su.charge_cost = su.charge_cost[range]
+            su.discharge_cost = su.discharge_cost[range]
+            su.charge_efficiency = su.charge_efficiency[range]
+            su.discharge_efficiency = su.discharge_efficiency[range]
+            su.loss_factor = su.loss_factor[range]
+            su.min_charge_rate = su.min_charge_rate[range]
+            su.max_charge_rate = su.max_charge_rate[range]
+            su.min_discharge_rate = su.min_discharge_rate[range]
+            su.max_discharge_rate = su.max_discharge_rate[range]
+        end
     end
     return modified
 end

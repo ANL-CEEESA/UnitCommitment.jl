@@ -136,6 +136,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
     loads = PriceSensitiveLoad[]
     reserves = Reserve[]
     profiled_units = ProfiledUnit[]
+    storage_units = StorageUnit[]
 
     function scalar(x; default = nothing)
         x !== nothing || return default
@@ -196,6 +197,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
             ThermalUnit[],
             PriceSensitiveLoad[],
             ProfiledUnit[],
+            StorageUnit[],
         )
         name_to_bus[bus_name] = bus
         push!(buses, bus)
@@ -405,6 +407,52 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         end
     end
 
+    # Read storage units 
+    if "Storage units" in keys(json)
+        for (storage_name, dict) in json["Storage units"]
+            bus = name_to_bus[dict["Bus"]]
+            min_level =
+                timeseries(scalar(dict["Minimum level (MWh)"], default = 0.0))
+            max_level = timeseries(dict["Maximum level (MWh)"])
+            storage = StorageUnit(
+                storage_name,
+                bus,
+                min_level,
+                max_level,
+                timeseries(
+                    scalar(
+                        dict["Allow simultaneous charging and discharging"],
+                        default = true,
+                    ),
+                ),
+                timeseries(dict["Charge cost (\$/MW)"]),
+                timeseries(dict["Discharge cost (\$/MW)"]),
+                timeseries(scalar(dict["Charge efficiency"], default = 1.0)),
+                timeseries(scalar(dict["Discharge efficiency"], default = 1.0)),
+                timeseries(scalar(dict["Loss factor"], default = 0.0)),
+                timeseries(
+                    scalar(dict["Minimum charge rate (MW)"], default = 0.0),
+                ),
+                timeseries(dict["Maximum charge rate (MW)"]),
+                timeseries(
+                    scalar(dict["Minimum discharge rate (MW)"], default = 0.0),
+                ),
+                timeseries(dict["Maximum discharge rate (MW)"]),
+                scalar(dict["Initial level (MWh)"], default = 0.0),
+                scalar(
+                    dict["Last period minimum level (MWh)"],
+                    default = min_level[T],
+                ),
+                scalar(
+                    dict["Last period maximum level (MWh)"],
+                    default = max_level[T],
+                ),
+            )
+            push!(bus.storage_units, storage)
+            push!(storage_units, storage)
+        end
+    end
+
     scenario = UnitCommitmentScenario(
         name = scenario_name,
         probability = probability,
@@ -425,6 +473,8 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         thermal_units = thermal_units,
         profiled_units_by_name = Dict(pu.name => pu for pu in profiled_units),
         profiled_units = profiled_units,
+        storage_units_by_name = Dict(su.name => su for su in storage_units),
+        storage_units = storage_units,
         isf = spzeros(Float64, length(lines), length(buses) - 1),
         lodf = spzeros(Float64, length(lines), length(lines)),
     )

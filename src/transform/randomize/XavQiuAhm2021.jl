@@ -137,6 +137,11 @@ function _randomize_costs(
         α = rand(rng, distribution)
         pu.cost *= α
     end
+    for su in sc.storage_units
+        α = rand(rng, distribution)
+        su.charge_cost *= α
+        su.discharge_cost *= α
+    end
     return
 end
 

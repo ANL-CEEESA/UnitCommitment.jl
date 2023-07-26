@@ -103,6 +103,30 @@ function solution(model::JuMP.Model)::OrderedDict
                 ] for pu in sc.profiled_units
             )
         end
+        if !isempty(sc.storage_units)
+            sol[sc.name]["Storage level (MWh)"] =
+                timeseries(model[:storage_level], sc.storage_units, sc = sc)
+            sol[sc.name]["Is charging"] =
+                timeseries(model[:is_charging], sc.storage_units, sc = sc)
+            sol[sc.name]["Storage charging rates (MW)"] =
+                timeseries(model[:charge_rate], sc.storage_units, sc = sc)
+            sol[sc.name]["Storage charging cost (\$)"] = OrderedDict(
+                su.name => [
+                    value(model[:charge_rate][sc.name, su.name, t]) *
+                    su.charge_cost[t] for t in 1:instance.time
+                ] for su in sc.storage_units
+            )
+            sol[sc.name]["Is discharging"] =
+                timeseries(model[:is_discharging], sc.storage_units, sc = sc)
+            sol[sc.name]["Storage discharging rates (MW)"] =
+                timeseries(model[:discharge_rate], sc.storage_units, sc = sc)
+            sol[sc.name]["Storage discharging cost (\$)"] = OrderedDict(
+                su.name => [
+                    value(model[:discharge_rate][sc.name, su.name, t]) *
+                    su.discharge_cost[t] for t in 1:instance.time
+                ] for su in sc.storage_units
+            )
+        end
         sol[sc.name]["Spinning reserve (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [

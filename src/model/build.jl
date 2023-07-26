@@ -99,6 +99,9 @@ function build_model(;
             for pu in sc.profiled_units
                 _add_profiled_unit!(model, pu, sc)
             end
+            for su in sc.storage_units
+                _add_storage_unit!(model, su, sc)
+            end
             _add_system_wide_eqs!(model, sc)
         end
         @objective(model, Min, model[:obj])
