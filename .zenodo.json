@@ -1,0 +1,27 @@
+{
+    "creators": [
+      {
+        "orcid": "0000-0002-5022-9802",
+        "affiliation": "Argonne National Laboratory",
+        "name": "Santos Xavier, Alinson"
+      },
+      {
+        "affiliation": "University of Florida",
+        "name": "Kazachkov, Aleksandr M."
+      },
+      {
+        "affiliation": "Technische Universität Berlin",
+        "name": "Yurdakul, Ogün"
+      },
+      {
+        "affiliation": "Purdue University",
+        "name": "He, Jun"
+      },
+      {
+        "affiliation": "Argonne National Laboratory",
+        "name": "Qiu, Feng"
+      }
+    ],
+    "title": "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment",
+    "description": "<b>UnitCommitment.jl</b> (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and Julia/JuMP implementations of state-of-the-art mixed-integer programming formulations."
+  }
