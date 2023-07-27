@@ -23,7 +23,7 @@ This section describes system-wide parameters, such as power balance penalty, an
 
 | Key                            | Description                                       | Default  | Time series? | Uncertain?
 | :----------------------------- | :------------------------------------------------ | :------: | :------------:| :----------:
-| `Version` | Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal `0.3`. | Required | No | No
+| `Version` | Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal `0.4`. | Required | No | No
 | `Time horizon (min)` or  `Time horizon (h)` | Length of the planning horizon (in minutes or hours). Either `Time horizon (min)` or `Time horizon (h)` is required, but not both.  | Required | No | No
 | `Time step (min)` | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc). | `60` | No | No
 | `Power balance penalty ($/MW)` | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged. | `1000.0` | No | Yes

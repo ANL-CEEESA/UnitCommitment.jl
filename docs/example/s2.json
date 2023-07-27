@@ -1,0 +1,495 @@
+{
+    "Parameters": {
+	"Version": "0.3",
+        "Time horizon (h)": 4
+    },
+    "Generators": {
+        "g1": {
+            "Bus": "b1",
+            "Production cost curve (MW)": [
+                100,
+                110,
+                130,
+                135
+            ],
+            "Production cost curve ($)": [
+                1400,
+                1600,
+                2200,
+                2400
+            ],
+            "Startup delays (h)": [
+                1,
+                2,
+                3
+            ],
+            "Startup costs ($)": [
+                1000.0,
+                1500.0,
+                2000.0
+            ],
+            "Initial status (h)": -100,
+            "Initial power (MW)": 0
+        },
+        "g2": {
+            "Bus": "b2",
+            "Production cost curve (MW)": [
+                0,
+                47,
+                94,
+                140
+            ],
+            "Production cost curve ($)": [
+                0,
+                2256.00,
+                4733.37,
+                7395.39
+            ],
+            "Startup delays (h)": [
+                1,
+                4
+            ],
+            "Startup costs ($)": [
+                3000.0,
+                4000.0
+            ],
+            "Ramp up limit (MW)": 98.0,
+            "Ramp down limit (MW)": 98.0,
+            "Startup limit (MW)": 98.0,
+            "Shutdown limit (MW)": 98.0,
+            "Minimum uptime (h)": 4,
+            "Minimum downtime (h)": 4,
+            "Maximum daily energy (MWh)": null,
+            "Maximum daily starts": null,
+            "Initial status (h)": -8,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": [
+                "r1"
+            ]
+        },
+        "g3": {
+            "Bus": "b3",
+            "Production cost curve (MW)": [
+                0,
+                33,
+                66,
+                100
+            ],
+            "Production cost curve ($)": [
+                0,
+                1113.75,
+                2369.07,
+                3891.54
+            ],
+            "Startup delays (h)": [
+                1,
+                4,
+                8
+            ],
+            "Startup costs ($)": [
+                1000.0,
+                2000.0,
+                3000.0
+            ],
+            "Ramp up limit (MW)": 70.0,
+            "Ramp down limit (MW)": 70.0,
+            "Startup limit (MW)": 70.0,
+            "Shutdown limit (MW)": 70.0,
+            "Must run?": true,
+            "Minimum uptime (h)": 1,
+            "Minimum downtime (h)": 1,
+            "Maximum daily energy (MWh)": null,
+            "Maximum daily starts": null,
+            "Initial status (h)": -6,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": [
+                "r1"
+            ]
+        },
+        "g4": {
+            "Bus": "b6",
+            "Production cost curve (MW)": [
+                33,
+                66,
+                100
+            ],
+            "Production cost curve ($)": [
+                1113.75,
+                2369.07,
+                3891.54
+            ],
+            "Initial status (h)": -100,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": [
+                "r1"
+            ]
+        },
+        "g5": {
+            "Bus": "b8",
+            "Production cost curve (MW)": [
+                33,
+                66,
+                100
+            ],
+            "Production cost curve ($)": [
+                1113.75,
+                2369.07,
+                3891.54
+            ],
+            "Initial status (h)": -100,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": [
+                "r1"
+            ]
+        },
+        "g6": {
+            "Bus": "b8",
+            "Production cost curve (MW)": [
+                100
+            ],
+            "Production cost curve ($)": [
+                10000.00
+            ],
+            "Initial status (h)": -100,
+            "Initial power (MW)": 0,
+            "Reserve eligibility": [
+                "r1"
+            ]
+        }
+    },
+    "Buses": {
+        "b1": {
+            "Load (MW)": 0.0
+        },
+        "b2": {
+            "Load (MW)": [
+                26.01527,
+                24.46212,
+                23.29725,
+                22.90897
+            ]
+        },
+        "b3": {
+            "Load (MW)": [
+                112.93263,
+                106.19039,
+                101.1337,
+                99.44814
+            ]
+        },
+        "b4": {
+            "Load (MW)": [
+                57.30552,
+                53.88429,
+                51.31838,
+                50.46307
+            ]
+        },
+        "b5": {
+            "Load (MW)": [
+                9.11134,
+                8.56738,
+                8.15941,
+                8.02342
+            ]
+        },
+        "b6": {
+            "Load (MW)": [
+                13.42723,
+                12.62561,
+                12.02439,
+                11.82398
+            ]
+        },
+        "b7": {
+            "Load (MW)": 0.0
+        },
+        "b8": {
+            "Load (MW)": 0.0
+        },
+        "b9": {
+            "Load (MW)": [
+                35.36638,
+                33.25495,
+                31.67138,
+                31.14353
+            ]
+        },
+        "b10": {
+            "Load (MW)": [
+                10.78974,
+                10.14558,
+                9.66246,
+                9.50141
+            ]
+        },
+        "b11": {
+            "Load (MW)": [
+                4.19601,
+                3.9455,
+                3.75762,
+                3.69499
+            ]
+        },
+        "b12": {
+            "Load (MW)": [
+                7.31305,
+                6.87645,
+                6.549,
+                6.43985
+            ]
+        },
+        "b13": {
+            "Load (MW)": [
+                16.18461,
+                15.21837,
+                14.49368,
+                14.25212
+            ]
+        },
+        "b14": {
+            "Load (MW)": [
+                17.86302,
+                16.79657,
+                15.99673,
+                15.73012
+            ]
+        }
+    },
+    "Transmission lines": {
+        "l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Reactance (ohms)": 0.05917000000000001,
+            "Susceptance (S)": 29.496860773945063,
+            "Normal flow limit (MW)": 300.0,
+            "Emergency flow limit (MW)": 400.0,
+            "Flow limit penalty ($/MW)": 1000.0
+        },
+        "l2": {
+            "Source bus": "b1",
+            "Target bus": "b5",
+            "Reactance (ohms)": 0.22304000000000002,
+            "Susceptance (S)": 7.825184953346168
+        },
+        "l3": {
+            "Source bus": "b2",
+            "Target bus": "b3",
+            "Reactance (ohms)": 0.19797,
+            "Susceptance (S)": 8.816129979261149
+        },
+        "l4": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Reactance (ohms)": 0.17632,
+            "Susceptance (S)": 9.898645939169292
+        },
+        "l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Reactance (ohms)": 0.17388,
+            "Susceptance (S)": 10.037550333530765
+        },
+        "l6": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Reactance (ohms)": 0.17103,
+            "Susceptance (S)": 10.204813494675376
+        },
+        "l7": {
+            "Source bus": "b4",
+            "Target bus": "b5",
+            "Reactance (ohms)": 0.04211,
+            "Susceptance (S)": 41.44690695783257
+        },
+        "l8": {
+            "Source bus": "b4",
+            "Target bus": "b7",
+            "Reactance (ohms)": 0.20911999999999997,
+            "Susceptance (S)": 8.346065665619404
+        },
+        "l9": {
+            "Source bus": "b4",
+            "Target bus": "b9",
+            "Reactance (ohms)": 0.55618,
+            "Susceptance (S)": 3.1380654680037567
+        },
+        "l10": {
+            "Source bus": "b5",
+            "Target bus": "b6",
+            "Reactance (ohms)": 0.25201999999999997,
+            "Susceptance (S)": 6.92536009838239
+        },
+        "l11": {
+            "Source bus": "b6",
+            "Target bus": "b11",
+            "Reactance (ohms)": 0.1989,
+            "Susceptance (S)": 8.774908255376218
+        },
+        "l12": {
+            "Source bus": "b6",
+            "Target bus": "b12",
+            "Reactance (ohms)": 0.25581,
+            "Susceptance (S)": 6.8227561549365925
+        },
+        "l13": {
+            "Source bus": "b6",
+            "Target bus": "b13",
+            "Reactance (ohms)": 0.13027,
+            "Susceptance (S)": 13.397783465067395
+        },
+        "l14": {
+            "Source bus": "b7",
+            "Target bus": "b8",
+            "Reactance (ohms)": 0.17615,
+            "Susceptance (S)": 9.908198989465395
+        },
+        "l15": {
+            "Source bus": "b7",
+            "Target bus": "b9",
+            "Reactance (ohms)": 0.11001,
+            "Susceptance (S)": 15.865187273832648
+        },
+        "l16": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Reactance (ohms)": 0.0845,
+            "Susceptance (S)": 20.65478404727017
+        },
+        "l17": {
+            "Source bus": "b9",
+            "Target bus": "b14",
+            "Reactance (ohms)": 0.27038,
+            "Susceptance (S)": 6.4550974628091184
+        },
+        "l18": {
+            "Source bus": "b10",
+            "Target bus": "b11",
+            "Reactance (ohms)": 0.19207,
+            "Susceptance (S)": 9.08694357262628
+        },
+        "l19": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Reactance (ohms)": 0.19988,
+            "Susceptance (S)": 8.73188539120637
+        },
+        "l20": {
+            "Source bus": "b13",
+            "Target bus": "b14",
+            "Reactance (ohms)": 0.34802,
+            "Susceptance (S)": 5.0150257226433235
+        }
+    },
+    "Contingencies": {
+        "c1": {
+            "Affected lines": [
+                "l1"
+            ]
+        },
+        "c2": {
+            "Affected lines": [
+                "l2"
+            ]
+        },
+        "c3": {
+            "Affected lines": [
+                "l3"
+            ]
+        },
+        "c4": {
+            "Affected lines": [
+                "l4"
+            ]
+        },
+        "c5": {
+            "Affected lines": [
+                "l5"
+            ]
+        },
+        "c6": {
+            "Affected lines": [
+                "l6"
+            ]
+        },
+        "c7": {
+            "Affected lines": [
+                "l7"
+            ]
+        },
+        "c8": {
+            "Affected lines": [
+                "l8"
+            ]
+        },
+        "c9": {
+            "Affected lines": [
+                "l9"
+            ]
+        },
+        "c10": {
+            "Affected lines": [
+                "l10"
+            ]
+        },
+        "c11": {
+            "Affected lines": [
+                "l11"
+            ]
+        },
+        "c12": {
+            "Affected lines": [
+                "l12"
+            ]
+        },
+        "c13": {
+            "Affected lines": [
+                "l13"
+            ]
+        },
+        "c15": {
+            "Affected lines": [
+                "l15"
+            ]
+        },
+        "c16": {
+            "Affected lines": [
+                "l16"
+            ]
+        },
+        "c17": {
+            "Affected lines": [
+                "l17"
+            ]
+        },
+        "c18": {
+            "Affected lines": [
+                "l18"
+            ]
+        },
+        "c19": {
+            "Affected lines": [
+                "l19"
+            ]
+        },
+        "c20": {
+            "Affected lines": [
+                "l20"
+            ]
+        }
+    },
+    "Price-sensitive loads": {
+        "ps1": {
+            "Bus": "b3",
+            "Revenue ($/MW)": 100.0,
+            "Demand (MW)": 50.0
+        }
+    },
+    "Reserves": {
+        "r1": {
+            "Type": "Spinning",
+            "Amount (MW)": 100.0,
+            "Shortfall penalty ($/MW)": 1000.0
+        }
+    }
+}

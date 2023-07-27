@@ -10,31 +10,27 @@ UnitCommitment.jl was tested and developed with [Julia 1.9](https://julialang.or
 pkg> add UnitCommitment@0.4
 ```
 
-To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [HiGHS](https://github.com/jump-dev/HiGHS.jl), [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, Cbc will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.
+To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [HiGHS](https://github.com/jump-dev/HiGHS.jl), [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, HiGHS will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.
 
 Typical Usage
 -------------
 
 ### Solving user-provided instances
 
-The first step to use UC.jl is to construct JSON files that describe each scenario of your stochastic unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the scenario files; (2) build the optimization model; (3) run the optimization; and (4) extract the optimal solution.
-
-!!! note
-
-> By default, UC.jl uses the extensive form to solve the problem. For a more advanced solution method, see below. 
+The first step to use UC.jl is to construct JSON files that describe each scenario of your deterministic or stochastic unit commitment instance. See [Data Format](format.md) for a complete description of the data format UC.jl expects. The next steps, as shown below, are to: (1) read the scenario files; (2) build the optimization model; (3) run the optimization; and (4) extract the optimal solution.
 
 ```julia
-using Cbc
-using JSON
+using HiGHS
+using JuMP
 using UnitCommitment
 
 # 1. Read instance
-instance = UnitCommitment.read(["/path/to/s1.json", "/path/to/s2.json"])
+instance = UnitCommitment.read(["example/s1.json", "example/s2.json"])
 
 # 2. Construct optimization model
 model = UnitCommitment.build_model(
     instance=instance,
-    optimizer=Cbc.Optimizer,
+    optimizer=HiGHS.Optimizer,
 )
 
 # 3. Solve model
@@ -42,28 +38,39 @@ UnitCommitment.optimize!(model)
 
 # 4. Write solution to a file
 solution = UnitCommitment.solution(model)
-UnitCommitment.write("/path/to/output.json", solution)
+UnitCommitment.write("example/out.json", solution)
 ```
 
-To read all files in a given folder, the [Glob](https://github.com/vtjnash/Glob.jl) package can be used:
+To read multiple files from a given folder, the [Glob](https://github.com/vtjnash/Glob.jl) package can be used:
 
-```julia
+```jldoctest usage1; output = false
 using Glob
-instance = UnitCommitment.read(glob("*.json", "/path/to/scenarios/"))
+using UnitCommitment
+
+instance = UnitCommitment.read(glob("s*.json", "example/"))
+
+# output
+UnitCommitmentInstance(2 scenarios, 6 thermal units, 0 profiled units, 14 buses, 20 lines, 19 contingencies, 1 price sensitive loads, 4 time steps)
 ```
 
 To solve deterministic instances, a single scenario file may be provided.
 
-```julia
-instance = UnitCommitment.read("/path/to/s1.json")
+```jldoctest usage1; output = false
+instance = UnitCommitment.read("example/s1.json")
+
+# output
+UnitCommitmentInstance(1 scenarios, 6 thermal units, 0 profiled units, 14 buses, 20 lines, 19 contingencies, 1 price sensitive loads, 4 time steps)
 ```
 
 ### Solving benchmark instances
 
 UnitCommitment.jl contains a large number of deterministic benchmark instances collected from the literature and converted into a common data format. To solve one of these instances individually, instead of constructing your own, the function `read_benchmark` can be used, as shown below. See [Instances](instances.md) for the complete list of available instances.
 
-```julia
+```jldoctest usage1; output = false
 instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
+
+# output
+UnitCommitmentInstance(1 scenarios, 590 thermal units, 0 profiled units, 3374 buses, 4161 lines, 3245 contingencies, 0 price sensitive loads, 36 time steps)
 ```
 
 ## Customizing the formulation
@@ -71,7 +78,7 @@ instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 By default, `build_model` uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.
 
 ```julia
-using Cbc
+using HiGHS
 using UnitCommitment
 
 import UnitCommitment:
@@ -86,7 +93,7 @@ instance = UnitCommitment.read_benchmark(
 
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
     formulation = Formulation(
         pwl_costs = KnuOstWat2018.PwlCosts(),
         ramping = MorLatRam2013.Ramping(),
@@ -101,24 +108,24 @@ model = UnitCommitment.build_model(
 
 ## Generating initial conditions
 
-When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.
+When creating random unit commitment instances for benchmark purposes, it is often hard to compute, in advance, sensible initial conditions for all thermal generators. Setting initial conditions naively (for example, making all generators initially off and producing no power) can easily cause the instance to become infeasible due to excessive ramping. Initial conditions can also make it hard to modify existing instances. For example, increasing the system load without carefully modifying the initial conditions may make the problem infeasible or unrealistically challenging to solve.
 
 To help with this issue, UC.jl provides a utility function which can generate feasible initial conditions by solving a single-period optimization problem, as shown below:
 
 ```julia
-using Cbc
+using HiGHS
 using UnitCommitment
 
 # Read original instance
-instance = UnitCommitment.read("instance.json")
+instance = UnitCommitment.read("example/s1.json")
 
 # Generate initial conditions (in-place)
-UnitCommitment.generate_initial_conditions!(instance, Cbc.Optimizer)
+UnitCommitment.generate_initial_conditions!(instance, HiGHS.Optimizer)
 
 # Construct and solve optimization model
 model = UnitCommitment.build_model(
     instance=instance,
-    optimizer=Cbc.Optimizer,
+    optimizer=HiGHS.Optimizer,
 )
 UnitCommitment.optimize!(model)
 ```
@@ -129,20 +136,24 @@ UnitCommitment.optimize!(model)
     
 ## Verifying solutions
 
-When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help with this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it. The function can also be used to verify solutions produced by other optimization packages, as long as they follow the [UC.jl data format](format.md).
+When developing new formulations, it is very easy to introduce subtle errors in the model that result in incorrect solutions. To help avoiding this, UC.jl includes a utility function that verifies if a given solution is feasible, and, if not, prints all the validation errors it found. The implementation of this function is completely independent from the implementation of the optimization model, and therefore can be used to validate it.
 
-```julia
+```jldoctest; output = false
 using JSON
 using UnitCommitment
 
 # Read instance
-instance = UnitCommitment.read("instance.json")
+instance = UnitCommitment.read("example/s1.json")
 
 # Read solution (potentially produced by other packages) 
-solution = JSON.parsefile("solution.json")
+solution = JSON.parsefile("example/out.json")
 
 # Validate solution and print validation errors
 UnitCommitment.validate(instance, solution)
+
+# output
+
+true
 ```
 
 ## Progressive Hedging
@@ -155,7 +166,7 @@ The following example shows how to solve SCUC instances using progressive hedgin
 
 
 ```julia
-using Cbc
+using HiGHS
 using MPI
 using UnitCommitment
 using Glob
@@ -167,12 +178,12 @@ MPI.Init()
 ph = UnitCommitment.ProgressiveHedging()
 
 # 3. Read problem instance
-instance = UnitCommitment.read(["s1.json", "s2.json"], ph)
+instance = UnitCommitment.read(["example/s1.json", "example/s2.json"], ph)
 
 # 4. Build JuMP model
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
 )
 
 # 5. Run the decentralized optimization algorithm
@@ -185,7 +196,7 @@ solution = UnitCommitment.solution(model, ph)
 MPI.Finalize()
 ```
 
-When using PH, the model can be customized as usual, with a different formulations or additional user-provided constraints. Note that `read`, in this case, takes `ph` as an argument. This allows each Julia process to read only the instance files that are relevant to it. Similarly, the `solution` function gathers the optimal solution of each processes and returns a combined dictionary. 
+When using PH, the model can be customized as usual, with different formulations or additional user-provided constraints. Note that `read`, in this case, takes `ph` as an argument. This allows each Julia process to read only the instance files that are relevant to it. Similarly, the `solution` function gathers the optimal solution of each processes and returns a combined dictionary. 
 
 Each process solves a sub-problem with $\frac{s}{p}$ scenarios, where $s$ is the total number of scenarios and $p$ is the number of MPI processes. For instance, if we have 15 scenario files and 5 processes, then each process will solve a JuMP model that contains data for 3 scenarios. If the total number of scenarios is not divisible by the number of processes, then an error will be thrown.
 
@@ -283,7 +294,9 @@ aelmp = UnitCommitment.compute_lmp(
 @show aelmp["s1", "b1", 1]
 ```
 
-## Time Decomposition Method
+## Time Decomposition
+
+Solving unit commitment instances that have long time horizons (for example, year-long 8760-hour instances) requires a substantial amount of computational power. To address this issue, UC.jl offers a time decomposition method, which breaks the instance down into multiple overlapping subproblems, solves them sequentially, then reassembles the solution.
 
 When solving a unit commitment instance with a dense time slot structure, computational complexity can become a significant challenge. For instance, if the instance contains hourly data for an entire year (8760 hours), solving such a model can require a substantial amount of computational power. To address this issue, UC.jl provides a time_decomposition method within the `optimize!` function. This method decomposes the problem into multiple sub-problems, solving them sequentially.
 
