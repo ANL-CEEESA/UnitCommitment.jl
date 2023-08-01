@@ -26,7 +26,6 @@ function instance_read_test()
         @test sc.lines[5].name == "l5"
         @test sc.lines[5].source.name == "b2"
         @test sc.lines[5].target.name == "b5"
-        @test sc.lines[5].reactance ≈ 0.17388
         @test sc.lines[5].susceptance ≈ 10.037550333
         @test sc.lines[5].normal_flow_limit == [1e8 for t in 1:4]
         @test sc.lines[5].emergency_flow_limit == [1e8 for t in 1:4]
@@ -36,7 +35,6 @@ function instance_read_test()
         @test sc.lines[1].name == "l1"
         @test sc.lines[1].source.name == "b1"
         @test sc.lines[1].target.name == "b2"
-        @test sc.lines[1].reactance ≈ 0.059170
         @test sc.lines[1].susceptance ≈ 29.496860773945
         @test sc.lines[1].normal_flow_limit == [300.0 for t in 1:4]
         @test sc.lines[1].emergency_flow_limit == [400.0 for t in 1:4]

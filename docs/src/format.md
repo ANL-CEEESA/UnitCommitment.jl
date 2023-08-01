@@ -281,8 +281,7 @@ This section describes the characteristics of transmission system, such as its t
 | :--------------------- | :----------------------------------------------- | ------- | :------------: | :---:
 | `Source bus`           | Identifier of the bus where the transmission line originates. | Required | No | Yes
 | `Target bus`           | Identifier of the bus where the transmission line reaches. | Required | No | Yes
-| `Reactance (ohms)`     | Reactance of the transmission line (in ohms). | Required | No | Yes
-| `Susceptance (S)`      | Susceptance  of the transmission line (in siemens). | Required | No | Yes
+| `Susceptance (S)`      | Susceptance of the transmission line (in siemens). | Required | No | Yes
 | `Normal flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state. | `+inf` | Yes | Yes
 | `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). | `+inf` | Y | Yes
 | `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` | Yes | Yes
@@ -295,7 +294,6 @@ This section describes the characteristics of transmission system, such as its t
         "l1": {
             "Source bus": "b1",
             "Target bus": "b2",
-            "Reactance (ohms)": 0.05917,
             "Susceptance (S)": 29.49686,
             "Normal flow limit (MW)": 15000.0,
             "Emergency flow limit (MW)": 20000.0,

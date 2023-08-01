@@ -354,7 +354,6 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 length(lines) + 1,
                 name_to_bus[dict["Source bus"]],
                 name_to_bus[dict["Target bus"]],
-                scalar(dict["Reactance (ohms)"]),
                 scalar(dict["Susceptance (S)"]),
                 timeseries(
                     dict["Normal flow limit (MW)"],
