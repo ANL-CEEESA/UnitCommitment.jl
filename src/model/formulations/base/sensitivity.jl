@@ -10,8 +10,8 @@ using SparseArrays, Base.Threads, LinearAlgebra, JuMP
 Returns a (B-1)xL matrix M, where B is the number of buses and L is the number
 of transmission lines. For a given bus b and transmission line l, the entry
 M[l.offset, b.offset] indicates the amount of power (in MW) that flows through
-transmission line l when 1 MW of power is injected at the slack bus (the bus
-that has offset zero) and withdrawn from b.
+transmission line l when 1 MW of power is injected at b and withdrawn from the
+slack bus (the bus that has offset zero).
 """
 function _injection_shift_factors(;
     buses::Array{Bus},

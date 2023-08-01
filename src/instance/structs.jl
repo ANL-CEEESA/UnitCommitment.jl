@@ -56,7 +56,6 @@ mutable struct TransmissionLine
     offset::Int
     source::Bus
     target::Bus
-    reactance::Float64
     susceptance::Float64
     normal_flow_limit::Vector{Float64}
     emergency_flow_limit::Vector{Float64}
