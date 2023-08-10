@@ -12,6 +12,7 @@ An instance of the stochastic security-constrained unit commitment (SCUC) proble
 * [Storage units](#Storage-units)
 * [Price-sensitive loads](#Price-sensitive-loads)
 * [Transmission lines](#Transmission-lines)
+* [Interfaces](#Interfaces)
 * [Reserves](#Reserves)
 * [Contingencies](#Contingencies)
 
@@ -283,7 +284,7 @@ This section describes the characteristics of transmission system, such as its t
 | `Target bus`           | Identifier of the bus where the transmission line reaches. | Required | No | Yes
 | `Susceptance (S)`      | Susceptance of the transmission line (in siemens). | Required | No | Yes
 | `Normal flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state. | `+inf` | Yes | Yes
-| `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). | `+inf` | Y | Yes
+| `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). | `+inf` | Yes | Yes
 | `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` | Yes | Yes
 
 #### Example
@@ -303,6 +304,33 @@ This section describes the characteristics of transmission system, such as its t
 }
 ```
 
+### Interfaces
+
+This section describes the characteristics of interfaces, such as its topology and the flow limits of each interface. An interface is a set of transmission lines that, when opened, split the network into different islands. A postive direction is pre-defined by the user between every 2 interfaces. The net flow through an interface is the sum of the flows through the positive lines minus the sum of the flows through the negative lines.
+
+| Key                    | Description                                      | Default | Time series? | Uncertain?
+| :--------------------- | :----------------------------------------------- | ------- | :------------: | :---:
+| `Outbound lines`           | List of transmission lines flow out from a region, which is defined as the positve direction. May be omitted if no outbound lines available. | `[]` | No | Yes
+| `Inbound lines`           | List of transmission lines flow into a region, which is defined as the negative direction. May be omitted if no inbound lines available. | `[]` | No | Yes
+| `Net flow upper limit (MW)` | Maximum net amount of power (in MW) allowed to flow through the interface. | `+inf` | Yes | Yes
+| `Net flow lower limit (MW)` | Minimum net amount of power (in MW) allowed to flow through the interface. | `-inf` | Yes | Yes
+| `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the interface (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` | Yes | Yes
+
+#### Example
+
+```json
+{
+    "Interfaces": {
+        "ifc1": {
+            "Outbound lines": ["l2", "l3", "l5", "l7", "l8", "l9"],
+            "Inbound lines": ["l6"],
+            "Net flow upper limit (MW)": 2000,
+            "Net flow lower limit (MW)": -1500,
+            "Flow limit penalty ($/MW)": 9999.0
+        }
+    }
+}
+```
 
 ### Reserves
 
