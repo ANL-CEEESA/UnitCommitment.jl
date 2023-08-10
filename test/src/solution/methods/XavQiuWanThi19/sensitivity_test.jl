@@ -146,4 +146,19 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
             end
         end
     end
+
+    @testset "_interface_injection_shift_factors" begin
+        instance = UnitCommitment.read(fixture("/case14-interface.json.gz"))
+        sc = instance.scenarios[1]
+        actual = UnitCommitment._interface_injection_shift_factors(
+            interfaces = sc.interfaces,
+            isf = UnitCommitment._injection_shift_factors(
+                lines = sc.lines,
+                buses = sc.buses,
+            ),
+        )
+        @test size(actual) == (1, 13)
+        @test round.(collect(actual), digits = 2) ==
+              [0.0 -1.0 0.0 -1.0 -1.0 -1.0 -1.0 -1.0 -1.0 -1.0 -1.0 -1.0 -1.0]
+    end
 end

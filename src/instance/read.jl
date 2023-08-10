@@ -137,6 +137,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
     reserves = Reserve[]
     profiled_units = ProfiledUnit[]
     storage_units = StorageUnit[]
+    interfaces = Interface[]
 
     function scalar(x; default = nothing)
         x !== nothing || return default
@@ -452,6 +453,45 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         end
     end
 
+    # Read interfaces
+    if "Interfaces" in keys(json)
+        for (int_name, dict) in json["Interfaces"]
+            outbound_lines = TransmissionLine[]
+            inbound_lines = TransmissionLine[]
+            if "Outbound lines" in keys(dict)
+                outbound_lines = [
+                    name_to_line[l] for
+                    l in scalar(dict["Outbound lines"], default = [])
+                ]
+            end
+            if "Inbound lines" in keys(dict)
+                inbound_lines = [
+                    name_to_line[l] for
+                    l in scalar(dict["Inbound lines"], default = [])
+                ]
+            end
+            interface = Interface(
+                int_name,
+                length(interfaces) + 1,
+                outbound_lines,
+                inbound_lines,
+                timeseries(
+                    dict["Net flow upper limit (MW)"],
+                    default = [1e8 for t in 1:T],
+                ),
+                timeseries(
+                    dict["Net flow lower limit (MW)"],
+                    default = [-1e8 for t in 1:T],
+                ),
+                timeseries(
+                    dict["Flow limit penalty (\$/MW)"],
+                    default = [5000.0 for t in 1:T],
+                ),
+            )
+            push!(interfaces, interface)
+        end
+    end
+
     scenario = UnitCommitmentScenario(
         name = scenario_name,
         probability = probability,
@@ -474,8 +514,11 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         profiled_units = profiled_units,
         storage_units_by_name = Dict(su.name => su for su in storage_units),
         storage_units = storage_units,
+        interfaces_by_name = Dict(i.name => i for i in interfaces),
+        interfaces = interfaces,
         isf = spzeros(Float64, length(lines), length(buses) - 1),
         lodf = spzeros(Float64, length(lines), length(lines)),
+        interface_isf = spzeros(Float64, length(interfaces), length(buses) - 1),
     )
     if repair
         UnitCommitment.repair!(scenario)

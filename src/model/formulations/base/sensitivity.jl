@@ -25,6 +25,29 @@ function _injection_shift_factors(;
 end
 
 """
+    _interface_injection_shift_factors(; interfaces, isf)
+
+Returns a Ix(B-1) matrix M, where B is the number of buses and I is the number
+of interfaces. For a given bus b and interface ifc, the entry M[ifc.offset, b.offset] 
+indicates the amount of power (in MW) that net flows through transmission lines of 
+the interface ifc when 1 MW of power is injected at b and withdrawn from the
+slack bus (the bus that has offset zero).
+"""
+function _interface_injection_shift_factors(;
+    interfaces::Array{Interface},
+    isf::Array{Float64,2},
+)
+    interface_isf = spzeros(Float64, length(interfaces), size(isf, 2))
+    for ifc in interfaces
+        outbound_lines = [l.offset for l in ifc.outbound_lines]
+        inbound_lines = [l.offset for l in ifc.inbound_lines]
+        interface_isf[ifc.offset, :] += sum(isf[outbound_lines, :], dims = 1)'
+        interface_isf[ifc.offset, :] -= sum(isf[inbound_lines, :], dims = 1)'
+    end
+    return interface_isf
+end
+
+"""
     _reduced_incidence_matrix(; buses::Array{Bus}, lines::Array{TransmissionLine})
 
 Returns the incidence matrix for the network, with the column corresponding to

@@ -103,6 +103,16 @@ mutable struct StorageUnit
     max_ending_level::Float64
 end
 
+mutable struct Interface
+    name::String
+    offset::Int
+    outbound_lines::Vector{TransmissionLine}
+    inbound_lines::Vector{TransmissionLine}
+    net_flow_upper_limit::Vector{Float64}
+    net_flow_lower_limit::Vector{Float64}
+    flow_limit_penalty::Vector{Float64}
+end
+
 Base.@kwdef mutable struct UnitCommitmentScenario
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
@@ -125,6 +135,9 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     thermal_units::Vector{ThermalUnit}
     storage_units_by_name::Dict{AbstractString,StorageUnit}
     storage_units::Vector{StorageUnit}
+    interfaces_by_name::Dict{AbstractString,Interface}
+    interfaces::Vector{Interface}
+    interface_isf::Array{Float64,2}
     time::Int
     time_step::Int
 end

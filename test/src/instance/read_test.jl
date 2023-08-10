@@ -224,4 +224,20 @@ function instance_read_test()
         @test su4.simultaneous_charge_and_discharge ==
               [false, false, true, true]
     end
+
+    @testset "read_benchmark interface" begin
+        instance = UnitCommitment.read(fixture("case14-interface.json.gz"))
+        sc = instance.scenarios[1]
+        @test length(sc.interfaces) == 1
+        @test sc.interfaces_by_name["ifc1"].name == "ifc1"
+
+        ifc = sc.interfaces[1]
+        @test ifc.name == "ifc1"
+        @test ifc.offset == 1
+        @test length(ifc.outbound_lines) == 6
+        @test length(ifc.inbound_lines) == 1
+        @test ifc.net_flow_upper_limit == [2000 for t in 1:4]
+        @test ifc.net_flow_lower_limit == [-1500 for t in 1:4]
+        @test ifc.flow_limit_penalty == [9999.0 for t in 1:4]
+    end
 end
