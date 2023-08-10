@@ -88,6 +88,26 @@ function solution(model::JuMP.Model)::OrderedDict
         if !isempty(sc.lines)
             sol[sc.name]["Line overflow (MW)"] =
                 timeseries(model[:overflow], sc.lines, sc = sc)
+            sol[sc.name]["Transmission line flow (MW)"] = OrderedDict(
+                l.name => [
+                    (
+                        sc.isf[l.offset, :]' * [
+                            value(model[:net_injection][sc.name, bus.name, t]) for bus in sc.buses
+                        ][2:end]
+                    ) for t in 1:T
+                ] for l in sc.lines
+            )
+        end
+        if !isempty(sc.interfaces)
+            sol[sc.name]["Interface flow (MW)"] = OrderedDict(
+                ifc.name => [
+                    (
+                        sc.interface_isf[ifc.offset, :]' * [
+                            value(model[:net_injection][sc.name, bus.name, t]) for bus in sc.buses
+                        ][2:end]
+                    ) for t in 1:T
+                ] for ifc in sc.interfaces
+            )
         end
         if !isempty(sc.price_sensitive_loads)
             sol[sc.name]["Price-sensitive loads (MW)"] =
