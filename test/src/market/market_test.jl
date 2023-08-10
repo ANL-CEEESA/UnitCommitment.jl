@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, Cbc, HiGHS, JuMP
+using UnitCommitment, HiGHS, JuMP
 import UnitCommitment: MarketSettings
 
 function simple_market_test()
@@ -20,8 +20,8 @@ function simple_market_test()
             rt_paths,
             MarketSettings(), # keep everything default
             optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
+                HiGHS.Optimizer,
+                "log_to_console" => false,
             ),
             lp_optimizer = optimizer_with_attributes(
                 HiGHS.Optimizer,
@@ -52,8 +52,8 @@ function simple_market_test()
             rt_paths,
             MarketSettings(lmp_method = nothing), # no lmp
             optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
+                HiGHS.Optimizer,
+                "log_to_console" => false,
             ),
         )
 
@@ -115,8 +115,8 @@ function stochastic_market_test()
             rt_paths,
             MarketSettings(), # keep everything default
             optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
+                HiGHS.Optimizer,
+                "log_to_console" => false,
             ),
             lp_optimizer = optimizer_with_attributes(
                 HiGHS.Optimizer,

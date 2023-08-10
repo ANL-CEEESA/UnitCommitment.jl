@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, Cbc, HiGHS, JuMP
+using UnitCommitment, HiGHS, JuMP
 import UnitCommitment: AELMP
 
 function lmp_aelmp_test()
@@ -13,8 +13,8 @@ function lmp_aelmp_test()
         model = UnitCommitment.build_model(
             instance = instance,
             optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
+                HiGHS.Optimizer,
+                "log_to_console" => false,
             ),
             variable_names = true,
         )

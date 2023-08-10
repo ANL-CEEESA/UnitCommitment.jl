@@ -4,7 +4,7 @@
 
 using UnitCommitment
 using JuMP
-using Cbc
+using HiGHS
 using JSON
 import UnitCommitment:
     ArrCon2000,
@@ -28,7 +28,7 @@ function _test(
         model = UnitCommitment.build_model(
             instance = instance,
             formulation = formulation,
-            optimizer = Cbc.Optimizer,
+            optimizer = HiGHS.Optimizer,
             variable_names = true,
         )
         set_silent(model)

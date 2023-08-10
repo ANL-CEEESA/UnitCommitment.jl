@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
+using UnitCommitment, LinearAlgebra, JuMP, JSON, GZip
 
 function instance_read_test()
     @testset "read_benchmark" begin
