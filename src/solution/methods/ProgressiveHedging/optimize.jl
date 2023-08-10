@@ -6,7 +6,7 @@ using TimerOutputs
 import JuMP
 const to = TimerOutput()
 
-function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
+function optimize!(model::JuMP.Model, method::ProgressiveHedging)::PHFinalResult
     mpi = MpiInfo(MPI.COMM_WORLD)
     iterations = PHIterationInfo[]
     consensus_vars = [var for var in all_variables(model) if is_binary(var)]
@@ -57,7 +57,11 @@ function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
             break
         end
     end
-    return
+    return PHFinalResult(
+        last(iterations).global_obj,
+        last(iterations).sp_vals,
+        last(iterations).total_elapsed_time,
+    )
 end
 
 function compute_total_elapsed_time(
