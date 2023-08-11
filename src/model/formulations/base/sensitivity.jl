@@ -37,7 +37,7 @@ function _interface_injection_shift_factors(;
     interfaces::Array{Interface},
     isf::Array{Float64,2},
 )
-    interface_isf = spzeros(Float64, length(interfaces), size(isf, 2))
+    interface_isf = zeros(Float64, length(interfaces), size(isf, 2))
     for ifc in interfaces
         outbound_lines = [l.offset for l in ifc.outbound_lines]
         inbound_lines = [l.offset for l in ifc.inbound_lines]
