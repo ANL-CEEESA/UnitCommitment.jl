@@ -71,6 +71,11 @@ function slice(
             su.min_discharge_rate = su.min_discharge_rate[range]
             su.max_discharge_rate = su.max_discharge_rate[range]
         end
+        for ifc in sc.interfaces
+            ifc.net_flow_upper_limit = ifc.net_flow_upper_limit[range]
+            ifc.net_flow_lower_limit = ifc.net_flow_lower_limit[range]
+            ifc.flow_limit_penalty = ifc.flow_limit_penalty[range]
+        end
     end
     return modified
 end

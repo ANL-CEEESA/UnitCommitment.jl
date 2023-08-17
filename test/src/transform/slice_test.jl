@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
+using UnitCommitment, LinearAlgebra, HiGHS, JuMP, JSON, GZip
 
 function transform_slice_test()
     @testset "slice" begin
@@ -38,7 +38,10 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -58,7 +61,10 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -88,7 +94,34 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0)
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
+        model = UnitCommitment.build_model(
+            instance = modified,
+            optimizer = optimizer,
+            variable_names = true,
+        )
+    end
+
+    @testset "slice interfaces" begin
+        instance = UnitCommitment.read(fixture("case14-interface.json.gz"))
+        modified = UnitCommitment.slice(instance, 1:3)
+        sc = modified.scenarios[1]
+
+        # Should update all time-dependent fields
+        for ifc in sc.interfaces
+            @test length(ifc.net_flow_upper_limit) == 3
+            @test length(ifc.net_flow_lower_limit) == 3
+            @test length(ifc.flow_limit_penalty) == 3
+        end
+
+        # Should be able to build model without errors
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,

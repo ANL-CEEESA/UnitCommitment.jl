@@ -7,7 +7,7 @@ import UnitCommitment: XavQiuAhm2021
 
 using Distributions
 using Random
-using UnitCommitment, Cbc, JuMP
+using UnitCommitment, JuMP
 
 function get_scenario()
     return UnitCommitment.read_benchmark(

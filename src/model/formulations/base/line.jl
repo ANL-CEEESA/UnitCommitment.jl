@@ -26,9 +26,11 @@ function _setup_transmission(
 )::Nothing
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf
+    interface_isf = nothing
     if length(sc.buses) == 1
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
+        interface_isf = zeros(0, 0)
     elseif isf === nothing
         @info "Computing injection shift factors..."
         time_isf = @elapsed begin
@@ -36,6 +38,11 @@ function _setup_transmission(
                 buses = sc.buses,
                 lines = sc.lines,
             )
+            interface_isf =
+                UnitCommitment._interface_injection_shift_factors(
+                    interfaces = sc.interfaces,
+                    isf = isf,
+                )
         end
         @info @sprintf("Computed ISF in %.2f seconds", time_isf)
         @info "Computing line outage factors..."
@@ -53,9 +60,13 @@ function _setup_transmission(
             formulation.lodf_cutoff
         )
         isf[abs.(isf).<formulation.isf_cutoff] .= 0
+        interface_isf[abs.(interface_isf).<formulation.isf_cutoff] .= 0
         lodf[abs.(lodf).<formulation.lodf_cutoff] .= 0
     end
     sc.isf = isf
     sc.lodf = lodf
+    if interface_isf !== nothing
+        sc.interface_isf = round.(interface_isf, digits = 5)
+    end
     return
 end

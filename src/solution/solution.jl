@@ -85,9 +85,26 @@ function solution(model::JuMP.Model)::OrderedDict
             sol[sc.name]["Load curtail (MW)"] =
                 timeseries(model[:curtail], sc.buses, sc = sc)
         end
+        # get matrix of bus net injection (BxT)
+        bus_net_injection = [
+            value(model[:net_injection][sc.name, bus.name, t]) for
+            bus in sc.buses, t in 1:T
+        ]
         if !isempty(sc.lines)
             sol[sc.name]["Line overflow (MW)"] =
                 timeseries(model[:overflow], sc.lines, sc = sc)
+            # get the matrix of line flows (Lx(B-1))x((B-1)xT)=(LxT)
+            line_flows = sc.isf * bus_net_injection[2:end, :]
+            sol[sc.name]["Transmission line flow (MW)"] =
+                OrderedDict(l.name => line_flows[l.offset, :] for l in sc.lines)
+        end
+        if !isempty(sc.interfaces)
+            # get the matrix of interface flows (Ix(B-1))x((B-1)xT)=(IxT)
+            interface_flows = sc.interface_isf * bus_net_injection[2:end, :]
+            sol[sc.name]["Interface flow (MW)"] = OrderedDict(
+                ifc.name => interface_flows[ifc.offset, :] for
+                ifc in sc.interfaces
+            )
         end
         if !isempty(sc.price_sensitive_loads)
             sol[sc.name]["Price-sensitive loads (MW)"] =

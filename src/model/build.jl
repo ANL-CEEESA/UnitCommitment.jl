@@ -103,6 +103,9 @@ function build_model(;
                 _add_storage_unit!(model, su, sc)
             end
             _add_system_wide_eqs!(model, sc)
+            for ifc in sc.interfaces
+                _add_interface!(model, ifc, formulation.transmission, sc)
+            end
         end
         @objective(model, Min, model[:obj])
     end
