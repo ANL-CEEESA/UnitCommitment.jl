@@ -4,6 +4,8 @@
 
 module UnitCommitment
 
+using Requires
+
 using Base: String
 
 include("instance/structs.jl")
@@ -71,5 +73,12 @@ include("validation/validate.jl")
 include("lmp/conventional.jl")
 include("lmp/aelmp.jl")
 include("market/market.jl")
+
+function __init__()
+    @require MIPLearn = "2b1277c3-b477-4c49-a15e-7ba350325c68" begin
+        include("solution/methods/MIPLearn/structs.jl")
+        include("solution/methods/MIPLearn/miplearn.jl")
+    end
+end
 
 end

@@ -1,6 +1,7 @@
 module UnitCommitmentT
 
 using JuliaFormatter
+using MIPLearn
 using UnitCommitment
 using Test
 
@@ -16,6 +17,7 @@ include("solution/methods/ProgressiveHedging/usage_test.jl")
 include("solution/methods/TimeDecomposition/initial_status_test.jl")
 include("solution/methods/TimeDecomposition/optimize_test.jl")
 include("solution/methods/TimeDecomposition/update_solution_test.jl")
+include("solution/methods/MIPLearn/usage_test.jl")
 include("transform/initcond_test.jl")
 include("transform/slice_test.jl")
 include("transform/randomize/XavQiuAhm2021_test.jl")
@@ -46,6 +48,7 @@ function runtests()
         solution_methods_TimeDecomposition_initial_status_test()
         solution_methods_TimeDecomposition_optimize_test()
         solution_methods_TimeDecomposition_update_solution_test()
+        solution_methods_MIPLearn_usage_test()
         transform_initcond_test()
         transform_slice_test()
         transform_randomize_XavQiuAhm2021_test()
