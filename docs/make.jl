@@ -1,18 +1,17 @@
 using Documenter, UnitCommitment, JuMP
 
 function make()
-    makedocs(
-        sitename="UnitCommitment.jl",
-        pages=[
+    return makedocs(
+        sitename = "UnitCommitment.jl",
+        pages = [
             "Home" => "index.md",
-            "usage.md",
-            "format.md",
-            "instances.md",
-            "model.md",
-            "api.md",
+            "problem.md",
+            # "usage.md",
+            # "format.md",
+            # "instances.md",
+            # "model.md",
+            # "api.md",
         ],
-        format = Documenter.HTML(
-            assets=["assets/custom.css"],
-        )
+        format = Documenter.HTML(assets = ["assets/custom.css"]),
     )
 end
