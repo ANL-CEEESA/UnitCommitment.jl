@@ -10,7 +10,7 @@ In addition to the basic components above, modern versions of SCUC also include 
 
 !!! warning
 
-    The problem formulation presented below is mathematically equivalent to the one solved by UC.jl, but the actual constraints enforced in the JuMP optimization model may be different, for performance reasons. For example, in this page we show only simplified ramping constraints, whereas the default UC.jl formulation uses a complex set of inequalities which better describes the convex hull, leading to better performance. For the actual constraints enforced in the model, we refer to the source code and references.
+    The problem definition presented below is mathematically equivalent to the one solved by UC.jl, but the actual constraints enforced in the JuMP optimization model may be different, for performance reasons. For example, in this page we show only simplified ramping constraints, whereas the default UC.jl formulation uses a complex set of inequalities which better describes the convex hull, leading to better performance. For the actual constraints enforced in the model, we refer to the source code and references.
 
 ## 1. General modeling assumptions
 
@@ -186,7 +186,7 @@ A _profiled generator_ is a simplified generator model that can be used to repre
 ### Constants
 
 | Symbol                  | Unit  | Description                                        |
-| ----------------------- | ----- | -------------------------------------------------- |
+| :---------------------- | :---- | :------------------------------------------------- |
 | $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$. |
 | $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$. |
 | $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.      |
@@ -194,26 +194,26 @@ A _profiled generator_ is a simplified generator model that can be used to repre
 ### Decision variables
 
 | Symbol                | Unit | Description                                                  | Stage |
-| --------------------- | ---- | ------------------------------------------------------------ | ----- |
+| :-------------------- | :--- | :----------------------------------------------------------- | :---- |
 | $y^\text{prod}_{sgt}$ | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
 
 - Production cost:
 
-$$
+```math
 \sum_{s \in S} p(s) \left[
   \sum_{t \in T} y^\text{prod}_{sgt} Z^{\text{pvar}}_{sgt}
 \right]
-$$
+```
 
 ### Constraints
 
 - Bounds:
 
-$$
+```math
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
-$$
+```
 
 ## 4. Conventional loads
 
@@ -221,34 +221,34 @@ Loads represent the demand for electrical power by consumers and devices connect
 
 ### Constants
 
-| Symbol                  | Unit | Description                                               |
-| ----------------------- | ---- | --------------------------------------------------------- |
-| $M^\text{load}_{sbt}$   | MW   | Conventional load on bus $b$ at time $s$ and scenario $s$ |
-| $Z^\text{curtail}_{st}$ | $/MW | Load curtailment penalty at time $t$ in scenario $s$      |
+| Symbol                  | Unit  | Description                                               |
+| :---------------------- | :---- | :-------------------------------------------------------- |
+| $M^\text{load}_{sbt}$   | MW    | Conventional load on bus $b$ at time $s$ and scenario $s$ |
+| $Z^\text{curtail}_{st}$ | \$/MW | Load curtailment penalty at time $t$ in scenario $s$      |
 
 ### Decision variables
 
 | Symbol                   | Unit | Description                                                      | Stage |
-| ------------------------ | ---- | ---------------------------------------------------------------- | ----- |
+| :----------------------- | :--- | :--------------------------------------------------------------- | :---- |
 | $y^\text{curtail}_{sbt}$ | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
 
 - Load curtailment penalty:
 
-$$
+```math
 \sum_{s \in S} p(s) \left[
   \sum_{b \in B} \sum_{t \in T} y^\text{curtail}_{sbt} Z^\text{curtail}_{ts}
 \right]
-$$
+```
 
 ### Constraints
 
 - Bounds:
 
-$$
+```math
 0 \leq y^\text{curtail}_{sbt} \leq M^\text{load}_{bts}
-$$
+```
 
 ## 5. Price-sensitive loads
 
@@ -256,36 +256,78 @@ Price-sensitive loads refer to components in the system which may increase or re
 
 ### Sets and constants
 
-| Symbol                       | Unit | Description                                                     |
-| ---------------------------- | ---- | --------------------------------------------------------------- |
-| $M^\text{psl-demand}_{spt}$  | MW   | Demand of price-sensitive load $p$ at time $t$ and scenario $s$ |
-| $Z^\text{psl-revenue}_{spt}$ | $/MW | Revenue from serving load $p$ at $t$ in scenario $s$            |
-| $\text{PSL}$                 |      | Set of price-sensitive loads                                    |
+| Symbol                       | Unit  | Description                                                     |
+| :--------------------------- | :---- | :-------------------------------------------------------------- |
+| $M^\text{psl-demand}_{spt}$  | MW    | Demand of price-sensitive load $p$ at time $t$ and scenario $s$ |
+| $Z^\text{psl-revenue}_{spt}$ | \$/MW | Revenue from serving load $p$ at $t$ in scenario $s$            |
+| $\text{PSL}$                 |       | Set of price-sensitive loads                                    |
 
 ### Decision variables
 
 | Symbol               | Unit | Description                                       | Stage |
-| -------------------- | ---- | ------------------------------------------------- | ----- |
+| :------------------- | :--- | :------------------------------------------------ | :---- |
 | $y^\text{psl}_{spt}$ | MW   | Amount served to $p$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
 
 - Revenue from serving price-sensitive loads:
-  $$
+
+```math
   - \sum_{s \in S} p(s) \left[
     \sum_{p \in \text{PSL}} \sum_{t \in T} y^\text{psl}_{spt} Z^\text{psl-revenue}_{spt}
   \right]
-  $$
+```
 
 ### Constraints
 
 - Bounds:
 
-$$
+```math
 0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
-$$
+```
 
-## 6. Transmission lines
+## 6. Buses and transmission lines
+
+So far, we have described generators, which produce power, and loads, which consume power. A third important element is the transmission network, which delivers the power produced by the generators to the loads. Mathematically, the network is represented as a graph $(B,L)$ where $B$ is the set of **buses** and $L$ is the set of **transmission lines**. Each generator and each bus in the network is located at a bus. The **net injection** at the bus is the sum of all power injected minus withdrawn at the bus. To balance production and consumption, we must enforce that the sum of all net injections over the network equal to zero.
+
+Besides the net balance equations, we must also enforce flow limits on the transmission lines. Unlike flows in other optimization problems, power flows are directly determined by net injections and transmission line parameters, and must follow physical laws. UC.jl uses the DC linearization of AC power flow equations, which are derived the assumptions that (i) line losses are negligible; (ii) voltage magnitudes are constant; and (iii) phase angle differences are small. Under these assumptions, the flow $f_l$ in transmission line $l$ is given by $\sum_{b \in B} \delta_{bl} n_b$, where $\delta_{bl}$ is a constant known as _injection shift factor_, computed from the line parameters, and $n_b$ is the net injection at bus $b$.
+
+### Sets and constants
+
+| Symbol | Unit | Description               |
+| :----- | :--- | :------------------------ |
+| $B$    |      | Set of buses              |
+| $L$    |      | Set of transmission lines |
+
+| $M^{}\_{}
+
+| $M^\text{psl-demand}_{spt}$ | MW | Demand of price-sensitive load $p$ at time $t$ and scenario $s$ |
+| $Z^\text{psl-revenue}_{spt}$ | \$/MW | Revenue from serving load $p$ at $t$ in scenario $s$ |
+| $\text{PSL}$ | | Set of price-sensitive loads |
+
+### Decision variables
+
+| Symbol               | Unit | Description                                       | Stage |
+| :------------------- | :--- | :------------------------------------------------ | :---- |
+| $y^\text{psl}_{spt}$ | MW   | Amount served to $p$ in time $t$ and scenario $s$ | 2     |
+
+### Objective function terms
+
+- Revenue from serving price-sensitive loads:
+
+```math
+  - \sum_{s \in S} p(s) \left[
+    \sum_{p \in \text{PSL}} \sum_{t \in T} y^\text{psl}_{spt} Z^\text{psl-revenue}_{spt}
+  \right]
+```
+
+### Constraints
+
+- Bounds:
+
+```math
+0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
+```
 
 ## 7. Transmission interfaces
 
