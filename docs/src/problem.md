@@ -2,23 +2,27 @@
 
 The **Security-Constrained Unit Commitment Problem** (SCUC) is a two-stage stochastic mixed-integer linear optimization problem that aims to find the minimum-cost schedule for electricity generation while satisfying various physical, operational and economic constraints. In its most basic form, the problem is composed by:
 
-- A set of thermal generators, which produce power, at a given cost;
+- A set of generators, which produce power, at a given cost;
 - A set of loads, which consume power;
 - A transmission network, which delivers power from generators to the loads.
 
-In addition to the basic components above, modern versions of SCUC also include a wide variety of additional components, such as _energy storage devices_, _reserves_, _price-sensitive loads_ and _network interfaces_, to name a few. On this page, we present a complete definition of the problem as it is formulated in UC.jl. Please note that various souces in the literature may have different definitions.
+In addition to the basic components above, modern versions of SCUC also include a wide variety of additional components, such as _energy storage devices_, _reserves_ and _network interfaces_, to name a few. On this page, we present a complete definition of the problem as it is formulated in UC.jl. Please note that various souces in the literature may have different definitions and assumptions.
 
-## General modeling assumptions
+!!! warning
 
-SCUC is a multi-period problem, with decisions typically covering a 24-hour or 36-hour time window. UC.jl assumes that this time window is discretized into time steps of fixed length. The number of time steps, as well as the duration of each time step, are configurable. In the equations below, the set of time steps is denoted by $T=\{1,2,\ldots,|T|\}$.
+    The problem formulation presented below is mathematically equivalent to the one solved by UC.jl, but the actual constraints enforced in the JuMP optimization model may be different, for performance reasons. For example, in this page we show only simplified ramping constraints, whereas the default UC.jl formulation uses a complex set of inequalities which better describes the convex hull, leading to better performance. For the actual constraints enforced in the model, we refer to the source code and references.
 
-SCUC is also a two-stage stochastic problem. In the first stage, we must decide the _commitment status_ of all thermal generators. In the second stage, we determine the remaining decision variables, such power output of all generators, the operation of energy storage devices and load shedding. Stochasticity is modeled through a discrete number of scenarios $s \in S$, each with given probability $p(S)$. The goal is to minimize the minimum expected cost. The deterministic version of SCUC can be modeled by assuming a single scenario with probability 1.
+## 1. General modeling assumptions
 
-## Thermal Generators
+- **Time discretization:** SCUC is a multi-period problem, with decisions typically covering a 24-hour or 36-hour time window. UC.jl assumes that this time window is discretized into time steps of fixed length. The number of time steps, as well as the duration of each time step, are configurable. In the equations below, the set of time steps is denoted by $T=\{1,2,\ldots,|T|\}$.
+
+- **Decision under uncertainty:** SCUC is a two-stage stochastic problem. In the first stage, we must decide the _commitment status_ of all thermal generators. In the second stage, we determine the remaining decision variables, such power output of all generators, the operation of energy storage devices and load shedding. Stochasticity is modeled through a discrete number of scenarios $s \in S$, each with given probability $p(S)$. The goal is to minimize the minimum expected cost. The deterministic version of SCUC can be modeled by assuming a single scenario with probability 1.
+
+## 2. Thermal generators
 
 A _thermal generator_ is a power generation unit that converts thermal energy, typically from the combustion of coal, natural gas or oil, into electrical energy. Scheduling thermal generators is particularly complex due to their operational characteristics, including minimum up and down times, ramping rates, and start-up and shutdown limits.
 
-### Concepts
+### Important concepts
 
 - **Commitment, power output and startup costs:** Thermal generators can either be operational (on) or offline (off). When a thermal generator is on, it can produce between a minimum and a maximum amount of power; when it is off, it cannot produce any power. Switching a generator on incurs a startup cost, which depends on how long the unit has been offline. More precisely, each thermal generator $g$ has a number $K^{start}_g$ of startup categories (e.g., cold, warm and hot). Each category $k$ has a corresponding startup cost $Z^{\text{start}}_{gk}$, and is available only if the unit has spent at most $M^{\text{delay}}_{gk}$ time steps offline.
 
@@ -175,18 +179,118 @@ y^{\text{prod-above}}_{g,1,s} \geq
 \left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{gt}\right) - M^{\text{ramp-down}}_{g}
 ```
 
-## Loads
+## 3. Profiled generators
 
-## Buses and Transmission Lines
+A _profiled generator_ is a simplified generator model that can be used to represent renewable energy resources, including wind, solar and hydro. Unlike thermal generators, which can be either on or off, profiled generators do not have status variables; the only optimization decision is on their power output level, which must remain between minimum and maximum time-varying amounts. Production cost curves for profiled generators are linear, making them again much simpler than thermal units.
 
-## Energy storage
+### Constants
 
-## Profiled generators
+| Symbol                  | Unit  | Description                                        |
+| ----------------------- | ----- | -------------------------------------------------- |
+| $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$. |
+| $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$. |
+| $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.      |
 
-## Contingencies
+### Decision variables
 
-## Reserves
+| Symbol                | Unit | Description                                                  | Stage |
+| --------------------- | ---- | ------------------------------------------------------------ | ----- |
+| $y^\text{prod}_{sgt}$ | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$ | 2     |
 
-## Price-sensitive loads
+### Objective function terms
 
-## Interfaces
+- Production cost:
+
+$$
+\sum_{s \in S} p(s) \left[
+  \sum_{t \in T} y^\text{prod}_{sgt} Z^{\text{pvar}}_{sgt}
+\right]
+$$
+
+### Constraints
+
+- Bounds:
+
+$$
+M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
+$$
+
+## 4. Conventional loads
+
+Loads represent the demand for electrical power by consumers and devices connected to the system. This section describes conventional (or inelastic) loads, which are not sensitive to changes in electricity prices, and must always be served. Each bus in the transmission network has exactly one load; multiple loads in the same bus can be modelled by aggregating them. If there is not enough production or transmission capacity to serve all loads, some load can be shed at a penalty.
+
+### Constants
+
+| Symbol                  | Unit | Description                                               |
+| ----------------------- | ---- | --------------------------------------------------------- |
+| $M^\text{load}_{sbt}$   | MW   | Conventional load on bus $b$ at time $s$ and scenario $s$ |
+| $Z^\text{curtail}_{st}$ | $/MW | Load curtailment penalty at time $t$ in scenario $s$      |
+
+### Decision variables
+
+| Symbol                   | Unit | Description                                                      | Stage |
+| ------------------------ | ---- | ---------------------------------------------------------------- | ----- |
+| $y^\text{curtail}_{sbt}$ | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
+
+### Objective function terms
+
+- Load curtailment penalty:
+
+$$
+\sum_{s \in S} p(s) \left[
+  \sum_{b \in B} \sum_{t \in T} y^\text{curtail}_{sbt} Z^\text{curtail}_{ts}
+\right]
+$$
+
+### Constraints
+
+- Bounds:
+
+$$
+0 \leq y^\text{curtail}_{sbt} \leq M^\text{load}_{bts}
+$$
+
+## 5. Price-sensitive loads
+
+Price-sensitive loads refer to components in the system which may increase or reduce their power consumption according to energy prices. Unlike convential loads, described above, price-sensitive loads are only served if it is economical to do so. More specifically, there are no constraints forcing these loads to be served; instead, there is a term in the objective function rewarding each MW served. There may be multiple price-sensitive loads per bus.
+
+### Sets and constants
+
+| Symbol                       | Unit | Description                                                     |
+| ---------------------------- | ---- | --------------------------------------------------------------- |
+| $M^\text{psl-demand}_{spt}$  | MW   | Demand of price-sensitive load $p$ at time $t$ and scenario $s$ |
+| $Z^\text{psl-revenue}_{spt}$ | $/MW | Revenue from serving load $p$ at $t$ in scenario $s$            |
+| $\text{PSL}$                 |      | Set of price-sensitive loads                                    |
+
+### Decision variables
+
+| Symbol               | Unit | Description                                       | Stage |
+| -------------------- | ---- | ------------------------------------------------- | ----- |
+| $y^\text{psl}_{spt}$ | MW   | Amount served to $p$ in time $t$ and scenario $s$ | 2     |
+
+### Objective function terms
+
+- Revenue from serving price-sensitive loads:
+  $$
+  - \sum_{s \in S} p(s) \left[
+    \sum_{p \in \text{PSL}} \sum_{t \in T} y^\text{psl}_{spt} Z^\text{psl-revenue}_{spt}
+  \right]
+  $$
+
+### Constraints
+
+- Bounds:
+
+$$
+0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
+$$
+
+## 6. Transmission lines
+
+## 7. Transmission interfaces
+
+## 7. Energy storage devices
+
+## 8. Contingencies
+
+## 9. Reserves
