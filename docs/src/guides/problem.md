@@ -1,4 +1,4 @@
-# Problem Definition
+# Problem definition
 
 The **Security-Constrained Unit Commitment Problem** (SCUC) is a two-stage stochastic mixed-integer linear optimization problem that aims to find the minimum-cost schedule for electricity generation while satisfying various physical, operational and economic constraints. In its most basic form, the problem is composed by:
 
@@ -30,41 +30,46 @@ A _thermal generator_ is a power generation unit that converts thermal energy, t
 
 - **Ramping, minimum up/down:** Due to physical and operational limits, such as thermal inertia and mechanical stress, thermal generators cannot vary their power output too dramatically from one time period to the next. Similarly, thermal generators cannot switch on and off too frequently; after switching on or off, units must remain at that state for a minimum specified number of time steps.
 
+- **Startup and shutdown limit:** A thermal generator cannot shut off if its output power level in the imediately preceeding time step is very high (above a specified value); the unit must first ramp down, over potentially multiple time steps, and only then shut off. Similarly, the unit cannot produce a very large amount of power (above a specified limit) imediately after starting up; it must ramp up over potentially multiple time steps.
+
 - **Initial status:** The optimization process finds optimal commitment status and power output level for all thermal generators starting at time period 1. Many constraints, however, require knowledge of previous time periods (0, -1, -2, ...) which are not part of the optimization model. For this reason, part of the input data is the initial power output $M^{\text{init-power}}_{g}$ of unit $g$ (that is, the output at time 0) and the initial status $M^{\text{init-status}}_{g}$ of unit g (how many time steps has it been online/offline at time time 0). If $M^{\text{init-status}}_{g}$ is positive, its magnitude indicates how many time periods has the unit been online; and if negative, how has it been offline.
 
 - **Must-run:** Due to various factors, including reliability considerations, some units must remain operational regardless of whether it is economical for them to do so. Must-run constraints are used to enforce such requirements.
 
 ### Sets and constants
 
-| Symbol                       | Unit   | Description                                                                                |
-| :--------------------------- | :----- | :----------------------------------------------------------------------------------------- |
-| $K^{cost}_g$                 |        | Number of piecewise linear segments in the production cost curve.                          |
-| $K^{start}_g$                |        | Number of startup categories (e.g. cold, warm, hot).                                       |
-| $M^{\text{delay}}_{gk}$      |        | Delay for startup category $k$.                                                            |
-| $M^{\text{init-power}}_{g}$  | MW     | Initial power output of unit $g$.                                                          |
-| $M^{\text{init-status}}_{g}$ |        | Initial status of unit $g$.                                                                |
-| $M^{\text{min-up}}_{g}$      |        | Minimum amount of time $g$ must stay on after switching on.                                |
-| $M^{\text{must-run}}_{gt}$   | Binary | One if unit $g$ must be on at time $t$.                                                    |
-| $M^{\text{pmax}}_{gt}$       | MW     | Maximum power output at time $t$.                                                          |
-| $M^{\text{pmin}}_{gt}$       | MW     | Minimum power output at time $t$.                                                          |
-| $M^{\text{ramp-down}}_{g}$   | MW     | Ramp down limit.                                                                           |
-| $M^{\text{ramp-up}}_{g}$     | MW     | Ramp up limit.                                                                             |
-| $R_g$                        |        | Set of spinning reserves that may be served by $g$.                                        |
-| $Z^{\text{pmin}}_{gt}$       | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
-| $Z^{\text{pvar}}_{gtks}$     | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
-| $Z^{\text{start}}_{gk}$      | \$     | Cost to start unit $g$ at startup category $k$.                                            |
+| Symbol                          | Unit   | Description                                                                                |
+| :------------------------------ | :----- | :----------------------------------------------------------------------------------------- |
+| $K^{cost}_g$                    |        | Number of piecewise linear segments in the production cost curve.                          |
+| $K^{start}_g$                   |        | Number of startup categories (e.g. cold, warm, hot).                                       |
+| $M^{\text{delay}}_{gk}$         |        | Delay for startup category $k$.                                                            |
+| $M^{\text{init-power}}_{g}$     | MW     | Initial power output of unit $g$.                                                          |
+| $M^{\text{init-status}}_{g}$    |        | Initial status of unit $g$.                                                                |
+| $M^{\text{min-up}}_{g}$         |        | Minimum amount of time $g$ must stay on after switching on.                                |
+| $M^{\text{must-run}}_{gt}$      | Binary | One if unit $g$ must be on at time $t$.                                                    |
+| $M^{\text{pmax}}_{gt}$          | MW     | Maximum power output at time $t$.                                                          |
+| $M^{\text{pmin}}_{gt}$          | MW     | Minimum power output at time $t$.                                                          |
+| $M^{\text{ramp-down}}_{g}$      | MW     | Ramp down limit.                                                                           |
+| $M^{\text{ramp-up}}_{g}$        | MW     | Ramp up limit.                                                                             |
+| $M^{\text{seg-pmax}}_{gtks}$    | MW     | Maximum power output for piecewise-linear segment $k$ at time $t$ and scenario $s$.        |
+| $M^{\text{shutdown-limit}}_{g}$ | MW     | Maximum power unit $g$ produces immediately before shutting down                           |
+| $M^{\text{startup-limit}}_{g}$  | MW     | Maximum power unit $g$ produces immediately after starting up                              |
+| $R_g$                           |        | Set of spinning reserves that may be served by $g$.                                        |
+| $Z^{\text{pmin}}_{gt}$          | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
+| $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
+| $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
 
 ### Decision variables
 
-| Symbol                        | Description                                                                                   | Unit   | Stage |
-| :---------------------------- | :-------------------------------------------------------------------------------------------- | :----- | :---- |
-| $x^{\text{is-on}}_{gt}$       | One if generator $g$ is on at time $t$.                                                       | Binary | 1     |
-| $x^{\text{switch-on}}_{gt}$   | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
-| $x^{\text{switch-off}}_{gt}$  | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
-| $x^{\text{start}}_{gtk}$      | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
-| $y^{\text{prod-above}}_{gts}$ | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
-| $y^{\text{seg-prod}}_{gtks}$  | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
-| $y^{\text{res}}_{grts}$       | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
+| Symbol                        | JuMP name           | Description                                                                                   | Unit   | Stage |
+| :---------------------------- | :------------------ | :-------------------------------------------------------------------------------------------- | :----- | :---- |
+| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`        | One if generator $g$ is on at time $t$.                                                       | Binary | 1     |
+| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`    | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
+| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`   | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
+| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`    | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
+| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]` | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
+| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`  | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
+| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`  | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
 
 ### Objective function terms
 
@@ -92,37 +97,37 @@ A _thermal generator_ is a power generation unit that converts thermal energy, t
 x^{\text{is-on}}_{gt} \geq M^{\text{must-run}}_{gt}
 ```
 
-- After switching on, unit must remain on for some amount of time:
+- After switching on, unit must remain on for some amount of time (`eq_min_uptime[g,t]`):
 
 ```math
 \sum_{i=max(1,t-M^{\text{min-up}}_{g}+1)}^t x^{\text{switch-on}}_{gi} \leq x^{\text{is-on}}_{gt}
 ```
 
-- Same as above, but covering the initial time steps:
+- Same as above, but covering the initial time steps (`eq_min_uptime[g,0]`):
 
 ```math
 \sum_{i=1}^{min(T,M^{\text{min-up}}_{g}-M^{\text{init-status}}_{g})} x^{\text{switch-off}}_{gi} = 0 \; \text{ if } \; M^{\text{init-status}}_{g} > 0
 ```
 
-- After switching off, unit must remain offline for some amount of time:
+- After switching off, unit must remain offline for some amount of time (`eq_min_downtime[g,t]`):
 
 ```math
 \sum_{i=max(1,t-M^{\text{min-down}}_{g}+1)}^t x^{\text{switch-off}}_{gi} \leq 1 - x^{\text{is-on}}_{gt}
 ```
 
-- Same as above, but covering the initial time steps:
+- Same as above, but covering the initial time steps (`eq_min_downtime[g,0]`):
 
 ```math
 \sum_{i=1}^{min(T,M^{\text{min-down}}_{g}+M^{\text{init-status}}_{g})} x^{\text{switch-on}}_{gi} = 0 \; \text{ if } \; M^{\text{init-status}}_{g} < 0
 ```
 
-- If the unit switches on, it must choose exactly one startup category:
+- If the unit switches on, it must choose exactly one startup category (`eq_startup_choose[g,t]`):
 
 ```math
 x^{\text{switch-on}}_{gt} = \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk}
 ```
 
-- If unit has not switched off in the last "delay" time periods, then startup category is forbidden.
+- If unit has not switched off in the last "delay" time periods, then startup category is forbidden (`eq_startup_restrict[g,t,s]`).
   The last startup category is always allowed.
   In the equation below, $L^{\text{start}}_{gtk}=1$ if category should be allowed based on initial status.
 
@@ -130,7 +135,7 @@ x^{\text{switch-on}}_{gt} = \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk}
 x^{\text{start}}_{gtk} \leq L^{\text{start}}_{gtk} + \sum_{i=min\left(1,t - M^{\text{delay}}_{g,k+1} + 1\right)}^{t - M^{\text{delay}}_{kg}} x^{\text{switch-off}}_{gi}
 ```
 
-- Link the binary variables together:
+- Link the binary variables together (`eq_binary_link[g,t]`):
 
 ```math
 \begin{align*}
@@ -138,45 +143,75 @@ x^{\text{start}}_{gtk} \leq L^{\text{start}}_{gtk} + \sum_{i=min\left(1,t - M^{\
 \end{align*}
 ```
 
-- If the unit is off, it cannot produce power or provide reserves. If it is on, it must to so within the specified production limits:
+- Cannot switch on and off at the same time (`eq_switch_on_off[g,t]`):
+
+```math
+x^{\text{switch-on}}_{gt} + x^{\text{switch-off}}_{gt} \leq 1
+```
+
+- If the unit is off, it cannot produce power or provide reserves. If it is on, it must to so within the specified production limits (`eq_prod_limit[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 (M^{\text{pmax}}_{gt} - M^{\text{pmin}}_{gt}) x^{\text{is-on}}_{gt}
 ```
 
-- Break down the "production above" variable into smaller "segment production" variables, to simplify the objective function:
+- Break down the "production above" variable into smaller "segment production" variables, to simplify the objective function (`eq_prod_above_def[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} = \sum_{k=1}^{K^{cost}_g} y^{\text{seg-prod}}_{gtks}
 ```
 
-- Unit cannot increase its production too quickly:
+- Impose upper limit on segment production variables (`eq_segprod_limit[s,g,t,k]`):
+
+```math
+0 \leq y^{\text{seg-prod}}_{gtks} \leq M^{\text{seg-pmax}}_{gtks}
+```
+
+- Unit cannot increase its production too quickly (`eq_ramp_up[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 y^{\text{prod-above}}_{g,t-1,s} + M^{\text{ramp-up}}_{g}
 ```
 
-- Same as above, for initial time:
+- Same as above, for initial time (`eq_ramp_up[s,g,1]`):
 
 ```math
 y^{\text{prod-above}}_{g,1,s} + \sum_{r \in R_g} y^{\text{res}}_{gr,1,s} \leq
 \left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{gt}\right) + M^{\text{ramp-up}}_{g}
 ```
 
-- Unit cannot decrease its production too quickly:
+- Unit cannot decrease its production too quickly (`eq_ramp_down[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} \geq
 y^{\text{prod-above}}_{g,t-1,s} - M^{\text{ramp-down}}_{g}
 ```
 
-- Same as above, for initial time:
+- Same as above, for initial time (`eq_ramp_down[s,g,1]`):
 
 ```math
 y^{\text{prod-above}}_{g,1,s} \geq
 \left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{gt}\right) - M^{\text{ramp-down}}_{g}
+```
+
+- Unit cannot produce excessive amount of power immediately after starting up (`eq_startup_limit[s,g,t]`):
+
+```math
+y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
+(M^{\text{pmax}}_{gt} - M^{\text{pmin}}_{gt}) x^{\text{is-on}}_{gt} -
+max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{startup-limit}}_{g}\right\}
+x^{\text{switch-on}}_{gt}
+```
+
+- Unit cannot shutoff it it's producing too much power (`eq_shutdown_limit[s,g,t]`):
+
+```math
+y^{\text{prod-above}}_{gts} \leq
+(M^{\text{pmax}}_{gt} - M^{\text{pmin}}_{gt}) x^{\text{is-on}}_{gt} -
+max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g}\right\}
+x^{\text{switch-off}}_{g,t+1}
 ```
 
 ## 3. Profiled generators
@@ -193,9 +228,9 @@ A _profiled generator_ is a simplified generator model that can be used to repre
 
 ### Decision variables
 
-| Symbol                | Unit | Description                                                  | Stage |
-| :-------------------- | :--- | :----------------------------------------------------------- | :---- |
-| $y^\text{prod}_{sgt}$ | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$ | 2     |
+| Symbol                | JuMP name              | Unit | Description                                                  | Stage |
+| :-------------------- | :--------------------- | :--- | :----------------------------------------------------------- | :---- |
+| $y^\text{prod}_{sgt}$ | `prod_profiled[s,g,t]` | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
 
@@ -209,7 +244,7 @@ A _profiled generator_ is a simplified generator model that can be used to repre
 
 ### Constraints
 
-- Bounds:
+- Variable bounds:
 
 ```math
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
@@ -228,9 +263,9 @@ Loads represent the demand for electrical power by consumers and devices connect
 
 ### Decision variables
 
-| Symbol                   | Unit | Description                                                      | Stage |
-| :----------------------- | :--- | :--------------------------------------------------------------- | :---- |
-| $y^\text{curtail}_{sbt}$ | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
+| Symbol                   | JuMP name        | Unit | Description                                                      | Stage |
+| :----------------------- | :--------------- | :--- | :--------------------------------------------------------------- | :---- |
+| $y^\text{curtail}_{sbt}$ | `curtail[s,b,t]` | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
 
@@ -244,7 +279,7 @@ Loads represent the demand for electrical power by consumers and devices connect
 
 ### Constraints
 
-- Bounds:
+- Variable bounds:
 
 ```math
 0 \leq y^\text{curtail}_{sbt} \leq M^\text{load}_{bts}
@@ -264,9 +299,9 @@ Price-sensitive loads refer to components in the system which may increase or re
 
 ### Decision variables
 
-| Symbol               | Unit | Description                                       | Stage |
-| :------------------- | :--- | :------------------------------------------------ | :---- |
-| $y^\text{psl}_{spt}$ | MW   | Amount served to $p$ in time $t$ and scenario $s$ | 2     |
+| Symbol               | JuMP name      | Unit | Description                                       | Stage |
+| :------------------- | :------------- | :--- | :------------------------------------------------ | :---- |
+| $y^\text{psl}_{spt}$ | `loads[s,p,t]` | MW   | Amount served to $p$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
 
@@ -280,7 +315,7 @@ Price-sensitive loads refer to components in the system which may increase or re
 
 ### Constraints
 
-- Bounds:
+- Variable bounds:
 
 ```math
 0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
@@ -291,43 +326,6 @@ Price-sensitive loads refer to components in the system which may increase or re
 So far, we have described generators, which produce power, and loads, which consume power. A third important element is the transmission network, which delivers the power produced by the generators to the loads. Mathematically, the network is represented as a graph $(B,L)$ where $B$ is the set of **buses** and $L$ is the set of **transmission lines**. Each generator and each bus in the network is located at a bus. The **net injection** at the bus is the sum of all power injected minus withdrawn at the bus. To balance production and consumption, we must enforce that the sum of all net injections over the network equal to zero.
 
 Besides the net balance equations, we must also enforce flow limits on the transmission lines. Unlike flows in other optimization problems, power flows are directly determined by net injections and transmission line parameters, and must follow physical laws. UC.jl uses the DC linearization of AC power flow equations, which are derived the assumptions that (i) line losses are negligible; (ii) voltage magnitudes are constant; and (iii) phase angle differences are small. Under these assumptions, the flow $f_l$ in transmission line $l$ is given by $\sum_{b \in B} \delta_{bl} n_b$, where $\delta_{bl}$ is a constant known as _injection shift factor_, computed from the line parameters, and $n_b$ is the net injection at bus $b$.
-
-### Sets and constants
-
-| Symbol | Unit | Description               |
-| :----- | :--- | :------------------------ |
-| $B$    |      | Set of buses              |
-| $L$    |      | Set of transmission lines |
-
-| $M^{}\_{}
-
-| $M^\text{psl-demand}_{spt}$ | MW | Demand of price-sensitive load $p$ at time $t$ and scenario $s$ |
-| $Z^\text{psl-revenue}_{spt}$ | \$/MW | Revenue from serving load $p$ at $t$ in scenario $s$ |
-| $\text{PSL}$ | | Set of price-sensitive loads |
-
-### Decision variables
-
-| Symbol               | Unit | Description                                       | Stage |
-| :------------------- | :--- | :------------------------------------------------ | :---- |
-| $y^\text{psl}_{spt}$ | MW   | Amount served to $p$ in time $t$ and scenario $s$ | 2     |
-
-### Objective function terms
-
-- Revenue from serving price-sensitive loads:
-
-```math
-  - \sum_{s \in S} p(s) \left[
-    \sum_{p \in \text{PSL}} \sum_{t \in T} y^\text{psl}_{spt} Z^\text{psl-revenue}_{spt}
-  \right]
-```
-
-### Constraints
-
-- Bounds:
-
-```math
-0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
-```
 
 ## 7. Transmission interfaces
 

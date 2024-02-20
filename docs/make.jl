@@ -5,12 +5,19 @@ function make()
         sitename = "UnitCommitment.jl",
         pages = [
             "Home" => "index.md",
-            "problem.md",
-            # "usage.md",
-            # "format.md",
-            # "instances.md",
-            # "model.md",
-            # "api.md",
+            "Tutorials" => [
+                "tutorials/usage.md",
+                "tutorials/customizing.md",
+                "tutorials/market.md",
+                "tutorials/decomposition.md",
+            ],
+            "User guide" => [
+                "guides/problem.md",
+                "guides/format.md",
+                "guides/instances.md",
+                "guides/model.md",
+            ],
+            "api.md",
         ],
         format = Documenter.HTML(assets = ["assets/custom.css"]),
     )

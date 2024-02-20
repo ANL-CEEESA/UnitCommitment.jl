@@ -14,7 +14,7 @@ const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.3/instances"
     read_benchmark(name::AbstractString)::UnitCommitmentInstance
 
 Read one of the benchmark instances included in the package. See
-[Instances](instances.md) for the entire list of benchmark instances available.
+[Instances](guides/instances.md) for the entire list of benchmark instances available.
 
 # Example
 ```julia

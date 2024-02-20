@@ -15,16 +15,17 @@ UnitCommitment.write
 ## Locational Marginal Prices
 
 ### Conventional LMPs
+
 ```@docs
 UnitCommitment.compute_lmp(::JuMP.Model,::UnitCommitment.ConventionalLMP)
 ```
 
 ### Approximated Extended LMPs
+
 ```@docs
 UnitCommitment.AELMP
 UnitCommitment.compute_lmp(::JuMP.Model,::UnitCommitment.AELMP)
 ```
-
 
 ## Modify instance
 
