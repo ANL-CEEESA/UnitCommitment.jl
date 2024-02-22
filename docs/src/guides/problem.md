@@ -416,142 +416,7 @@ loads per bus.
 0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
 ```
 
-## 6. Buses and transmission lines
-
-So far, we have described generators, which produce power, and loads, which
-consume power. A third important element is the transmission network, which
-delivers the power produced by the generators to the loads. Mathematically, the
-network is represented as a graph $(B,L)$ where $B$ is the set of **buses** and
-$L$ is the set of **transmission lines**. Each generator, load and energy
-storage device is located at a bus. The **net injection** at the bus is the sum
-of all power injected minus withdrawn at the bus. To balance production and
-consumption, we must enforce that the sum of all net injections over the entire
-network equal to zero.
-
-Besides the net balance equations, we must also enforce flow limits on the
-transmission lines. Unlike flows in other optimization problems, power flows are
-directly determined by net injections and transmission line parameters, and must
-follow physical laws. UC.jl uses the DC linearization of AC power flow
-equations. Under this linearization, the flow $f_l$ in transmission line $l$ is
-given by $\sum_{b \in B} \delta_{bl} n_b$, where $\delta_{bl}$ is a constant
-known as _injection shift factor_ (also commonly called _power transfer
-distribution factor_), computed from the line parameters, and $n_b$ is the net
-injection at bus $b$.
-
-!!! warning
-
-    To improve computational performance, power flow variables and constraints are generated on-the-fly, during `UnitCommitment.optimize!`; they are **not** added by `UnitCommitment.build_model`.
-
-### Sets and constants
-
-| Symbol                    | Unit  | Description                                                 |
-| :------------------------ | :---- | :---------------------------------------------------------- |
-| $M^\text{limit}_{slt}$    | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.       |
-| $Z^\text{overflow}_{slt}$ | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$. |
-| $L$                       |       | Set of transmission lines.                                  |
-| $B$                       |       | Set of buses.                                               |
-
-### Decision variables
-
-| Symbol                    | JuMP name              | Unit | Description                                                           | Stage |
-| :------------------------ | :--------------------- | :--- | :-------------------------------------------------------------------- | :---- |
-| $y^\text{flow}_{slt}$     | _(added on-the-fly)_   | MW   | Flow in line $l$ at time $t$ and scenario $s$.                        | 2     |
-| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW   | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
-| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW   | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
-
-### Objective function terms
-
-- Penalty for exceeding line limits:
-
-```math
-  \sum_{s \in S} p(s) \left[
-    \sum_{l \in L} \sum_{t \in T} y^\text{overflow}_{slt} Z^\text{overflow}_{slt}
-  \right]
-```
-
-### Constraints
-
-- Power produced equal power consumed (`eq_power_balance[s,t]`):
-
-```math
-\sum_{b \in B} \sum_{t \in T} y^\text{inj}_{sbt} = 0
-```
-
-- Definition of flow (_enforced on-the-fly_):
-
-```math
-y^\text{flow}_{slt} = \sum_{b \in B} \delta_{sbl} y^\text{inj}_{sbt}
-```
-
-- Flow limits (_enforced on-the-fly_):
-
-```math
-\begin{align*}
- y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt} \\
--y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt}
-\end{align*}
-```
-
-## 7. Transmission interfaces
-
-In some applications, such as energy exchange studies, it is important to
-enforce flow limits not only on individual lines, but also on groups of
-transmission lines. These groups are known as _interfaces_. More precisely, an
-interface is composed by two sets of lines: the _inbound_ and the _outbound
-lines_. The flow across the interface is defined as the sum of the flow in all
-inbound lines minus the sum of the flow in all outbound lines. An upper and a
-lower limit may be imposed on the flow across the interface, and a penalty is
-imposed if the limit is exceeded.
-
-### Sets and constants
-
-| Symbol                      | Unit  | Description                                                                                |
-| :-------------------------- | :---- | :----------------------------------------------------------------------------------------- |
-| $L^\text{inbound}_{si}$     |       | Set of inbound lines for interface $i$ in scenario $s$.                                    |
-| $L^\text{outbound}_{si}$    |       | Set of outbound lines for interface $i$ in scenario $s$.                                   |
-| $M^\text{limit-down}_{sit}$ | MW    | Lower flow limit for interface $i$ at time at time $t$ and scenario $s$ (negative number). |
-| $M^\text{limit-up}_{sit}$   | MW    | Upper flow limit for interface $i$ at time at time $t$ and scenario $s$ (positive number). |
-| $Z^\text{overflow}_{sit}$   | \$/MW | Overflow penalty for interface $l$ at time $t$ and scenario $s$.                           |
-| $\text{IF}$                 |       | Set of transmission interfaces.                                                            |
-
-### Decision variables
-
-| Symbol                      | JuMP name                   | Unit | Description                                                      | Stage |
-| :-------------------------- | :-------------------------- | :--- | :--------------------------------------------------------------- | :---- |
-| $y^\text{i-flow}_{sit}$     | `interface_flow[s,i,t]`     | MW   | Flow across interface $i$ at time $t$ and scenario $s$.          | 2     |
-| $y^\text{i-overflow}_{sit}$ | `interface_overflow[s,i,t]` | MW   | Flow above limit for interface $i$ at time $t$ and scenario $s$. | 2     |
-
-### Objective function terms
-
-- Penalty for exceeding interface limits:
-
-```math
-  \sum_{s \in S} p(s) \left[
-    \sum_{i \in \text{IF}} \sum_{t \in T} y^\text{i-overflow}_{sit} Z^\text{overflow}_{sit}
-  \right]
-```
-
-### Constraints
-
-- Definition of interface flow (`eq_if_flow`):
-
-```math
-y^\text{i-flow}_{sit} = \sum_{b \in B} y^\text{inj}_{sbt} \left[
-\sum_{l \in L^\text{outbound}_{si}} \delta_{sbl} -
-\sum_{l \in L^\text{inbound}_{si}} \delta_{sbl}
-\right]
-```
-
-- Interface flow limits (`eq_if_limit_up` and `eq_if_limit_up`)
-
-```math
-\begin{align*}
- y^\text{i-flow}_{sit} & \leq M^\text{limit-up}_{sit} + y^\text{i-overflow}_{sit} \\
--y^\text{i-flow}_{sit} & \leq -M^\text{limit-down}_{sit} + y^\text{i-overflow}_{sit}
-\end{align*}
-```
-
-## 7. Energy storage
+## 6. Energy storage
 
 _Energy storage_ units are able to store energy during periods of low demand,
 then release energy back to the grid during periods of high demand. These
@@ -618,67 +483,198 @@ integration of renewable energy resources.
 
 | Symbol                          | JuMP name               | Unit   | Description                                                  | Stage |
 | :------------------------------ | :---------------------- | :----- | :----------------------------------------------------------- | :---- |
-| $y^\text{level}_{sut}$          | `storage_level[s,u,t]`  | MWh    | Storage level of unit $u$ at time $t$ in scenario $s$.       |
-| $y^\text{charge}_{sut}$         | `charge_rate[s,u,t]`    | MW     | Charge rate of unit $u$ at time $t$ in scenario $s$.         |
-| $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      |
-| $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    |
-| $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. |
-
-| $y^\text{i-flow}_{sit}$ | `interface_flow[s,i,t]` | MW | Flow across interface
-$i$ at time $t$ and scenario $s$. | 2 | | $y^\text{i-overflow}_{sit}$ |
-`interface_overflow[s,i,t]` | MW | Flow above limit for interface $i$ at time
-$t$ and scenario $s$. | 2 |
+| $y^\text{level}_{sut}$          | `storage_level[s,u,t]`  | MWh    | Storage level of unit $u$ at time $t$ in scenario $s$.       | 2     |
+| $y^\text{charge}_{sut}$         | `charge_rate[s,u,t]`    | MW     | Charge rate of unit $u$ at time $t$ in scenario $s$.         | 2     |
+| $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      | 2     |
+| $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    | 2     |
+| $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. | 2     |
 
 ### Objective function terms
 
 - Charge and discharge cost/revenue:
 
-$$
+```math
 \sum_{s \in S} p(s) \left[
   \sum_{u \in \text{SU}} \sum_{t \in T} \left(
     y^\text{charge}_{sut} Z^\text{charge}_{sut} +
     y^\text{discharge}_{sut} Z^\text{discharge}_{sut}
     \right)
 \right]
-$$
+```
 
 ### Constraints
 
 - Prevent simultaneous charge and discharge
   (`eq_simultaneous_charge_and_discharge[s,u,t]`):
 
-  $$
-  x^\text{is-charging}_{sut} + x^\text{is-discharging}_{sut} \leq 1
-  $$
+```math
+x^\text{is-charging}_{sut} + x^\text{is-discharging}_{sut} \leq 1
+```
 
 - Limit charge/discharge rate (`eq_min_charge_rate[s,u,t]`,
   `eq_max_charge_rate[s,u,t]`, `eq_min_discharge_rate[s,u,t]` and
   `eq_max_discharge_rate[s,u,t]`):
 
-$$
+```math
 \begin{align*}
 y^\text{charge}_{sut} \leq x^\text{is-charging}_{sut} M^\text{charge-max}_{sut} \\
 y^\text{charge}_{sut} \geq x^\text{is-charging}_{sut} M^\text{charge-min}_{sut} \\
 y^\text{discharge}_{sut} \leq x^\text{is-discharging}_{sut} M^\text{discharge-max}_{sut} \\
 y^\text{discharge}_{sut} \geq x^\text{is-discharging}_{sut} M^\text{discharge-min}_{sut} \\
 \end{align*}
-$$
+```
 
 - Calculate current storage level (`eq_storage_transition[s,u,t]`):
 
-$$
+```math
 y^\text{level}_{sut} =
 (1 - \gamma^\text{loss}_{s,u,t}) y^\text{level}_{su,t-1} +
  \gamma^\text{time-step} \gamma^\text{charge-eff}_{s,u,t} y^\text{charge}_{sut} -
 \frac{\gamma^\text{time-step}}{\gamma^\text{discharge-eff}_{s,u,t}} y^\text{charge}_{sut}
-$$
+```
 
 - Enforce storage level at last time step (`eq_ending_level[s,u]`):
 
-$$
+```math
 M^\text{min-end-level}_{su} \leq y^\text{level}_{sut} \leq M^\text{max-end-level}_{su}
-$$
+```
 
-## 8. Contingencies
+## 7. Buses and transmission lines
 
-## 9. Reserves
+So far, we have described generators, which produce power, loads, which consume
+power, and storage units, which store energy for later use. Another important
+element is the transmission network, which delivers the power produced by the
+generators to the loads and storage units. Mathematically, the network is
+represented as a graph $(B,L)$ where $B$ is the set of **buses** and $L$ is the
+set of **transmission lines**. Each generator, load and storage unit is located
+at a bus. The **net injection** at the bus is the sum of all power injected
+minus withdrawn at the bus. To balance production and consumption, we must
+enforce that the sum of all net injections over the entire network equal to
+zero.
+
+Besides the net balance equations, we must also enforce flow limits on the
+transmission lines. Unlike flows in other optimization problems, power flows are
+directly determined by net injections and transmission line parameters, and must
+follow physical laws. UC.jl uses the DC linearization of AC power flow
+equations. Under this linearization, the flow $f_l$ in transmission line $l$ is
+given by $\sum_{b \in B} \delta_{bl} n_b$, where $\delta_{bl}$ is a constant
+known as _injection shift factor_ (also commonly called _power transfer
+distribution factor_), computed from the line parameters, and $n_b$ is the net
+injection at bus $b$.
+
+!!! warning
+
+    To improve computational performance, power flow variables and constraints are generated on-the-fly, during `UnitCommitment.optimize!`; they are **not** added by `UnitCommitment.build_model`.
+
+### Sets and constants
+
+| Symbol                    | Unit  | Description                                                 |
+| :------------------------ | :---- | :---------------------------------------------------------- |
+| $M^\text{limit}_{slt}$    | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.       |
+| $Z^\text{overflow}_{slt}$ | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$. |
+| $L$                       |       | Set of transmission lines.                                  |
+| $B$                       |       | Set of buses.                                               |
+
+### Decision variables
+
+| Symbol                    | JuMP name              | Unit | Description                                                           | Stage |
+| :------------------------ | :--------------------- | :--- | :-------------------------------------------------------------------- | :---- |
+| $y^\text{flow}_{slt}$     | _(added on-the-fly)_   | MW   | Flow in line $l$ at time $t$ and scenario $s$.                        | 2     |
+| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW   | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
+| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW   | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
+
+### Objective function terms
+
+- Penalty for exceeding line limits:
+
+```math
+  \sum_{s \in S} p(s) \left[
+    \sum_{l \in L} \sum_{t \in T} y^\text{overflow}_{slt} Z^\text{overflow}_{slt}
+  \right]
+```
+
+### Constraints
+
+- Power produced equal power consumed (`eq_power_balance[s,t]`):
+
+```math
+\sum_{b \in B} \sum_{t \in T} y^\text{inj}_{sbt} = 0
+```
+
+- Definition of flow (_enforced on-the-fly_):
+
+```math
+y^\text{flow}_{slt} = \sum_{b \in B} \delta_{sbl} y^\text{inj}_{sbt}
+```
+
+- Flow limits (_enforced on-the-fly_):
+
+```math
+\begin{align*}
+ y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt} \\
+-y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt}
+\end{align*}
+```
+
+## 8. Transmission interfaces
+
+In some applications, such as energy exchange studies, it is important to
+enforce flow limits not only on individual lines, but also on groups of
+transmission lines. These groups are known as _interfaces_. More precisely, an
+interface is composed by two sets of lines: the _inbound_ and the _outbound
+lines_. The flow across the interface is defined as the sum of the flow in all
+inbound lines minus the sum of the flow in all outbound lines. An upper and a
+lower limit may be imposed on the flow across the interface, and a penalty is
+imposed if the limit is exceeded.
+
+### Sets and constants
+
+| Symbol                      | Unit  | Description                                                                                |
+| :-------------------------- | :---- | :----------------------------------------------------------------------------------------- |
+| $L^\text{inbound}_{si}$     |       | Set of inbound lines for interface $i$ in scenario $s$.                                    |
+| $L^\text{outbound}_{si}$    |       | Set of outbound lines for interface $i$ in scenario $s$.                                   |
+| $M^\text{limit-down}_{sit}$ | MW    | Lower flow limit for interface $i$ at time at time $t$ and scenario $s$ (negative number). |
+| $M^\text{limit-up}_{sit}$   | MW    | Upper flow limit for interface $i$ at time at time $t$ and scenario $s$ (positive number). |
+| $Z^\text{overflow}_{sit}$   | \$/MW | Overflow penalty for interface $l$ at time $t$ and scenario $s$.                           |
+| $\text{IF}$                 |       | Set of transmission interfaces.                                                            |
+
+### Decision variables
+
+| Symbol                      | JuMP name                   | Unit | Description                                                      | Stage |
+| :-------------------------- | :-------------------------- | :--- | :--------------------------------------------------------------- | :---- |
+| $y^\text{i-flow}_{sit}$     | `interface_flow[s,i,t]`     | MW   | Flow across interface $i$ at time $t$ and scenario $s$.          | 2     |
+| $y^\text{i-overflow}_{sit}$ | `interface_overflow[s,i,t]` | MW   | Flow above limit for interface $i$ at time $t$ and scenario $s$. | 2     |
+
+### Objective function terms
+
+- Penalty for exceeding interface limits:
+
+```math
+  \sum_{s \in S} p(s) \left[
+    \sum_{i \in \text{IF}} \sum_{t \in T} y^\text{i-overflow}_{sit} Z^\text{overflow}_{sit}
+  \right]
+```
+
+### Constraints
+
+- Definition of interface flow (`eq_if_flow`):
+
+```math
+y^\text{i-flow}_{sit} = \sum_{b \in B} y^\text{inj}_{sbt} \left[
+\sum_{l \in L^\text{outbound}_{si}} \delta_{sbl} -
+\sum_{l \in L^\text{inbound}_{si}} \delta_{sbl}
+\right]
+```
+
+- Interface flow limits (`eq_if_limit_up` and `eq_if_limit_up`)
+
+```math
+\begin{align*}
+ y^\text{i-flow}_{sit} & \leq M^\text{limit-up}_{sit} + y^\text{i-overflow}_{sit} \\
+-y^\text{i-flow}_{sit} & \leq -M^\text{limit-down}_{sit} + y^\text{i-overflow}_{sit}
+\end{align*}
+```
+
+## 9. Contingencies
+
+## 10. Reserves
