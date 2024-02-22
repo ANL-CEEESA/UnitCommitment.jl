@@ -464,7 +464,7 @@ injection at bus $b$.
 - Penalty for exceeding line limits:
 
 ```math
-  - \sum_{s \in S} p(s) \left[
+  \sum_{s \in S} p(s) \left[
     \sum_{l \in L} \sum_{t \in T} y^\text{overflow}_{slt} Z^\text{overflow}_{slt}
   \right]
 ```
@@ -526,7 +526,7 @@ imposed if the limit is exceeded.
 - Penalty for exceeding interface limits:
 
 ```math
-  - \sum_{s \in S} p(s) \left[
+  \sum_{s \in S} p(s) \left[
     \sum_{i \in \text{IF}} \sum_{t \in T} y^\text{i-overflow}_{sit} Z^\text{overflow}_{sit}
   \right]
 ```
@@ -551,7 +551,133 @@ y^\text{i-flow}_{sit} = \sum_{b \in B} y^\text{inj}_{sbt} \left[
 \end{align*}
 ```
 
-## 7. Energy storage devices
+## 7. Energy storage
+
+_Energy storage_ units are able to store energy during periods of low demand,
+then release energy back to the grid during periods of high demand. These
+devices include _batteries_, _pumped hydroelectric storage_, _compressed air
+energy storage_ and _flywheels_. They are becoming increasingly important in the
+modern power grid, and can help to enhance grid reliability, efficiency and
+integration of renewable energy resources.
+
+### Concepts
+
+- **Min/max energy level and charge rate:** Energy storage units can only store
+  a limited amount of energy (in MWh). To maintain the operational safety and
+  longevity of these devices, a minimum energy level may also be imposed. The
+  rate (in MW) at which these units can charge and discharge is also limited,
+  due to chemical, physical and operational considerations.
+
+- **Operational costs:** Charging and discharging energy storage units may incur
+  a cost/revenue. We assume that this cost/revenue is linear on the
+  charge/discharte rate ($/MW).
+
+- **Efficiency:** Charging an energy storage unit for one hour with an input of
+  1 MW might not result in an increase of the energy level in the device by
+  exactly 1 MWh, due to various inneficiencies in the charging process,
+  including coversion losses and heat generation. For similar reasons,
+  discharging a storage unit for one hour at 1 MW might reduce the energy level
+  by more than 1 MWh. Furthermore, even when the unit is not charging or
+  discharging, some energy level may be gradually lost over time, due to
+  unwanted chemical reactions, thermal effects of mechanical losses.
+
+- **Myopic effect:** Because the optimization process considers a fixed time
+  window, there is an inherent bias towards exploiting energy storage units to
+  their maximum within the window, completely ignoring their operation just
+  beyond this horizon. For instance, without further constraints, the
+  optimization algorithm will often ensure that all storage units are fully
+  discharged at the end of the last time step, which may not be desirable. To
+  mitigate this myopic effect, a minimum and maximum energy level may be imposed
+  at the last time step.
+
+- **Simultaneous charging and discharging:** Depending on charge and discharge
+  costs/revenue, it may make sense mathematically to simultaneously charge and
+  discharge the storage unit, thus keeping its energy level unchanged while
+  potentially collecting revenue. Additional binary variables and constraints
+  are required to prevent this incorrect model behavior.
+
+### Sets and constants
+
+| Symbol                                | Unit  | Description                                                                                           |
+| :------------------------------------ | :---- | :---------------------------------------------------------------------------------------------------- |
+| $\text{SU}$                           |       | Set of storage units                                                                                  |
+| $Z^\text{charge}_{sut}$               | \$/MW | Linear charge cost/revenue for unit $u$ at time $t$ in scenario $s$.                                  |
+| $Z^\text{discharge}_{sut}$            | \$/MW | Linear discharge cost/revenue for unit $u$ at time $t$ in scenario $s$.                               |
+| $M^\text{discharge-max}_{sut}$        | \$/MW | Maximum discharge rate for unit $u$ at time $t$ in scenario $s$.                                      |
+| $M^\text{discharge-min}_{sut}$        | \$/MW | Minimum discharge rate for unit $u$ at time $t$ in scenario $s$.                                      |
+| $M^\text{charge-max}_{sut}$           | \$/MW | Maximum charge rate for unit $u$ at time $t$ in scenario $s$.                                         |
+| $M^\text{charge-min}_{sut}$           | \$/MW | Minimum charge rate for unit $u$ at time $t$ in scenario $s$.                                         |
+| $M^\text{max-end-level}_{su}$         | MWh   | Maximum storage level of unit $u$ at the last time step in scenario $s$                               |
+| $M^\text{min-end-level}_{su}$         | MWh   | Minimum storage level of unit $u$ at the last time step in scenario $s$                               |
+| $\gamma^\text{loss}_{s,u,t}$          |       | Self-discharge factor.                                                                                |
+| $\gamma^\text{charge-eff}_{s,u,t}$    |       | Charging efficiency factor.                                                                           |
+| $\gamma^\text{discharge-eff}_{s,u,t}$ |       | Discharging efficiency factor.                                                                        |
+| $\gamma^\text{time-step}$             |       | Length of a time step, in hours. Should be 1.0 for hourly time steps, 0.5 for 30-min half steps, etc. |
+
+### Decision variables
+
+| Symbol                          | JuMP name               | Unit   | Description                                                  | Stage |
+| :------------------------------ | :---------------------- | :----- | :----------------------------------------------------------- | :---- |
+| $y^\text{level}_{sut}$          | `storage_level[s,u,t]`  | MWh    | Storage level of unit $u$ at time $t$ in scenario $s$.       |
+| $y^\text{charge}_{sut}$         | `charge_rate[s,u,t]`    | MW     | Charge rate of unit $u$ at time $t$ in scenario $s$.         |
+| $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      |
+| $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    |
+| $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. |
+
+| $y^\text{i-flow}_{sit}$ | `interface_flow[s,i,t]` | MW | Flow across interface
+$i$ at time $t$ and scenario $s$. | 2 | | $y^\text{i-overflow}_{sit}$ |
+`interface_overflow[s,i,t]` | MW | Flow above limit for interface $i$ at time
+$t$ and scenario $s$. | 2 |
+
+### Objective function terms
+
+- Charge and discharge cost/revenue:
+
+$$
+\sum_{s \in S} p(s) \left[
+  \sum_{u \in \text{SU}} \sum_{t \in T} \left(
+    y^\text{charge}_{sut} Z^\text{charge}_{sut} +
+    y^\text{discharge}_{sut} Z^\text{discharge}_{sut}
+    \right)
+\right]
+$$
+
+### Constraints
+
+- Prevent simultaneous charge and discharge
+  (`eq_simultaneous_charge_and_discharge[s,u,t]`):
+
+  $$
+  x^\text{is-charging}_{sut} + x^\text{is-discharging}_{sut} \leq 1
+  $$
+
+- Limit charge/discharge rate (`eq_min_charge_rate[s,u,t]`,
+  `eq_max_charge_rate[s,u,t]`, `eq_min_discharge_rate[s,u,t]` and
+  `eq_max_discharge_rate[s,u,t]`):
+
+$$
+\begin{align*}
+y^\text{charge}_{sut} \leq x^\text{is-charging}_{sut} M^\text{charge-max}_{sut} \\
+y^\text{charge}_{sut} \geq x^\text{is-charging}_{sut} M^\text{charge-min}_{sut} \\
+y^\text{discharge}_{sut} \leq x^\text{is-discharging}_{sut} M^\text{discharge-max}_{sut} \\
+y^\text{discharge}_{sut} \geq x^\text{is-discharging}_{sut} M^\text{discharge-min}_{sut} \\
+\end{align*}
+$$
+
+- Calculate current storage level (`eq_storage_transition[s,u,t]`):
+
+$$
+y^\text{level}_{sut} =
+(1 - \gamma^\text{loss}_{s,u,t}) y^\text{level}_{su,t-1} +
+ \gamma^\text{time-step} \gamma^\text{charge-eff}_{s,u,t} y^\text{charge}_{sut} -
+\frac{\gamma^\text{time-step}}{\gamma^\text{discharge-eff}_{s,u,t}} y^\text{charge}_{sut}
+$$
+
+- Enforce storage level at last time step (`eq_ending_level[s,u]`):
+
+$$
+M^\text{min-end-level}_{su} \leq y^\text{level}_{sut} \leq M^\text{max-end-level}_{su}
+$$
 
 ## 8. Contingencies
 

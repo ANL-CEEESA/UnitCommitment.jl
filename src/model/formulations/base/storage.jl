@@ -36,7 +36,7 @@ function _add_storage_unit!(
         is_charging[sc.name, su.name, t] = @variable(model, binary = true)
         is_discharging[sc.name, su.name, t] = @variable(model, binary = true)
 
-        # Objective function terms ##### CHECK & FIXME
+        # Objective function terms
         add_to_expression!(
             model[:obj],
             charge_rate[sc.name, su.name, t],
