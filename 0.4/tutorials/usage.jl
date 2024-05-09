@@ -213,6 +213,6 @@ UnitCommitment.optimize!(model)
 
 solution = UnitCommitment.solution(model)
 
-# The solution for each stage can be accessed through `solution[scenario_name]`. For conveniance, this includes both first- and second-stage optimal decisions:
+# The solution for each scenario can be accessed through `solution[scenario_name]`. For conveniance, this includes both first- and second-stage optimal decisions:
 
 solution["s1"]
