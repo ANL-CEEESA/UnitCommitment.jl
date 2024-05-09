@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Customizing the model · UnitCommitment.jl</title><meta name="title" content="Customizing the model · UnitCommitment.jl"/><meta property="og:title" content="Customizing the model · UnitCommitment.jl"/><meta property="twitter:title" content="Customizing the model · UnitCommitment.jl"/><meta name="description" content="Documentation for UnitCommitment.jl."/><meta property="og:description" content="Documentation for UnitCommitment.jl."/><meta property="twitter:description" content="Documentation for UnitCommitment.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">UnitCommitment.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../usage/">Getting started</a></li><li class="is-active"><a class="tocitem" href>Customizing the model</a><ul class="internal"><li><a class="tocitem" href="#Inspecting-and-modifying-the-model"><span>Inspecting and modifying the model</span></a></li></ul></li><li><a class="tocitem" href="../market/">Market clearing and LMPs</a></li><li><a class="tocitem" href="../decomposition/">Decomposition methods</a></li></ul></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../guides/problem/">Problem definition</a></li><li><a class="tocitem" href="../../guides/format/">JSON data format</a></li><li><a class="tocitem" href="../../guides/instances/">Benchmark instances</a></li><li><a class="tocitem" href="../../guides/model/">JuMP Model</a></li></ul></li><li><a class="tocitem" href="../../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Customizing the model</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Customizing the model</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/docs/src/tutorials/customizing.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Customizing-the-model"><a class="docs-heading-anchor" href="#Customizing-the-model">Customizing the model</a><a id="Customizing-the-model-1"></a><a class="docs-heading-anchor-permalink" href="#Customizing-the-model" title="Permalink"></a></h1><p>By default, <code>build_model</code> uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.</p><pre><code class="language-julia hljs">using HiGHS
+using UnitCommitment
+
+import UnitCommitment:
+    Formulation,
+    KnuOstWat2018,
+    MorLatRam2013,
+    ShiftFactorsFormulation
+
+instance = UnitCommitment.read_benchmark(
+    &quot;matpower/case118/2017-02-01&quot;,
+)
+
+model = UnitCommitment.build_model(
+    instance = instance,
+    optimizer = HiGHS.Optimizer,
+    formulation = Formulation(
+        pwl_costs = KnuOstWat2018.PwlCosts(),
+        ramping = MorLatRam2013.Ramping(),
+        startup_costs = MorLatRam2013.StartupCosts(),
+        transmission = ShiftFactorsFormulation(
+            isf_cutoff = 0.005,
+            lodf_cutoff = 0.001,
+        ),
+    ),
+)</code></pre><h2 id="Inspecting-and-modifying-the-model"><a class="docs-heading-anchor" href="#Inspecting-and-modifying-the-model">Inspecting and modifying the model</a><a id="Inspecting-and-modifying-the-model-1"></a><a class="docs-heading-anchor-permalink" href="#Inspecting-and-modifying-the-model" title="Permalink"></a></h2><h3 id="Accessing-decision-variables"><a class="docs-heading-anchor" href="#Accessing-decision-variables">Accessing decision variables</a><a id="Accessing-decision-variables-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-decision-variables" title="Permalink"></a></h3><p>After building a model using <code>UnitCommitment.build_model</code>, it is possible to obtain a reference to the decision variables by calling <code>model[:varname][index]</code>. For example, <code>model[:is_on][&quot;g1&quot;,1]</code> returns a direct reference to the JuMP variable indicating whether generator named &quot;g1&quot; is on at time 1. The script below illustrates how to build a model, solve it and display the solution without using the function <code>UnitCommitment.solution</code>.</p><pre><code class="language-julia hljs">using Cbc
+using Printf
+using JuMP
+using UnitCommitment
+
+# Load benchmark instance
+instance = UnitCommitment.read_benchmark(&quot;matpower/case118/2017-02-01&quot;)
+
+# Build JuMP model
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
+
+# Solve the model
+UnitCommitment.optimize!(model)
+
+# Display commitment status
+for g in instance.units
+    for t in 1:instance.time
+        @printf(
+            &quot;%-10s %5d %5.1f %5.1f %5.1f\n&quot;,
+            g.name,
+            t,
+            value(model[:is_on][g.name, t]),
+            value(model[:switch_on][g.name, t]),
+            value(model[:switch_off][g.name, t]),
+        )
+    end
+end</code></pre><h3 id="Fixing-variables,-modifying-objective-function-and-adding-constraints"><a class="docs-heading-anchor" href="#Fixing-variables,-modifying-objective-function-and-adding-constraints">Fixing variables, modifying objective function and adding constraints</a><a id="Fixing-variables,-modifying-objective-function-and-adding-constraints-1"></a><a class="docs-heading-anchor-permalink" href="#Fixing-variables,-modifying-objective-function-and-adding-constraints" title="Permalink"></a></h3><p>Since we now have a direct reference to the JuMP decision variables, it is possible to fix variables, change the coefficients in the objective function, or even add new constraints to the model before solving it.</p><div class="admonition is-warning"><header class="admonition-header">Warning</header><div class="admonition-body"><p>It is important to take into account the stage of the decision variables in modifying the optimization model. In changing a deterministic SCUC model, modifying the second-stage decision variables requires adding the term <code>s1</code>, which is the default scenario name assigned to the second-stage decision variables in the SCUC model. For an SUC model, the package permits the modification of the second-stage decision variables individually for each scenario.</p></div></div><p>The script below shows how the JuMP model can be modified after it is created. For more information on modifying an existing model, <a href="https://jump.dev/JuMP.jl/stable/manual/variables/">see the JuMP documentation</a>.</p><pre><code class="language-julia hljs">using Cbc
+using JuMP
+using UnitCommitment
+
+# Load benchmark instance
+instance = UnitCommitment.read_benchmark(&quot;matpower/case118/2017-02-01&quot;)
+
+# Construct JuMP model
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
+
+# Fix the commitment status of the generator &quot;g1&quot; in time period 1 to 1.0
+JuMP.fix(
+    model[:is_on][&quot;g1&quot;,1],
+    1.0,
+    force=true,
+)
+
+# Fix the production level of the generator &quot;g1&quot; above its minimum level in time period 1 and
+# in scenario &quot;s1&quot; to 20.0 MW. Observe that the three-tuple dictionary key involves the scenario
+# index &quot;s1&quot;, as production above minimum is a second-stage decision variable.
+JuMP.fix(
+    model[:prod_above][&quot;s1&quot;, &quot;g1&quot;, 1],
+    20.0,
+    force=true,
+)
+
+# Enforce the curtailment of 20.0 MW of load at bus &quot;b2&quot; in time period 4 in scenario &quot;s1&quot;.
+JuMP.fix(
+    curtail[&quot;s1&quot;, &quot;b2&quot;, 4] =
+    20.0,
+    force=true,
+)
+
+# Change the objective function
+JuMP.set_objective_coefficient(
+    model,
+    model[:switch_on][&quot;g2&quot;,1],
+    1000.0,
+)
+
+# Create a new constraint
+@constraint(
+    model,
+    model[:is_on][&quot;g3&quot;,1] + model[:is_on][&quot;g4&quot;,1] &lt;= 1,
+)
+
+# Solve the model
+UnitCommitment.optimize!(model)</code></pre><h3 id="Adding-new-component-to-a-bus"><a class="docs-heading-anchor" href="#Adding-new-component-to-a-bus">Adding new component to a bus</a><a id="Adding-new-component-to-a-bus-1"></a><a class="docs-heading-anchor-permalink" href="#Adding-new-component-to-a-bus" title="Permalink"></a></h3><p>The following snippet shows how to add a new grid component to a particular bus. For each time step, we create decision variables for the new grid component, add these variables to the objective function, then attach the component to a particular bus by modifying some existing model constraints.</p><pre><code class="language-julia hljs">using Cbc
+using JuMP
+using UnitCommitment
+
+# Load instance and build base model
+instance = UnitCommitment.read_benchmark(&quot;matpower/case118/2017-02-01&quot;)
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=Cbc.Optimizer,
+)
+
+# Get the number of time steps in the original instance
+T = instance.time
+
+# Create decision variables for the new grid component.
+# In this example, we assume that the new component can
+# inject up to 10 MW of power at each time step, so we
+# create new continuous variables 0 ≤ x[t] ≤ 10.
+@variable(model, x[1:T], lower_bound=0.0, upper_bound=10.0)
+
+# For each time step
+for t in 1:T
+
+    # Add production costs to the objective function.
+    # In this example, we assume a cost of $5/MW.
+    set_objective_coefficient(model, x[t], 5.0)
+
+    # Attach the new component to bus b1 in scenario s1, by modifying the
+    # constraint `eq_net_injection`.
+    set_normalized_coefficient(
+        model[:eq_net_injection][&quot;s1&quot;, &quot;b1&quot;, t],
+        x[t],
+        1.0,
+    )
+end
+
+# Solve the model
+UnitCommitment.optimize!(model)
+
+# Show optimal values for the x variables
+@show value.(x)</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../usage/">« Getting started</a><a class="docs-footer-nextpage" href="../market/">Market clearing and LMPs »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 9 May 2024 09:53">Thursday 9 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

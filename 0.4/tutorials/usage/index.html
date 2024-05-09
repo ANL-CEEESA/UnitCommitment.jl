@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Getting started · UnitCommitment.jl</title><meta name="title" content="Getting started · UnitCommitment.jl"/><meta property="og:title" content="Getting started · UnitCommitment.jl"/><meta property="twitter:title" content="Getting started · UnitCommitment.jl"/><meta name="description" content="Documentation for UnitCommitment.jl."/><meta property="og:description" content="Documentation for UnitCommitment.jl."/><meta property="twitter:description" content="Documentation for UnitCommitment.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">UnitCommitment.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Tutorials</span><ul><li class="is-active"><a class="tocitem" href>Getting started</a><ul class="internal"><li><a class="tocitem" href="#Installing-the-package"><span>Installing the package</span></a></li><li><a class="tocitem" href="#Solving-a-benchmark-instance"><span>Solving a benchmark instance</span></a></li><li><a class="tocitem" href="#Solving-a-custom-deterministic-instance"><span>Solving a custom deterministic instance</span></a></li><li><a class="tocitem" href="#Solving-a-custom-stochastic-instance"><span>Solving a custom stochastic instance</span></a></li></ul></li><li><a class="tocitem" href="../customizing/">Customizing the model</a></li><li><a class="tocitem" href="../market/">Market clearing and LMPs</a></li><li><a class="tocitem" href="../decomposition/">Decomposition methods</a></li></ul></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../guides/problem/">Problem definition</a></li><li><a class="tocitem" href="../../guides/format/">JSON data format</a></li><li><a class="tocitem" href="../../guides/instances/">Benchmark instances</a></li><li><a class="tocitem" href="../../guides/model/">JuMP Model</a></li></ul></li><li><a class="tocitem" href="../../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Getting started</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Getting started</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/docs/src/tutorials/usage.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Getting-started"><a class="docs-heading-anchor" href="#Getting-started">Getting started</a><a id="Getting-started-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-started" title="Permalink"></a></h1><h2 id="Installing-the-package"><a class="docs-heading-anchor" href="#Installing-the-package">Installing the package</a><a id="Installing-the-package-1"></a><a class="docs-heading-anchor-permalink" href="#Installing-the-package" title="Permalink"></a></h2><p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.10</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p><pre><code class="language-text hljs">pkg&gt; add UnitCommitment@0.4</code></pre><p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a href="https://github.com/jump-dev/HiGHS.jl">HiGHS</a>, <a href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, HiGHS will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.</p><h2 id="Solving-a-benchmark-instance"><a class="docs-heading-anchor" href="#Solving-a-benchmark-instance">Solving a benchmark instance</a><a id="Solving-a-benchmark-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-benchmark-instance" title="Permalink"></a></h2><p>We start this tutorial by illustrating how to use UnitCommitment.jl to solve one of the provided benchmark instances. The package contains a large number of deterministic benchmark instances collected from the literature and converted into a common data format, which can be used to evaluate the performance of different solution methods. See <a href="../../guides/instances/">Instances</a> for more details. The first step is to import <code>UnitCommitment</code> and HiGHS.</p><pre><code class="language-julia hljs">using HiGHS
+using UnitCommitment</code></pre><p>Next, we use the function <code>read_benchmark</code> to read the instance.</p><pre><code class="language-julia hljs">instance = UnitCommitment.read_benchmark(&quot;matpower/case14/2017-01-01&quot;);</code></pre><p>Now that we have the instance loaded in memory, we build the JuMP optimization model using <code>UnitCommitment.build_model</code>:</p><pre><code class="language-julia hljs">model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=HiGHS.Optimizer,
+);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s1 with probability 1.0
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing injection shift factors...
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed ISF in 0.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing line outage factors...
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed LODF in 0.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Applying PTDF and LODF cutoffs (0.00500, 0.00100)
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.89 seconds</code></pre><p>Next, we run the optimization process, with <code>UnitCommitment.optimize!</code>:</p><pre><code class="language-julia hljs">UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86399.99 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Presolving model
+4382 rows, 2704 cols, 14776 nonzeros
+3279 rows, 2195 cols, 11913 nonzeros
+3160 rows, 2085 cols, 12983 nonzeros
+
+Solving MIP model with:
+   3160 rows
+   2085 cols (865 binary, 0 integer, 0 implied int., 1220 continuous)
+   12983 nonzeros
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
+     Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.1s
+ R       0       0         0   0.00%   360642.328869   360642.544974      0.00%        0      0      0       861     0.1s
+
+Solving report
+  Status            Optimal
+  Primal bound      360642.544974
+  Dual bound        360642.328869
+  Gap               6e-05% (tolerance: 0.01%)
+  Solution status   feasible
+                    360642.544974 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.07 (total)
+                    0.04 (presolve)
+                    0.00 (postsolve)
+  Nodes             1
+  LP iterations     861 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Verifying transmission limits...
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Verified transmission limits in 0.57 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>No violations found</code></pre><p>Finally, we extract the optimal solution from the model:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 15 entries:
+  &quot;Thermal production (MW)&quot;         =&gt; OrderedDict(&quot;g1&quot;=&gt;[181.92, 172.85, 166.8…
+  &quot;Thermal production cost (\$)&quot;    =&gt; OrderedDict(&quot;g1&quot;=&gt;[7241.95, 6839.01, 657…
+  &quot;Startup cost (\$)&quot;               =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0, 0…
+  &quot;Is on&quot;                           =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, 1.0, 1.0, 1.0, 1…
+  &quot;Switch on&quot;                       =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0, 0…
+  &quot;Switch off&quot;                      =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0, 0…
+  &quot;Net injection (MW)&quot;              =&gt; OrderedDict(&quot;b1&quot;=&gt;[181.92, 172.85, 166.8…
+  &quot;Load curtail (MW)&quot;               =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0, 0…
+  &quot;Line overflow (MW)&quot;              =&gt; OrderedDict(&quot;l1&quot;=&gt;[0.0, 0.0, 0.0, 0.0, 0…
+  &quot;Spinning reserve (MW)&quot;           =&gt; OrderedDict(&quot;r1&quot;=&gt;OrderedDict(&quot;g1&quot;=&gt;[4.6…
+  &quot;Spinning reserve shortfall (MW)&quot; =&gt; OrderedDict(&quot;r1&quot;=&gt;[0.0, 0.0, 0.0, 0.0, 0…
+  &quot;Up-flexiramp (MW)&quot;               =&gt; OrderedDict{Any, Any}()
+  &quot;Up-flexiramp shortfall (MW)&quot;     =&gt; OrderedDict{Any, Any}()
+  &quot;Down-flexiramp (MW)&quot;             =&gt; OrderedDict{Any, Any}()
+  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre><p>We can then explore the solution using Julia:</p><pre><code class="language-julia hljs">@show solution[&quot;Thermal production (MW)&quot;][&quot;g1&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">36-element Vector{Float64}:
+ 181.92024301829747
+ 172.8503730182975
+ 166.8067830182975
+ 163.2384530182975
+ 165.5149530182975
+ 169.95052301829747
+ 182.3719130182975
+ 191.43277301829744
+ 196.67234301829745
+ 202.53524301829742
+   ⋮
+ 165.0181030182975
+ 167.24040301829746
+ 180.89039301829752
+ 196.95238301829744
+ 206.5552530182975
+ 214.18877301829747
+ 225.48092301829746
+ 226.81792301829745
+ 222.7256530182974</code></pre><p>Or export the entire solution to a JSON file:</p><pre><code class="language-julia hljs">UnitCommitment.write(&quot;solution.json&quot;, solution)</code></pre><h2 id="Solving-a-custom-deterministic-instance"><a class="docs-heading-anchor" href="#Solving-a-custom-deterministic-instance">Solving a custom deterministic instance</a><a id="Solving-a-custom-deterministic-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-custom-deterministic-instance" title="Permalink"></a></h2><p>In the previous example, we solved a benchmark instance provided by the package. To solve a custom instance, the first step is to create an input file describing the list of elements (generators, loads and transmission lines) in the network. See <a href="../../guides/format/">Data Format</a> for a complete description of the data format UC.jl expects. To keep this tutorial self-contained, we will create the input JSON file using Julia; however, this step can also be done with a simple text editor. First, we define the contents of the file:</p><pre><code class="language-julia hljs">json_contents = &quot;&quot;&quot;
+{
+    &quot;Parameters&quot;: {
+        &quot;Version&quot;: &quot;0.4&quot;,
+        &quot;Time horizon (h)&quot;: 4
+    },
+    &quot;Buses&quot;: {
+        &quot;b1&quot;: {
+            &quot;Load (MW)&quot;: [100, 150, 200, 250]
+        }
+    },
+    &quot;Generators&quot;: {
+        &quot;g1&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Type&quot;: &quot;Thermal&quot;,
+            &quot;Production cost curve (MW)&quot;: [0, 200],
+            &quot;Production cost curve (\$)&quot;: [0, 1000],
+            &quot;Initial status (h)&quot;: -24,
+            &quot;Initial power (MW)&quot;: 0
+        },
+        &quot;g2&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Type&quot;: &quot;Thermal&quot;,
+            &quot;Production cost curve (MW)&quot;: [0, 300],
+            &quot;Production cost curve (\$)&quot;: [0, 3000],
+            &quot;Initial status (h)&quot;: -24,
+            &quot;Initial power (MW)&quot;: 0
+        }
+    }
+}
+&quot;&quot;&quot;;</code></pre><p>Next, we write it to <code>example.json</code>.</p><pre><code class="language-julia hljs">open(&quot;example.json&quot;, &quot;w&quot;) do file
+    write(file, json_contents)
+end;</code></pre><p>Now that we have the input file, we can proceed as before, but using <code>UnitCommitment.read</code> instead of <code>UnitCommitment.read_benchmark</code>:</p><pre><code class="language-julia hljs">instance = UnitCommitment.read(&quot;example.json&quot;);
+model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=HiGHS.Optimizer,
+);
+UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s1 with probability 1.0
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.01 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Presolving model
+74 rows, 36 cols, 166 nonzeros
+63 rows, 29 cols, 164 nonzeros
+49 rows, 25 cols, 120 nonzeros
+39 rows, 19 cols, 97 nonzeros
+32 rows, 15 cols, 90 nonzeros
+24 rows, 13 cols, 64 nonzeros
+8 rows, 6 cols, 21 nonzeros
+0 rows, 0 cols, 0 nonzeros
+Presolve: Optimal
+
+Solving report
+  Status            Optimal
+  Primal bound      3750
+  Dual bound        3750
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    3750 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             0
+  LP iterations     0 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)</code></pre><p>Finally, we extract and display the solution:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 14 entries:
+  &quot;Thermal production (MW)&quot;         =&gt; OrderedDict(&quot;g1&quot;=&gt;[100.0, 150.0, 200.0, …
+  &quot;Thermal production cost (\$)&quot;    =&gt; OrderedDict(&quot;g1&quot;=&gt;[500.0, 750.0, 1000.0,…
+  &quot;Startup cost (\$)&quot;               =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
+  &quot;Is on&quot;                           =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, 1.0, 1.0, 1.0], …
+  &quot;Switch on&quot;                       =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, 0.0, 0.0, 0.0], …
+  &quot;Switch off&quot;                      =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
+  &quot;Net injection (MW)&quot;              =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0])
+  &quot;Load curtail (MW)&quot;               =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0])
+  &quot;Spinning reserve (MW)&quot;           =&gt; OrderedDict{Any, Any}()
+  &quot;Spinning reserve shortfall (MW)&quot; =&gt; OrderedDict{Any, Any}()
+  &quot;Up-flexiramp (MW)&quot;               =&gt; OrderedDict{Any, Any}()
+  &quot;Up-flexiramp shortfall (MW)&quot;     =&gt; OrderedDict{Any, Any}()
+  &quot;Down-flexiramp (MW)&quot;             =&gt; OrderedDict{Any, Any}()
+  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre><pre><code class="language-julia hljs">@show solution[&quot;Thermal production (MW)&quot;][&quot;g1&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{Float64}:
+ 100.0
+ 150.0
+ 200.0
+ 200.0</code></pre><pre><code class="language-julia hljs">@show solution[&quot;Thermal production (MW)&quot;][&quot;g2&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">4-element Vector{Float64}:
+  0.0
+  0.0
+  0.0
+ 50.0</code></pre><h2 id="Solving-a-custom-stochastic-instance"><a class="docs-heading-anchor" href="#Solving-a-custom-stochastic-instance">Solving a custom stochastic instance</a><a id="Solving-a-custom-stochastic-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-custom-stochastic-instance" title="Permalink"></a></h2><p>In addition to deterministic test cases, UnitCommitment.jl can also solve two-stage stochastic instances of the problem. In this section, we demonstrate the most simple form, which builds a single (extensive form) model containing information for all scenarios. See <a href="../decomposition/">Decomposition</a> for more advanced methods.</p><p>First, we need to create one JSON input file for each scenario. Parameters that are allowed to change across scenarios are marked as &quot;uncertain&quot; in the <a href="../../guides/format/">JSON data format</a> page. It is also possible to specify the name and weight of each scenario, as shown below.</p><p>We start by creating <code>example_s1.json</code>, the first scenario file:</p><pre><code class="language-julia hljs">json_contents_s1 = &quot;&quot;&quot;
+{
+    &quot;Parameters&quot;: {
+        &quot;Version&quot;: &quot;0.4&quot;,
+        &quot;Time horizon (h)&quot;: 4,
+        &quot;Scenario name&quot;: &quot;s1&quot;,
+        &quot;Scenario weight&quot;: 3.0
+    },
+    &quot;Buses&quot;: {
+        &quot;b1&quot;: {
+            &quot;Load (MW)&quot;: [100, 150, 200, 250]
+        }
+    },
+    &quot;Generators&quot;: {
+        &quot;g1&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Type&quot;: &quot;Thermal&quot;,
+            &quot;Production cost curve (MW)&quot;: [0, 200],
+            &quot;Production cost curve (\$)&quot;: [0, 1000],
+            &quot;Initial status (h)&quot;: -24,
+            &quot;Initial power (MW)&quot;: 0
+        },
+        &quot;g2&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Type&quot;: &quot;Thermal&quot;,
+            &quot;Production cost curve (MW)&quot;: [0, 300],
+            &quot;Production cost curve (\$)&quot;: [0, 3000],
+            &quot;Initial status (h)&quot;: -24,
+            &quot;Initial power (MW)&quot;: 0
+        }
+    }
+}
+&quot;&quot;&quot;
+open(&quot;example_s1.json&quot;, &quot;w&quot;) do file
+    write(file, json_contents_s1)
+end;</code></pre><p>Next, we create <code>example_s2.json</code>, the second scenario file:</p><pre><code class="language-julia hljs">json_contents_s2 = &quot;&quot;&quot;
+{
+    &quot;Parameters&quot;: {
+        &quot;Version&quot;: &quot;0.4&quot;,
+        &quot;Time horizon (h)&quot;: 4,
+        &quot;Scenario name&quot;: &quot;s2&quot;,
+        &quot;Scenario weight&quot;: 1.0
+    },
+    &quot;Buses&quot;: {
+        &quot;b1&quot;: {
+            &quot;Load (MW)&quot;: [200, 300, 400, 500]
+        }
+    },
+    &quot;Generators&quot;: {
+        &quot;g1&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Type&quot;: &quot;Thermal&quot;,
+            &quot;Production cost curve (MW)&quot;: [0, 200],
+            &quot;Production cost curve (\$)&quot;: [0, 1000],
+            &quot;Initial status (h)&quot;: -24,
+            &quot;Initial power (MW)&quot;: 0
+        },
+        &quot;g2&quot;: {
+            &quot;Bus&quot;: &quot;b1&quot;,
+            &quot;Type&quot;: &quot;Thermal&quot;,
+            &quot;Production cost curve (MW)&quot;: [0, 300],
+            &quot;Production cost curve (\$)&quot;: [0, 3000],
+            &quot;Initial status (h)&quot;: -24,
+            &quot;Initial power (MW)&quot;: 0
+        }
+    }
+}
+&quot;&quot;&quot;;
+open(&quot;example_s2.json&quot;, &quot;w&quot;) do file
+    write(file, json_contents_s2)
+end;</code></pre><p>Now that we have our two scenario files, we can read them using <code>UnitCommitment.read</code>. Note that, instead of a single file, we now provide a list.</p><pre><code class="language-julia hljs">instance = UnitCommitment.read([&quot;example_s1.json&quot;, &quot;example_s2.json&quot;])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">UnitCommitmentInstance(2 scenarios, 2 thermal units, 0 profiled units, 1 buses, 0 lines, 0 contingencies, 0 price sensitive loads, 4 time steps)</code></pre><p>If we have a large number of scenario files, the <a href="https://github.com/vtjnash/Glob.jl">Glob</a> package can also be used to avoid having to list them individually:</p><pre><code class="language-julia hljs">using Glob
+instance = UnitCommitment.read(glob(&quot;example_s*.json&quot;))</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">UnitCommitmentInstance(2 scenarios, 2 thermal units, 0 profiled units, 1 buses, 0 lines, 0 contingencies, 0 price sensitive loads, 4 time steps)</code></pre><p>Finally, we build the model and optimize as before:</p><pre><code class="language-julia hljs">model = UnitCommitment.build_model(
+    instance=instance,
+    optimizer=HiGHS.Optimizer,
+);
+UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s1 with probability 0.75
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s2 with probability 0.25
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
+Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Presolving model
+115 rows, 47 cols, 251 nonzeros
+47 rows, 43 cols, 113 nonzeros
+33 rows, 33 cols, 93 nonzeros
+23 rows, 25 cols, 61 nonzeros
+7 rows, 9 cols, 21 nonzeros
+5 rows, 7 cols, 13 nonzeros
+
+Solving MIP model with:
+   5 rows
+   7 cols (4 binary, 0 integer, 0 implied int., 3 continuous)
+   13 nonzeros
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
+     Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   4562.5          inf                  inf        0      0      0         0     0.0s
+ T       0       0         0   0.00%   4562.5          5312.5            14.12%        0      0      0         2     0.0s
+
+Solving report
+  Status            Optimal
+  Primal bound      5312.5
+  Dual bound        5312.5
+  Gap               0% (tolerance: 0.01%)
+  Solution status   feasible
+                    5312.5 (objective)
+                    0 (bound viol.)
+                    0 (int. viol.)
+                    0 (row viol.)
+  Timing            0.00 (total)
+                    0.00 (presolve)
+                    0.00 (postsolve)
+  Nodes             1
+  LP iterations     2 (total)
+                    0 (strong br.)
+                    0 (separation)
+                    0 (heuristics)</code></pre><p>The solution to stochastic instances follows a slightly different format, as shown below:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 2 entries:
+  &quot;s1&quot; =&gt; OrderedDict{Any, Any}(&quot;Thermal production (MW)&quot;=&gt;OrderedDict(&quot;g1&quot;=&gt;[1…
+  &quot;s2&quot; =&gt; OrderedDict{Any, Any}(&quot;Thermal production (MW)&quot;=&gt;OrderedDict(&quot;g1&quot;=&gt;[2…</code></pre><p>The solution for each stage can be accessed through <code>solution[scenario_name]</code>. For conveniance, this includes both first- and second-stage optimal decisions:</p><pre><code class="language-julia hljs">solution[&quot;s1&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 14 entries:
+  &quot;Thermal production (MW)&quot;         =&gt; OrderedDict(&quot;g1&quot;=&gt;[100.0, 150.0, 200.0, …
+  &quot;Thermal production cost (\$)&quot;    =&gt; OrderedDict(&quot;g1&quot;=&gt;[500.0, 750.0, 1000.0,…
+  &quot;Startup cost (\$)&quot;               =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
+  &quot;Is on&quot;                           =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, 1.0, 1.0, 1.0], …
+  &quot;Switch on&quot;                       =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, -0.0, 0.0, 0.0],…
+  &quot;Switch off&quot;                      =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
+  &quot;Net injection (MW)&quot;              =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0])
+  &quot;Load curtail (MW)&quot;               =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0])
+  &quot;Spinning reserve (MW)&quot;           =&gt; OrderedDict{Any, Any}()
+  &quot;Spinning reserve shortfall (MW)&quot; =&gt; OrderedDict{Any, Any}()
+  &quot;Up-flexiramp (MW)&quot;               =&gt; OrderedDict{Any, Any}()
+  &quot;Up-flexiramp shortfall (MW)&quot;     =&gt; OrderedDict{Any, Any}()
+  &quot;Down-flexiramp (MW)&quot;             =&gt; OrderedDict{Any, Any}()
+  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../customizing/">Customizing the model »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Thursday 9 May 2024 09:53">Thursday 9 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

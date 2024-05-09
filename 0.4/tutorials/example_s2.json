@@ -1,0 +1,31 @@
+{
+    "Parameters": {
+        "Version": "0.4",
+        "Time horizon (h)": 4,
+        "Scenario name": "s2",
+        "Scenario weight": 1.0
+    },
+    "Buses": {
+        "b1": {
+            "Load (MW)": [200, 300, 400, 500]
+        }
+    },
+    "Generators": {
+        "g1": {
+            "Bus": "b1",
+            "Type": "Thermal",
+            "Production cost curve (MW)": [0, 200],
+            "Production cost curve ($)": [0, 1000],
+            "Initial status (h)": -24,
+            "Initial power (MW)": 0
+        },
+        "g2": {
+            "Bus": "b1",
+            "Type": "Thermal",
+            "Production cost curve (MW)": [0, 300],
+            "Production cost curve ($)": [0, 3000],
+            "Initial status (h)": -24,
+            "Initial power (MW)": 0
+        }
+    }
+}
