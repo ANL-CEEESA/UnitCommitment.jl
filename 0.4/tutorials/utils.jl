@@ -33,7 +33,7 @@ json_contents = """
 }
 """;
 open("example_initial.json", "w") do file
-    write(file, json_contents)
+    return write(file, json_contents)
 end;
 
 # Next, we read the instance and generate the initial conditions (in-place):
@@ -43,10 +43,8 @@ UnitCommitment.generate_initial_conditions!(instance, HiGHS.Optimizer)
 
 # Finally, we optimize the resulting problem:
 
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-)
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer)
 UnitCommitment.optimize!(model)
 
 # !!! warning

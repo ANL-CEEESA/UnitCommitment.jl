@@ -43,15 +43,13 @@ model = UnitCommitment.build_model(
 # First, we load a benchmark instance and solve it, as before.
 
 instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-);
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)
 
 # At this point, it is possible to obtain a reference to the decision variables by calling `model[:varname][index]`. For example, `model[:is_on]["g1",1]` returns a direct reference to the JuMP variable indicating whether generator named "g1" is on at time 1. For a complete list of decision variables available, and how are they indexed, see the [problem definition](../guides/problem.md).
 
-@show JuMP.value(model[:is_on]["g1",1])
+@show JuMP.value(model[:is_on]["g1", 1])
 
 # To access second-stage decisions, it is necessary to specify the scenario name. UnitCommitment.jl models deterministic instances as a particular case in which there is a single scenario named "s1", so we need to use this key.
 
@@ -62,33 +60,24 @@ UnitCommitment.optimize!(model)
 # When testing variations of the unit commitment problem, it is often necessary to modify the objective function, variables and constraints of the formulation. UnitCommitment.jl makes this process relatively easy. The first step is to construct the standard model using `UnitCommitment.build_model`:
 
 instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-);
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 
 # Now, before calling `UnitCommitment.optimize`, we can make any desired changes to the formulation. In the previous section, we saw how to obtain a direct reference to the decision variables. It is possible to modify them by using standard JuMP methods. For example, to fix the commitment status of a particular generator, we can use `JuMP.fix`:
 
-JuMP.fix(model[:is_on]["g1",1], 1.0, force=true)
+JuMP.fix(model[:is_on]["g1", 1], 1.0, force = true)
 
 # To modify the cost coefficient of a particular variable, we can use `JuMP.set_objective_coefficient`:
 
-JuMP.set_objective_coefficient(
-    model,
-    model[:switch_on]["g1",1],
-    1000.0,
-)
+JuMP.set_objective_coefficient(model, model[:switch_on]["g1", 1], 1000.0)
 
 # It is also possible to make changes to the set of constraints. For example, we can add a custom constraint, using the `JuMP.@constraint` macro:
 
-@constraint(
-    model,
-    model[:is_on]["g3",1] + model[:is_on]["g4",1] <= 1,
-);
+@constraint(model, model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,);
 
 # We can also remove an existing model constraint using `JuMP.delete`. See the [problem definition](../guides/problem.md) for a list of constraint names and indices.
 
-JuMP.delete(model, model[:eq_min_uptime]["g1",1])
+JuMP.delete(model, model[:eq_min_uptime]["g1", 1])
 
 # After we are done with all changes, we can call `UnitCommitment.optimize` and extract the optimal solution:
 
@@ -100,16 +89,13 @@ UnitCommitment.optimize!(model)
 # In this section we demonstrate how to add a new grid component to a particular bus in the network. This is useful, for example, when developing formulations for a new type of generator, energy storage, or any other grid device. We start by reading the instance data and buliding a standard model:
 
 instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-);
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 
 # Next, we create decision variables for the new grid component. In this example, we assume that the new component can inject up to 10 MW of power at each time step, so we create new continuous variables $0 \leq x_t \leq 10$.
 
 T = instance.time
-@variable(model, x[1:T], lower_bound=0.0, upper_bound=10.0);
-
+@variable(model, x[1:T], lower_bound = 0.0, upper_bound = 10.0);
 
 # Next, we add the production costs to the objective function. In this example, we assume a generation cost of \$5/MW:
 

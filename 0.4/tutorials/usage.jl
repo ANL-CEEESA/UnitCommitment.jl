@@ -8,7 +8,7 @@
 # pkg> add UnitCommitment@0.4
 # ```
 
-# To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [HiGHS](https://github.com/jump-dev/HiGHS.jl), [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, HiGHS will be used, but any other MILP solver listed in JuMP installation guide should also be compatible.
+# To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [HiGHS](https://github.com/jump-dev/HiGHS.jl), [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, HiGHS will be used, but any other MILP solver should also be compatible.
 
 # ## Solving a benchmark instance
 
@@ -17,16 +17,14 @@
 using HiGHS
 using UnitCommitment
 
-# Next, we use the function `read_benchmark` to read the instance.
+# Next, we use the function `UnitCommitment.read_benchmark` to read the instance.
 
 instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
 
 # Now that we have the instance loaded in memory, we build the JuMP optimization model using `UnitCommitment.build_model`:
 
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-);
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 
 # Next, we run the optimization process, with `UnitCommitment.optimize!`:
 
@@ -43,7 +41,6 @@ solution = UnitCommitment.solution(model)
 # Or export the entire solution to a JSON file:
 
 UnitCommitment.write("solution.json", solution)
-
 
 # ## Solving a custom deterministic instance
 
@@ -84,16 +81,14 @@ json_contents = """
 # Next, we write it to `example.json`.
 
 open("example.json", "w") do file
-    write(file, json_contents)
+    return write(file, json_contents)
 end;
 
 # Now that we have the input file, we can proceed as before, but using `UnitCommitment.read` instead of `UnitCommitment.read_benchmark`:
 
 instance = UnitCommitment.read("example.json");
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-);
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)
 
 # Finally, we extract and display the solution:
@@ -150,7 +145,7 @@ json_contents_s1 = """
 }
 """
 open("example_s1.json", "w") do file
-    write(file, json_contents_s1)
+    return write(file, json_contents_s1)
 end;
 
 # Next, we create `example_s2.json`, the second scenario file:
@@ -189,7 +184,7 @@ json_contents_s2 = """
 }
 """;
 open("example_s2.json", "w") do file
-    write(file, json_contents_s2)
+    return write(file, json_contents_s2)
 end;
 
 # Now that we have our two scenario files, we can read them using `UnitCommitment.read`. Note that, instead of a single file, we now provide a list.
@@ -203,10 +198,8 @@ instance = UnitCommitment.read(glob("example_s*.json"))
 
 # Finally, we build the model and optimize as before:
 
-model = UnitCommitment.build_model(
-    instance=instance,
-    optimizer=HiGHS.Optimizer,
-);
+model =
+    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)
 
 # The solution to stochastic instances follows a slightly different format, as shown below:
