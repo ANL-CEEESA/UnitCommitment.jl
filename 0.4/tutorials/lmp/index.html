@@ -12,7 +12,7 @@ UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-outpu
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing line outage factors...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed LODF in 0.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Applying PTDF and LODF cutoffs (0.00500, 0.00100)
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.05 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.01 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
 Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
@@ -29,7 +29,7 @@ Solving MIP model with:
         Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
      Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
 
-         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.1s
+         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.0s
  R       0       0         0   0.00%   360642.328869   360642.544974      0.00%        0      0      0       861     0.1s
 
 Solving report
@@ -42,8 +42,8 @@ Solving report
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.07 (total)
-                    0.05 (presolve)
+  Timing            0.05 (total)
+                    0.03 (presolve)
                     0.00 (postsolve)
   Nodes             1
   LP iterations     861 (total)
@@ -92,4 +92,4 @@ lmp = UnitCommitment.compute_lmp(
     optimizer = HiGHS.Optimizer,
 )
 
-@show lmp[&quot;s1&quot;, &quot;B1&quot;, 1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">274.3333333333333</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../customizing/">« Model customization</a><a class="docs-footer-nextpage" href="../market/">Market Clearing »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Tuesday 21 May 2024 10:39">Tuesday 21 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+@show lmp[&quot;s1&quot;, &quot;B1&quot;, 1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">274.3333333333333</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../customizing/">« Model customization</a><a class="docs-footer-nextpage" href="../market/">Market Clearing »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Tuesday 21 May 2024 10:56">Tuesday 21 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

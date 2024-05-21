@@ -22,7 +22,7 @@ instance = UnitCommitment.read_benchmark(&quot;matpower/case14/2017-01-01&quot;)
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing line outage factors...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed LODF in 0.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Applying PTDF and LODF cutoffs (0.00800, 0.00300)
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.94 seconds</code></pre><h2 id="Accessing-decision-variables"><a class="docs-heading-anchor" href="#Accessing-decision-variables">Accessing decision variables</a><a id="Accessing-decision-variables-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-decision-variables" title="Permalink"></a></h2><p>In the previous tutorial, we saw how to access the optimal solution through <code>UnitCommitment.solution</code>. While this approach works well for basic usage, it is also possible to get a direct reference to the JuMP decision variables and query their values, as the next example illustrates.</p><p>First, we load a benchmark instance and solve it, as before.</p><pre><code class="language-julia hljs">instance = UnitCommitment.read_benchmark(&quot;matpower/case14/2017-01-01&quot;);
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.89 seconds</code></pre><h2 id="Accessing-decision-variables"><a class="docs-heading-anchor" href="#Accessing-decision-variables">Accessing decision variables</a><a id="Accessing-decision-variables-1"></a><a class="docs-heading-anchor-permalink" href="#Accessing-decision-variables" title="Permalink"></a></h2><p>In the previous tutorial, we saw how to access the optimal solution through <code>UnitCommitment.solution</code>. While this approach works well for basic usage, it is also possible to get a direct reference to the JuMP decision variables and query their values, as the next example illustrates.</p><p>First, we load a benchmark instance and solve it, as before.</p><pre><code class="language-julia hljs">instance = UnitCommitment.read_benchmark(&quot;matpower/case14/2017-01-01&quot;);
 model =
     UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
@@ -62,7 +62,7 @@ Solving report
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.05 (total)
+  Timing            0.06 (total)
                     0.03 (presolve)
                     0.00 (postsolve)
   Nodes             1
@@ -71,7 +71,7 @@ Solving report
                     0 (separation)
                     0 (heuristics)
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Verifying transmission limits...
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Verified transmission limits in 0.55 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Verified transmission limits in 0.59 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>No violations found</code></pre><p>At this point, it is possible to obtain a reference to the decision variables by calling <code>model[:varname][index]</code>. For example, <code>model[:is_on][&quot;g1&quot;,1]</code> returns a direct reference to the JuMP variable indicating whether generator named &quot;g1&quot; is on at time 1. For a complete list of decision variables available, and how are they indexed, see the <a href="../../guides/problem/">problem definition</a>.</p><pre><code class="language-julia hljs">@show JuMP.value(model[:is_on][&quot;g1&quot;, 1])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">1.0</code></pre><p>To access second-stage decisions, it is necessary to specify the scenario name. UnitCommitment.jl models deterministic instances as a particular case in which there is a single scenario named &quot;s1&quot;, so we need to use this key.</p><pre><code class="language-julia hljs">@show JuMP.value(model[:prod_above][&quot;s1&quot;, &quot;g1&quot;, 1])</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">145.16900936037393</code></pre><h2 id="Modifying-variables-and-constraints"><a class="docs-heading-anchor" href="#Modifying-variables-and-constraints">Modifying variables and constraints</a><a id="Modifying-variables-and-constraints-1"></a><a class="docs-heading-anchor-permalink" href="#Modifying-variables-and-constraints" title="Permalink"></a></h2><p>When testing variations of the unit commitment problem, it is often necessary to modify the objective function, variables and constraints of the formulation. UnitCommitment.jl makes this process relatively easy. The first step is to construct the standard model using <code>UnitCommitment.build_model</code>:</p><pre><code class="language-julia hljs">instance = UnitCommitment.read_benchmark(&quot;matpower/case14/2017-01-01&quot;);
 model =
     UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
@@ -102,11 +102,11 @@ model =
     UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s1 with probability 1.0
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing injection shift factors...
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed ISF in 0.24 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed ISF in 0.23 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing line outage factors...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed LODF in 0.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Applying PTDF and LODF cutoffs (0.00500, 0.00100)
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.44 seconds</code></pre><p>Next, we create decision variables for the new grid component. In this example, we assume that the new component can inject up to 10 MW of power at each time step, so we create new continuous variables <span>$0 \leq x_t \leq 10$</span>.</p><pre><code class="language-julia hljs">T = instance.time
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.41 seconds</code></pre><p>Next, we create decision variables for the new grid component. In this example, we assume that the new component can inject up to 10 MW of power at each time step, so we create new continuous variables <span>$0 \leq x_t \leq 10$</span>.</p><pre><code class="language-julia hljs">T = instance.time
 @variable(model, x[1:T], lower_bound = 0.0, upper_bound = 10.0);</code></pre><p>Next, we add the production costs to the objective function. In this example, we assume a generation cost of <span>$</span>5/MW:</p><pre><code class="language-julia hljs">for t in 1:T
     set_objective_coefficient(model, x[t], 5.0)
 end</code></pre><p>We then attach the new component to bus <code>b1</code> by modifying the net injection constraint (<code>eq_net_injection</code>):</p><pre><code class="language-julia hljs">for t in 1:T
@@ -131,8 +131,8 @@ Solving MIP model with:
         Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
      Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
 
-         0       0         0   0.00%   -501782.068184  inf                  inf        0      0      0         0     0.7s
- R       0       0         0   0.00%   5748240.007416  5748250.232723     0.00%        0      0      0      8320     1.1s
+         0       0         0   0.00%   -501782.068184  inf                  inf        0      0      0         0     0.5s
+ R       0       0         0   0.00%   5748240.007416  5748250.232723     0.00%        0      0      0      8320     1.0s
 
 Solving report
   Status            Optimal
@@ -144,8 +144,8 @@ Solving report
                     0 (bound viol.)
                     2.22044604925e-15 (int. viol.)
                     0 (row viol.)
-  Timing            1.09 (total)
-                    0.55 (presolve)
+  Timing            0.97 (total)
+                    0.36 (presolve)
                     0.00 (postsolve)
   Nodes             1
   LP iterations     8320 (total)
@@ -174,4 +174,4 @@ Solving report
  10.0
  10.0
  10.0
- 10.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../usage/">« Getting started</a><a class="docs-footer-nextpage" href="../lmp/">Locational Marginal Prices »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Tuesday 21 May 2024 10:39">Tuesday 21 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+ 10.0</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../usage/">« Getting started</a><a class="docs-footer-nextpage" href="../lmp/">Locational Marginal Prices »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Tuesday 21 May 2024 10:56">Tuesday 21 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
