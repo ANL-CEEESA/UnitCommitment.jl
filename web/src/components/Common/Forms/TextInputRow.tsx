@@ -1,5 +1,11 @@
+/*
+ * UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+ * Copyright (C) 2020-2025, UChicago Argonne, LLC. All rights reserved.
+ * Released under the modified BSD license. See COPYING.md for more details.
+ */
+
 import formStyles from "./Form.module.css";
-import HelpButton from "./HelpButton";
+import HelpButton from "../Buttons/HelpButton";
 
 function TextInputRow({label, unit, tooltip, currentValue, defaultValue}: {
     label: string,
@@ -19,9 +25,9 @@ function TextInputRow({label, unit, tooltip, currentValue, defaultValue}: {
                 placeholder={defaultValue}
                 value={currentValue}
             />
-            <HelpButton text={tooltip} />
+            <HelpButton text={tooltip}/>
         </div>
-    )
+    );
 }
 
 export default TextInputRow;

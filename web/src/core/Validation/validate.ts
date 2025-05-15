@@ -4,11 +4,14 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import {ReactNode} from 'react';
-import styles from "./Form.module.css";
+import { schema } from './schema';
+import Ajv from "ajv";
 
-function Form({children}: { children: ReactNode }) {
-    return <div className={styles.Form}>{children}</div>;
-}
+// Create Ajv instance with detailed debug options
+const ajv = new Ajv({
+    verbose: true,
+    allErrors: true,
+    $data: true,
+});
 
-export default Form;
+export const validate = ajv.compile(schema);

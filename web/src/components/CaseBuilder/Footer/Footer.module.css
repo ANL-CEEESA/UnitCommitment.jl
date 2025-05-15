@@ -4,11 +4,11 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import {ReactNode} from 'react';
-import styles from "./Form.module.css";
-
-function Form({children}: { children: ReactNode }) {
-    return <div className={styles.Form}>{children}</div>;
+.Footer {
+    background-color: #333;
+    text-align: center;
+    color: #aaa;
+    font-size: 14px;
+    padding: 16px;
+    line-height: 24px;
 }
-
-export default Form;

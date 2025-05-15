@@ -1,0 +1,84 @@
+/*
+ * UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+ * Copyright (C) 2020-2025, UChicago Argonne, LLC. All rights reserved.
+ * Released under the modified BSD license. See COPYING.md for more details.
+ */
+
+import {UnitCommitmentScenario} from "../../../core/data";
+import {changeBusData, createBus, deleteBus, renameBus} from "./BusOperations";
+import assert from "node:assert";
+
+export const BUS_TEST_DATA_1: UnitCommitmentScenario = {
+    "Parameters": {
+        "Version": "0.4",
+        "Power balance penalty ($/MW)": 1000.0,
+        "Time horizon (h)": 5,
+        "Time step (min)": 60,
+    },
+    "Buses": {
+        "b1": {"Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044]},
+        "b2": {"Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939]},
+        "b3": {"Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268]},
+    }
+};
+
+test("createBus", () => {
+    const newScenario = createBus(BUS_TEST_DATA_1);
+    assert.deepEqual(Object.keys(newScenario.Buses), ["b1", "b2", "b3", "b4"]);
+});
+
+test("changeBusData", () => {
+    let scenario = BUS_TEST_DATA_1;
+    scenario = changeBusData("b1", "Load 0", "99", scenario);
+    scenario = changeBusData("b1", "Load 3", "99", scenario);
+    scenario = changeBusData("b3", "Load 4", "99", scenario);
+    assert.deepEqual(scenario, {
+        "Parameters": {
+            "Version": "0.4",
+            "Power balance penalty ($/MW)": 1000.0,
+            "Time horizon (h)": 5,
+            "Time step (min)": 60,
+        },
+        "Buses": {
+            "b1": {"Load (MW)": [99, 34.38835, 33.45083, 99, 33.25044]},
+            "b2": {"Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939]},
+            "b3": {"Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 99]},
+        }
+    });
+});
+
+test("deleteBus", () => {
+    let scenario = BUS_TEST_DATA_1;
+    scenario = deleteBus("b2", scenario);
+    assert.deepEqual(scenario, {
+        "Parameters": {
+            "Version": "0.4",
+            "Power balance penalty ($/MW)": 1000.0,
+            "Time horizon (h)": 5,
+            "Time step (min)": 60,
+        },
+        "Buses": {
+            "b1": {"Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044]},
+            "b3": {"Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268]},
+        }
+    });
+});
+
+
+test("renameBus", () => {
+    let scenario = BUS_TEST_DATA_1;
+    scenario = renameBus("b2", "b99", scenario);
+    assert.deepEqual(scenario, {
+        "Parameters": {
+            "Version": "0.4",
+            "Power balance penalty ($/MW)": 1000.0,
+            "Time horizon (h)": 5,
+            "Time step (min)": 60,
+        },
+        "Buses": {
+            "b1": {"Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044]},
+            "b99": {"Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939]},
+            "b3": {"Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268]},
+        }
+    });
+});
