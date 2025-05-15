@@ -6,83 +6,107 @@
 
 import Header from "./Header/Header";
 import Parameters from "./Parameters/Parameters";
-import BusesComponent from "./Buses/Buses";
-import {BLANK_SCENARIO, TEST_SCENARIO, UnitCommitmentScenario} from "../../core/data";
+import BusesComponent from "./Buses/BusesComponent";
+import {
+  BLANK_SCENARIO,
+  TEST_SCENARIO,
+  UnitCommitmentScenario,
+} from "../../core/data";
 
 import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
-import {useState} from "react";
+import { useState } from "react";
 import Footer from "./Footer/Footer";
-import {validate} from "../../core/Validation/validate";
-import {offerDownload} from "../Common/io";
-import {changeBusData, createBus, deleteBus, renameBus} from "./Buses/BusOperations";
+import { validate, ValidationError } from "../../core/Validation/validate";
+import { offerDownload } from "../Common/io";
+import {
+  changeBusData,
+  createBus,
+  deleteBus,
+  renameBus,
+} from "./Buses/BusOperations";
 
 const CaseBuilder = () => {
-    const [scenario, setScenario] = useState(TEST_SCENARIO);
+  const [scenario, setScenario] = useState(TEST_SCENARIO);
 
-    const onClear = () => {
-        setScenario(BLANK_SCENARIO);
-    };
+  const onClear = () => {
+    setScenario(BLANK_SCENARIO);
+  };
 
-    const onSave = () => {
-        offerDownload(
-            JSON.stringify(scenario, null, 2),
-            'application/json',
-            'case.json',
-        );
-    };
+  const onSave = () => {
+    offerDownload(
+      JSON.stringify(scenario, null, 2),
+      "application/json",
+      "case.json",
+    );
+  };
 
-    const onBusCreated = () => {
-        const newScenario = createBus(scenario);
-        setScenario(newScenario);
-    };
+  const onBusCreated = () => {
+    const newScenario = createBus(scenario);
+    setScenario(newScenario);
+  };
 
-    const onBusDataChanged = (bus: string, field: string, newValue: string) => {
-        const newScenario = changeBusData(bus, field, newValue, scenario);
-        setScenario(newScenario);
-    };
+  const onBusDataChanged = (
+    bus: string,
+    field: string,
+    newValue: string,
+  ): ValidationError | null => {
+    const [newScenario, err] = changeBusData(bus, field, newValue, scenario);
+    if (err) {
+      console.log(err);
+      return err;
+    }
+    setScenario(newScenario);
+    return null;
+  };
 
-    const onBusDeleted = (bus: string) => {
-        const newScenario = deleteBus(bus, scenario);
-        setScenario(newScenario);
-    };
+  const onBusDeleted = (bus: string) => {
+    const newScenario = deleteBus(bus, scenario);
+    setScenario(newScenario);
+  };
 
-    const onBusRenamed = (oldName: string, newName: string) => {
-        const newScenario = renameBus(oldName, newName, scenario);
-        setScenario(newScenario);
-    };
+  const onBusRenamed = (
+    oldName: string,
+    newName: string,
+  ): ValidationError | null => {
+    const [newScenario, err] = renameBus(oldName, newName, scenario);
+    if (err) {
+      console.log(err);
+      return err;
+    }
+    setScenario(newScenario);
+    return null;
+  };
 
-    const onDataChanged = (newScenario: UnitCommitmentScenario) => {
-        setScenario(newScenario);
-    };
+  const onDataChanged = (newScenario: UnitCommitmentScenario) => {
+    setScenario(newScenario);
+  };
 
-    const onLoad = (scenario: UnitCommitmentScenario) => {
-        if (!validate(scenario)) {
-            console.error(validate.errors);
-            return;
-        }
-        setScenario(scenario);
-    };
+  const onLoad = (scenario: UnitCommitmentScenario) => {
+    if (!validate(scenario)) {
+      console.error(validate.errors);
+      return;
+    }
+    setScenario(scenario);
+  };
 
-    return <div>
-        <Header
-            onClear={onClear}
-            onSave={onSave}
-            onLoad={onLoad}
+  return (
+    <div>
+      <Header onClear={onClear} onSave={onSave} onLoad={onLoad} />
+      <div className="content">
+        <Parameters scenario={scenario} />
+        <BusesComponent
+          scenario={scenario}
+          onBusCreated={onBusCreated}
+          onBusDataChanged={onBusDataChanged}
+          onBusRenamed={onBusRenamed}
+          onBusDeleted={onBusDeleted}
+          onDataChanged={onDataChanged}
         />
-        <div className="content">
-            <Parameters scenario={scenario}/>
-            <BusesComponent
-                scenario={scenario}
-                onBusCreated={onBusCreated}
-                onBusDataChanged={onBusDataChanged}
-                onBusRenamed={onBusRenamed}
-                onBusDeleted={onBusDeleted}
-                onDataChanged={onDataChanged}
-            />
-        </div>
-        <Footer/>
-    </div>;
+      </div>
+      <Footer />
+    </div>
+  );
 };
 
 export default CaseBuilder;

@@ -4,4 +4,4 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import '@testing-library/jest-dom';
+import "@testing-library/jest-dom";

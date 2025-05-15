@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "alwaysStrict": true,
@@ -35,7 +31,5 @@
     "noUnusedParameters": false,
     "checkJs": true
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }

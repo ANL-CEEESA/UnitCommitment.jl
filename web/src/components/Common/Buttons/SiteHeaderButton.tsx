@@ -6,14 +6,18 @@
 
 import styles from "./SiteHeaderButton.module.css";
 
-function SiteHeaderButton({title, onClick}: { title: string, onClick?: () => void }) {
-    return (
-        <button
-            className={styles.SiteHeaderButton}
-            onClick={onClick}>
-            {title}
-        </button>
-    );
+function SiteHeaderButton({
+  title,
+  onClick,
+}: {
+  title: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button className={styles.SiteHeaderButton} onClick={onClick}>
+      {title}
+    </button>
+  );
 }
 
 export default SiteHeaderButton;

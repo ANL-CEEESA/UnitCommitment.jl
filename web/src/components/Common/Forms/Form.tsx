@@ -4,11 +4,11 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import {ReactNode} from 'react';
+import { ReactNode } from "react";
 import styles from "./Form.module.css";
 
-function Form({children}: { children: ReactNode }) {
-    return <div className={styles.Form}>{children}</div>;
+function Form({ children }: { children: ReactNode }) {
+  return <div className={styles.Form}>{children}</div>;
 }
 
 export default Form;

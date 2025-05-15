@@ -5,20 +5,20 @@
  */
 
 .SectionHeader {
-    max-width: var(--site-max-width);
-    min-width: var(--site-min-width);
-    margin: 0 auto;
-    color: var(--contrast-100);
+  max-width: var(--site-max-width);
+  min-width: var(--site-min-width);
+  margin: 0 auto;
+  color: var(--contrast-100);
 }
 
 .SectionHeader h1 {
-    margin: 0;
-    padding: 0 12px;
-    font-size: 16px;
-    line-height: 64px;
+  margin: 0;
+  padding: 0 12px;
+  font-size: 16px;
+  line-height: 64px;
 }
 
 .SectionButtonsContainer {
-    float: right;
-    height: 64px;
+  float: right;
+  height: 64px;
 }

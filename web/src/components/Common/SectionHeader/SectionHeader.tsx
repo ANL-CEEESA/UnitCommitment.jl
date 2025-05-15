@@ -5,23 +5,20 @@
  */
 
 import styles from "./SectionHeader.module.css";
-import {ReactNode} from "react";
+import { ReactNode } from "react";
 
 interface SectionHeaderProps {
-    title: string,
-    children: ReactNode
+  title: string;
+  children?: ReactNode;
 }
 
-
-function SectionHeader({title, children}: SectionHeaderProps) {
-    return (
-        <div className={styles.SectionHeader}>
-            <div className={styles.SectionButtonsContainer}>
-                {children}
-            </div>
-            <h1>{title}</h1>
-        </div>
-    );
+function SectionHeader({ title, children }: SectionHeaderProps) {
+  return (
+    <div className={styles.SectionHeader}>
+      <div className={styles.SectionButtonsContainer}>{children}</div>
+      <h1>{title}</h1>
+    </div>
+  );
 }
 
 export default SectionHeader;

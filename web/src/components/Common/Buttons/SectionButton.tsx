@@ -4,26 +4,26 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import {IconDefinition} from "@fortawesome/fontawesome-svg-core";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import styles from "./SectionButton.module.css";
 
 interface SectionButtonProps {
-    icon: IconDefinition,
-    tooltip: string,
-    onClick?: () => void,
+  icon: IconDefinition;
+  tooltip: string;
+  onClick?: () => void;
 }
 
 function SectionButton(props: SectionButtonProps) {
-    return (
-        <button
-            className={styles.SectionButton}
-            title={props.tooltip}
-            onClick={props.onClick}
-        >
-            <FontAwesomeIcon icon={props.icon}/>
-        </button>
-    );
+  return (
+    <button
+      className={styles.SectionButton}
+      title={props.tooltip}
+      onClick={props.onClick}
+    >
+      <FontAwesomeIcon icon={props.icon} />
+    </button>
+  );
 }
 
 export default SectionButton;
