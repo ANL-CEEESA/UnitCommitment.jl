@@ -5,14 +5,14 @@
  */
 
 import Papa from "papaparse";
-import { Buses, UnitCommitmentScenario } from "../../../core/data";
+import { Buses, UnitCommitmentScenario } from "../../core/fixtures";
 import { useEffect, useRef } from "react";
 import {
   CellComponent,
   ColumnDefinition,
   TabulatorFull as Tabulator,
 } from "tabulator-tables";
-import { ValidationError } from "../../../core/Validation/validate";
+import { ValidationError } from "../../core/Validation/validate";
 
 const generateBusesTableData = (scenario: UnitCommitmentScenario) => {
   const tableData: { [name: string]: any }[] = [];

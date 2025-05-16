@@ -6,7 +6,7 @@
 
 import assert from "node:assert";
 import { generateBusesCsv, parseBusesCsv } from "./BusesTable";
-import { BUS_TEST_DATA_1 } from "./BusOperations.test";
+import { BUS_TEST_DATA_1 } from "../../core/Operations/busOperations.test";
 
 test("generate CSV", () => {
   const actualCsv = generateBusesCsv(BUS_TEST_DATA_1);

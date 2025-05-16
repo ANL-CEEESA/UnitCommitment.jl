@@ -4,19 +4,19 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import Header from "./Header/Header";
-import Parameters from "./Parameters/Parameters";
-import BusesComponent from "./Buses/BusesComponent";
+import Header from "./Header";
+import Parameters from "./Parameters";
+import BusesComponent from "./BusesComponent";
 import {
   BLANK_SCENARIO,
   TEST_SCENARIO,
   UnitCommitmentScenario,
-} from "../../core/data";
+} from "../../core/fixtures";
 
 import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
 import { useState } from "react";
-import Footer from "./Footer/Footer";
+import Footer from "./Footer";
 import { validate, ValidationError } from "../../core/Validation/validate";
 import { offerDownload } from "../Common/io";
 import {
@@ -24,11 +24,11 @@ import {
   createBus,
   deleteBus,
   renameBus,
-} from "./Buses/BusOperations";
+} from "../../core/Operations/busOperations";
 import {
   changeTimeHorizon,
   changeTimeStep,
-} from "./Parameters/ParameterOperations";
+} from "../../core/Operations/parameterOperations";
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(TEST_SCENARIO);

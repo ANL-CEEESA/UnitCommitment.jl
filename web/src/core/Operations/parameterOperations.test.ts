@@ -8,8 +8,8 @@ import {
   changeTimeHorizon,
   changeTimeStep,
   evaluatePwlFunction,
-} from "./ParameterOperations";
-import { BUS_TEST_DATA_1, BUS_TEST_DATA_2 } from "../Buses/BusOperations.test";
+} from "./parameterOperations";
+import { BUS_TEST_DATA_1, BUS_TEST_DATA_2 } from "./busOperations.test";
 import assert from "node:assert";
 
 test("changeTimeHorizon: Shrink 1", () => {

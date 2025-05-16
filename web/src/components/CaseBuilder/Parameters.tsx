@@ -4,11 +4,11 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import SectionHeader from "../../Common/SectionHeader/SectionHeader";
-import Form from "../../Common/Forms/Form";
-import TextInputRow from "../../Common/Forms/TextInputRow";
-import { UnitCommitmentScenario } from "../../../core/data";
-import { ValidationError } from "../../../core/Validation/validate";
+import SectionHeader from "../Common/SectionHeader/SectionHeader";
+import Form from "../Common/Forms/Form";
+import TextInputRow from "../Common/Forms/TextInputRow";
+import { UnitCommitmentScenario } from "../../core/fixtures";
+import { ValidationError } from "../../core/Validation/validate";
 
 interface ParametersProps {
   scenario: UnitCommitmentScenario;

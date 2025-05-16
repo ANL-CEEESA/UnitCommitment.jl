@@ -4,19 +4,19 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import SectionHeader from "../../Common/SectionHeader/SectionHeader";
-import { UnitCommitmentScenario } from "../../../core/data";
+import SectionHeader from "../Common/SectionHeader/SectionHeader";
+import { UnitCommitmentScenario } from "../../core/fixtures";
 import BusesTable, { generateBusesCsv, parseBusesCsv } from "./BusesTable";
-import SectionButton from "../../Common/Buttons/SectionButton";
+import SectionButton from "../Common/Buttons/SectionButton";
 import {
   faDownload,
   faPlus,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
-import { offerDownload } from "../../Common/io";
-import FileUploadElement from "../../Common/Buttons/FileUploadElement";
+import { offerDownload } from "../Common/io";
+import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
-import { ValidationError } from "../../../core/Validation/validate";
+import { ValidationError } from "../../core/Validation/validate";
 
 interface BusesProps {
   scenario: UnitCommitmentScenario;

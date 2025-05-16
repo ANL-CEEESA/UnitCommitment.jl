@@ -4,8 +4,8 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { Buses, UnitCommitmentScenario } from "../../../core/data";
-import { ValidationError } from "../../../core/Validation/validate";
+import { Buses, UnitCommitmentScenario } from "../fixtures";
+import { ValidationError } from "../Validation/validate";
 
 const generateUniqueBusName = (scenario: UnitCommitmentScenario) => {
   let newBusName = "b";

@@ -4,13 +4,13 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { UnitCommitmentScenario } from "../../../core/data";
+import { UnitCommitmentScenario } from "../fixtures";
 import {
   changeBusData,
   createBus,
   deleteBus,
   renameBus,
-} from "./BusOperations";
+} from "./busOperations";
 import assert from "node:assert";
 
 export const BUS_TEST_DATA_1: UnitCommitmentScenario = {
