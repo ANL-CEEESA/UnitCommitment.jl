@@ -6,28 +6,44 @@
 
 import formStyles from "./Form.module.css";
 import HelpButton from "../Buttons/HelpButton";
+import React, { useRef, useState } from "react";
+import { ValidationError } from "../../../core/Validation/validate";
 
-function TextInputRow({
-  label,
-  unit,
-  tooltip,
-  currentValue,
-  defaultValue,
-}: {
+interface TextInputRowProps {
   label: string;
   unit: string;
   tooltip: string;
-  currentValue: string;
-  defaultValue: string;
-}) {
+  initialValue: string;
+  onChange: (newValue: string) => ValidationError | null;
+}
+
+function TextInputRow(props: TextInputRowProps) {
+  const [savedValue, setSavedValue] = useState(props.initialValue);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    if (newValue === savedValue) return;
+    const err = props.onChange(newValue);
+    if (err) {
+      inputRef.current!.value = savedValue;
+      return;
+    }
+    setSavedValue(newValue);
+  };
   return (
     <div className={formStyles.FormRow}>
       <label>
-        {label}
-        <span className={formStyles.FormRow_unit}> ({unit})</span>
+        {props.label}
+        <span className={formStyles.FormRow_unit}> ({props.unit})</span>
       </label>
-      <input type="text" placeholder={defaultValue} value={currentValue} />
-      <HelpButton text={tooltip} />
+      <input
+        ref={inputRef}
+        type="text"
+        defaultValue={savedValue}
+        onBlur={onBlur}
+      />
+      <HelpButton text={props.tooltip} />
     </div>
   );
 }

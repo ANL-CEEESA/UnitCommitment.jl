@@ -25,6 +25,10 @@ import {
   deleteBus,
   renameBus,
 } from "./Buses/BusOperations";
+import {
+  changeTimeHorizon,
+  changeTimeStep,
+} from "./Parameters/ParameterOperations";
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(TEST_SCENARIO);
@@ -90,11 +94,37 @@ const CaseBuilder = () => {
     setScenario(scenario);
   };
 
+  const onParameterChanged = (key: string, value: string) => {
+    if (key === "Time horizon (h)") {
+      const [newScenario, err] = changeTimeHorizon(scenario, value);
+      if (err) {
+        return err;
+      }
+      setScenario(newScenario);
+      return null;
+    }
+
+    if (key === "Time step (min)") {
+      const [newScenario, err] = changeTimeStep(scenario, value);
+      if (err) {
+        return err;
+      }
+      setScenario(newScenario);
+      return null;
+    }
+
+    console.log("onParameterChanged", key, value);
+    return null;
+  };
+
   return (
     <div>
       <Header onClear={onClear} onSave={onSave} onLoad={onLoad} />
       <div className="content">
-        <Parameters scenario={scenario} />
+        <Parameters
+          onParameterChanged={onParameterChanged}
+          scenario={scenario}
+        />
         <BusesComponent
           scenario={scenario}
           onBusCreated={onBusCreated}

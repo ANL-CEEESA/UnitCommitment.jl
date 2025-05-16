@@ -27,6 +27,20 @@ export const BUS_TEST_DATA_1: UnitCommitmentScenario = {
   },
 };
 
+export const BUS_TEST_DATA_2: UnitCommitmentScenario = {
+  Parameters: {
+    Version: "0.4",
+    "Power balance penalty ($/MW)": 1000.0,
+    "Time horizon (h)": 2,
+    "Time step (min)": 30,
+  },
+  Buses: {
+    b1: { "Load (MW)": [30, 30, 30, 30] },
+    b2: { "Load (MW)": [10, 20, 30, 40] },
+    b3: { "Load (MW)": [0, 30, 0, 40] },
+  },
+};
+
 test("createBus", () => {
   const newScenario = createBus(BUS_TEST_DATA_1);
   assert.deepEqual(Object.keys(newScenario.Buses), ["b1", "b2", "b3", "b4"]);

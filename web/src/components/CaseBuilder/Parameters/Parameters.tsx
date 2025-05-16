@@ -8,12 +8,14 @@ import SectionHeader from "../../Common/SectionHeader/SectionHeader";
 import Form from "../../Common/Forms/Form";
 import TextInputRow from "../../Common/Forms/TextInputRow";
 import { UnitCommitmentScenario } from "../../../core/data";
+import { ValidationError } from "../../../core/Validation/validate";
 
 interface ParametersProps {
   scenario: UnitCommitmentScenario;
+  onParameterChanged: (key: string, value: string) => ValidationError | null;
 }
 
-function Parameters({ scenario }: ParametersProps) {
+function Parameters(props: ParametersProps) {
   return (
     <div>
       <SectionHeader title="Parameters"></SectionHeader>
@@ -22,22 +24,24 @@ function Parameters({ scenario }: ParametersProps) {
           label="Time horizon"
           unit="h"
           tooltip="Length of the planning horizon (in hours)."
-          currentValue={`${scenario.Parameters["Time horizon (h)"]}`}
-          defaultValue="24"
+          initialValue={`${props.scenario.Parameters["Time horizon (h)"]}`}
+          onChange={(v) => props.onParameterChanged("Time horizon (h)", v)}
         />
         <TextInputRow
           label="Time step"
           unit="min"
           tooltip="Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc)."
-          currentValue={`${scenario.Parameters["Time step (min)"]}`}
-          defaultValue="60"
+          initialValue={`${props.scenario.Parameters["Time step (min)"]}`}
+          onChange={(v) => props.onParameterChanged("Time step (min)", v)}
         />
         <TextInputRow
           label="Power balance penalty"
           unit="$/MW"
           tooltip="Penalty for system-wide shortage or surplus in production (in /MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged."
-          currentValue={`${scenario.Parameters["Power balance penalty ($/MW)"]}`}
-          defaultValue="1000.0"
+          initialValue={`${props.scenario.Parameters["Power balance penalty ($/MW)"]}`}
+          onChange={(v) =>
+            props.onParameterChanged("Power balance penalty ($/MW)", v)
+          }
         />
       </Form>
     </div>

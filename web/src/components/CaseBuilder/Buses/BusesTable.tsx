@@ -50,7 +50,7 @@ const generateBusesTableColumns = (
       ...columnsCommonAttrs,
       title: "Name",
       field: "Name",
-      width: 150,
+      minWidth: 150,
     },
   ];
   for (
@@ -65,7 +65,10 @@ const generateBusesTableColumns = (
       ...columnsCommonAttrs,
       title: `Load (MW)<div class="subtitle">${formattedTime}</div>`,
       field: `Load ${offset}`,
-      width: 100,
+      minWidth: 100,
+      formatter: (cell) => {
+        return parseFloat(cell.getValue()).toFixed(2);
+      },
     });
   }
   return columns;
