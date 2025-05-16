@@ -4,6 +4,7 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
+import pako from "pako";
 import React, { Component } from "react";
 
 class FileUploadElement extends Component<any> {
@@ -16,14 +17,27 @@ class FileUploadElement extends Component<any> {
   };
 
   onFileSelected = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files![0];
+    const file = event.target.files![0]!;
+    let isCompressed = file.name.endsWith(".gz");
     if (file) {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        this.callback(e.target?.result as string);
+        let content = e.target?.result;
+
+        if (isCompressed) {
+          const compressed = new Uint8Array(content as ArrayBuffer);
+          const decompressed = pako.inflate(compressed);
+          content = new TextDecoder().decode(decompressed);
+        }
+
+        this.callback(content as string);
         this.callback = () => {};
       };
-      reader.readAsText(file);
+      if (isCompressed) {
+        reader.readAsArrayBuffer(file);
+      } else {
+        reader.readAsText(file);
+      }
     }
     event.target.value = "";
   };

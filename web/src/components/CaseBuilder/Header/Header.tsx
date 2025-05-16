@@ -36,7 +36,7 @@ function Header(props: HeaderProps) {
           <SiteHeaderButton title="Load" onClick={onLoad} />
           <SiteHeaderButton title="Save" onClick={props.onSave} />
         </div>
-        <FileUploadElement ref={fileElem} accept=".json" />
+        <FileUploadElement ref={fileElem} accept=".json,.json.gz" />
       </div>
     </div>
   );
