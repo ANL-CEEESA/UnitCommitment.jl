@@ -9,6 +9,7 @@ import Ajv from "ajv";
 
 // Create Ajv instance with detailed debug options
 const ajv = new Ajv({
+  useDefaults: true,
   verbose: true,
   allErrors: true,
   $data: true,

@@ -152,6 +152,12 @@ interface BusesTableProps {
   onBusRenamed: (oldName: string, newName: string) => ValidationError | null;
 }
 
+function computeBusesTableHeight(scenario: UnitCommitmentScenario): string {
+  const numBuses = Object.keys(scenario.Buses).length;
+  const height = 65 + Math.min(numBuses, 15) * 28;
+  return `${height}px`;
+}
+
 function BusesTable(props: BusesTableProps) {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -188,7 +194,7 @@ function BusesTable(props: BusesTableProps) {
       layout: "fitColumns",
       data: generateBusesTableData(scenario),
       columns: generateBusesTableColumns(scenario),
-      maxHeight: "500px",
+      height: computeBusesTableHeight(scenario),
     });
     table.on("cellEdited", (cell) => {
       onCellEdited(cell);

@@ -29,6 +29,7 @@ import {
   changeTimeHorizon,
   changeTimeStep,
 } from "../../core/Operations/parameterOperations";
+import { preprocess } from "../../core/Operations/preprocessing";
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(TEST_SCENARIO);
@@ -87,11 +88,16 @@ const CaseBuilder = () => {
   };
 
   const onLoad = (scenario: UnitCommitmentScenario) => {
-    if (!validate(scenario)) {
+    const preprocessed = preprocess(
+      scenario,
+    ) as unknown as UnitCommitmentScenario;
+
+    // Validate and assign default values
+    if (!validate(preprocessed)) {
       console.error(validate.errors);
       return;
     }
-    setScenario(scenario);
+    setScenario(preprocessed);
   };
 
   const onParameterChanged = (key: string, value: string) => {
