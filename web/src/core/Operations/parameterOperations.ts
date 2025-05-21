@@ -121,3 +121,24 @@ export const changeTimeStep = (
     null,
   ];
 };
+
+export const changeParameter = (
+  scenario: UnitCommitmentScenario,
+  key: string,
+  valueStr: string,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const value = parseFloat(valueStr);
+  if (isNaN(value)) {
+    return [scenario, { message: `Invalid value: ${valueStr}` }];
+  }
+  return [
+    {
+      ...scenario,
+      Parameters: {
+        ...scenario.Parameters,
+        [key]: value,
+      },
+    },
+    null,
+  ];
+};

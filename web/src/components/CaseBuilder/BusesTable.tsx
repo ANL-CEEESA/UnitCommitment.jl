@@ -6,7 +6,7 @@
 
 import Papa from "papaparse";
 import { Buses, UnitCommitmentScenario } from "../../core/fixtures";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   CellComponent,
   ColumnDefinition,
@@ -154,21 +154,21 @@ interface BusesTableProps {
 
 function computeBusesTableHeight(scenario: UnitCommitmentScenario): string {
   const numBuses = Object.keys(scenario.Buses).length;
-  const height = 65 + Math.min(numBuses, 15) * 28;
+  const height = 70 + Math.min(numBuses, 15) * 28;
   return `${height}px`;
 }
 
 function BusesTable(props: BusesTableProps) {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const tableRef = useRef<Tabulator | null>(null);
+  const [isTableBuilt, setTableBuilt] = useState<Boolean>(false);
 
   useEffect(() => {
-    const scenario = props.scenario;
     const onCellEdited = (cell: CellComponent) => {
       let newValue = cell.getValue();
       let oldValue = cell.getOldValue();
       // eslint-disable-next-line eqeqeq
       if (newValue == oldValue) return;
-
       if (cell.getField() === "Name") {
         if (newValue === "") {
           props.onBusDeleted(oldValue);
@@ -188,18 +188,54 @@ function BusesTable(props: BusesTableProps) {
         }
       }
     };
-
     if (tableContainerRef.current === null) return;
-    const table = new Tabulator(tableContainerRef.current, {
-      layout: "fitColumns",
-      data: generateBusesTableData(scenario),
-      columns: generateBusesTableColumns(scenario),
-      height: computeBusesTableHeight(scenario),
-    });
-    table.on("cellEdited", (cell) => {
-      onCellEdited(cell);
-    });
-  }, [props]);
+    if (tableRef.current === null) {
+      tableRef.current = new Tabulator(tableContainerRef.current, {
+        layout: "fitColumns",
+        data: generateBusesTableData(props.scenario),
+        columns: generateBusesTableColumns(props.scenario),
+        height: computeBusesTableHeight(props.scenario),
+      });
+      tableRef.current.on("tableBuilt", () => {
+        setTableBuilt(true);
+      });
+    }
+    if (isTableBuilt) {
+      const newHeight = computeBusesTableHeight(props.scenario);
+      const newColumns = generateBusesTableColumns(props.scenario);
+      const newData = generateBusesTableData(props.scenario);
+      const oldRows = tableRef.current.getRows();
+
+      // Update data
+      tableRef.current.replaceData(newData).then(() => {});
+
+      // Update columns
+      if (newColumns.length !== tableRef.current.getColumns().length) {
+        tableRef.current.setColumns(newColumns);
+      }
+
+      // Update height
+      if (tableRef.current.options.height !== newHeight) {
+        tableRef.current.setHeight(newHeight);
+      }
+
+      // Scroll to bottom
+      if (tableRef.current.getRows().length === oldRows.length + 1) {
+        setTimeout(() => {
+          const rows = tableRef.current!.getRows()!;
+          const lastRow = rows[rows.length - 1]!;
+          lastRow.scrollTo().then((r) => {});
+          lastRow.getCell("Name").edit();
+        }, 10);
+      }
+
+      // Update callbacks
+      tableRef.current.off("cellEdited");
+      tableRef.current.on("cellEdited", (cell) => {
+        onCellEdited(cell);
+      });
+    }
+  }, [props, isTableBuilt]);
 
   return <div className="tableContainer" ref={tableContainerRef} />;
 }

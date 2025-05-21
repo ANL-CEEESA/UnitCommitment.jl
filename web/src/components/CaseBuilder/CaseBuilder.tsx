@@ -26,16 +26,27 @@ import {
   renameBus,
 } from "../../core/Operations/busOperations";
 import {
+  changeParameter,
   changeTimeHorizon,
   changeTimeStep,
 } from "../../core/Operations/parameterOperations";
 import { preprocess } from "../../core/Operations/preprocessing";
+import Toast from "../Common/Forms/Toast";
 
 const CaseBuilder = () => {
-  const [scenario, setScenario] = useState(TEST_SCENARIO);
+  const [scenario, setScenario] = useState(() => {
+    const savedScenario = localStorage.getItem("scenario");
+    return savedScenario ? JSON.parse(savedScenario) : TEST_SCENARIO;
+  });
+  const [toastMessage, setToastMessage] = useState<string>("");
+
+  const setAndSaveScenario = (scenario: UnitCommitmentScenario) => {
+    setScenario(scenario);
+    localStorage.setItem("scenario", JSON.stringify(scenario));
+  };
 
   const onClear = () => {
-    setScenario(BLANK_SCENARIO);
+    setAndSaveScenario(BLANK_SCENARIO);
   };
 
   const onSave = () => {
@@ -48,7 +59,7 @@ const CaseBuilder = () => {
 
   const onBusCreated = () => {
     const newScenario = createBus(scenario);
-    setScenario(newScenario);
+    setAndSaveScenario(newScenario);
   };
 
   const onBusDataChanged = (
@@ -58,16 +69,16 @@ const CaseBuilder = () => {
   ): ValidationError | null => {
     const [newScenario, err] = changeBusData(bus, field, newValue, scenario);
     if (err) {
-      console.log(err);
+      setToastMessage(err.message);
       return err;
     }
-    setScenario(newScenario);
+    setAndSaveScenario(newScenario);
     return null;
   };
 
   const onBusDeleted = (bus: string) => {
     const newScenario = deleteBus(bus, scenario);
-    setScenario(newScenario);
+    setAndSaveScenario(newScenario);
   };
 
   const onBusRenamed = (
@@ -76,15 +87,15 @@ const CaseBuilder = () => {
   ): ValidationError | null => {
     const [newScenario, err] = renameBus(oldName, newName, scenario);
     if (err) {
-      console.log(err);
+      setToastMessage(err.message);
       return err;
     }
-    setScenario(newScenario);
+    setAndSaveScenario(newScenario);
     return null;
   };
 
   const onDataChanged = (newScenario: UnitCommitmentScenario) => {
-    setScenario(newScenario);
+    setAndSaveScenario(newScenario);
   };
 
   const onLoad = (scenario: UnitCommitmentScenario) => {
@@ -94,32 +105,29 @@ const CaseBuilder = () => {
 
     // Validate and assign default values
     if (!validate(preprocessed)) {
+      setToastMessage("Error loading JSON file");
       console.error(validate.errors);
       return;
     }
-    setScenario(preprocessed);
+
+    setAndSaveScenario(preprocessed);
+    setToastMessage("Data loaded successfully");
   };
 
   const onParameterChanged = (key: string, value: string) => {
+    let newScenario, err;
     if (key === "Time horizon (h)") {
-      const [newScenario, err] = changeTimeHorizon(scenario, value);
-      if (err) {
-        return err;
-      }
-      setScenario(newScenario);
-      return null;
+      [newScenario, err] = changeTimeHorizon(scenario, value);
+    } else if (key === "Time step (min)") {
+      [newScenario, err] = changeTimeStep(scenario, value);
+    } else {
+      [newScenario, err] = changeParameter(scenario, key, value);
     }
-
-    if (key === "Time step (min)") {
-      const [newScenario, err] = changeTimeStep(scenario, value);
-      if (err) {
-        return err;
-      }
-      setScenario(newScenario);
-      return null;
+    if (err) {
+      setToastMessage(err.message);
+      return err;
     }
-
-    console.log("onParameterChanged", key, value);
+    setAndSaveScenario(newScenario);
     return null;
   };
 
@@ -139,6 +147,7 @@ const CaseBuilder = () => {
           onBusDeleted={onBusDeleted}
           onDataChanged={onDataChanged}
         />
+        <Toast message={toastMessage} />
       </div>
       <Footer />
     </div>
