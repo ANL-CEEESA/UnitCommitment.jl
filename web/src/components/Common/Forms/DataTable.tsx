@@ -1,0 +1,308 @@
+/*
+ * UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+ * Copyright (C) 2020-2025, UChicago Argonne, LLC. All rights reserved.
+ * Released under the modified BSD license. See COPYING.md for more details.
+ */
+
+import { useEffect, useRef, useState } from "react";
+import {
+  CellComponent,
+  ColumnDefinition,
+  TabulatorFull as Tabulator,
+} from "tabulator-tables";
+import { ValidationError } from "../../../core/Validation/validate";
+import { UnitCommitmentScenario } from "../../../core/fixtures";
+
+export interface ColumnSpec {
+  title: string;
+  type: "string" | "number" | "number[]";
+  width: number;
+}
+
+export const generateTableColumns = (
+  scenario: UnitCommitmentScenario,
+  colSpecs: ColumnSpec[],
+) => {
+  const timeSlots = generateTimeslots(scenario);
+  const columns: ColumnDefinition[] = [];
+  colSpecs.forEach((spec) => {
+    switch (spec.type) {
+      case "string":
+        columns.push({
+          ...columnsCommonAttrs,
+          title: spec.title,
+          field: spec.title,
+          minWidth: spec.width,
+        });
+        break;
+      case "number":
+        columns.push({
+          ...columnsCommonAttrs,
+          title: spec.title,
+          field: spec.title,
+          minWidth: spec.width,
+          formatter: floatFormatter,
+        });
+        break;
+      case "number[]":
+        const subColumns: ColumnDefinition[] = [];
+        timeSlots.forEach((t) => {
+          subColumns.push({
+            ...columnsCommonAttrs,
+            title: `${t}`,
+            field: `${spec.title} ${t}`,
+            minWidth: spec.width,
+            formatter: floatFormatter,
+          });
+        });
+        columns.push({
+          title: spec.title,
+          columns: subColumns,
+        });
+        break;
+      default:
+        console.error(`Unknown type: ${spec.type}`);
+    }
+  });
+  return columns;
+};
+
+export const generateTableData = (
+  container: any,
+  colSpecs: ColumnSpec[],
+  scenario: UnitCommitmentScenario,
+): any[] => {
+  const data: any[] = [];
+  const timeslots = generateTimeslots(scenario);
+  for (const [entryName, entryData] of Object.entries(container) as [
+    string,
+    any,
+  ]) {
+    const entry: any = {};
+    for (const spec of colSpecs) {
+      if (spec.title === "Name") {
+        entry["Name"] = entryName;
+        continue;
+      }
+      switch (spec.type) {
+        case "string":
+        case "number":
+          entry[spec.title] = entryData[spec.title];
+          break;
+        case "number[]":
+          for (let i = 0; i < timeslots.length; i++) {
+            entry[`${spec.title} ${timeslots[i]}`] = entryData[spec.title][i];
+          }
+          break;
+        default:
+          console.error(`Unknown type: ${spec.type}`);
+      }
+    }
+    data.push(entry);
+  }
+  return data;
+};
+
+export const generateCsv = (data: any[], columns: ColumnDefinition[]) => {
+  const header: string[] = [];
+  const body: string[][] = data.map(() => []);
+  columns.forEach((column) => {
+    if (column.columns) {
+      column.columns.forEach((subcolumn) => {
+        header.push(subcolumn.field!);
+        for (let i = 0; i < data.length; i++) {
+          body[i]!.push(data[i]![subcolumn["field"]!]);
+        }
+      });
+    } else {
+      header.push(column.field!);
+      for (let i = 0; i < data.length; i++) {
+        body[i]!.push(data[i]![column["field"]!]);
+      }
+    }
+  });
+  const csvHeader = header.join(",");
+  const csvBody = body.map((row) => row.join(",")).join("\n");
+  return `${csvHeader}\n${csvBody}`;
+};
+
+export const floatFormatter = (cell: CellComponent) => {
+  return parseFloat(cell.getValue()).toFixed(1);
+};
+
+export const addNameColumn = (columns: ColumnDefinition[]) => {
+  columns.push({
+    ...columnsCommonAttrs,
+    title: "Name",
+    field: "Name",
+    minWidth: 150,
+  });
+};
+
+export const generateTimeslots = (scenario: UnitCommitmentScenario) => {
+  const timeHorizonHours = scenario["Parameters"]["Time horizon (h)"];
+  const timeStepMin = scenario["Parameters"]["Time step (min)"];
+  const timeslots: string[] = [];
+  for (
+    let m = 0, offset = 0;
+    m < timeHorizonHours * 60;
+    m += timeStepMin, offset += 1
+  ) {
+    const hours = Math.floor(m / 60);
+    const mins = m % 60;
+    const formattedTime = `${String(hours).padStart(2, "0")}:${String(mins).padStart(2, "0")}`;
+    timeslots.push(formattedTime);
+  }
+  return timeslots;
+};
+
+export const addTimeseriesColumn = (
+  scenario: UnitCommitmentScenario,
+  title: string,
+  columns: ColumnDefinition[],
+  minWidth: number = 65,
+) => {
+  const timeSlots = generateTimeslots(scenario);
+  const subColumns: ColumnDefinition[] = [];
+  timeSlots.forEach((t) => {
+    subColumns.push({
+      ...columnsCommonAttrs,
+      title: `${t}`,
+      field: `${title} ${t}`,
+      minWidth: minWidth,
+      formatter: floatFormatter,
+    });
+  });
+  columns.push({
+    title: title,
+    columns: subColumns,
+  });
+};
+
+export const columnsCommonAttrs: ColumnDefinition = {
+  headerHozAlign: "left",
+  hozAlign: "left",
+  title: "",
+  editor: "input",
+  editorParams: {
+    selectContents: true,
+  },
+  headerWordWrap: true,
+  formatter: "plaintext",
+  headerSort: false,
+  resizable: false,
+};
+
+interface DataTableProps {
+  onRowDeleted: (rowName: string) => ValidationError | null;
+  onRowRenamed: (
+    oldRowName: string,
+    newRowName: string,
+  ) => ValidationError | null;
+  onDataChanged: (
+    rowName: string,
+    key: string,
+    newValue: string,
+  ) => ValidationError | null;
+  generateData: () => [any[], ColumnDefinition[]];
+}
+
+function computeTableHeight(data: any[]): string {
+  const numRows = data.length;
+  const height = 70 + Math.min(numRows, 15) * 28;
+  return `${height}px`;
+}
+
+const DataTable = (props: DataTableProps) => {
+  const tableContainerRef = useRef<HTMLDivElement | null>(null);
+  const tableRef = useRef<Tabulator | null>(null);
+  const [isTableBuilt, setTableBuilt] = useState<Boolean>(false);
+
+  useEffect(() => {
+    const onCellEdited = (cell: CellComponent) => {
+      let newValue = cell.getValue();
+      let oldValue = cell.getOldValue();
+      // eslint-disable-next-line eqeqeq
+      if (newValue == oldValue) return;
+      if (cell.getField() === "Name") {
+        if (newValue === "") {
+          const err = props.onRowDeleted(oldValue);
+          if (err) {
+            cell.restoreOldValue();
+          } else {
+            cell
+              .getRow()
+              .delete()
+              .then((r) => {});
+          }
+        } else {
+          const err = props.onRowRenamed(oldValue, newValue);
+          if (err) {
+            cell.restoreOldValue();
+          }
+        }
+      } else {
+        const row = cell.getRow().getData();
+        const bus = row["Name"];
+        const err = props.onDataChanged(bus, cell.getField(), newValue);
+        if (err) {
+          cell.restoreOldValue();
+        }
+      }
+    };
+    if (tableContainerRef.current === null) return;
+    const [data, columns] = props.generateData();
+    const height = computeTableHeight(data);
+
+    if (tableRef.current === null) {
+      tableRef.current = new Tabulator(tableContainerRef.current, {
+        layout: "fitColumns",
+        data: data,
+        columns: columns,
+        height: height,
+      });
+      tableRef.current.on("tableBuilt", () => {
+        setTableBuilt(true);
+      });
+    }
+    if (isTableBuilt) {
+      const newHeight = height;
+      const newColumns = columns;
+      const newData = data;
+      const oldRows = tableRef.current.getRows();
+
+      // Update data
+      tableRef.current.replaceData(newData).then(() => {});
+
+      // Update columns
+      if (newColumns.length !== tableRef.current.getColumns().length) {
+        tableRef.current.setColumns(newColumns);
+      }
+
+      // Update height
+      if (tableRef.current.options.height !== newHeight) {
+        tableRef.current.setHeight(newHeight);
+      }
+
+      // Scroll to bottom
+      if (tableRef.current.getRows().length === oldRows.length + 1) {
+        setTimeout(() => {
+          const rows = tableRef.current!.getRows()!;
+          const lastRow = rows[rows.length - 1]!;
+          lastRow.scrollTo().then((r) => {});
+          lastRow.getCell("Name").edit();
+        }, 10);
+      }
+
+      // Update callbacks
+      tableRef.current.off("cellEdited");
+      tableRef.current.on("cellEdited", (cell) => {
+        onCellEdited(cell);
+      });
+    }
+  }, [props, isTableBuilt]);
+
+  return <div className="tableContainer" ref={tableContainerRef} />;
+};
+
+export default DataTable;

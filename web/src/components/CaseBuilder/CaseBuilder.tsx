@@ -5,8 +5,8 @@
  */
 
 import Header from "./Header";
-import Parameters from "./Parameters";
-import BusesComponent from "./BusesComponent";
+import Parameters from "./Parameters/Parameters";
+import Buses from "./Buses/Buses";
 import {
   BLANK_SCENARIO,
   TEST_SCENARIO,
@@ -32,11 +32,13 @@ import {
 } from "../../core/Operations/parameterOperations";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
+import ProfiledUnitsComponent from "./ProfiledUnits/ProfiledUnits";
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(() => {
-    const savedScenario = localStorage.getItem("scenario");
-    return savedScenario ? JSON.parse(savedScenario) : TEST_SCENARIO;
+    // const savedScenario = localStorage.getItem("scenario");
+    // return savedScenario ? JSON.parse(savedScenario) : TEST_SCENARIO;
+    return TEST_SCENARIO;
   });
   const [toastMessage, setToastMessage] = useState<string>("");
 
@@ -76,9 +78,10 @@ const CaseBuilder = () => {
     return null;
   };
 
-  const onBusDeleted = (bus: string) => {
+  const onBusDeleted = (bus: string): ValidationError | null => {
     const newScenario = deleteBus(bus, scenario);
     setAndSaveScenario(newScenario);
+    return null;
   };
 
   const onBusRenamed = (
@@ -97,6 +100,8 @@ const CaseBuilder = () => {
   const onDataChanged = (newScenario: UnitCommitmentScenario) => {
     setAndSaveScenario(newScenario);
   };
+
+  const onProfiledUnitCreated = () => {};
 
   const onLoad = (scenario: UnitCommitmentScenario) => {
     const preprocessed = preprocess(
@@ -139,13 +144,17 @@ const CaseBuilder = () => {
           onParameterChanged={onParameterChanged}
           scenario={scenario}
         />
-        <BusesComponent
+        <Buses
           scenario={scenario}
           onBusCreated={onBusCreated}
           onBusDataChanged={onBusDataChanged}
           onBusRenamed={onBusRenamed}
           onBusDeleted={onBusDeleted}
           onDataChanged={onDataChanged}
+        />
+        <ProfiledUnitsComponent
+          scenario={scenario}
+          onProfiledUnitCreated={onProfiledUnitCreated}
         />
         <Toast message={toastMessage} />
       </div>

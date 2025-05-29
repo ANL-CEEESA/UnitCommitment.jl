@@ -35,8 +35,9 @@
 }
 
 .tabulator .tabulator-header .tabulator-col .tabulator-col-content {
-  padding: 6px 8px;
-  height: 48px;
+  text-align: left;
+  padding: 0 8px;
+  line-height: 24px;
 }
 
 .tabulator .tabulator-header .tabulator-col:last-child {
@@ -71,6 +72,10 @@
 
 .tabulator-row .tabulator-cell.tabulator-editing input {
   font-family: monospace;
-  text-align: right;
+  text-align: left;
+  font-size: 12px;
+}
+
+.tabulator-col-group-cols {
   font-size: 12px;
 }
