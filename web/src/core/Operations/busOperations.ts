@@ -6,34 +6,27 @@
 
 import { Buses, UnitCommitmentScenario } from "../fixtures";
 import { ValidationError } from "../Validation/validate";
+import { generateTimeslots } from "../../components/Common/Forms/DataTable";
 
-const generateUniqueBusName = (scenario: UnitCommitmentScenario) => {
-  let newBusName = "b";
+export const generateUniqueName = (container: any, prefix: string): string => {
   let counter = 1;
-  let name = `${newBusName}${counter}`;
-  while (name in scenario.Buses) {
+  let name = `${prefix}${counter}`;
+  while (name in container) {
     counter++;
-    name = `${newBusName}${counter}`;
+    name = `${prefix}${counter}`;
   }
   return name;
 };
 
-const generateDefaultBusLoad = (scenario: UnitCommitmentScenario) => {
-  const T =
-    scenario.Parameters["Time horizon (h)"] *
-    (60 / scenario.Parameters["Time step (min)"]);
-  return new Array(T).fill(0);
-};
-
 export const createBus = (scenario: UnitCommitmentScenario) => {
-  const load = generateDefaultBusLoad(scenario);
-  let name = generateUniqueBusName(scenario);
+  const name = generateUniqueName(scenario.Buses, "b");
+  const timeslots = generateTimeslots(scenario);
   return {
     ...scenario,
     Buses: {
       ...scenario.Buses,
       [name]: {
-        "Load (MW)": load,
+        "Load (MW)": Array(timeslots.length).fill(0),
       },
     },
   };

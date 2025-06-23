@@ -23,6 +23,7 @@ import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../../Common/io";
 import FileUploadElement from "../../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
+import { createProfiledUnit } from "../../../core/Operations/profiledUnitOps";
 
 interface ProfiledUnitsProps {
   scenario: UnitCommitmentScenario;
@@ -98,7 +99,14 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
     });
   };
 
-  const onAdd = () => {};
+  const onAdd = () => {
+    const [newScenario, err] = createProfiledUnit(props.scenario);
+    if (err) {
+      props.onError(err.message);
+      return;
+    }
+    props.onDataChanged(newScenario);
+  };
 
   return (
     <div>

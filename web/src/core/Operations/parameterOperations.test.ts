@@ -15,18 +15,16 @@ import { TEST_DATA_1, TEST_DATA_2 } from "../fixtures.test";
 test("changeTimeHorizon: Shrink 1", () => {
   const [newScenario, err] = changeTimeHorizon(TEST_DATA_1, "3");
   assert(err === null);
-  assert.deepEqual(newScenario, {
-    Parameters: {
-      Version: "0.4",
-      "Power balance penalty ($/MW)": 1000.0,
-      "Time horizon (h)": 3,
-      "Time step (min)": 60,
-    },
-    Buses: {
-      b1: { "Load (MW)": [35.79534, 34.38835, 33.45083] },
-      b2: { "Load (MW)": [14.03739, 13.48563, 13.11797] },
-      b3: { "Load (MW)": [27.3729, 26.29698, 25.58005] },
-    },
+  assert.deepEqual(newScenario.Parameters, {
+    Version: "0.4",
+    "Power balance penalty ($/MW)": 1000.0,
+    "Time horizon (h)": 3,
+    "Time step (min)": 60,
+  });
+  assert.deepEqual(newScenario.Buses, {
+    b1: { "Load (MW)": [35.79534, 34.38835, 33.45083] },
+    b2: { "Load (MW)": [14.03739, 13.48563, 13.11797] },
+    b3: { "Load (MW)": [27.3729, 26.29698, 25.58005] },
   });
 });
 
@@ -51,23 +49,21 @@ test("changeTimeHorizon: Shrink 2", () => {
 test("changeTimeHorizon grow", () => {
   const [newScenario, err] = changeTimeHorizon(TEST_DATA_1, "7");
   assert(err === null);
-  assert.deepEqual(newScenario, {
-    Parameters: {
-      Version: "0.4",
-      "Power balance penalty ($/MW)": 1000.0,
-      "Time horizon (h)": 7,
-      "Time step (min)": 60,
+  assert.deepEqual(newScenario.Parameters, {
+    Version: "0.4",
+    "Power balance penalty ($/MW)": 1000.0,
+    "Time horizon (h)": 7,
+    "Time step (min)": 60,
+  });
+  assert.deepEqual(newScenario.Buses, {
+    b1: {
+      "Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044, 0, 0],
     },
-    Buses: {
-      b1: {
-        "Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044, 0, 0],
-      },
-      b2: {
-        "Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939, 0, 0],
-      },
-      b3: {
-        "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268, 0, 0],
-      },
+    b2: {
+      "Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939, 0, 0],
+    },
+    b3: {
+      "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268, 0, 0],
     },
   });
 });

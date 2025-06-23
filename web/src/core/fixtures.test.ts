@@ -12,7 +12,17 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
     b2: { "Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939] },
     b3: { "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268] },
   },
+  Generators: {
+    pu1: {
+      Bus: "b1",
+      Type: "Profiled",
+      "Cost ($/MW)": 12.5,
+      "Maximum power (MW)": [10, 12, 13, 15, 20],
+      "Minimum power (MW)": [0, 0, 0, 0, 0],
+    },
+  },
 };
+
 export const TEST_DATA_2: UnitCommitmentScenario = {
   Parameters: {
     Version: "0.4",
@@ -25,6 +35,17 @@ export const TEST_DATA_2: UnitCommitmentScenario = {
     b2: { "Load (MW)": [10, 20, 30, 40] },
     b3: { "Load (MW)": [0, 30, 0, 40] },
   },
+};
+
+export const TEST_DATA_BLANK: UnitCommitmentScenario = {
+  Parameters: {
+    Version: "0.4",
+    "Power balance penalty ($/MW)": 1000.0,
+    "Time horizon (h)": 5,
+    "Time step (min)": 60,
+  },
+  Buses: {},
+  Generators: {},
 };
 
 test("fixtures", () => {});
