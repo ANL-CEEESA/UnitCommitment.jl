@@ -46,13 +46,18 @@ export const changeBusData = (
   scenario: UnitCommitmentScenario,
 ): [UnitCommitmentScenario, ValidationError | null] => {
   // Load (MW)
-  const match = field.match(/Load (\d+)/);
+  const match = field.match(/Load \(MW\) (\d+):(\d+)/);
   if (match) {
     const newValueFloat = parseFloat(newValueStr);
     if (isNaN(newValueFloat)) {
       return [scenario, { message: `Invalid value: ${newValueStr}` }];
     }
-    const idx = parseInt(match[1]!, 10);
+
+    // Convert HH:MM to offset
+    const hours = parseInt(match[1]!, 10);
+    const min = parseInt(match[2]!, 10);
+    const idx = (hours * 60 + min) / scenario.Parameters["Time step (min)"];
+
     const newLoad = [...scenario.Buses[bus]!["Load (MW)"]];
     newLoad[idx] = newValueFloat;
     return [

@@ -5,13 +5,13 @@
  */
 
 import assert from "node:assert";
-import { BUS_TEST_DATA_1 } from "../../../core/Operations/busOperations.test";
 import { parseBusesCsv } from "../../CaseBuilder/Buses/BusesCsv";
 import { generateBusesData } from "../../CaseBuilder/Buses/Buses";
 import { generateCsv } from "./DataTable";
+import { TEST_DATA_1 } from "../../../core/fixtures.test";
 
 test("generate CSV", () => {
-  const [data, columns] = generateBusesData(BUS_TEST_DATA_1);
+  const [data, columns] = generateBusesData(TEST_DATA_1);
   const actualCsv = generateCsv(data, columns);
   const expectedCsv =
     "Name,Load (MW) 00:00,Load (MW) 01:00,Load (MW) 02:00,Load (MW) 03:00,Load (MW) 04:00\n" +
@@ -26,7 +26,7 @@ test("parse valid CSV", () => {
   //   "Name,Load 0,Load 1,Load 2,Load 3,Load 4\n" +
   //   "b1,0,1,2,3,4\n" +
   //   "b3,27.3729,26.29698,25.58005,25.15675,25.4268";
-  // const newScenario = parseBusesCsv(BUS_TEST_DATA_1, csvContents);
+  // const newScenario = parseBusesCsv(FixturesTest, csvContents);
   // assert.deepEqual(newScenario.Buses, {
   //   b1: {
   //     "Load (MW)": [0, 1, 2, 3, 4],
@@ -43,7 +43,7 @@ test("parse invalid CSV (wrong headers)", () => {
     "b1,0,1,2,3,4\n" +
     "b3,27.3729,26.29698,25.58005,25.15675,25.4268";
   expect(() => {
-    parseBusesCsv(BUS_TEST_DATA_1, csvContents);
+    parseBusesCsv(TEST_DATA_1, csvContents);
   }).toThrow(Error);
 });
 
@@ -53,6 +53,6 @@ test("parse invalid CSV (wrong data length)", () => {
     "b1,0,1,2,3\n" +
     "b3,27.3729,26.29698,25.58005,25.15675,25.4268";
   expect(() => {
-    parseBusesCsv(BUS_TEST_DATA_1, csvContents);
+    parseBusesCsv(TEST_DATA_1, csvContents);
   }).toThrow(Error);
 });

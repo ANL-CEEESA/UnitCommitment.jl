@@ -9,11 +9,11 @@ import {
   changeTimeStep,
   evaluatePwlFunction,
 } from "./parameterOperations";
-import { BUS_TEST_DATA_1, BUS_TEST_DATA_2 } from "./busOperations.test";
 import assert from "node:assert";
+import { TEST_DATA_1, TEST_DATA_2 } from "../fixtures.test";
 
 test("changeTimeHorizon: Shrink 1", () => {
-  const [newScenario, err] = changeTimeHorizon(BUS_TEST_DATA_1, "3");
+  const [newScenario, err] = changeTimeHorizon(TEST_DATA_1, "3");
   assert(err === null);
   assert.deepEqual(newScenario, {
     Parameters: {
@@ -31,7 +31,7 @@ test("changeTimeHorizon: Shrink 1", () => {
 });
 
 test("changeTimeHorizon: Shrink 2", () => {
-  const [newScenario, err] = changeTimeHorizon(BUS_TEST_DATA_2, "1");
+  const [newScenario, err] = changeTimeHorizon(TEST_DATA_2, "1");
   assert(err === null);
   assert.deepEqual(newScenario, {
     Parameters: {
@@ -49,7 +49,7 @@ test("changeTimeHorizon: Shrink 2", () => {
 });
 
 test("changeTimeHorizon grow", () => {
-  const [newScenario, err] = changeTimeHorizon(BUS_TEST_DATA_1, "7");
+  const [newScenario, err] = changeTimeHorizon(TEST_DATA_1, "7");
   assert(err === null);
   assert.deepEqual(newScenario, {
     Parameters: {
@@ -73,11 +73,11 @@ test("changeTimeHorizon grow", () => {
 });
 
 test("changeTimeHorizon invalid", () => {
-  let [, err] = changeTimeHorizon(BUS_TEST_DATA_1, "x");
+  let [, err] = changeTimeHorizon(TEST_DATA_1, "x");
   assert(err !== null);
   assert.equal(err.message, "Invalid value: x");
 
-  [, err] = changeTimeHorizon(BUS_TEST_DATA_1, "-3");
+  [, err] = changeTimeHorizon(TEST_DATA_1, "-3");
   assert(err !== null);
   assert.equal(err.message, "Invalid value: -3");
 });
@@ -93,7 +93,7 @@ test("evaluatePwlFunction", () => {
 });
 
 test("changeTimeStep", () => {
-  let [scenario, err] = changeTimeStep(BUS_TEST_DATA_2, "15");
+  let [scenario, err] = changeTimeStep(TEST_DATA_2, "15");
   assert(err === null);
   assert.deepEqual(scenario, {
     Parameters: {
@@ -109,7 +109,7 @@ test("changeTimeStep", () => {
     },
   });
 
-  [scenario, err] = changeTimeStep(BUS_TEST_DATA_2, "60");
+  [scenario, err] = changeTimeStep(TEST_DATA_2, "60");
   assert(err === null);
   assert.deepEqual(scenario, {
     Parameters: {
@@ -127,19 +127,19 @@ test("changeTimeStep", () => {
 });
 
 test("changeTimeStep invalid", () => {
-  let [, err] = changeTimeStep(BUS_TEST_DATA_2, "x");
+  let [, err] = changeTimeStep(TEST_DATA_2, "x");
   assert(err !== null);
   assert.equal(err.message, "Invalid value: x");
 
-  [, err] = changeTimeStep(BUS_TEST_DATA_2, "-10");
+  [, err] = changeTimeStep(TEST_DATA_2, "-10");
   assert(err !== null);
   assert.equal(err.message, "Invalid value: -10");
 
-  [, err] = changeTimeStep(BUS_TEST_DATA_2, "120");
+  [, err] = changeTimeStep(TEST_DATA_2, "120");
   assert(err !== null);
   assert.equal(err.message, "Invalid value: 120");
 
-  [, err] = changeTimeStep(BUS_TEST_DATA_2, "7");
+  [, err] = changeTimeStep(TEST_DATA_2, "7");
   assert(err !== null);
   assert.equal(err.message, "Time step must be a divisor of 60: 7");
 });
