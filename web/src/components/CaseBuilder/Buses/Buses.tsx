@@ -16,58 +16,46 @@ import FileUploadElement from "../../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
 import { ValidationError } from "../../../core/Validation/validate";
 import DataTable, {
-  addNameColumn,
-  addTimeseriesColumn,
   ColumnSpec,
   generateCsv,
   generateTableColumns,
   generateTableData,
+  parseCsv,
 } from "../../Common/Forms/DataTable";
 
 import { UnitCommitmentScenario } from "../../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
-import { parseBusesCsv } from "./BusesCsv";
+import {
+  changeBusData,
+  createBus,
+  deleteBus,
+  renameBus,
+} from "../../../core/Operations/busOperations";
+
+export const BusesColumnSpec: ColumnSpec[] = [
+  {
+    title: "Name",
+    type: "string",
+    width: 150,
+  },
+  {
+    title: "Load (MW)",
+    type: "number[]",
+    width: 60,
+  },
+];
 
 export const generateBusesData = (
   scenario: UnitCommitmentScenario,
 ): [any[], ColumnDefinition[]] => {
-  const colSpecs: ColumnSpec[] = [
-    {
-      title: "Name",
-      type: "string",
-      width: 150,
-    },
-    {
-      title: "Load (MW)",
-      type: "number[]",
-      width: 60,
-    },
-  ];
-  const columns = generateTableColumns(scenario, colSpecs);
-  const data = generateTableData(scenario.Buses, colSpecs, scenario);
+  const columns = generateTableColumns(scenario, BusesColumnSpec);
+  const data = generateTableData(scenario.Buses, BusesColumnSpec, scenario);
   return [data, columns];
 };
-
-export const generateBusesColumns = (
-  scenario: UnitCommitmentScenario,
-): ColumnDefinition[] => {
-  const columns: ColumnDefinition[] = [];
-  addNameColumn(columns);
-  addTimeseriesColumn(scenario, "Load (MW)", columns);
-  return columns;
-};
-
 interface BusesProps {
   scenario: UnitCommitmentScenario;
-  onBusCreated: () => void;
-  onBusDataChanged: (
-    bus: string,
-    field: string,
-    newValue: string,
-  ) => ValidationError | null;
-  onBusDeleted: (bus: string) => ValidationError | null;
-  onBusRenamed: (oldName: string, newName: string) => ValidationError | null;
   onDataChanged: (scenario: UnitCommitmentScenario) => void;
+  onError: (msg: string) => void;
 }
 
 function BusesComponent(props: BusesProps) {
@@ -81,19 +69,70 @@ function BusesComponent(props: BusesProps) {
 
   const onUpload = () => {
     fileUploadElem.current!.showFilePicker((csvContents: any) => {
-      const newScenario = parseBusesCsv(props.scenario, csvContents);
+      const [newBuses, err] = parseCsv(
+        csvContents,
+        BusesColumnSpec,
+        props.scenario,
+      );
+      if (err) {
+        props.onError(err.message);
+        return;
+      }
+      const newScenario = {
+        ...props.scenario,
+        Buses: newBuses,
+      };
       props.onDataChanged(newScenario);
     });
+  };
+
+  const onAdd = () => {
+    const newScenario = createBus(props.scenario);
+    props.onDataChanged(newScenario);
+  };
+
+  const onDataChanged = (
+    bus: string,
+    field: string,
+    newValue: string,
+  ): ValidationError | null => {
+    const [newScenario, err] = changeBusData(
+      bus,
+      field,
+      newValue,
+      props.scenario,
+    );
+    if (err) {
+      props.onError(err.message);
+      return err;
+    }
+    props.onDataChanged(newScenario);
+    return null;
+  };
+
+  const onDelete = (bus: string): ValidationError | null => {
+    const newScenario = deleteBus(bus, props.scenario);
+    props.onDataChanged(newScenario);
+    return null;
+  };
+
+  const onRename = (
+    oldName: string,
+    newName: string,
+  ): ValidationError | null => {
+    const [newScenario, err] = renameBus(oldName, newName, props.scenario);
+    if (err) {
+      props.onError(err.message);
+      return err;
+    }
+    props.onDataChanged(newScenario);
+    return null;
   };
 
   return (
     <div>
       <SectionHeader title="Buses">
-        <SectionButton
-          icon={faPlus}
-          tooltip="Add"
-          onClick={props.onBusCreated}
-        />
+        <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
         <SectionButton
           icon={faDownload}
           tooltip="Download"
@@ -102,9 +141,9 @@ function BusesComponent(props: BusesProps) {
         <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
       </SectionHeader>
       <DataTable
-        onRowDeleted={props.onBusDeleted}
-        onRowRenamed={props.onBusRenamed}
-        onDataChanged={props.onBusDataChanged}
+        onRowDeleted={onDelete}
+        onRowRenamed={onRename}
+        onDataChanged={onDataChanged}
         generateData={() => generateBusesData(props.scenario)}
       />
       <FileUploadElement ref={fileUploadElem} accept=".csv" />

@@ -16,66 +16,94 @@ import DataTable, {
   generateCsv,
   generateTableColumns,
   generateTableData,
+  parseCsv,
 } from "../../Common/Forms/DataTable";
 import { UnitCommitmentScenario } from "../../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../../Common/io";
+import FileUploadElement from "../../Common/Buttons/FileUploadElement";
+import { useRef } from "react";
 
 interface ProfiledUnitsProps {
   scenario: UnitCommitmentScenario;
-  onProfiledUnitCreated: () => void;
+  onDataChanged: (scenario: UnitCommitmentScenario) => void;
+  onError: (msg: string) => void;
 }
+
+const ProfiledUnitsColumnSpec: ColumnSpec[] = [
+  {
+    title: "Name",
+    type: "string",
+    width: 150,
+  },
+  {
+    title: "Bus",
+    type: "string",
+    width: 150,
+  },
+  {
+    title: "Cost ($/MW)",
+    type: "number",
+    width: 100,
+  },
+  {
+    title: "Maximum power (MW)",
+    type: "number[]",
+    width: 60,
+  },
+  {
+    title: "Minimum power (MW)",
+    type: "number[]",
+    width: 60,
+  },
+];
 
 const generateProfiledUnitsData = (
   scenario: UnitCommitmentScenario,
 ): [any[], ColumnDefinition[]] => {
-  const colSpecs: ColumnSpec[] = [
-    {
-      title: "Name",
-      type: "string",
-      width: 150,
-    },
-    {
-      title: "Bus",
-      type: "string",
-      width: 150,
-    },
-    {
-      title: "Cost ($/MW)",
-      type: "number",
-      width: 100,
-    },
-    {
-      title: "Maximum power (MW)",
-      type: "number[]",
-      width: 60,
-    },
-    {
-      title: "Minimum power (MW)",
-      type: "number[]",
-      width: 60,
-    },
-  ];
-  const columns = generateTableColumns(scenario, colSpecs);
-  const data = generateTableData(scenario.Generators, colSpecs, scenario);
+  const columns = generateTableColumns(scenario, ProfiledUnitsColumnSpec);
+  const data = generateTableData(
+    scenario.Generators,
+    ProfiledUnitsColumnSpec,
+    scenario,
+  );
   return [data, columns];
 };
 
 const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
+  const fileUploadElem = useRef<FileUploadElement>(null);
+
   const onDownload = () => {
     const [data, columns] = generateProfiledUnitsData(props.scenario);
     const csvContents = generateCsv(data, columns);
     offerDownload(csvContents, "text/csv", "profiled_units.csv");
   };
-  const onUpload = () => {};
+
+  const onUpload = () => {
+    fileUploadElem.current!.showFilePicker((csvContents: any) => {
+      const [newGenerators, err] = parseCsv(
+        csvContents,
+        ProfiledUnitsColumnSpec,
+        props.scenario,
+      );
+      if (err) {
+        props.onError(err.message);
+        return;
+      }
+      const newScenario = {
+        ...props.scenario,
+        Generators: newGenerators,
+      };
+      props.onDataChanged(newScenario);
+    });
+  };
+
+  const onAdd = () => {};
+
   return (
     <div>
       <SectionHeader title="Profiled Units">
-        <SectionButton
-          icon={faPlus}
-          tooltip="Add"
-          onClick={props.onProfiledUnitCreated}
-        />
+        <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
         <SectionButton
           icon={faDownload}
           tooltip="Download"
@@ -95,6 +123,7 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
         }}
         generateData={() => generateProfiledUnitsData(props.scenario)}
       />
+      <FileUploadElement ref={fileUploadElem} accept=".csv" />
     </div>
   );
 };

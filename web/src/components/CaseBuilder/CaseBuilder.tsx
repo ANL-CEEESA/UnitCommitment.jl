@@ -17,19 +17,8 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
 import { useState } from "react";
 import Footer from "./Footer";
-import { validate, ValidationError } from "../../core/Validation/validate";
+import { validate } from "../../core/Validation/validate";
 import { offerDownload } from "../Common/io";
-import {
-  changeBusData,
-  createBus,
-  deleteBus,
-  renameBus,
-} from "../../core/Operations/busOperations";
-import {
-  changeParameter,
-  changeTimeHorizon,
-  changeTimeStep,
-} from "../../core/Operations/parameterOperations";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
 import ProfiledUnitsComponent from "./ProfiledUnits/ProfiledUnits";
@@ -59,49 +48,9 @@ const CaseBuilder = () => {
     );
   };
 
-  const onBusCreated = () => {
-    const newScenario = createBus(scenario);
-    setAndSaveScenario(newScenario);
-  };
-
-  const onBusDataChanged = (
-    bus: string,
-    field: string,
-    newValue: string,
-  ): ValidationError | null => {
-    const [newScenario, err] = changeBusData(bus, field, newValue, scenario);
-    if (err) {
-      setToastMessage(err.message);
-      return err;
-    }
-    setAndSaveScenario(newScenario);
-    return null;
-  };
-
-  const onBusDeleted = (bus: string): ValidationError | null => {
-    const newScenario = deleteBus(bus, scenario);
-    setAndSaveScenario(newScenario);
-    return null;
-  };
-
-  const onBusRenamed = (
-    oldName: string,
-    newName: string,
-  ): ValidationError | null => {
-    const [newScenario, err] = renameBus(oldName, newName, scenario);
-    if (err) {
-      setToastMessage(err.message);
-      return err;
-    }
-    setAndSaveScenario(newScenario);
-    return null;
-  };
-
   const onDataChanged = (newScenario: UnitCommitmentScenario) => {
     setAndSaveScenario(newScenario);
   };
-
-  const onProfiledUnitCreated = () => {};
 
   const onLoad = (scenario: UnitCommitmentScenario) => {
     const preprocessed = preprocess(
@@ -119,42 +68,24 @@ const CaseBuilder = () => {
     setToastMessage("Data loaded successfully");
   };
 
-  const onParameterChanged = (key: string, value: string) => {
-    let newScenario, err;
-    if (key === "Time horizon (h)") {
-      [newScenario, err] = changeTimeHorizon(scenario, value);
-    } else if (key === "Time step (min)") {
-      [newScenario, err] = changeTimeStep(scenario, value);
-    } else {
-      [newScenario, err] = changeParameter(scenario, key, value);
-    }
-    if (err) {
-      setToastMessage(err.message);
-      return err;
-    }
-    setAndSaveScenario(newScenario);
-    return null;
-  };
-
   return (
     <div>
       <Header onClear={onClear} onSave={onSave} onLoad={onLoad} />
       <div className="content">
         <Parameters
-          onParameterChanged={onParameterChanged}
           scenario={scenario}
+          onDataChanged={onDataChanged}
+          onError={setToastMessage}
         />
         <Buses
           scenario={scenario}
-          onBusCreated={onBusCreated}
-          onBusDataChanged={onBusDataChanged}
-          onBusRenamed={onBusRenamed}
-          onBusDeleted={onBusDeleted}
           onDataChanged={onDataChanged}
+          onError={setToastMessage}
         />
         <ProfiledUnitsComponent
           scenario={scenario}
-          onProfiledUnitCreated={onProfiledUnitCreated}
+          onDataChanged={onDataChanged}
+          onError={setToastMessage}
         />
         <Toast message={toastMessage} />
       </div>

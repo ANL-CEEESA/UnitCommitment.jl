@@ -12,6 +12,7 @@ import {
 } from "tabulator-tables";
 import { ValidationError } from "../../../core/Validation/validate";
 import { UnitCommitmentScenario } from "../../../core/fixtures";
+import Papa from "papaparse";
 
 export interface ColumnSpec {
   title: string;
@@ -126,17 +127,85 @@ export const generateCsv = (data: any[], columns: ColumnDefinition[]) => {
   return `${csvHeader}\n${csvBody}`;
 };
 
-export const floatFormatter = (cell: CellComponent) => {
-  return parseFloat(cell.getValue()).toFixed(1);
+export const parseCsv = (
+  csvContents: string,
+  colSpecs: ColumnSpec[],
+  scenario: UnitCommitmentScenario,
+): [any, ValidationError | null] => {
+  // Parse contents
+  const csv = Papa.parse(csvContents, {
+    header: true,
+    skipEmptyLines: true,
+    transformHeader: (header) => header.trim(),
+    transform: (value) => value.trim(),
+  });
+
+  // Check for parsing errors
+  if (csv.errors.length > 0) {
+    console.error(csv.errors);
+    return [null, { message: "Could not parse CSV file" }];
+  }
+
+  // Check CSV headers
+  const columns = generateTableColumns(scenario, colSpecs);
+  const expectedHeader: string[] = [];
+  columns.forEach((column) => {
+    if (column.columns) {
+      column.columns.forEach((subcolumn) => {
+        expectedHeader.push(subcolumn.field!);
+      });
+    } else {
+      expectedHeader.push(column.field!);
+    }
+  });
+  const actualHeader = csv.meta.fields!;
+  for (let i = 0; i < expectedHeader.length; i++) {
+    if (expectedHeader[i] !== actualHeader[i]) {
+      return [
+        null,
+        {
+          message: `Invalid CSV: Header mismatch at column ${i + 1}. 
+          Expected "${expectedHeader[i]}", found "${actualHeader[i]}"`,
+        },
+      ];
+    }
+  }
+
+  // Parse each row
+  const timeslots = generateTimeslots(scenario);
+  const data: { [key: string]: any } = {};
+  for (let i = 0; i < csv.data.length; i++) {
+    const row = csv.data[i] as { [key: string]: any };
+    const name = row["Name"] as string;
+    data[name] = {};
+
+    for (const spec of colSpecs) {
+      if (spec.title === "Name") continue;
+      switch (spec.type) {
+        case "string":
+        case "number":
+          data[name][spec.title] = row[spec.title];
+          break;
+        case "number[]":
+          data[name][spec.title] = Array(timeslots.length);
+
+          for (let i = 0; i < timeslots.length; i++) {
+            data[name][spec.title][i] = parseFloat(
+              row[`${spec.title} ${timeslots[i]}`],
+            );
+          }
+          break;
+        default:
+          console.error(`Unknown type: ${spec.type}`);
+      }
+    }
+  }
+
+  return [data, null];
 };
 
-export const addNameColumn = (columns: ColumnDefinition[]) => {
-  columns.push({
-    ...columnsCommonAttrs,
-    title: "Name",
-    field: "Name",
-    minWidth: 150,
-  });
+export const floatFormatter = (cell: CellComponent) => {
+  return parseFloat(cell.getValue()).toFixed(1);
 };
 
 export const generateTimeslots = (scenario: UnitCommitmentScenario) => {
@@ -154,29 +223,6 @@ export const generateTimeslots = (scenario: UnitCommitmentScenario) => {
     timeslots.push(formattedTime);
   }
   return timeslots;
-};
-
-export const addTimeseriesColumn = (
-  scenario: UnitCommitmentScenario,
-  title: string,
-  columns: ColumnDefinition[],
-  minWidth: number = 65,
-) => {
-  const timeSlots = generateTimeslots(scenario);
-  const subColumns: ColumnDefinition[] = [];
-  timeSlots.forEach((t) => {
-    subColumns.push({
-      ...columnsCommonAttrs,
-      title: `${t}`,
-      field: `${title} ${t}`,
-      minWidth: minWidth,
-      formatter: floatFormatter,
-    });
-  });
-  columns.push({
-    title: title,
-    columns: subColumns,
-  });
 };
 
 export const columnsCommonAttrs: ColumnDefinition = {
