@@ -56,7 +56,14 @@ export const changeBusData = (
 
 export const deleteBus = (bus: string, scenario: UnitCommitmentScenario) => {
   const { [bus]: _, ...newBuses } = scenario.Buses;
-  return { ...scenario, Buses: newBuses };
+  const newGenerators = { ...scenario.Generators };
+
+  // Update generators
+  for (const genName in scenario.Generators) {
+    let gen = scenario.Generators[genName]!;
+    if (gen["Bus"] === bus) delete newGenerators[genName];
+  }
+  return { ...scenario, Buses: newBuses, Generators: newGenerators };
 };
 
 export const renameBus = (
@@ -66,5 +73,14 @@ export const renameBus = (
 ): [UnitCommitmentScenario, ValidationError | null] => {
   const [newBuses, err] = renameItemInObject(oldName, newName, scenario.Buses);
   if (err) return [scenario, err];
-  return [{ ...scenario, Buses: newBuses }, null];
+
+  // Update generators
+  const newGenerators = { ...scenario.Generators };
+  for (const genName in scenario.Generators) {
+    let gen = newGenerators[genName]!;
+    if (gen["Bus"] === oldName) {
+      newGenerators[genName] = { ...gen, Bus: newName };
+    }
+  }
+  return [{ ...scenario, Buses: newBuses, Generators: newGenerators }, null];
 };

@@ -48,12 +48,19 @@ test("deleteBus", () => {
 });
 
 test("renameBus", () => {
-  let [scenario, err] = renameBus("b2", "b99", TEST_DATA_1);
+  let [scenario, err] = renameBus("b1", "b99", TEST_DATA_1);
   assert(err === null);
   assert.deepEqual(scenario.Buses, {
-    b1: { "Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044] },
-    b99: { "Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939] },
+    b99: { "Load (MW)": [35.79534, 34.38835, 33.45083, 32.89729, 33.25044] },
+    b2: { "Load (MW)": [14.03739, 13.48563, 13.11797, 12.9009, 13.03939] },
     b3: { "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268] },
+  });
+  assert.deepEqual(scenario.Generators["pu1"], {
+    Bus: "b99",
+    Type: "Profiled",
+    "Cost ($/MW)": 12.5,
+    "Maximum power (MW)": [10, 12, 13, 15, 20],
+    "Minimum power (MW)": [0, 0, 0, 0, 0],
   });
 });
 
