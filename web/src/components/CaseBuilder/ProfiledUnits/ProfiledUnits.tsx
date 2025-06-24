@@ -97,6 +97,10 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
         props.onError(err.message);
         return;
       }
+      for (const gen in newGenerators) {
+        newGenerators[gen]["Type"] = "Profiled";
+      }
+
       const newScenario = {
         ...props.scenario,
         Generators: newGenerators,

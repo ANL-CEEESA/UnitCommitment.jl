@@ -13,6 +13,7 @@ import {
 import { ValidationError } from "../../../core/Validation/validate";
 import { UnitCommitmentScenario } from "../../../core/fixtures";
 import Papa from "papaparse";
+import { parseNumber } from "../../../core/Operations/commonOps";
 
 export interface ColumnSpec {
   title: string;
@@ -178,14 +179,32 @@ export const parseCsv = (
   const data: { [key: string]: any } = {};
   for (let i = 0; i < csv.data.length; i++) {
     const row = csv.data[i] as { [key: string]: any };
+    const rowRef = ` (row ${i + 1})`;
     const name = row["Name"] as string;
+    if (name in data) {
+      return [null, { message: `Name "${name}" is duplicated` + rowRef }];
+    }
     data[name] = {};
 
     for (const spec of colSpecs) {
       if (spec.title === "Name") continue;
       switch (spec.type) {
         case "string":
+          data[name][spec.title] = row[spec.title];
+          break;
         case "number":
+          const [val, err] = parseNumber(row[spec.title]);
+          if (err) return [null, { message: err.message + rowRef }];
+          data[name][spec.title] = val;
+          break;
+        case "busRef":
+          const busName = row[spec.title];
+          if (!(busName in scenario.Buses)) {
+            return [
+              null,
+              { message: `Bus "${busName}" does not exist` + rowRef },
+            ];
+          }
           data[name][spec.title] = row[spec.title];
           break;
         case "number[]":
@@ -198,7 +217,7 @@ export const parseCsv = (
           }
           break;
         default:
-          console.error(`Unknown type: ${spec.type}`);
+          throw Error(`Unknown type: ${spec.type}`);
       }
     }
   }

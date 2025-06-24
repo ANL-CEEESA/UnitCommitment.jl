@@ -40,7 +40,9 @@ export const generateUniqueName = (container: any, prefix: string): string => {
   return name;
 };
 
-const parseNumber = (valueStr: string): [number, ValidationError | null] => {
+export const parseNumber = (
+  valueStr: string,
+): [number, ValidationError | null] => {
   const valueFloat = parseFloat(valueStr);
   if (isNaN(valueFloat)) {
     return [0, { message: `"${valueStr}" is not a valid number` }];
