@@ -13,6 +13,7 @@ import FileUploadElement from "../Common/Buttons/FileUploadElement";
 interface HeaderProps {
   onClear: () => void;
   onSave: () => void;
+  onUndo: () => void;
   onLoad: (data: UnitCommitmentScenario) => void;
 }
 
@@ -32,6 +33,7 @@ function Header(props: HeaderProps) {
         <h1>UnitCommitment.jl</h1>
         <h2>Case Builder</h2>
         <div className={styles.buttonContainer}>
+          <SiteHeaderButton title="Undo" onClick={props.onUndo} />
           <SiteHeaderButton title="Clear" onClick={props.onClear} />
           <SiteHeaderButton title="Load" onClick={onLoad} />
           <SiteHeaderButton title="Save" onClick={props.onSave} />

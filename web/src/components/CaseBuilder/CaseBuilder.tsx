@@ -29,11 +29,22 @@ const CaseBuilder = () => {
     // return savedScenario ? JSON.parse(savedScenario) : TEST_SCENARIO;
     return TEST_SCENARIO;
   });
+  const [undoStack, setUndoStack] = useState<UnitCommitmentScenario[]>([]);
   const [toastMessage, setToastMessage] = useState<string>("");
 
-  const setAndSaveScenario = (scenario: UnitCommitmentScenario) => {
-    setScenario(scenario);
-    localStorage.setItem("scenario", JSON.stringify(scenario));
+  const setAndSaveScenario = (
+    newScenario: UnitCommitmentScenario,
+    updateUndoStack = true,
+  ) => {
+    if (updateUndoStack) {
+      const newUndoStack = [...undoStack, scenario];
+      if (newUndoStack.length > 25) {
+        newUndoStack.splice(0, newUndoStack.length - 25);
+      }
+      setUndoStack(newUndoStack);
+    }
+    setScenario(newScenario);
+    localStorage.setItem("scenario", JSON.stringify(newScenario));
   };
 
   const onClear = () => {
@@ -68,9 +79,20 @@ const CaseBuilder = () => {
     setToastMessage("Data loaded successfully");
   };
 
+  const onUndo = () => {
+    if (undoStack.length === 0) return;
+    setUndoStack(undoStack.slice(0, -1));
+    setAndSaveScenario(undoStack[undoStack.length - 1]!, false);
+  };
+
   return (
     <div>
-      <Header onClear={onClear} onSave={onSave} onLoad={onLoad} />
+      <Header
+        onClear={onClear}
+        onSave={onSave}
+        onLoad={onLoad}
+        onUndo={onUndo}
+      />
       <div className="content">
         <Parameters
           scenario={scenario}
