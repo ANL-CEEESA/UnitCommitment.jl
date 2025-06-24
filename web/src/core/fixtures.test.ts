@@ -20,6 +20,13 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
       "Maximum power (MW)": [10, 12, 13, 15, 20],
       "Minimum power (MW)": [0, 0, 0, 0, 0],
     },
+    pu2: {
+      Bus: "b1",
+      Type: "Profiled",
+      "Cost ($/MW)": 120,
+      "Maximum power (MW)": [50, 50, 50, 50, 50],
+      "Minimum power (MW)": [0, 0, 0, 0, 0],
+    },
   },
 };
 
@@ -35,6 +42,7 @@ export const TEST_DATA_2: UnitCommitmentScenario = {
     b2: { "Load (MW)": [10, 20, 30, 40] },
     b3: { "Load (MW)": [0, 30, 0, 40] },
   },
+  Generators: {},
 };
 
 export const TEST_DATA_BLANK: UnitCommitmentScenario = {

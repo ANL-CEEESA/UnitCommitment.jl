@@ -28,7 +28,7 @@ export interface UnitCommitmentScenario {
     "Time step (min)": number;
   };
   Buses: Buses;
-  Generators?: Generators;
+  Generators: Generators;
 }
 
 export const BLANK_SCENARIO: UnitCommitmentScenario = {

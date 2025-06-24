@@ -12,7 +12,7 @@ import {
   changeParameter,
   changeTimeHorizon,
   changeTimeStep,
-} from "../../../core/Operations/parameterOperations";
+} from "../../../core/Operations/parameterOps";
 
 interface ParametersProps {
   scenario: UnitCommitmentScenario;

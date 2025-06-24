@@ -6,8 +6,8 @@
 
 import { UnitCommitmentScenario } from "../fixtures";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
-import { generateUniqueName } from "./busOperations";
 import { ValidationError } from "../Validation/validate";
+import { generateUniqueName, renameItemInObject } from "./commonOps";
 
 export const createProfiledUnit = (
   scenario: UnitCommitmentScenario,
@@ -34,4 +34,26 @@ export const createProfiledUnit = (
     },
     null,
   ];
+};
+
+export const deleteGenerator = (
+  name: string,
+  scenario: UnitCommitmentScenario,
+): UnitCommitmentScenario => {
+  const { [name]: _, ...newGenerators } = scenario.Generators;
+  return { ...scenario, Generators: newGenerators };
+};
+
+export const renameGenerator = (
+  oldName: string,
+  newName: string,
+  scenario: UnitCommitmentScenario,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const [newGen, err] = renameItemInObject(
+    oldName,
+    newName,
+    scenario.Generators,
+  );
+  if (err) return [scenario, err];
+  return [{ ...scenario, Generators: newGen }, null];
 };

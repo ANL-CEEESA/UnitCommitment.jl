@@ -30,7 +30,7 @@ import {
   createBus,
   deleteBus,
   renameBus,
-} from "../../../core/Operations/busOperations";
+} from "../../../core/Operations/busOps";
 
 export const BusesColumnSpec: ColumnSpec[] = [
   {

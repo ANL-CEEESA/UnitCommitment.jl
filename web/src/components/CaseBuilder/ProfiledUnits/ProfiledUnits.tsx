@@ -23,7 +23,11 @@ import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../../Common/io";
 import FileUploadElement from "../../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
-import { createProfiledUnit } from "../../../core/Operations/profiledUnitOps";
+import {
+  createProfiledUnit,
+  deleteGenerator,
+} from "../../../core/Operations/generatorOps";
+import { ValidationError } from "../../../core/Validation/validate";
 
 interface ProfiledUnitsProps {
   scenario: UnitCommitmentScenario;
@@ -108,6 +112,12 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
     props.onDataChanged(newScenario);
   };
 
+  const onDelete = (name: string): ValidationError | null => {
+    const newScenario = deleteGenerator(name, props.scenario);
+    props.onDataChanged(newScenario);
+    return null;
+  };
+
   return (
     <div>
       <SectionHeader title="Profiled Units">
@@ -120,9 +130,7 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
         <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
       </SectionHeader>
       <DataTable
-        onRowDeleted={() => {
-          return null;
-        }}
+        onRowDeleted={onDelete}
         onRowRenamed={() => {
           return null;
         }}

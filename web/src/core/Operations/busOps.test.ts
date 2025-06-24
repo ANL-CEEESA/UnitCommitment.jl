@@ -4,12 +4,7 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import {
-  changeBusData,
-  createBus,
-  deleteBus,
-  renameBus,
-} from "./busOperations";
+import { changeBusData, createBus, deleteBus, renameBus } from "./busOps";
 import assert from "node:assert";
 import { TEST_DATA_1 } from "../fixtures.test";
 
@@ -65,5 +60,5 @@ test("renameBus", () => {
 test("renameBus with duplicated name", () => {
   let [, err] = renameBus("b3", "b1", TEST_DATA_1);
   assert(err != null);
-  assert.equal(err.message, `Bus b1 already exists`);
+  assert.equal(err.message, `b1 already exists`);
 });

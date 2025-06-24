@@ -4,19 +4,10 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { Buses, UnitCommitmentScenario } from "../fixtures";
+import { UnitCommitmentScenario } from "../fixtures";
 import { ValidationError } from "../Validation/validate";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
-
-export const generateUniqueName = (container: any, prefix: string): string => {
-  let counter = 1;
-  let name = `${prefix}${counter}`;
-  while (name in container) {
-    counter++;
-    name = `${prefix}${counter}`;
-  }
-  return name;
-};
+import { generateUniqueName, renameItemInObject } from "./commonOps";
 
 export const createBus = (scenario: UnitCommitmentScenario) => {
   const name = generateUniqueName(scenario.Buses, "b");
@@ -72,10 +63,7 @@ export const changeBusData = (
 
 export const deleteBus = (bus: string, scenario: UnitCommitmentScenario) => {
   const { [bus]: _, ...newBuses } = scenario.Buses;
-  return {
-    ...scenario,
-    Buses: newBuses,
-  };
+  return { ...scenario, Buses: newBuses };
 };
 
 export const renameBus = (
@@ -83,22 +71,7 @@ export const renameBus = (
   newName: string,
   scenario: UnitCommitmentScenario,
 ): [UnitCommitmentScenario, ValidationError | null] => {
-  if (newName in scenario.Buses) {
-    return [scenario, { message: `Bus ${newName} already exists` }];
-  }
-  const newBuses: Buses = Object.keys(scenario.Buses).reduce((acc, val) => {
-    if (val === oldName) {
-      acc[newName] = scenario.Buses[val]!;
-    } else {
-      acc[val] = scenario.Buses[val]!;
-    }
-    return acc;
-  }, {} as Buses);
-  return [
-    {
-      ...scenario,
-      Buses: newBuses,
-    },
-    null,
-  ];
+  const [newBuses, err] = renameItemInObject(oldName, newName, scenario.Buses);
+  if (err) return [scenario, err];
+  return [{ ...scenario, Buses: newBuses }, null];
 };
