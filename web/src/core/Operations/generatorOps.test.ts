@@ -7,6 +7,7 @@
 import { TEST_DATA_1, TEST_DATA_BLANK } from "../fixtures.test";
 import assert from "node:assert";
 import {
+  changeProfiledUnitData,
   createProfiledUnit,
   deleteGenerator,
   renameGenerator,
@@ -41,9 +42,54 @@ test("createProfiledUnit", () => {
 });
 
 test("createProfiledUnit with blank file", () => {
-  const [_, err] = createProfiledUnit(TEST_DATA_BLANK);
+  const [, err] = createProfiledUnit(TEST_DATA_BLANK);
   assert(err !== null);
   assert.equal(err.message, "Profiled unit requires an existing bus.");
+});
+
+test("changeProfiledUnitData", () => {
+  let scenario = TEST_DATA_1;
+  let err = null;
+  [scenario, err] = changeProfiledUnitData(
+    "pu1",
+    "Cost ($/MW)",
+    "99",
+    scenario,
+  );
+  assert.equal(err, null);
+  [scenario, err] = changeProfiledUnitData(
+    "pu1",
+    "Maximum power (MW) 03:00",
+    "99",
+    scenario,
+  );
+  assert.equal(err, null);
+  [scenario, err] = changeProfiledUnitData("pu2", "Bus", "b3", scenario);
+  assert.equal(err, null);
+  assert.deepEqual(scenario.Generators, {
+    pu1: {
+      Bus: "b1",
+      Type: "Profiled",
+      "Cost ($/MW)": 99,
+      "Maximum power (MW)": [10, 12, 13, 99, 20],
+      "Minimum power (MW)": [0, 0, 0, 0, 0],
+    },
+    pu2: {
+      Bus: "b3",
+      Type: "Profiled",
+      "Cost ($/MW)": 120,
+      "Maximum power (MW)": [50, 50, 50, 50, 50],
+      "Minimum power (MW)": [0, 0, 0, 0, 0],
+    },
+  });
+});
+
+test("changeProfiledUnitData with invalid bus", () => {
+  let scenario = TEST_DATA_1;
+  let err = null;
+  [scenario, err] = changeProfiledUnitData("pu1", "Bus", "b99", scenario);
+  assert(err !== null);
+  assert.equal(err.message, 'Bus "b99" does not exist');
 });
 
 test("deleteGenerator", () => {

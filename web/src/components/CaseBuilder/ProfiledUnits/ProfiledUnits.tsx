@@ -24,8 +24,10 @@ import { offerDownload } from "../../Common/io";
 import FileUploadElement from "../../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
 import {
+  changeProfiledUnitData,
   createProfiledUnit,
   deleteGenerator,
+  renameGenerator,
 } from "../../../core/Operations/generatorOps";
 import { ValidationError } from "../../../core/Validation/validate";
 
@@ -35,7 +37,7 @@ interface ProfiledUnitsProps {
   onError: (msg: string) => void;
 }
 
-const ProfiledUnitsColumnSpec: ColumnSpec[] = [
+export const ProfiledUnitsColumnSpec: ColumnSpec[] = [
   {
     title: "Name",
     type: "string",
@@ -43,7 +45,7 @@ const ProfiledUnitsColumnSpec: ColumnSpec[] = [
   },
   {
     title: "Bus",
-    type: "string",
+    type: "busRef",
     width: 150,
   },
   {
@@ -118,6 +120,42 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
     return null;
   };
 
+  const onDataChanged = (
+    name: string,
+    field: string,
+    newValue: string,
+  ): ValidationError | null => {
+    const [newScenario, err] = changeProfiledUnitData(
+      name,
+      field,
+      newValue,
+      props.scenario,
+    );
+    if (err) {
+      props.onError(err.message);
+      return err;
+    }
+    props.onDataChanged(newScenario);
+    return null;
+  };
+
+  const onRename = (
+    oldName: string,
+    newName: string,
+  ): ValidationError | null => {
+    const [newScenario, err] = renameGenerator(
+      oldName,
+      newName,
+      props.scenario,
+    );
+    if (err) {
+      props.onError(err.message);
+      return err;
+    }
+    props.onDataChanged(newScenario);
+    return null;
+  };
+
   return (
     <div>
       <SectionHeader title="Profiled Units">
@@ -131,12 +169,8 @@ const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
       </SectionHeader>
       <DataTable
         onRowDeleted={onDelete}
-        onRowRenamed={() => {
-          return null;
-        }}
-        onDataChanged={() => {
-          return null;
-        }}
+        onRowRenamed={onRename}
+        onDataChanged={onDataChanged}
         generateData={() => generateProfiledUnitsData(props.scenario)}
       />
       <FileUploadElement ref={fileUploadElem} accept=".csv" />

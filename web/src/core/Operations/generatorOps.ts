@@ -4,10 +4,15 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { UnitCommitmentScenario } from "../fixtures";
+import { Generators, UnitCommitmentScenario } from "../fixtures";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
 import { ValidationError } from "../Validation/validate";
-import { generateUniqueName, renameItemInObject } from "./commonOps";
+import {
+  changeData,
+  generateUniqueName,
+  renameItemInObject,
+} from "./commonOps";
+import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits/ProfiledUnits";
 
 export const createProfiledUnit = (
   scenario: UnitCommitmentScenario,
@@ -31,6 +36,32 @@ export const createProfiledUnit = (
           "Maximum power (MW)": Array(timeslots.length).fill(0),
         },
       },
+    },
+    null,
+  ];
+};
+
+export const changeProfiledUnitData = (
+  generator: string,
+  field: string,
+  newValueStr: string,
+  scenario: UnitCommitmentScenario,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const [newGen, err] = changeData(
+    field,
+    newValueStr,
+    scenario.Generators[generator]!,
+    ProfiledUnitsColumnSpec,
+    scenario,
+  );
+  if (err) return [scenario, err];
+  return [
+    {
+      ...scenario,
+      Generators: {
+        ...scenario.Generators,
+        [generator]: newGen,
+      } as Generators,
     },
     null,
   ];

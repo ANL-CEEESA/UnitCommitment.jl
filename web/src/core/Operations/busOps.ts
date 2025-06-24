@@ -4,10 +4,15 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { UnitCommitmentScenario } from "../fixtures";
+import { Buses, UnitCommitmentScenario } from "../fixtures";
 import { ValidationError } from "../Validation/validate";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
-import { generateUniqueName, renameItemInObject } from "./commonOps";
+import {
+  changeData,
+  generateUniqueName,
+  renameItemInObject,
+} from "./commonOps";
+import { BusesColumnSpec } from "../../components/CaseBuilder/Buses/Buses";
 
 export const createBus = (scenario: UnitCommitmentScenario) => {
   const name = generateUniqueName(scenario.Buses, "b");
@@ -29,36 +34,24 @@ export const changeBusData = (
   newValueStr: string,
   scenario: UnitCommitmentScenario,
 ): [UnitCommitmentScenario, ValidationError | null] => {
-  // Load (MW)
-  const match = field.match(/Load \(MW\) (\d+):(\d+)/);
-  if (match) {
-    const newValueFloat = parseFloat(newValueStr);
-    if (isNaN(newValueFloat)) {
-      return [scenario, { message: `Invalid value: ${newValueStr}` }];
-    }
-
-    // Convert HH:MM to offset
-    const hours = parseInt(match[1]!, 10);
-    const min = parseInt(match[2]!, 10);
-    const idx = (hours * 60 + min) / scenario.Parameters["Time step (min)"];
-
-    const newLoad = [...scenario.Buses[bus]!["Load (MW)"]];
-    newLoad[idx] = newValueFloat;
-    return [
-      {
-        ...scenario,
-        Buses: {
-          ...scenario.Buses,
-          [bus]: {
-            "Load (MW)": newLoad,
-          },
-        },
-      },
-      null,
-    ];
-  }
-
-  throw Error(`Unknown field: ${field}`);
+  const [newBus, err] = changeData(
+    field,
+    newValueStr,
+    scenario.Buses[bus]!,
+    BusesColumnSpec,
+    scenario,
+  );
+  if (err) return [scenario, err];
+  return [
+    {
+      ...scenario,
+      Buses: {
+        ...scenario.Buses,
+        [bus]: newBus,
+      } as Buses,
+    },
+    null,
+  ];
 };
 
 export const deleteBus = (bus: string, scenario: UnitCommitmentScenario) => {

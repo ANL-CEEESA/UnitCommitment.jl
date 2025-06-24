@@ -16,7 +16,7 @@ import Papa from "papaparse";
 
 export interface ColumnSpec {
   title: string;
-  type: "string" | "number" | "number[]";
+  type: "string" | "number" | "number[]" | "busRef";
   width: number;
 }
 
@@ -29,6 +29,7 @@ export const generateTableColumns = (
   colSpecs.forEach((spec) => {
     switch (spec.type) {
       case "string":
+      case "busRef":
         columns.push({
           ...columnsCommonAttrs,
           title: spec.title,
@@ -62,7 +63,7 @@ export const generateTableColumns = (
         });
         break;
       default:
-        console.error(`Unknown type: ${spec.type}`);
+        throw Error(`Unknown type: ${spec.type}`);
     }
   });
   return columns;
@@ -88,6 +89,7 @@ export const generateTableData = (
       switch (spec.type) {
         case "string":
         case "number":
+        case "busRef":
           entry[spec.title] = entryData[spec.title];
           break;
         case "number[]":

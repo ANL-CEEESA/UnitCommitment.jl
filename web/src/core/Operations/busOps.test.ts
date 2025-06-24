@@ -35,7 +35,7 @@ test("changeBusData", () => {
 test("changeBusData with invalid numbers", () => {
   let [, err] = changeBusData("b1", "Load (MW) 00:00", "xx", TEST_DATA_1);
   assert(err !== null);
-  assert.equal(err.message, "Invalid value: xx");
+  assert.equal(err.message, '"xx" is not a valid number');
 });
 
 test("deleteBus", () => {
