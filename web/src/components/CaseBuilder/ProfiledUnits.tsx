@@ -20,6 +20,7 @@ import DataTable, {
 } from "../Common/Forms/DataTable";
 import {
   getProfiledGenerators,
+  getThermalGenerators,
   UnitCommitmentScenario,
 } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
@@ -75,6 +76,31 @@ const generateProfiledUnitsData = (
   return [data, columns];
 };
 
+export const parseProfiledUnitsCsv = (
+  csvContents: string,
+  scenario: UnitCommitmentScenario,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const [profGens, err] = parseCsv(
+    csvContents,
+    ProfiledUnitsColumnSpec,
+    scenario,
+  );
+  if (err) return [scenario, err];
+
+  // Process imported generators
+  for (const gen in profGens) {
+    profGens[gen]["Type"] = "Profiled";
+  }
+
+  // Merge with existing data
+  const thermalGens = getThermalGenerators(scenario);
+  const newScenario = {
+    ...scenario,
+    Generators: { ...thermalGens, ...profGens },
+  };
+  return [newScenario, null];
+};
+
 const ProfiledUnitsComponent = (props: CaseBuilderSectionProps) => {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
@@ -85,24 +111,12 @@ const ProfiledUnitsComponent = (props: CaseBuilderSectionProps) => {
   };
 
   const onUpload = () => {
-    fileUploadElem.current!.showFilePicker((csvContents: any) => {
-      const [newGenerators, err] = parseCsv(
-        csvContents,
-        ProfiledUnitsColumnSpec,
-        props.scenario,
-      );
+    fileUploadElem.current!.showFilePicker((csv: any) => {
+      const [newScenario, err] = parseProfiledUnitsCsv(csv, props.scenario);
       if (err) {
         props.onError(err.message);
         return;
       }
-      for (const gen in newGenerators) {
-        newGenerators[gen]["Type"] = "Profiled";
-      }
-
-      const newScenario = {
-        ...props.scenario,
-        Generators: newGenerators,
-      };
       props.onDataChanged(newScenario);
     });
   };
