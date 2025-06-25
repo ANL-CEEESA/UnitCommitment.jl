@@ -32,13 +32,24 @@ export const generateTableColumns = (
     const subColumns: ColumnDefinition[] = [];
     switch (spec.type) {
       case "string":
-      case "boolean":
       case "busRef":
         columns.push({
           ...columnsCommonAttrs,
           title: spec.title,
           field: spec.title,
           minWidth: spec.width,
+        });
+        break;
+      case "boolean":
+        columns.push({
+          ...columnsCommonAttrs,
+          title: spec.title,
+          field: spec.title,
+          minWidth: spec.width,
+          editor: "list",
+          editorParams: {
+            values: [true, false],
+          },
         });
         break;
       case "number":
