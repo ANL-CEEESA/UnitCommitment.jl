@@ -13,6 +13,7 @@ import {
   renameItemInObject,
 } from "./commonOps";
 import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits";
+import { ThermalUnitsColumnSpec } from "../../components/CaseBuilder/ThermalUnits";
 
 const assertBusesNotEmpty = (
   scenario: UnitCommitmentScenario,
@@ -94,6 +95,32 @@ export const changeProfiledUnitData = (
     newValueStr,
     scenario.Generators[generator]!,
     ProfiledUnitsColumnSpec,
+    scenario,
+  );
+  if (err) return [scenario, err];
+  return [
+    {
+      ...scenario,
+      Generators: {
+        ...scenario.Generators,
+        [generator]: newGen,
+      } as Generators,
+    },
+    null,
+  ];
+};
+
+export const changeThermalUnitData = (
+  generator: string,
+  field: string,
+  newValueStr: string,
+  scenario: UnitCommitmentScenario,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const [newGen, err] = changeData(
+    field,
+    newValueStr,
+    scenario.Generators[generator]!,
+    ThermalUnitsColumnSpec,
     scenario,
   );
   if (err) return [scenario, err];

@@ -108,7 +108,26 @@ export const changeNumberData = (
   ];
 };
 
-export const changeNumberVecData = (
+export const changeBooleanData = (
+  field: string,
+  newValueStr: string,
+  container: { [key: string]: any },
+): [{ [key: string]: any }, ValidationError | null] => {
+  // Parse value
+  const [newValueBool, err] = parseBool(newValueStr);
+  if (err) return [container, err];
+
+  // Build the new object
+  return [
+    {
+      ...container,
+      [field]: newValueBool,
+    },
+    null,
+  ];
+};
+
+export const changeNumberVecTData = (
   field: string,
   time: string,
   newValueStr: string,
@@ -136,6 +155,43 @@ export const changeNumberVecData = (
   ];
 };
 
+export const changeNumberVecNData = (
+  field: string,
+  offset: string,
+  newValueStr: string,
+  container: { [key: string]: any },
+): [{ [key: string]: any }, ValidationError | null] => {
+  const oldVec = container[field];
+  const newVec = [...container[field]];
+  const idx = parseInt(offset) - 1;
+
+  if (newValueStr === "") {
+    // Trim the vector
+    newVec.splice(idx, oldVec.length - idx);
+  } else {
+    // Parse new value
+    const [newValueFloat, err] = parseNumber(newValueStr);
+    if (err) return [container, err];
+
+    // Increase the length of the vector
+    if (idx >= oldVec.length) {
+      for (let i = oldVec.length; i < idx; i++) {
+        newVec[i] = 0;
+      }
+    }
+
+    // Assign new value
+    newVec[idx] = newValueFloat;
+  }
+  return [
+    {
+      ...container,
+      [field]: newVec,
+    },
+    null,
+  ];
+};
+
 export const changeData = (
   field: string,
   newValueStr: string,
@@ -143,9 +199,9 @@ export const changeData = (
   colSpecs: ColumnSpec[],
   scenario: UnitCommitmentScenario,
 ): [{ [key: string]: any }, ValidationError | null] => {
-  const match = field.match(/^([^0-9]+)(\d+:\d+)?$/);
+  const match = field.match(/^([^0-9]+)([0-9:]+)?$/);
   const fieldName = match![1]!.trim();
-  const fieldTime = match![2];
+  const fieldOffset = match![2];
   for (const spec of colSpecs) {
     if (spec.title !== fieldName) continue;
     switch (spec.type) {
@@ -156,13 +212,22 @@ export const changeData = (
       case "number":
         return changeNumberData(fieldName, newValueStr, container);
       case "number[T]":
-        return changeNumberVecData(
+        return changeNumberVecTData(
           fieldName,
-          fieldTime!,
+          fieldOffset!,
           newValueStr,
           container,
           scenario,
         );
+      case "number[N]":
+        return changeNumberVecNData(
+          fieldName,
+          fieldOffset!,
+          newValueStr,
+          container,
+        );
+      case "boolean":
+        return changeBooleanData(fieldName, newValueStr, container);
       default:
         throw Error(`Unknown type: ${spec.type}`);
     }

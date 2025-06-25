@@ -30,6 +30,7 @@ import {
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../Common/io";
 import {
+  changeThermalUnitData,
   createThermalUnit,
   deleteGenerator,
   renameGenerator,
@@ -194,17 +195,17 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
     field: string,
     newValue: string,
   ): ValidationError | null => {
-    //   const [newScenario, err] = changeThermalUnitData(
-    //     name,
-    //     field,
-    //     newValue,
-    //     props.scenario,
-    //   );
-    //   if (err) {
-    //     props.onError(err.message);
-    //     return err;
-    //   }
-    //   props.onDataChanged(newScenario);
+    const [newScenario, err] = changeThermalUnitData(
+      name,
+      field,
+      newValue,
+      props.scenario,
+    );
+    if (err) {
+      props.onError(err.message);
+      return err;
+    }
+    props.onDataChanged(newScenario);
     return null;
   };
 

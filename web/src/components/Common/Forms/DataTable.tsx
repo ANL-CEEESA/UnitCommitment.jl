@@ -350,10 +350,9 @@ const DataTable = (props: DataTableProps) => {
 
   useEffect(() => {
     const onCellEdited = (cell: CellComponent) => {
-      let newValue = cell.getValue();
-      let oldValue = cell.getOldValue();
-      // eslint-disable-next-line eqeqeq
-      if (newValue == oldValue) return;
+      let newValue = `${cell.getValue()}`;
+      let oldValue = `${cell.getOldValue()}`;
+      if (newValue === oldValue) return;
       if (cell.getField() === "Name") {
         if (newValue === "") {
           const err = props.onRowDeleted(oldValue);

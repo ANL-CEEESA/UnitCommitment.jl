@@ -8,6 +8,7 @@ import { TEST_DATA_1, TEST_DATA_BLANK } from "../fixtures.test";
 import assert from "node:assert";
 import {
   changeProfiledUnitData,
+  changeThermalUnitData,
   createProfiledUnit,
   createThermalUnit,
   deleteGenerator,
@@ -60,6 +61,58 @@ test("changeProfiledUnitData", () => {
     "Cost ($/MW)": 120,
     "Maximum power (MW)": [50, 50, 50, 50, 50],
     "Minimum power (MW)": [0, 0, 0, 0, 0],
+  });
+});
+
+test("changeThermalUnitData", () => {
+  let scenario = TEST_DATA_1;
+  let err: ValidationError | null;
+  [scenario, err] = changeThermalUnitData(
+    "g1",
+    "Ramp up limit (MW)",
+    "99",
+    scenario,
+  );
+  assert(!err);
+  [scenario, err] = changeThermalUnitData(
+    "g1",
+    "Startup costs ($) 2",
+    "99",
+    scenario,
+  );
+  assert(!err);
+  [scenario, err] = changeThermalUnitData(
+    "g1",
+    "Production cost curve ($) 7",
+    "99",
+    scenario,
+  );
+  assert(!err);
+  [scenario, err] = changeThermalUnitData(
+    "g1",
+    "Production cost curve (MW) 3",
+    "",
+    scenario,
+  );
+  assert(!err);
+  [scenario, err] = changeThermalUnitData("g1", "Must run?", "true", scenario);
+  assert(!err);
+  assert.deepEqual(scenario.Generators["g1"], {
+    Bus: "b1",
+    Type: "Thermal",
+    "Production cost curve (MW)": [100.0, 110],
+    "Production cost curve ($)": [1400.0, 1600.0, 2200.0, 2400.0, 0, 0, 99],
+    "Startup costs ($)": [300.0, 99.0],
+    "Startup delays (h)": [1, 4],
+    "Ramp up limit (MW)": 99,
+    "Ramp down limit (MW)": 232.68,
+    "Startup limit (MW)": 232.68,
+    "Shutdown limit (MW)": 232.68,
+    "Minimum downtime (h)": 4,
+    "Minimum uptime (h)": 4,
+    "Initial status (h)": 12,
+    "Initial power (MW)": 115,
+    "Must run?": true,
   });
 });
 
