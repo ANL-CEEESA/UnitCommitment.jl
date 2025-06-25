@@ -13,7 +13,7 @@ import {
 import { ValidationError } from "../../../core/Validation/validate";
 import { UnitCommitmentScenario } from "../../../core/fixtures";
 import Papa from "papaparse";
-import { parseNumber } from "../../../core/Operations/commonOps";
+import { parseBool, parseNumber } from "../../../core/Operations/commonOps";
 
 export interface ColumnSpec {
   title: string;
@@ -228,11 +228,12 @@ export const parseCsv = (
         case "string":
           data[name][spec.title] = row[spec.title];
           break;
-        case "number":
+        case "number": {
           const [val, err] = parseNumber(row[spec.title]);
           if (err) return [null, { message: err.message + rowRef }];
           data[name][spec.title] = val;
           break;
+        }
         case "busRef":
           const busName = row[spec.title];
           if (!(busName in scenario.Buses)) {
@@ -243,15 +244,36 @@ export const parseCsv = (
           }
           data[name][spec.title] = row[spec.title];
           break;
-        case "number[T]":
+        case "number[T]": {
           data[name][spec.title] = Array(timeslots.length);
-
           for (let i = 0; i < timeslots.length; i++) {
-            data[name][spec.title][i] = parseFloat(
-              row[`${spec.title} ${timeslots[i]}`],
-            );
+            const [vf, err] = parseNumber(row[`${spec.title} ${timeslots[i]}`]);
+            if (err) return [data, { message: err.message + rowRef }];
+            data[name][spec.title][i] = vf;
           }
           break;
+        }
+        case "number[N]": {
+          data[name][spec.title] = Array(spec.length).fill(0);
+          for (let i = 0; i < spec.length!; i++) {
+            let v = row[`${spec.title} ${i + 1}`];
+            if (v.trim() === "") {
+              data[name][spec.title].splice(i, spec.length! - i);
+              break;
+            } else {
+              const [vf, err] = parseNumber(row[`${spec.title} ${i + 1}`]);
+              if (err) return [data, { message: err.message + rowRef }];
+              data[name][spec.title][i] = vf;
+            }
+          }
+          break;
+        }
+        case "boolean": {
+          const [val, err] = parseBool(row[spec.title]);
+          if (err) return [data, { message: err.message + rowRef }];
+          data[name][spec.title] = val;
+          break;
+        }
         default:
           throw Error(`Unknown type: ${spec.type}`);
       }

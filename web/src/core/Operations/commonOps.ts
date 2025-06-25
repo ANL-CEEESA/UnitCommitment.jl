@@ -51,6 +51,18 @@ export const parseNumber = (
   }
 };
 
+export const parseBool = (
+  valueStr: string,
+): [boolean, ValidationError | null] => {
+  if (["true", "1"].includes(valueStr.toLowerCase())) {
+    return [true, null];
+  }
+  if (["false", "0"].includes(valueStr.toLowerCase())) {
+    return [false, null];
+  }
+  return [true, { message: `"${valueStr}" is not a valid boolean value` }];
+};
+
 export const changeStringData = (
   field: string,
   newValue: string,

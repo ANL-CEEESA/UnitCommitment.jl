@@ -63,8 +63,8 @@ export const createThermalUnit = (
         [name]: {
           Bus: busName,
           Type: "Thermal",
-          "Production cost curve (MW)": [0],
-          "Production cost curve ($)": [0],
+          "Production cost curve (MW)": [0, 100],
+          "Production cost curve ($)": [0, 10],
           "Startup costs ($)": [0],
           "Startup delays (h)": [1],
           "Ramp up limit (MW)": "",

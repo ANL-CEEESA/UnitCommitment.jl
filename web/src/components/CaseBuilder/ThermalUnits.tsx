@@ -9,6 +9,7 @@ import DataTable, {
   generateCsv,
   generateTableColumns,
   generateTableData,
+  parseCsv,
 } from "../Common/Forms/DataTable";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
 import { useRef } from "react";
@@ -22,6 +23,7 @@ import {
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
 import {
+  getProfiledGenerators,
   getThermalGenerators,
   UnitCommitmentScenario,
 } from "../../core/fixtures";
@@ -115,7 +117,7 @@ export const ThermalUnitsColumnSpec: ColumnSpec[] = [
   },
 ];
 
-const generateThermalUnitsData = (
+export const generateThermalUnitsData = (
   scenario: UnitCommitmentScenario,
 ): [any[], ColumnDefinition[]] => {
   const columns = generateTableColumns(scenario, ThermalUnitsColumnSpec);
@@ -125,6 +127,31 @@ const generateThermalUnitsData = (
     scenario,
   );
   return [data, columns];
+};
+
+export const parseThermalUnitsCsv = (
+  csvContents: string,
+  scenario: UnitCommitmentScenario,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const [thermalGens, err] = parseCsv(
+    csvContents,
+    ThermalUnitsColumnSpec,
+    scenario,
+  );
+  if (err) return [scenario, err];
+
+  // Process imported generators
+  for (const gen in thermalGens) {
+    thermalGens[gen]["Type"] = "Thermal";
+  }
+
+  // Merge with existing data
+  const profGens = getProfiledGenerators(scenario);
+  const newScenario = {
+    ...scenario,
+    Generators: { ...thermalGens, ...profGens },
+  };
+  return [newScenario, null];
 };
 
 const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
@@ -137,26 +164,14 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
   };
 
   const onUpload = () => {
-    // fileUploadElem.current!.showFilePicker((csvContents: any) => {
-    //   const [newGenerators, err] = parseCsv(
-    //     csvContents,
-    //     ThermalUnitsColumnSpec,
-    //     props.scenario,
-    //   );
-    //   if (err) {
-    //     props.onError(err.message);
-    //     return;
-    //   }
-    //   for (const gen in newGenerators) {
-    //     newGenerators[gen]["Type"] = "Thermal";
-    //   }
-    //
-    //   const newScenario = {
-    //     ...props.scenario,
-    //     Generators: newGenerators,
-    //   };
-    //   props.onDataChanged(newScenario);
-    // });
+    fileUploadElem.current!.showFilePicker((csv: any) => {
+      const [newScenario, err] = parseThermalUnitsCsv(csv, props.scenario);
+      if (err) {
+        props.onError(err.message);
+        return;
+      }
+      props.onDataChanged(newScenario);
+    });
   };
 
   const onAdd = () => {
