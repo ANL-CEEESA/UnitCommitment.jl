@@ -9,7 +9,7 @@ export interface Buses {
 }
 
 export interface Generators {
-  [name: string]: ProfiledUnit;
+  [name: string]: ProfiledUnit | ThermalUnit;
 }
 
 export interface ProfiledUnit {
@@ -18,6 +18,24 @@ export interface ProfiledUnit {
   "Minimum power (MW)": number[];
   "Maximum power (MW)": number[];
   "Cost ($/MW)": number;
+}
+
+export interface ThermalUnit {
+  Bus: string;
+  Type: "Thermal";
+  "Production cost curve (MW)": number[];
+  "Production cost curve ($)": number[];
+  "Startup costs ($)": number[];
+  "Startup delays (h)": number[];
+  "Ramp up limit (MW)": number;
+  "Ramp down limit (MW)": number;
+  "Startup limit (MW)": number;
+  "Shutdown limit (MW)": number;
+  "Minimum downtime (h)": number;
+  "Minimum uptime (h)": number;
+  "Initial status (h)": number;
+  "Initial power (MW)": number;
+  "Must run?": boolean;
 }
 
 export interface UnitCommitmentScenario {
@@ -30,6 +48,29 @@ export interface UnitCommitmentScenario {
   Buses: Buses;
   Generators: Generators;
 }
+
+const getTypedGenerators = <T extends any>(
+  scenario: UnitCommitmentScenario,
+  type: string,
+): {
+  [key: string]: T;
+} => {
+  const selected: { [key: string]: T } = {};
+  for (const [name, gen] of Object.entries(scenario.Generators)) {
+    if (gen["Type"] === type) selected[name] = gen as T;
+  }
+  return selected;
+};
+
+export const getProfiledGenerators = (
+  scenario: UnitCommitmentScenario,
+): { [key: string]: ProfiledUnit } =>
+  getTypedGenerators<ProfiledUnit>(scenario, "Profiled");
+
+export const getThermalGenerators = (
+  scenario: UnitCommitmentScenario,
+): { [key: string]: ThermalUnit } =>
+  getTypedGenerators<ThermalUnit>(scenario, "Thermal");
 
 export const BLANK_SCENARIO: UnitCommitmentScenario = {
   Parameters: {
@@ -116,6 +157,23 @@ export const TEST_SCENARIO: UnitCommitmentScenario = {
         213.9792409,
       ],
       "Cost ($/MW)": 50.0,
+    },
+    gen1: {
+      Bus: "b1",
+      Type: "Thermal",
+      "Production cost curve (MW)": [100.0, 110.0, 130.0, 135.0],
+      "Production cost curve ($)": [1400.0, 1600.0, 2200.0, 2400.0],
+      "Startup costs ($)": [300.0, 400.0],
+      "Startup delays (h)": [1, 4],
+      "Ramp up limit (MW)": 232.68,
+      "Ramp down limit (MW)": 232.68,
+      "Startup limit (MW)": 232.68,
+      "Shutdown limit (MW)": 232.68,
+      "Minimum downtime (h)": 4,
+      "Minimum uptime (h)": 4,
+      "Initial status (h)": 12,
+      "Initial power (MW)": 115,
+      "Must run?": false,
     },
   },
 };

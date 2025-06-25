@@ -143,7 +143,7 @@ export const changeData = (
         return changeBusRefData(fieldName, newValueStr, container, scenario);
       case "number":
         return changeNumberData(fieldName, newValueStr, container);
-      case "number[]":
+      case "number[T]":
         return changeNumberVecData(
           fieldName,
           fieldTime!,

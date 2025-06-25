@@ -6,9 +6,71 @@
 
 import assert from "node:assert";
 import { BusesColumnSpec, generateBusesData } from "../../CaseBuilder/Buses";
-import { generateCsv, parseCsv } from "./DataTable";
+import {
+  floatFormatter,
+  generateCsv,
+  generateTableColumns,
+  parseCsv,
+} from "./DataTable";
 import { TEST_DATA_1 } from "../../../core/fixtures.test";
 import { ProfiledUnitsColumnSpec } from "../../CaseBuilder/ProfiledUnits";
+import { ThermalUnitsColumnSpec } from "../../CaseBuilder/ThermalUnits";
+
+test("generateTableColumns (ProfiledUnits)", () => {
+  const columns = generateTableColumns(TEST_DATA_1, ProfiledUnitsColumnSpec);
+  assert.equal(columns.length, 5);
+  assert.deepEqual(columns[0], {
+    editor: "input",
+    editorParams: {
+      selectContents: true,
+    },
+    field: "Name",
+    formatter: "plaintext",
+    headerHozAlign: "left",
+    headerSort: false,
+    headerWordWrap: true,
+    hozAlign: "left",
+    minWidth: 100,
+    resizable: false,
+    title: "Name",
+  });
+  assert.equal(columns[3]!["columns"]!.length, 5);
+  assert.deepEqual(columns[3]!["columns"]![0], {
+    editor: "input",
+    editorParams: {
+      selectContents: true,
+    },
+    field: "Maximum power (MW) 00:00",
+    formatter: floatFormatter,
+    headerHozAlign: "left",
+    headerSort: false,
+    headerWordWrap: true,
+    hozAlign: "left",
+    minWidth: 60,
+    resizable: false,
+    title: "00:00",
+  });
+});
+
+test("generateTableColumns (ThermalUnits)", () => {
+  const columns = generateTableColumns(TEST_DATA_1, ThermalUnitsColumnSpec);
+  assert.equal(columns[2]!["columns"]!.length, 10);
+  assert.deepEqual(columns[2]!["columns"]![0], {
+    editor: "input",
+    editorParams: {
+      selectContents: true,
+    },
+    field: "Production cost curve (MW) 1",
+    formatter: floatFormatter,
+    headerHozAlign: "left",
+    headerSort: false,
+    headerWordWrap: true,
+    hozAlign: "left",
+    minWidth: 60,
+    resizable: false,
+    title: "1",
+  });
+});
 
 test("generate CSV", () => {
   const [data, columns] = generateBusesData(TEST_DATA_1);

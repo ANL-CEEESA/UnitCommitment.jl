@@ -6,7 +6,7 @@
 
 import Header from "./Header";
 import Parameters from "./Parameters";
-import Buses from "./Buses";
+import BusesComponent from "./Buses";
 import {
   BLANK_SCENARIO,
   TEST_SCENARIO,
@@ -22,6 +22,13 @@ import { offerDownload } from "../Common/io";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
 import ProfiledUnitsComponent from "./ProfiledUnits";
+import ThermalUnitsComponent from "./ThermalUnits";
+
+export interface CaseBuilderSectionProps {
+  scenario: UnitCommitmentScenario;
+  onDataChanged: (scenario: UnitCommitmentScenario) => void;
+  onError: (msg: string) => void;
+}
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(() => {
@@ -99,7 +106,12 @@ const CaseBuilder = () => {
           onDataChanged={onDataChanged}
           onError={setToastMessage}
         />
-        <Buses
+        <BusesComponent
+          scenario={scenario}
+          onDataChanged={onDataChanged}
+          onError={setToastMessage}
+        />
+        <ThermalUnitsComponent
           scenario={scenario}
           onDataChanged={onDataChanged}
           onError={setToastMessage}

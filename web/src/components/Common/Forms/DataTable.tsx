@@ -17,7 +17,8 @@ import { parseNumber } from "../../../core/Operations/commonOps";
 
 export interface ColumnSpec {
   title: string;
-  type: "string" | "number" | "number[]" | "busRef";
+  type: "string" | "number" | "number[N]" | "number[T]" | "busRef" | "boolean";
+  length?: number;
   width: number;
 }
 
@@ -28,8 +29,10 @@ export const generateTableColumns = (
   const timeSlots = generateTimeslots(scenario);
   const columns: ColumnDefinition[] = [];
   colSpecs.forEach((spec) => {
+    const subColumns: ColumnDefinition[] = [];
     switch (spec.type) {
       case "string":
+      case "boolean":
       case "busRef":
         columns.push({
           ...columnsCommonAttrs,
@@ -47,8 +50,7 @@ export const generateTableColumns = (
           formatter: floatFormatter,
         });
         break;
-      case "number[]":
-        const subColumns: ColumnDefinition[] = [];
+      case "number[T]":
         timeSlots.forEach((t) => {
           subColumns.push({
             ...columnsCommonAttrs,
@@ -58,6 +60,21 @@ export const generateTableColumns = (
             formatter: floatFormatter,
           });
         });
+        columns.push({
+          title: spec.title,
+          columns: subColumns,
+        });
+        break;
+      case "number[N]":
+        for (let i = 1; i <= spec.length!; i++) {
+          subColumns.push({
+            ...columnsCommonAttrs,
+            title: `${i}`,
+            field: `${spec.title} ${i}`,
+            minWidth: spec.width,
+            formatter: floatFormatter,
+          });
+        }
         columns.push({
           title: spec.title,
           columns: subColumns,
@@ -93,7 +110,7 @@ export const generateTableData = (
         case "busRef":
           entry[spec.title] = entryData[spec.title];
           break;
-        case "number[]":
+        case "number[T]":
           for (let i = 0; i < timeslots.length; i++) {
             entry[`${spec.title} ${timeslots[i]}`] = entryData[spec.title][i];
           }
@@ -207,7 +224,7 @@ export const parseCsv = (
           }
           data[name][spec.title] = row[spec.title];
           break;
-        case "number[]":
+        case "number[T]":
           data[name][spec.title] = Array(timeslots.length);
 
           for (let i = 0; i < timeslots.length; i++) {

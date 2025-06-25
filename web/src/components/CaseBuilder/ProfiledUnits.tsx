@@ -18,7 +18,10 @@ import DataTable, {
   generateTableData,
   parseCsv,
 } from "../Common/Forms/DataTable";
-import { UnitCommitmentScenario } from "../../core/fixtures";
+import {
+  getProfiledGenerators,
+  UnitCommitmentScenario,
+} from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../Common/io";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
@@ -30,23 +33,18 @@ import {
   renameGenerator,
 } from "../../core/Operations/generatorOps";
 import { ValidationError } from "../../core/Validation/validate";
-
-interface ProfiledUnitsProps {
-  scenario: UnitCommitmentScenario;
-  onDataChanged: (scenario: UnitCommitmentScenario) => void;
-  onError: (msg: string) => void;
-}
+import { CaseBuilderSectionProps } from "./CaseBuilder";
 
 export const ProfiledUnitsColumnSpec: ColumnSpec[] = [
   {
     title: "Name",
     type: "string",
-    width: 150,
+    width: 100,
   },
   {
     title: "Bus",
     type: "busRef",
-    width: 150,
+    width: 100,
   },
   {
     title: "Cost ($/MW)",
@@ -55,12 +53,12 @@ export const ProfiledUnitsColumnSpec: ColumnSpec[] = [
   },
   {
     title: "Maximum power (MW)",
-    type: "number[]",
+    type: "number[T]",
     width: 60,
   },
   {
     title: "Minimum power (MW)",
-    type: "number[]",
+    type: "number[T]",
     width: 60,
   },
 ];
@@ -70,14 +68,14 @@ const generateProfiledUnitsData = (
 ): [any[], ColumnDefinition[]] => {
   const columns = generateTableColumns(scenario, ProfiledUnitsColumnSpec);
   const data = generateTableData(
-    scenario.Generators,
+    getProfiledGenerators(scenario),
     ProfiledUnitsColumnSpec,
     scenario,
   );
   return [data, columns];
 };
 
-const ProfiledUnitsComponent = (props: ProfiledUnitsProps) => {
+const ProfiledUnitsComponent = (props: CaseBuilderSectionProps) => {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
   const onDownload = () => {

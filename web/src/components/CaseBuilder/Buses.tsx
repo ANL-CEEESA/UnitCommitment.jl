@@ -31,16 +31,17 @@ import {
   deleteBus,
   renameBus,
 } from "../../core/Operations/busOps";
+import { CaseBuilderSectionProps } from "./CaseBuilder";
 
 export const BusesColumnSpec: ColumnSpec[] = [
   {
     title: "Name",
     type: "string",
-    width: 150,
+    width: 100,
   },
   {
     title: "Load (MW)",
-    type: "number[]",
+    type: "number[T]",
     width: 60,
   },
 ];
@@ -52,13 +53,8 @@ export const generateBusesData = (
   const data = generateTableData(scenario.Buses, BusesColumnSpec, scenario);
   return [data, columns];
 };
-interface BusesProps {
-  scenario: UnitCommitmentScenario;
-  onDataChanged: (scenario: UnitCommitmentScenario) => void;
-  onError: (msg: string) => void;
-}
 
-function BusesComponent(props: BusesProps) {
+function BusesComponent(props: CaseBuilderSectionProps) {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
   const onDownload = () => {

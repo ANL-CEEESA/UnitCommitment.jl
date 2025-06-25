@@ -13,6 +13,23 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
     b3: { "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268] },
   },
   Generators: {
+    gen1: {
+      Bus: "b1",
+      Type: "Thermal",
+      "Production cost curve (MW)": [100.0, 110.0, 130.0, 135.0],
+      "Production cost curve ($)": [1400.0, 1600.0, 2200.0, 2400.0],
+      "Startup costs ($)": [300.0, 400.0],
+      "Startup delays (h)": [1, 4],
+      "Ramp up limit (MW)": 232.68,
+      "Ramp down limit (MW)": 232.68,
+      "Startup limit (MW)": 232.68,
+      "Shutdown limit (MW)": 232.68,
+      "Minimum downtime (h)": 4,
+      "Minimum uptime (h)": 4,
+      "Initial status (h)": 12,
+      "Initial power (MW)": 115,
+      "Must run?": false,
+    },
     pu1: {
       Bus: "b1",
       Type: "Profiled",
