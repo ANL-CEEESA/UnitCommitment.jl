@@ -6,6 +6,7 @@
 
 import DataTable, {
   ColumnSpec,
+  generateCsv,
   generateTableColumns,
   generateTableData,
 } from "../Common/Forms/DataTable";
@@ -25,6 +26,7 @@ import {
   UnitCommitmentScenario,
 } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
+import { offerDownload } from "../Common/io";
 
 export const ThermalUnitsColumnSpec: ColumnSpec[] = [
   {
@@ -124,9 +126,9 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
   const onDownload = () => {
-    // const [data, columns] = generateThermalUnitsData(props.scenario);
-    // const csvContents = generateCsv(data, columns);
-    // offerDownload(csvContents, "text/csv", "profiled_units.csv");
+    const [data, columns] = generateThermalUnitsData(props.scenario);
+    const csvContents = generateCsv(data, columns);
+    offerDownload(csvContents, "text/csv", "thermal_units.csv");
   };
 
   const onUpload = () => {
