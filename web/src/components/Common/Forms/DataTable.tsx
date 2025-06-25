@@ -107,6 +107,7 @@ export const generateTableData = (
       switch (spec.type) {
         case "string":
         case "number":
+        case "boolean":
         case "busRef":
           entry[spec.title] = entryData[spec.title];
           break;
@@ -115,8 +116,13 @@ export const generateTableData = (
             entry[`${spec.title} ${timeslots[i]}`] = entryData[spec.title][i];
           }
           break;
+        case "number[N]":
+          for (let i = 0; i < spec.length!; i++) {
+            entry[`${spec.title} ${i + 1}`] = entryData[spec.title][i] || "";
+          }
+          break;
         default:
-          console.error(`Unknown type: ${spec.type}`);
+          throw Error(`Unknown type: ${spec.type}`);
       }
     }
     data.push(entry);
@@ -243,7 +249,12 @@ export const parseCsv = (
 };
 
 export const floatFormatter = (cell: CellComponent) => {
-  return parseFloat(cell.getValue()).toFixed(1);
+  const v = cell.getValue();
+  if (v === "") {
+    return "&mdash;";
+  } else {
+    return parseFloat(cell.getValue()).toFixed(1);
+  }
 };
 
 export const generateTimeslots = (scenario: UnitCommitmentScenario) => {

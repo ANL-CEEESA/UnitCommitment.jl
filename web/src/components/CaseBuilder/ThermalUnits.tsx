@@ -62,12 +62,12 @@ export const ThermalUnitsColumnSpec: ColumnSpec[] = [
     width: 60,
   },
   {
-    title: "Min uptime (h)",
+    title: "Minimum uptime (h)",
     type: "number",
     width: 80,
   },
   {
-    title: "Min downtime (h)",
+    title: "Minimum downtime (h)",
     type: "number",
     width: 100,
   },

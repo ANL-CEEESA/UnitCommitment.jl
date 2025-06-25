@@ -10,11 +10,13 @@ import {
   floatFormatter,
   generateCsv,
   generateTableColumns,
+  generateTableData,
   parseCsv,
 } from "./DataTable";
 import { TEST_DATA_1 } from "../../../core/fixtures.test";
 import { ProfiledUnitsColumnSpec } from "../../CaseBuilder/ProfiledUnits";
 import { ThermalUnitsColumnSpec } from "../../CaseBuilder/ThermalUnits";
+import { getThermalGenerators } from "../../../core/fixtures";
 
 test("generateTableColumns (ProfiledUnits)", () => {
   const columns = generateTableColumns(TEST_DATA_1, ProfiledUnitsColumnSpec);
@@ -69,6 +71,56 @@ test("generateTableColumns (ThermalUnits)", () => {
     minWidth: 60,
     resizable: false,
     title: "1",
+  });
+});
+
+test("generateTableData (ThermalUnits)", () => {
+  const data = generateTableData(
+    getThermalGenerators(TEST_DATA_1),
+    ThermalUnitsColumnSpec,
+    TEST_DATA_1,
+  );
+  assert.deepEqual(data[0], {
+    Name: "gen1",
+    Bus: "b1",
+    "Initial power (MW)": 115,
+    "Initial status (h)": 12,
+    "Minimum downtime (h)": 4,
+    "Minimum uptime (h)": 4,
+    "Ramp down limit (MW)": 232.68,
+    "Ramp up limit (MW)": 232.68,
+    "Shutdown limit (MW)": 232.68,
+    "Startup limit (MW)": 232.68,
+    "Production cost curve ($) 1": 1400,
+    "Production cost curve ($) 2": 1600,
+    "Production cost curve ($) 3": 2200,
+    "Production cost curve ($) 4": 2400,
+    "Production cost curve ($) 5": "",
+    "Production cost curve ($) 6": "",
+    "Production cost curve ($) 7": "",
+    "Production cost curve ($) 8": "",
+    "Production cost curve ($) 9": "",
+    "Production cost curve ($) 10": "",
+    "Production cost curve (MW) 1": 100,
+    "Production cost curve (MW) 2": 110,
+    "Production cost curve (MW) 3": 130,
+    "Production cost curve (MW) 4": 135,
+    "Production cost curve (MW) 5": "",
+    "Production cost curve (MW) 6": "",
+    "Production cost curve (MW) 7": "",
+    "Production cost curve (MW) 8": "",
+    "Production cost curve (MW) 9": "",
+    "Production cost curve (MW) 10": "",
+    "Startup costs ($) 1": 300,
+    "Startup costs ($) 2": 400,
+    "Startup costs ($) 3": "",
+    "Startup costs ($) 4": "",
+    "Startup costs ($) 5": "",
+    "Startup delays (h) 1": 1,
+    "Startup delays (h) 2": 4,
+    "Startup delays (h) 3": "",
+    "Startup delays (h) 4": "",
+    "Startup delays (h) 5": "",
   });
 });
 
