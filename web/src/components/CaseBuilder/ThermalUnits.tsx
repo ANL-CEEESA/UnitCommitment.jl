@@ -27,6 +27,11 @@ import {
 } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../Common/io";
+import {
+  createThermalUnit,
+  deleteGenerator,
+  renameGenerator,
+} from "../../core/Operations/generatorOps";
 
 export const ThermalUnitsColumnSpec: ColumnSpec[] = [
   {
@@ -155,17 +160,17 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
   };
 
   const onAdd = () => {
-    // const [newScenario, err] = createThermalUnit(props.scenario);
-    // if (err) {
-    //   props.onError(err.message);
-    //   return;
-    // }
-    // props.onDataChanged(newScenario);
+    const [newScenario, err] = createThermalUnit(props.scenario);
+    if (err) {
+      props.onError(err.message);
+      return;
+    }
+    props.onDataChanged(newScenario);
   };
 
   const onDelete = (name: string): ValidationError | null => {
-    // const newScenario = deleteGenerator(name, props.scenario);
-    // props.onDataChanged(newScenario);
+    const newScenario = deleteGenerator(name, props.scenario);
+    props.onDataChanged(newScenario);
     return null;
   };
 
@@ -192,16 +197,16 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
     oldName: string,
     newName: string,
   ): ValidationError | null => {
-    // const [newScenario, err] = renameGenerator(
-    //   oldName,
-    //   newName,
-    //   props.scenario,
-    // );
-    // if (err) {
-    //   props.onError(err.message);
-    //   return err;
-    // }
-    // props.onDataChanged(newScenario);
+    const [newScenario, err] = renameGenerator(
+      oldName,
+      newName,
+      props.scenario,
+    );
+    if (err) {
+      props.onError(err.message);
+      return err;
+    }
+    props.onDataChanged(newScenario);
     return null;
   };
 

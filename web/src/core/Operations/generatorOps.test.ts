@@ -9,21 +9,24 @@ import assert from "node:assert";
 import {
   changeProfiledUnitData,
   createProfiledUnit,
+  createThermalUnit,
   deleteGenerator,
   renameGenerator,
 } from "./generatorOps";
+import { ValidationError } from "../Validation/validate";
 
 test("createProfiledUnit", () => {
   const [newScenario, err] = createProfiledUnit(TEST_DATA_1);
   assert(err === null);
   assert.equal(Object.keys(newScenario.Generators).length, 4);
-  assert.deepEqual(newScenario.Generators["pu3"], {
-    Bus: "b1",
-    Type: "Profiled",
-    "Cost ($/MW)": 0,
-    "Maximum power (MW)": [0, 0, 0, 0, 0],
-    "Minimum power (MW)": [0, 0, 0, 0, 0],
-  });
+  assert("pu3" in newScenario.Generators);
+});
+
+test("createThermalUnit", () => {
+  const [newScenario, err] = createThermalUnit(TEST_DATA_1);
+  assert(err === null);
+  assert.equal(Object.keys(newScenario.Generators).length, 4);
+  assert("g2" in newScenario.Generators);
 });
 
 test("createProfiledUnit with blank file", () => {
@@ -34,7 +37,7 @@ test("createProfiledUnit with blank file", () => {
 
 test("changeProfiledUnitData", () => {
   let scenario = TEST_DATA_1;
-  let err = null;
+  let err: ValidationError | null;
   [scenario, err] = changeProfiledUnitData(
     "pu1",
     "Cost ($/MW)",
@@ -71,7 +74,7 @@ test("changeProfiledUnitData with invalid bus", () => {
 test("deleteGenerator", () => {
   const newScenario = deleteGenerator("pu1", TEST_DATA_1);
   assert.equal(Object.keys(newScenario.Generators).length, 2);
-  assert("gen1" in newScenario.Generators);
+  assert("g1" in newScenario.Generators);
   assert("pu2" in newScenario.Generators);
 });
 

@@ -129,7 +129,9 @@ export const generateTableData = (
           break;
         case "number[N]":
           for (let i = 0; i < spec.length!; i++) {
-            entry[`${spec.title} ${i + 1}`] = entryData[spec.title][i] || "";
+            let v = entryData[spec.title][i];
+            if (v === undefined || v === null) v = "";
+            entry[`${spec.title} ${i + 1}`] = v;
           }
           break;
         default:

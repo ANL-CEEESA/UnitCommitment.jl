@@ -13,7 +13,7 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
     b3: { "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268] },
   },
   Generators: {
-    gen1: {
+    g1: {
       Bus: "b1",
       Type: "Thermal",
       "Production cost curve (MW)": [100.0, 110.0, 130.0, 135.0],

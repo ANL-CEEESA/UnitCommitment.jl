@@ -27,10 +27,10 @@ export interface ThermalUnit {
   "Production cost curve ($)": number[];
   "Startup costs ($)": number[];
   "Startup delays (h)": number[];
-  "Ramp up limit (MW)": number;
-  "Ramp down limit (MW)": number;
-  "Startup limit (MW)": number;
-  "Shutdown limit (MW)": number;
+  "Ramp up limit (MW)": number | "";
+  "Ramp down limit (MW)": number | "";
+  "Startup limit (MW)": number | "";
+  "Shutdown limit (MW)": number | "";
   "Minimum downtime (h)": number;
   "Minimum uptime (h)": number;
   "Initial status (h)": number;
@@ -158,7 +158,7 @@ export const TEST_SCENARIO: UnitCommitmentScenario = {
       ],
       "Cost ($/MW)": 50.0,
     },
-    gen1: {
+    g1: {
       Bus: "b1",
       Type: "Thermal",
       "Production cost curve (MW)": [100.0, 110.0, 130.0, 135.0],

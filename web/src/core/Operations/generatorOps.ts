@@ -14,13 +14,20 @@ import {
 } from "./commonOps";
 import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits";
 
+const assertBusesNotEmpty = (
+  scenario: UnitCommitmentScenario,
+): ValidationError | null => {
+  if (Object.keys(scenario.Buses).length === 0)
+    return { message: "Profiled unit requires an existing bus." };
+  return null;
+};
+
 export const createProfiledUnit = (
   scenario: UnitCommitmentScenario,
 ): [UnitCommitmentScenario, ValidationError | null] => {
-  const busNames = Object.keys(scenario.Buses);
-  if (busNames.length === 0) {
-    return [scenario, { message: "Profiled unit requires an existing bus." }];
-  }
+  const err = assertBusesNotEmpty(scenario);
+  if (err) return [scenario, err];
+  const busName = Object.keys(scenario.Buses)[0]!;
   const timeslots = generateTimeslots(scenario);
   const name = generateUniqueName(scenario.Generators, "pu");
   return [
@@ -29,11 +36,46 @@ export const createProfiledUnit = (
       Generators: {
         ...scenario.Generators,
         [name]: {
-          Bus: busNames[0]!,
+          Bus: busName,
           Type: "Profiled",
           "Cost ($/MW)": 0,
           "Minimum power (MW)": Array(timeslots.length).fill(0),
           "Maximum power (MW)": Array(timeslots.length).fill(0),
+        },
+      },
+    },
+    null,
+  ];
+};
+
+export const createThermalUnit = (
+  scenario: UnitCommitmentScenario,
+): [UnitCommitmentScenario, ValidationError | null] => {
+  const err = assertBusesNotEmpty(scenario);
+  if (err) return [scenario, err];
+  const busName = Object.keys(scenario.Buses)[0]!;
+  const name = generateUniqueName(scenario.Generators, "g");
+  return [
+    {
+      ...scenario,
+      Generators: {
+        ...scenario.Generators,
+        [name]: {
+          Bus: busName,
+          Type: "Thermal",
+          "Production cost curve (MW)": [0],
+          "Production cost curve ($)": [0],
+          "Startup costs ($)": [0],
+          "Startup delays (h)": [1],
+          "Ramp up limit (MW)": "",
+          "Ramp down limit (MW)": "",
+          "Startup limit (MW)": "",
+          "Shutdown limit (MW)": "",
+          "Minimum downtime (h)": 1,
+          "Minimum uptime (h)": 1,
+          "Initial status (h)": -24,
+          "Initial power (MW)": 0,
+          "Must run?": false,
         },
       },
     },
