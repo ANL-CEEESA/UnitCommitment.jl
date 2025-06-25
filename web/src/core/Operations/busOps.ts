@@ -12,7 +12,7 @@ import {
   generateUniqueName,
   renameItemInObject,
 } from "./commonOps";
-import { BusesColumnSpec } from "../../components/CaseBuilder/Buses/Buses";
+import { BusesColumnSpec } from "../../components/CaseBuilder/Buses";
 
 export const createBus = (scenario: UnitCommitmentScenario) => {
   const name = generateUniqueName(scenario.Buses, "b");

@@ -5,13 +5,10 @@
  */
 
 import assert from "node:assert";
-import {
-  BusesColumnSpec,
-  generateBusesData,
-} from "../../CaseBuilder/Buses/Buses";
+import { BusesColumnSpec, generateBusesData } from "../../CaseBuilder/Buses";
 import { generateCsv, parseCsv } from "./DataTable";
 import { TEST_DATA_1 } from "../../../core/fixtures.test";
-import { ProfiledUnitsColumnSpec } from "../../CaseBuilder/ProfiledUnits/ProfiledUnits";
+import { ProfiledUnitsColumnSpec } from "../../CaseBuilder/ProfiledUnits";
 
 test("generate CSV", () => {
   const [data, columns] = generateBusesData(TEST_DATA_1);

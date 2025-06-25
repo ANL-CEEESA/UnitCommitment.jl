@@ -4,33 +4,33 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import SectionHeader from "../../Common/SectionHeader/SectionHeader";
-import SectionButton from "../../Common/Buttons/SectionButton";
+import SectionHeader from "../Common/SectionHeader/SectionHeader";
+import SectionButton from "../Common/Buttons/SectionButton";
 import {
   faDownload,
   faPlus,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
-import { offerDownload } from "../../Common/io";
-import FileUploadElement from "../../Common/Buttons/FileUploadElement";
+import { offerDownload } from "../Common/io";
+import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
-import { ValidationError } from "../../../core/Validation/validate";
+import { ValidationError } from "../../core/Validation/validate";
 import DataTable, {
   ColumnSpec,
   generateCsv,
   generateTableColumns,
   generateTableData,
   parseCsv,
-} from "../../Common/Forms/DataTable";
+} from "../Common/Forms/DataTable";
 
-import { UnitCommitmentScenario } from "../../../core/fixtures";
+import { UnitCommitmentScenario } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import {
   changeBusData,
   createBus,
   deleteBus,
   renameBus,
-} from "../../../core/Operations/busOps";
+} from "../../core/Operations/busOps";
 
 export const BusesColumnSpec: ColumnSpec[] = [
   {

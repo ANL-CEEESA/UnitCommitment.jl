@@ -5,8 +5,8 @@
  */
 
 import Header from "./Header";
-import Parameters from "./Parameters/Parameters";
-import Buses from "./Buses/Buses";
+import Parameters from "./Parameters";
+import Buses from "./Buses";
 import {
   BLANK_SCENARIO,
   TEST_SCENARIO,
@@ -21,7 +21,7 @@ import { validate } from "../../core/Validation/validate";
 import { offerDownload } from "../Common/io";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
-import ProfiledUnitsComponent from "./ProfiledUnits/ProfiledUnits";
+import ProfiledUnitsComponent from "./ProfiledUnits";
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(() => {

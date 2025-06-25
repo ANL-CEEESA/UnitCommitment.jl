@@ -12,7 +12,7 @@ import {
   generateUniqueName,
   renameItemInObject,
 } from "./commonOps";
-import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits/ProfiledUnits";
+import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits";
 
 export const createProfiledUnit = (
   scenario: UnitCommitmentScenario,

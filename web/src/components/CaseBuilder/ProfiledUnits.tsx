@@ -4,8 +4,8 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import SectionHeader from "../../Common/SectionHeader/SectionHeader";
-import SectionButton from "../../Common/Buttons/SectionButton";
+import SectionHeader from "../Common/SectionHeader/SectionHeader";
+import SectionButton from "../Common/Buttons/SectionButton";
 import {
   faDownload,
   faPlus,
@@ -17,19 +17,19 @@ import DataTable, {
   generateTableColumns,
   generateTableData,
   parseCsv,
-} from "../../Common/Forms/DataTable";
-import { UnitCommitmentScenario } from "../../../core/fixtures";
+} from "../Common/Forms/DataTable";
+import { UnitCommitmentScenario } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
-import { offerDownload } from "../../Common/io";
-import FileUploadElement from "../../Common/Buttons/FileUploadElement";
+import { offerDownload } from "../Common/io";
+import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
 import {
   changeProfiledUnitData,
   createProfiledUnit,
   deleteGenerator,
   renameGenerator,
-} from "../../../core/Operations/generatorOps";
-import { ValidationError } from "../../../core/Validation/validate";
+} from "../../core/Operations/generatorOps";
+import { ValidationError } from "../../core/Validation/validate";
 
 interface ProfiledUnitsProps {
   scenario: UnitCommitmentScenario;

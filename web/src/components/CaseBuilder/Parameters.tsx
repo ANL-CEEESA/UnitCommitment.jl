@@ -4,15 +4,15 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import SectionHeader from "../../Common/SectionHeader/SectionHeader";
-import Form from "../../Common/Forms/Form";
-import TextInputRow from "../../Common/Forms/TextInputRow";
-import { UnitCommitmentScenario } from "../../../core/fixtures";
+import SectionHeader from "../Common/SectionHeader/SectionHeader";
+import Form from "../Common/Forms/Form";
+import TextInputRow from "../Common/Forms/TextInputRow";
+import { UnitCommitmentScenario } from "../../core/fixtures";
 import {
   changeParameter,
   changeTimeHorizon,
   changeTimeStep,
-} from "../../../core/Operations/parameterOps";
+} from "../../core/Operations/parameterOps";
 
 interface ParametersProps {
   scenario: UnitCommitmentScenario;
