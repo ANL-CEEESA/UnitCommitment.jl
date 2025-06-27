@@ -7,7 +7,7 @@
 import Header from "./Header";
 import Parameters from "./Parameters";
 import BusesComponent from "./Buses";
-import { BLANK_SCENARIO, TEST_SCENARIO } from "../../core/Data/fixtures";
+import { BLANK_SCENARIO } from "../../core/Data/fixtures";
 
 import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
@@ -29,9 +29,8 @@ export interface CaseBuilderSectionProps {
 
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(() => {
-    // const savedScenario = localStorage.getItem("scenario");
-    // return savedScenario ? JSON.parse(savedScenario) : TEST_SCENARIO;
-    return TEST_SCENARIO;
+    const savedScenario = localStorage.getItem("scenario");
+    return savedScenario ? JSON.parse(savedScenario) : BLANK_SCENARIO;
   });
   const [undoStack, setUndoStack] = useState<UnitCommitmentScenario[]>([]);
   const [toastMessage, setToastMessage] = useState<string>("");
