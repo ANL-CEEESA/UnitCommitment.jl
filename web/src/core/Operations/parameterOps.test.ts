@@ -10,7 +10,7 @@ import {
   evaluatePwlFunction,
 } from "./parameterOps";
 import assert from "node:assert";
-import { TEST_DATA_1, TEST_DATA_2 } from "../fixtures.test";
+import { TEST_DATA_1, TEST_DATA_2 } from "../Data/fixtures.test";
 
 test("changeTimeHorizon: Shrink 1", () => {
   const [newScenario, err] = changeTimeHorizon(TEST_DATA_1, "3");

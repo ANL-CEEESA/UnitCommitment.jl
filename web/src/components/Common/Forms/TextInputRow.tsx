@@ -7,7 +7,7 @@
 import formStyles from "./Form.module.css";
 import HelpButton from "../Buttons/HelpButton";
 import React, { useRef, useState } from "react";
-import { ValidationError } from "../../../core/Validation/validate";
+import { ValidationError } from "../../../core/Data/validate";
 
 interface TextInputRowProps {
   label: string;

@@ -4,7 +4,7 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { TEST_DATA_1, TEST_DATA_BLANK } from "../fixtures.test";
+import { TEST_DATA_1, TEST_DATA_BLANK } from "../Data/fixtures.test";
 import assert from "node:assert";
 import {
   changeProfiledUnitData,
@@ -14,7 +14,7 @@ import {
   deleteGenerator,
   renameGenerator,
 } from "./generatorOps";
-import { ValidationError } from "../Validation/validate";
+import { ValidationError } from "../Data/validate";
 
 test("createProfiledUnit", () => {
   const [newScenario, err] = createProfiledUnit(TEST_DATA_1);

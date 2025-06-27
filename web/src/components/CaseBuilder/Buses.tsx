@@ -14,7 +14,7 @@ import {
 import { offerDownload } from "../Common/io";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
-import { ValidationError } from "../../core/Validation/validate";
+import { ValidationError } from "../../core/Data/validate";
 import DataTable, {
   ColumnSpec,
   generateCsv,
@@ -23,7 +23,6 @@ import DataTable, {
   parseCsv,
 } from "../Common/Forms/DataTable";
 
-import { UnitCommitmentScenario } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import {
   changeBusData,
@@ -32,6 +31,7 @@ import {
   renameBus,
 } from "../../core/Operations/busOps";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
+import { UnitCommitmentScenario } from "../../core/Data/types";
 
 export const BusesColumnSpec: ColumnSpec[] = [
   {

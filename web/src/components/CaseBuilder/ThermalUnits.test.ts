@@ -10,7 +10,7 @@ import {
   generateTableColumns,
   generateTableData,
 } from "../Common/Forms/DataTable";
-import { TEST_DATA_1 } from "../../core/fixtures.test";
+import { TEST_DATA_1 } from "../../core/Data/fixtures.test";
 import {
   generateThermalUnitsData,
   parseThermalUnitsCsv,
@@ -20,7 +20,7 @@ import assert from "node:assert";
 import {
   getProfiledGenerators,
   getThermalGenerators,
-} from "../../core/fixtures";
+} from "../../core/Data/types";
 
 test("generateTableColumns", () => {
   const columns = generateTableColumns(TEST_DATA_1, ThermalUnitsColumnSpec);

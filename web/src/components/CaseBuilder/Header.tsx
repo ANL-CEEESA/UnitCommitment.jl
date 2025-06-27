@@ -6,9 +6,9 @@
 
 import styles from "./Header.module.css";
 import SiteHeaderButton from "../Common/Buttons/SiteHeaderButton";
-import { UnitCommitmentScenario } from "../../core/fixtures";
 import { useRef } from "react";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
+import { UnitCommitmentScenario } from "../../core/Data/types";
 
 interface HeaderProps {
   onClear: () => void;

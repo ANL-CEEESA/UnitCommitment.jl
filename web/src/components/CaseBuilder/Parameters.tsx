@@ -7,12 +7,12 @@
 import SectionHeader from "../Common/SectionHeader/SectionHeader";
 import Form from "../Common/Forms/Form";
 import TextInputRow from "../Common/Forms/TextInputRow";
-import { UnitCommitmentScenario } from "../../core/fixtures";
 import {
   changeParameter,
   changeTimeHorizon,
   changeTimeStep,
 } from "../../core/Operations/parameterOps";
+import { UnitCommitmentScenario } from "../../core/Data/types";
 
 interface ParametersProps {
   scenario: UnitCommitmentScenario;

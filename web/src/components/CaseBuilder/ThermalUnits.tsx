@@ -14,7 +14,7 @@ import DataTable, {
 import { CaseBuilderSectionProps } from "./CaseBuilder";
 import { useRef } from "react";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
-import { ValidationError } from "../../core/Validation/validate";
+import { ValidationError } from "../../core/Data/validate";
 import SectionHeader from "../Common/SectionHeader/SectionHeader";
 import SectionButton from "../Common/Buttons/SectionButton";
 import {
@@ -22,11 +22,6 @@ import {
   faPlus,
   faUpload,
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  getProfiledGenerators,
-  getThermalGenerators,
-  UnitCommitmentScenario,
-} from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../Common/io";
 import {
@@ -35,6 +30,11 @@ import {
   deleteGenerator,
   renameGenerator,
 } from "../../core/Operations/generatorOps";
+import {
+  getProfiledGenerators,
+  getThermalGenerators,
+  UnitCommitmentScenario,
+} from "../../core/Data/types";
 
 export const ThermalUnitsColumnSpec: ColumnSpec[] = [
   {

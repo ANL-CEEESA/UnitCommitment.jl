@@ -13,12 +13,12 @@ import {
   parseProfiledUnitsCsv,
   ProfiledUnitsColumnSpec,
 } from "./ProfiledUnits";
-import { TEST_DATA_1 } from "../../core/fixtures.test";
+import { TEST_DATA_1 } from "../../core/Data/fixtures.test";
 import assert from "node:assert";
 import {
   getProfiledGenerators,
   getThermalGenerators,
-} from "../../core/fixtures";
+} from "../../core/Data/types";
 
 test("parse CSV", () => {
   const csvContents =

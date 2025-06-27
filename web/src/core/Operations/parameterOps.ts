@@ -4,8 +4,9 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { Buses, UnitCommitmentScenario } from "../fixtures";
-import { ValidationError } from "../Validation/validate";
+import { Buses } from "../Data/fixtures";
+import { ValidationError } from "../Data/validate";
+import { UnitCommitmentScenario } from "../Data/types";
 
 export const changeTimeHorizon = (
   scenario: UnitCommitmentScenario,

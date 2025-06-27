@@ -4,9 +4,9 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { ValidationError } from "../Validation/validate";
-import { UnitCommitmentScenario } from "../fixtures";
+import { ValidationError } from "../Data/validate";
 import { ColumnSpec } from "../../components/Common/Forms/DataTable";
+import { UnitCommitmentScenario } from "../Data/types";
 
 export const renameItemInObject = <T>(
   oldName: string,

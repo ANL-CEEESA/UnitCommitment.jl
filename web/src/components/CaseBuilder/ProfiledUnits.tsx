@@ -18,11 +18,6 @@ import DataTable, {
   generateTableData,
   parseCsv,
 } from "../Common/Forms/DataTable";
-import {
-  getProfiledGenerators,
-  getThermalGenerators,
-  UnitCommitmentScenario,
-} from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../Common/io";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
@@ -33,8 +28,13 @@ import {
   deleteGenerator,
   renameGenerator,
 } from "../../core/Operations/generatorOps";
-import { ValidationError } from "../../core/Validation/validate";
+import { ValidationError } from "../../core/Data/validate";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
+import {
+  getProfiledGenerators,
+  getThermalGenerators,
+  UnitCommitmentScenario,
+} from "../../core/Data/types";
 
 export const ProfiledUnitsColumnSpec: ColumnSpec[] = [
   {

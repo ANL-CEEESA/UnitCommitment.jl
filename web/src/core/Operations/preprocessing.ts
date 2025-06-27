@@ -6,7 +6,7 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { validate } from "../Validation/validate";
+import { validate } from "../Data/validate";
 
 export const preprocess = (data) => {
   // Make a copy of the original data

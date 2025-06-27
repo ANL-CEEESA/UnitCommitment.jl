@@ -10,10 +10,10 @@ import {
   ColumnDefinition,
   TabulatorFull as Tabulator,
 } from "tabulator-tables";
-import { ValidationError } from "../../../core/Validation/validate";
-import { UnitCommitmentScenario } from "../../../core/fixtures";
+import { ValidationError } from "../../../core/Data/validate";
 import Papa from "papaparse";
 import { parseBool, parseNumber } from "../../../core/Operations/commonOps";
+import { UnitCommitmentScenario } from "../../../core/Data/types";
 
 export interface ColumnSpec {
   title: string;

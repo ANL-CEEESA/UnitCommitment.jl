@@ -4,9 +4,8 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { Generators, UnitCommitmentScenario } from "../fixtures";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
-import { ValidationError } from "../Validation/validate";
+import { ValidationError } from "../Data/validate";
 import {
   assertBusesNotEmpty,
   changeData,
@@ -15,6 +14,7 @@ import {
 } from "./commonOps";
 import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits";
 import { ThermalUnitsColumnSpec } from "../../components/CaseBuilder/ThermalUnits";
+import { Generators, UnitCommitmentScenario } from "../Data/types";
 
 export const createProfiledUnit = (
   scenario: UnitCommitmentScenario,

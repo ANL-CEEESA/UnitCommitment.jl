@@ -7,23 +7,20 @@
 import Header from "./Header";
 import Parameters from "./Parameters";
 import BusesComponent from "./Buses";
-import {
-  BLANK_SCENARIO,
-  TEST_SCENARIO,
-  UnitCommitmentScenario,
-} from "../../core/fixtures";
+import { BLANK_SCENARIO, TEST_SCENARIO } from "../../core/Data/fixtures";
 
 import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
 import { useState } from "react";
 import Footer from "./Footer";
-import { validate } from "../../core/Validation/validate";
+import { validate } from "../../core/Data/validate";
 import { offerDownload } from "../Common/io";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
 import ProfiledUnitsComponent from "./ProfiledUnits";
 import ThermalUnitsComponent from "./ThermalUnits";
 import TransmissionLinesComponent from "./TransmissionLines";
+import { UnitCommitmentScenario } from "../../core/Data/types";
 
 export interface CaseBuilderSectionProps {
   scenario: UnitCommitmentScenario;

@@ -4,7 +4,7 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { TEST_DATA_1 } from "../fixtures.test";
+import { TEST_DATA_1 } from "../Data/fixtures.test";
 import assert from "node:assert";
 import {
   changeTransmissionLineData,
@@ -12,7 +12,7 @@ import {
   deleteTransmissionLine,
   renameTransmissionLine,
 } from "./transmissionOps";
-import { ValidationError } from "../Validation/validate";
+import { ValidationError } from "../Data/validate";
 
 test("createTransmissionLine", () => {
   const [newScenario, err] = createTransmissionLine(TEST_DATA_1);

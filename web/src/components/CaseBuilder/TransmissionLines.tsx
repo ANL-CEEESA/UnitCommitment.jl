@@ -18,11 +18,10 @@ import DataTable, {
   generateTableData,
   parseCsv,
 } from "../Common/Forms/DataTable";
-import { UnitCommitmentScenario } from "../../core/fixtures";
 import { ColumnDefinition } from "tabulator-tables";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
-import { ValidationError } from "../../core/Validation/validate";
+import { ValidationError } from "../../core/Data/validate";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
 import {
   changeTransmissionLineData,
@@ -31,6 +30,7 @@ import {
   renameTransmissionLine,
 } from "../../core/Operations/transmissionOps";
 import { offerDownload } from "../Common/io";
+import { UnitCommitmentScenario } from "../../core/Data/types";
 
 export const TransmissionLinesColumnSpec: ColumnSpec[] = [
   {

@@ -4,15 +4,15 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { TransmissionLine, UnitCommitmentScenario } from "../fixtures";
 import {
   assertBusesNotEmpty,
   changeData,
   generateUniqueName,
   renameItemInObject,
 } from "./commonOps";
-import { ValidationError } from "../Validation/validate";
+import { ValidationError } from "../Data/validate";
 import { TransmissionLinesColumnSpec } from "../../components/CaseBuilder/TransmissionLines";
+import { TransmissionLine, UnitCommitmentScenario } from "../Data/types";
 
 export const createTransmissionLine = (
   scenario: UnitCommitmentScenario,

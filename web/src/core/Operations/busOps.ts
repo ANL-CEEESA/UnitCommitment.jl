@@ -4,8 +4,8 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import { Buses, UnitCommitmentScenario } from "../fixtures";
-import { ValidationError } from "../Validation/validate";
+import { Buses } from "../Data/fixtures";
+import { ValidationError } from "../Data/validate";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
 import {
   changeData,
@@ -13,6 +13,7 @@ import {
   renameItemInObject,
 } from "./commonOps";
 import { BusesColumnSpec } from "../../components/CaseBuilder/Buses";
+import { UnitCommitmentScenario } from "../Data/types";
 
 export const createBus = (scenario: UnitCommitmentScenario) => {
   const name = generateUniqueName(scenario.Buses, "b");

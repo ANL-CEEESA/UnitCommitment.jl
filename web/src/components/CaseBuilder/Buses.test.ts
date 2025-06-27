@@ -7,7 +7,7 @@
 import assert from "node:assert";
 import { BusesColumnSpec, generateBusesData } from "./Buses";
 import { generateCsv, parseCsv } from "../Common/Forms/DataTable";
-import { TEST_DATA_1 } from "../../core/fixtures.test";
+import { TEST_DATA_1 } from "../../core/Data/fixtures.test";
 
 test("generate CSV", () => {
   const [data, columns] = generateBusesData(TEST_DATA_1);

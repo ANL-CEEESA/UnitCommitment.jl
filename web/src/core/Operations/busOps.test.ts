@@ -6,7 +6,7 @@
 
 import { changeBusData, createBus, deleteBus, renameBus } from "./busOps";
 import assert from "node:assert";
-import { TEST_DATA_1 } from "../fixtures.test";
+import { TEST_DATA_1 } from "../Data/fixtures.test";
 
 test("createBus", () => {
   const newScenario = createBus(TEST_DATA_1);
