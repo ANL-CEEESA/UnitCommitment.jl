@@ -8,20 +8,13 @@ import { Generators, UnitCommitmentScenario } from "../fixtures";
 import { generateTimeslots } from "../../components/Common/Forms/DataTable";
 import { ValidationError } from "../Validation/validate";
 import {
+  assertBusesNotEmpty,
   changeData,
   generateUniqueName,
   renameItemInObject,
 } from "./commonOps";
 import { ProfiledUnitsColumnSpec } from "../../components/CaseBuilder/ProfiledUnits";
 import { ThermalUnitsColumnSpec } from "../../components/CaseBuilder/ThermalUnits";
-
-const assertBusesNotEmpty = (
-  scenario: UnitCommitmentScenario,
-): ValidationError | null => {
-  if (Object.keys(scenario.Buses).length === 0)
-    return { message: "Profiled unit requires an existing bus." };
-  return null;
-};
 
 export const createProfiledUnit = (
   scenario: UnitCommitmentScenario,

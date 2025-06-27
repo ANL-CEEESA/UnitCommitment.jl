@@ -45,6 +45,16 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
       "Minimum power (MW)": [0, 0, 0, 0, 0],
     },
   },
+  "Transmission lines": {
+    l1: {
+      "Source bus": "b1",
+      "Target bus": "b2",
+      "Susceptance (S)": 29.49686,
+      "Normal flow limit (MW)": 15000.0,
+      "Emergency flow limit (MW)": 20000.0,
+      "Flow limit penalty ($/MW)": 5000.0,
+    },
+  },
 };
 
 export const TEST_DATA_2: UnitCommitmentScenario = {
@@ -60,6 +70,7 @@ export const TEST_DATA_2: UnitCommitmentScenario = {
     b3: { "Load (MW)": [0, 30, 0, 40] },
   },
   Generators: {},
+  "Transmission lines": {},
 };
 
 export const TEST_DATA_BLANK: UnitCommitmentScenario = {
@@ -71,6 +82,7 @@ export const TEST_DATA_BLANK: UnitCommitmentScenario = {
   },
   Buses: {},
   Generators: {},
+  "Transmission lines": {},
 };
 
 test("fixtures", () => {});

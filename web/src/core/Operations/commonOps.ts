@@ -234,3 +234,10 @@ export const changeData = (
   }
   throw Error(`Unknown field: ${fieldName}`);
 };
+export const assertBusesNotEmpty = (
+  scenario: UnitCommitmentScenario,
+): ValidationError | null => {
+  if (Object.keys(scenario.Buses).length === 0)
+    return { message: "Profiled unit requires an existing bus." };
+  return null;
+};

@@ -38,6 +38,15 @@ export interface ThermalUnit {
   "Must run?": boolean;
 }
 
+export interface TransmissionLine {
+  "Source bus": string;
+  "Target bus": string;
+  "Susceptance (S)": number;
+  "Normal flow limit (MW)": number;
+  "Emergency flow limit (MW)": number;
+  "Flow limit penalty ($/MW)": number;
+}
+
 export interface UnitCommitmentScenario {
   Parameters: {
     Version: string;
@@ -47,6 +56,9 @@ export interface UnitCommitmentScenario {
   };
   Buses: Buses;
   Generators: Generators;
+  "Transmission lines": {
+    [name: string]: TransmissionLine;
+  };
 }
 
 const getTypedGenerators = <T extends any>(
@@ -81,6 +93,7 @@ export const BLANK_SCENARIO: UnitCommitmentScenario = {
   },
   Buses: {},
   Generators: {},
+  "Transmission lines": {},
 };
 
 export const TEST_SCENARIO: UnitCommitmentScenario = {
@@ -174,6 +187,16 @@ export const TEST_SCENARIO: UnitCommitmentScenario = {
       "Initial status (h)": 12,
       "Initial power (MW)": 115,
       "Must run?": false,
+    },
+  },
+  "Transmission lines": {
+    l1: {
+      "Source bus": "b1",
+      "Target bus": "b2",
+      "Susceptance (S)": 29.49686,
+      "Normal flow limit (MW)": 15000.0,
+      "Emergency flow limit (MW)": 20000.0,
+      "Flow limit penalty ($/MW)": 5000.0,
     },
   },
 };

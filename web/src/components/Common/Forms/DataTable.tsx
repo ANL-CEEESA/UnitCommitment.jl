@@ -288,7 +288,10 @@ export const floatFormatter = (cell: CellComponent) => {
   if (v === "") {
     return "&mdash;";
   } else {
-    return parseFloat(cell.getValue()).toFixed(1);
+    return parseFloat(cell.getValue()).toLocaleString("en-US", {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
   }
 };
 

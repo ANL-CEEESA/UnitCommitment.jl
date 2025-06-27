@@ -23,6 +23,7 @@ import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
 import ProfiledUnitsComponent from "./ProfiledUnits";
 import ThermalUnitsComponent from "./ThermalUnits";
+import TransmissionLinesComponent from "./TransmissionLines";
 
 export interface CaseBuilderSectionProps {
   scenario: UnitCommitmentScenario;
@@ -117,6 +118,11 @@ const CaseBuilder = () => {
           onError={setToastMessage}
         />
         <ProfiledUnitsComponent
+          scenario={scenario}
+          onDataChanged={onDataChanged}
+          onError={setToastMessage}
+        />
+        <TransmissionLinesComponent
           scenario={scenario}
           onDataChanged={onDataChanged}
           onError={setToastMessage}

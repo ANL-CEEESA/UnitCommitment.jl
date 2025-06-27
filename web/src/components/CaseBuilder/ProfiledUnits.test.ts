@@ -104,7 +104,7 @@ test("generateTableColumns", () => {
     headerSort: false,
     headerWordWrap: true,
     hozAlign: "left",
-    minWidth: 60,
+    minWidth: 75,
     resizable: false,
     title: "00:00",
   });
