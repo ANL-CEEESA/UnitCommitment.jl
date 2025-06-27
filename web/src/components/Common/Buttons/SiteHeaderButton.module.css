@@ -1,0 +1,28 @@
+/*
+ * UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+ * Copyright (C) 2020-2025, UChicago Argonne, LLC. All rights reserved.
+ * Released under the modified BSD license. See COPYING.md for more details.
+ */
+
+.SiteHeaderButton {
+  padding: 6px 36px;
+  margin: 0 0 0 8px;
+  line-height: 24px;
+  border: var(--box-border);
+  box-shadow: var(--box-shadow);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  color: var(--contrast-80);
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 12px;
+  background: linear-gradient(var(--contrast-0) 25%, var(--contrast-10) 100%);
+}
+
+.SiteHeaderButton:hover {
+  background: rgb(245, 245, 245);
+}
+
+.SiteHeaderButton:active {
+  background: rgba(220, 220, 220);
+}

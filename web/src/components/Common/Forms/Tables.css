@@ -1,0 +1,81 @@
+/*
+ * UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+ * Copyright (C) 2020-2025, UChicago Argonne, LLC. All rights reserved.
+ * Released under the modified BSD license. See COPYING.md for more details.
+ */
+
+.tabulator {
+  background-color: var(--contrast-0);
+  border: var(--box-border) !important;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  min-height: 48px;
+  margin: 0 auto;
+  min-width: var(--site-min-width);
+  max-width: var(--site-max-width);
+  padding: 0;
+}
+
+.tabulator .tabulator-header {
+  border-bottom: 1px solid #ccc;
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--contrast-100);
+  line-height: 18px;
+}
+
+.tabulator .tabulator-header .subtitle {
+  color: var(--contrast-80);
+  font-weight: normal;
+}
+
+.tabulator .tabulator-header .tabulator-col {
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+  vertical-align: middle !important;
+}
+
+.tabulator .tabulator-header .tabulator-col .tabulator-col-content {
+  text-align: left;
+  padding: 0 8px;
+  line-height: 24px;
+}
+
+.tabulator .tabulator-header .tabulator-col:last-child {
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.tabulator-row .tabulator-cell {
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 28px;
+  height: 28px;
+  text-align: right;
+  vertical-align: middle !important;
+  border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 0 8px;
+}
+
+.tabulator-row-even {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.tabulator-row-odd {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.tabulator-row .tabulator-cell.tabulator-editing {
+  border: 0;
+  padding: 0 4px;
+  background-color: #cee;
+}
+
+.tabulator-row .tabulator-cell.tabulator-editing input {
+  font-family: monospace;
+  text-align: left;
+  font-size: 12px;
+}
+
+.tabulator-col-group-cols {
+  font-size: 12px;
+}
