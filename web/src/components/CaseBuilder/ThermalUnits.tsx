@@ -51,13 +51,13 @@ export const ThermalUnitsColumnSpec: ColumnSpec[] = [
     title: "Production cost curve (MW)",
     type: "number[N]",
     length: 10,
-    width: 75,
+    width: 80,
   },
   {
     title: "Production cost curve ($)",
     type: "number[N]",
     length: 10,
-    width: 75,
+    width: 80,
   },
   {
     title: "Startup costs ($)",
@@ -83,22 +83,22 @@ export const ThermalUnitsColumnSpec: ColumnSpec[] = [
   },
   {
     title: "Ramp up limit (MW)",
-    type: "number",
+    type: "number?",
     width: 100,
   },
   {
     title: "Ramp down limit (MW)",
-    type: "number",
+    type: "number?",
     width: 100,
   },
   {
     title: "Startup limit (MW)",
-    type: "number",
+    type: "number?",
     width: 80,
   },
   {
     title: "Shutdown limit (MW)",
-    type: "number",
+    type: "number?",
     width: 100,
   },
   {

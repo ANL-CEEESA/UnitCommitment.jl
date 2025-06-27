@@ -97,15 +97,18 @@ export const schema = {
           },
           "Susceptance (S)": {
             type: "number",
-            minimum: 0,
           },
           "Normal flow limit (MW)": {
             type: "number",
             minimum: 0,
+            nullable: true,
+            default: null,
           },
           "Emergency flow limit (MW)": {
             type: "number",
             minimum: 0,
+            nullable: true,
+            default: null,
           },
           "Flow limit penalty ($/MW)": {
             type: "number",
@@ -254,18 +257,26 @@ export const schema = {
             "Ramp up limit (MW)": {
               type: "number",
               minimum: 0,
+              nullable: true,
+              default: null,
             },
             "Ramp down limit (MW)": {
               type: "number",
               minimum: 0,
+              nullable: true,
+              default: null,
             },
             "Startup limit (MW)": {
               type: "number",
               minimum: 0,
+              nullable: true,
+              default: null,
             },
             "Shutdown limit (MW)": {
               type: "number",
               minimum: 0,
+              nullable: true,
+              default: null,
             },
             "Initial status (h)": {
               type: "integer",

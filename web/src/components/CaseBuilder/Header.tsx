@@ -22,8 +22,7 @@ function Header(props: HeaderProps) {
 
   function onLoad() {
     fileElem.current!.showFilePicker((data: any) => {
-      const scenario = JSON.parse(data) as UnitCommitmentScenario;
-      props.onLoad(scenario);
+      props.onLoad(data);
     });
   }
 

@@ -17,7 +17,14 @@ import { UnitCommitmentScenario } from "../../../core/Data/types";
 
 export interface ColumnSpec {
   title: string;
-  type: "string" | "number" | "number[N]" | "number[T]" | "busRef" | "boolean";
+  type:
+    | "string"
+    | "number"
+    | "number?"
+    | "number[N]"
+    | "number[T]"
+    | "busRef"
+    | "boolean";
   length?: number;
   width: number;
 }
@@ -53,6 +60,7 @@ export const generateTableColumns = (
         });
         break;
       case "number":
+      case "number?":
         columns.push({
           ...columnsCommonAttrs,
           title: spec.title,
@@ -118,6 +126,7 @@ export const generateTableData = (
       switch (spec.type) {
         case "string":
         case "number":
+        case "number?":
         case "boolean":
         case "busRef":
           entry[spec.title] = entryData[spec.title];
@@ -285,7 +294,7 @@ export const parseCsv = (
 
 export const floatFormatter = (cell: CellComponent) => {
   const v = cell.getValue();
-  if (v === "") {
+  if (v === "" || v === null) {
     return "&mdash;";
   } else {
     return parseFloat(cell.getValue()).toLocaleString("en-US", {

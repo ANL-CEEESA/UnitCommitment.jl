@@ -25,10 +25,10 @@ export interface ThermalUnit {
   "Production cost curve ($)": number[];
   "Startup costs ($)": number[];
   "Startup delays (h)": number[];
-  "Ramp up limit (MW)": number | "";
-  "Ramp down limit (MW)": number | "";
-  "Startup limit (MW)": number | "";
-  "Shutdown limit (MW)": number | "";
+  "Ramp up limit (MW)": number | null;
+  "Ramp down limit (MW)": number | null;
+  "Startup limit (MW)": number | null;
+  "Shutdown limit (MW)": number | null;
   "Minimum downtime (h)": number;
   "Minimum uptime (h)": number;
   "Initial status (h)": number;
@@ -40,8 +40,8 @@ export interface TransmissionLine {
   "Source bus": string;
   "Target bus": string;
   "Susceptance (S)": number;
-  "Normal flow limit (MW)": number;
-  "Emergency flow limit (MW)": number;
+  "Normal flow limit (MW)": number | null;
+  "Emergency flow limit (MW)": number | null;
   "Flow limit penalty ($/MW)": number;
 }
 

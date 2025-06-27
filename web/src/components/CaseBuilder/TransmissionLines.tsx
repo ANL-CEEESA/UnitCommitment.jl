@@ -55,12 +55,12 @@ export const TransmissionLinesColumnSpec: ColumnSpec[] = [
   },
   {
     title: "Normal flow limit (MW)",
-    type: "number",
+    type: "number?",
     width: 60,
   },
   {
     title: "Emergency flow limit (MW)",
-    type: "number",
+    type: "number?",
     width: 60,
   },
   {

@@ -13,7 +13,6 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
 import { useState } from "react";
 import Footer from "./Footer";
-import { validate } from "../../core/Data/validate";
 import { offerDownload } from "../Common/io";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
@@ -68,19 +67,14 @@ const CaseBuilder = () => {
     setAndSaveScenario(newScenario);
   };
 
-  const onLoad = (scenario: UnitCommitmentScenario) => {
-    const preprocessed = preprocess(
-      scenario,
-    ) as unknown as UnitCommitmentScenario;
-
-    // Validate and assign default values
-    if (!validate(preprocessed)) {
-      setToastMessage("Error loading JSON file");
-      console.error(validate.errors);
+  const onLoad = (data: any) => {
+    const json = JSON.parse(data);
+    const [scenario, err] = preprocess(json);
+    if (err) {
+      setToastMessage(err.message);
       return;
     }
-
-    setAndSaveScenario(preprocessed);
+    setAndSaveScenario(scenario!);
     setToastMessage("Data loaded successfully");
   };
 

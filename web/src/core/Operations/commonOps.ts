@@ -43,12 +43,22 @@ export const generateUniqueName = (container: any, prefix: string): string => {
 export const parseNumber = (
   valueStr: string,
 ): [number, ValidationError | null] => {
+  if (valueStr === "") {
+    return [0, { message: "Field must not be blank" }];
+  }
   const valueFloat = parseFloat(valueStr);
   if (isNaN(valueFloat)) {
     return [0, { message: `"${valueStr}" is not a valid number` }];
   } else {
     return [valueFloat, null];
   }
+};
+
+export const parseNullableNumber = (
+  valueStr: string,
+): [number | null, ValidationError | null] => {
+  if (valueStr === "") return [null, null];
+  return parseNumber(valueStr);
 };
 
 export const parseBool = (
@@ -93,9 +103,12 @@ export const changeNumberData = (
   field: string,
   newValueStr: string,
   container: { [key: string]: any },
+  nullable: boolean = false,
 ): [{ [key: string]: any }, ValidationError | null] => {
   // Parse value
-  const [newValueFloat, err] = parseNumber(newValueStr);
+  const [newValueFloat, err] = nullable
+    ? parseNullableNumber(newValueStr)
+    : parseNumber(newValueStr);
   if (err) return [container, err];
 
   // Build the new object
@@ -211,6 +224,8 @@ export const changeData = (
         return changeBusRefData(fieldName, newValueStr, container, scenario);
       case "number":
         return changeNumberData(fieldName, newValueStr, container);
+      case "number?":
+        return changeNumberData(fieldName, newValueStr, container, true);
       case "number[T]":
         return changeNumberVecTData(
           fieldName,
