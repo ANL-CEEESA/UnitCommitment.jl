@@ -264,6 +264,20 @@ Test cases used in [TeLuSa19]. These instances are similar to OR-LIB/UC, in the 
 | `tejada19/UC_168h_192g` | 168   | 1     | 192        | 0     | 0             | [TeLuSa19] |
 | `tejada19/UC_168h_199g` | 168   | 1     | 199        | 0     | 0             | [TeLuSa19] |
 
+### Transmission and Expansion Planning Instances
+
+We curate a list of popular [MuSe21] transmission and expansion planning (TEP) instances used in academia paper. These TEP instances follow [UCJL format](format.md), with information on candidate transmission lines and investment costs.
+
+| Name                    | Buses | Generators | Generator Cost? | Lines | Line Cost? |  References |
+| ----------------------- | ----- | ---------- | --------------- | ----- | ---------- | ----------- |
+| `tep/garver6`  | 6     | 3        | Default     | 6     | Yes   | [Ga70] |
+| `tep/ieee24`  | 24     | 32       | Default     | 35    | Yes    | [FaHi03] |
+| `tep/ieee30`  | 30    | 6        | Default     | 41    | Yes     | [AlDeAm13] |
+| `tep/ieee118`  | 118   | 70       | Yes     | 186   | Yes    | [KhShKa10] |
+| `tep/south_brazilian`  | 242   | 53      | Default | 467   | Yes   | [HaMoGa00] |
+| `tep/south_brazilian`  | 85    | 14       | Default | 299   | Yes    | [RoMoGa02] |
+    
+
 ## References
 
 - [UCJL] **Alinson S. Xavier, Aleksandr M. Kazachkov, Ogün Yurdakul, Feng Qiu.** "UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment (Version 0.3)". Zenodo (2022). [DOI: 10.5281/zenodo.4269874](https://doi.org/10.5281/zenodo.4269874)
@@ -286,4 +300,18 @@ Test cases used in [TeLuSa19]. These instances are similar to OR-LIB/UC, in the 
 
 - [FrGe06] **A. Frangioni, C. Gentile.** "Solving nonlinear single-unit commitment problems with ramping constraints" Operations Research 54(4), p. 767 - 775, 2006. [DOI: 10.1287/opre.1060.0309](https://doi.org/10.1287/opre.1060.0309)
 
-- [TeLuSa19] **D. A. Tejada-Arango, S. Lumbreras, P. Sanchez-Martin and A. Ramos.** "Which Unit-Commitment Formulation is Best? A Systematic Comparison," in IEEE Transactions on Power Systems. [DOI: 10.1109/TPWRS.2019.2962024](https://ieeexplore.ieee.org/document/8941313/).
+- [TeLuSa19] **D. A. Tejada-Arango, S. Lumbreras, P. Sanchez-Martin and A. Ramos.** "Which unit-commitment formulation is best? A systematic comparison," in IEEE Transactions on Power Systems. [DOI: 10.1109/TPWRS.2019.2962024](https://ieeexplore.ieee.org/document/8941313/).
+
+- [MuSe21] **Selçuk Mutlu, Ercan Şenyiğit.** "Literature review of transmission expansion planning problem test systems: detailed analysis of IEEE-24," in Electric Power Systems Research 201 (2021). [DOI: 10.1016/j.epsr.2021.107543](https://doi.org/10.1016/j.epsr.2021.107543)
+
+- [Ga70] **Len L. Garver.** "Transmission network estimation using linear programming," in IEEE Transactions on Power Apparatus and Systems, vol. PAS-89, no. 7, pp. 1688-1697, Sept. 1970. [DOI: 10.1109/TPAS.1970.292825](https://ieeexplore.ieee.org/abstract/document/4074249)
+
+- [FaHi03] **Risheng Fang, David J. Hill.** "A new strategy for transmission expansion in competitive electricity markets." IEEE Transactions on power systems 18.1 (2003): 374-380. [DOI: 10.1109/TPWRS.2002.807083](https://ieeexplore.ieee.org/document/1178822)
+
+- [AlDeAm13] **Behnam Alizadeh, Shahab Dehghan, Nima Amjady, Shahram Jadid and Ahad Kazemi.** "Robust transmission system expansion considering planning uncertainties," IET Generation, Transmission & Distribution (2013). [DOI: 10.1049/iet-gtd.2012.0137](https://doi.org/10.1049/iet-gtd.2012.0137)
+
+- [KhShKa10] **Amin Khodaei, Mohammad Shahidehpour and Saeed Kamalinia.** "Transmission switching in expansion planning," IEEE TRANSACTIONS ON POWER SYSTEMS, VOL. 25, NO. 3, AUGUST 2010. [DOI: 10.1109/TPWRS.2009.2039946](https://doi.org/10.1109/TPWRS.2009.2039946)
+
+- [HaMoGa00] **S. Haffner, A. Monticelli, A. Garcia, J. Mantovani and R. Romero.** "Branch and bound algorithm for transmission system expansion planning using a transportation model," IEE Proceedings - Generation Transmission and Distribution, Vol. 147, No. 3, May 2000. [DOI: 10.1049/ip-gtd:20000337](https://doi.org/10.1049/ip-gtd:20000337)
+
+- [RoMoGa02] **R. Romero, A. Monticelli, A. Garcia and S. Haffner.** "Test systems and mathematical models for transmission network expansion planning," IEEE Proceeding - Generation Transmission and Distribution, Vol. 149, No. 1, January 2002. [DOI: 10.1049/ip-gtd:20020026](https://doi.org/10.1049/ip-gtd:20020026)
