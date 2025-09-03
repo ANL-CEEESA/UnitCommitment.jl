@@ -24,7 +24,8 @@ This section describes system-wide parameters, such as power balance penalty, an
 | `Time step (min)`                          | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc).                                                                                                                                           |   `60`   |      No      |     No     |
 | `Power balance penalty ($/MW)`             | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.                       | `1000.0` |      No      |    Yes     |
 | `Scenario name`                            | Name of the scenario.                                                                                                                                                                                                                |  `"s1"`  |      No      |    ---     |
-| `Scenario weight`                          | Weight of the scenario. The scenario weight can be any positive real number, that is, it does not have to be between zero and one. The package normalizes the weights to ensure that the probability of all scenarios sum up to one. |   1.0    |      No      |    ---     |
+| `Scenario weight`                          | Weight of the scenario. The scenario weight can be any positive real number, that is, it does not have to be between zero and one. The package normalizes the weights to ensure that the probability of all scenarios sum up to one. |   `1.0`    |      No      |    ---     |
+| `Operation cost weight`                          | Weighting factor to make operation costs comparable to investment costs. Required for transmission expansion planning problem. |   `1.0`    |      No      |    ---     |
 
 #### Example
 
@@ -35,7 +36,8 @@ This section describes system-wide parameters, such as power balance penalty, an
     "Time horizon (h)": 4,
     "Power balance penalty ($/MW)": 1000.0,
     "Scenario name": "s1",
-    "Scenario weight": 0.5
+    "Scenario weight": 0.5,
+    "Operation cost weight": 1.0
   }
 }
 ```
@@ -89,6 +91,7 @@ This section describes all generators in the system. Two types of units can be s
 | `Must run?`                                                  | If `true`, the generator should be committed, even if that is not economical (Boolean).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `false`           |     Yes      |    Yes     |
 | `Reserve eligibility`                                        | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `[]`              |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be commited at that time period; if `false`, the generator must not be commited at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                         | `null`            |     Yes      |    Yes     |
+| `Investment cost ($)`                | Cost to build a candidate generation unit. $0.0 for existing units.                                                                                                                                                                     | `0.0` |      No      |    No     |
 
 #### Profiled Units
 
@@ -99,7 +102,7 @@ This section describes all generators in the system. Two types of units can be s
 | `Cost ($/MW)`        | Cost incurred for serving each MW of power by this generator.                     | Required |     Yes      |    Yes     |
 | `Minimum power (MW)` | Minimum amount of power this generator may supply.                                |  `0.0`   |     Yes      |    Yes     |
 | `Maximum power (MW)` | Maximum amount of power this generator may supply.                                | Required |     Yes      |    Yes     |
-
+| `Investment cost ($)`| Cost to build a candidate generation unit. $0.0 for existing units.               |  `0.0`.  |      No      |     No     |
 #### Production costs and limits
 
 Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs \$1400, \$1600, \$2200 and \$2400 to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, `Production cost curve (MW)` should be set to `[100, 110, 130, 135]`, and `Production cost curve ($)` should be set to `[1400, 1600, 2200, 2400]`.
@@ -158,7 +161,8 @@ Note that this curve also specifies the production limits. Specifically, the fir
       "Type": "Profiled",
       "Minimum power (MW)": 10.0,
       "Maximum power (MW)": 120.0,
-      "Cost ($/MW)": 100.0
+      "Cost ($/MW)": 100.0,
+      "Investment cost ($)": 3000000.0
     }
   }
 }
@@ -276,6 +280,8 @@ This section describes the characteristics of transmission system, such as its t
 | `Normal flow limit (MW)`    | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state.                                                                                                      | `+inf`   |     Yes      |    Yes     |
 | `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line).                                                              | `+inf`   |      Y       |    Yes     |
 | `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` |     Yes      |    Yes     |
+| `Investment cost ($)`                | Cost to build a candidate transmission line. $0 for existing lines.                                                                                                                                                                      | `0.0` |      No      |    No     |
+| `Max number of parallel circuits`| Maximum number of lines can be built in this corridor.  | `0` |      No      |    No     |
 
 #### Example
 
@@ -288,7 +294,9 @@ This section describes the characteristics of transmission system, such as its t
       "Susceptance (S)": 29.49686,
       "Normal flow limit (MW)": 15000.0,
       "Emergency flow limit (MW)": 20000.0,
-      "Flow limit penalty ($/MW)": 5000.0
+      "Flow limit penalty ($/MW)": 5000.0,
+      "Investment cost ($)": 3000000.0,
+      "Max number of parallel circuits": 2
     }
   }
 }
