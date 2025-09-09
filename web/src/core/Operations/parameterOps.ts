@@ -29,10 +29,22 @@ export const changeTimeHorizon = (
     Object.values(newScenario.Buses).forEach((bus) => {
       bus["Load (MW)"] = bus["Load (MW)"].slice(0, newT);
     });
+    Object.values(newScenario.Generators).forEach((generator) => {
+      if (generator.Type === "Profiled") {
+        generator["Minimum power (MW)"] = generator["Minimum power (MW)"].slice(0, newT);
+        generator["Maximum power (MW)"] = generator["Maximum power (MW)"].slice(0, newT);
+      }
+    });
   } else {
     const padding = Array(newT - oldT).fill(0);
     Object.values(newScenario.Buses).forEach((bus) => {
       bus["Load (MW)"] = bus["Load (MW)"].concat(padding);
+    });
+    Object.values(newScenario.Generators).forEach((generator) => {
+      if (generator.Type === "Profiled") {
+        generator["Minimum power (MW)"] = generator["Minimum power (MW)"].concat(padding);
+        generator["Maximum power (MW)"] = generator["Maximum power (MW)"].concat(padding);
+      }
     });
   }
   return [newScenario, null];
@@ -110,6 +122,40 @@ export const changeTimeStep = (
     };
   }
 
+  const newGenerators: { [name: string]: any } = {};
+  for (const generatorName in scenario.Generators) {
+    const generator = scenario.Generators[generatorName]!;
+    if (generator.Type === "Profiled") {
+      // Build data_y for minimum power
+      const minPower = generator["Minimum power (MW)"];
+      const minData_y = Array(oldT + 1).fill(0);
+      for (let i = 0; i < oldT; i++) minData_y[i] = minPower[i];
+      minData_y[oldT] = minData_y[0];
+
+      // Build data_y for maximum power
+      const maxPower = generator["Maximum power (MW)"];
+      const maxData_y = Array(oldT + 1).fill(0);
+      for (let i = 0; i < oldT; i++) maxData_y[i] = maxPower[i];
+      maxData_y[oldT] = maxData_y[0];
+
+      // Run interpolation for both
+      const newMinPower = Array(newT).fill(0);
+      const newMaxPower = Array(newT).fill(0);
+      for (let i = 0; i < newT; i++) {
+        newMinPower[i] = evaluatePwlFunction(data_x, minData_y, newTimeStep * i);
+        newMaxPower[i] = evaluatePwlFunction(data_x, maxData_y, newTimeStep * i);
+      }
+
+      newGenerators[generatorName] = {
+        ...generator,
+        "Minimum power (MW)": newMinPower,
+        "Maximum power (MW)": newMaxPower,
+      };
+    } else {
+      newGenerators[generatorName] = generator;
+    }
+  }
+
   return [
     {
       ...scenario,
@@ -118,6 +164,7 @@ export const changeTimeStep = (
         "Time step (min)": newTimeStep,
       },
       Buses: newBuses,
+      Generators: newGenerators,
     },
     null,
   ];
