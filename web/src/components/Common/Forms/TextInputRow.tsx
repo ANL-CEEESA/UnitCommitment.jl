@@ -6,7 +6,7 @@
 
 import formStyles from "./Form.module.css";
 import HelpButton from "../Buttons/HelpButton";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { ValidationError } from "../../../core/Data/validate";
 
 interface TextInputRowProps {
@@ -21,6 +21,13 @@ function TextInputRow(props: TextInputRowProps) {
   const [savedValue, setSavedValue] = useState(props.initialValue);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.value = props.initialValue;
+    }
+    setSavedValue(props.initialValue);
+  }, [props.initialValue]);
+
   const onBlur = (event: React.FocusEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
     if (newValue === savedValue) return;
@@ -29,8 +36,8 @@ function TextInputRow(props: TextInputRowProps) {
       inputRef.current!.value = savedValue;
       return;
     }
-    setSavedValue(newValue);
   };
+
   return (
     <div className={formStyles.FormRow}>
       <label>
