@@ -14,6 +14,7 @@ import { ValidationError } from "../../../core/Data/validate";
 import Papa from "papaparse";
 import { parseBool, parseNumber } from "../../../core/Operations/commonOps";
 import { UnitCommitmentScenario } from "../../../core/Data/types";
+import { tab } from "@testing-library/user-event/dist/tab";
 
 export interface ColumnSpec {
   title: string;
@@ -359,6 +360,7 @@ const DataTable = (props: DataTableProps) => {
   const tableContainerRef = useRef<HTMLDivElement | null>(null);
   const tableRef = useRef<Tabulator | null>(null);
   const [isTableBuilt, setTableBuilt] = useState<Boolean>(false);
+  const [activeCell, setActiveCell] = useState<CellComponent | null>(null);
 
   useEffect(() => {
     const onCellEdited = (cell: CellComponent) => {
@@ -412,9 +414,19 @@ const DataTable = (props: DataTableProps) => {
       const newColumns = columns;
       const newData = data;
       const oldRows = tableRef.current.getRows();
+      const activeRowPosition = activeCell?.getRow().getPosition() as number;
+      const activeField = activeCell?.getField();
 
       // Update data
       tableRef.current.replaceData(newData).then(() => {});
+
+      // Restore active cell selection
+      if (activeCell) {
+        const cell = tableRef.current
+          .getRowFromPosition(activeRowPosition!!)
+          .getCell(activeField!!);
+        cell.edit();
+      }
 
       // Update columns
       let newColCount = 0;
@@ -444,8 +456,21 @@ const DataTable = (props: DataTableProps) => {
         }, 10);
       }
 
-      // Update callbacks
+      // Remove old callbacks
       tableRef.current.off("cellEdited");
+      tableRef.current.off("cellEditing");
+      tableRef.current.off("cellEditCancelled");
+
+      // Set new callbacks
+      tableRef.current.on("cellEditing", (cell) => {
+        console.log("cellEditing", cell);
+        setActiveCell(cell);
+      });
+
+      tableRef.current.on("cellEditCancelled", (cell) => {
+        setActiveCell(null);
+      });
+
       tableRef.current.on("cellEdited", (cell) => {
         onCellEdited(cell);
       });
