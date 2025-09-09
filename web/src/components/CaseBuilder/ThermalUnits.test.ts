@@ -36,7 +36,7 @@ test("generateTableColumns", () => {
     headerSort: false,
     headerWordWrap: true,
     hozAlign: "left",
-    minWidth: 75,
+    minWidth: 80,
     resizable: false,
     title: "1",
   });

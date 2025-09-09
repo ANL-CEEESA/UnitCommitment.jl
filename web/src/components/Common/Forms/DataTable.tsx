@@ -12,7 +12,11 @@ import {
 } from "tabulator-tables";
 import { ValidationError } from "../../../core/Data/validate";
 import Papa from "papaparse";
-import { parseBool, parseNumber } from "../../../core/Operations/commonOps";
+import {
+  parseBool,
+  parseNullableNumber,
+  parseNumber,
+} from "../../../core/Operations/commonOps";
 import { UnitCommitmentScenario } from "../../../core/Data/types";
 
 export interface ColumnSpec {
@@ -243,6 +247,12 @@ export const parseCsv = (
           data[name][spec.title] = val;
           break;
         }
+        case "number?": {
+          const [val, err] = parseNullableNumber(row[spec.title]);
+          if (err) return [null, { message: err.message + rowRef }];
+          data[name][spec.title] = val;
+          break;
+        }
         case "busRef":
           const busName = row[spec.title];
           if (!(busName in scenario.Buses)) {
@@ -421,10 +431,10 @@ const DataTable = (props: DataTableProps) => {
 
       // Restore active cell selection
       if (activeCell) {
-        const cell = tableRef.current
-          .getRowFromPosition(activeRowPosition!!)
-          .getCell(activeField!!);
-        cell.edit();
+        tableRef.current
+          ?.getRowFromPosition(activeRowPosition!!)
+          ?.getCell(activeField!!)
+          ?.edit();
       }
 
       // Update columns
