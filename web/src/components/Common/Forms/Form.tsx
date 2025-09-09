@@ -8,7 +8,11 @@ import { ReactNode } from "react";
 import styles from "./Form.module.css";
 
 function Form({ children }: { children: ReactNode }) {
-  return <div className={styles.Form}>{children}</div>;
+  return (
+    <div className={styles.FormWrapper}>
+      <div className={styles.Form}>{children}</div>
+    </div>
+  );
 }
 
 export default Form;

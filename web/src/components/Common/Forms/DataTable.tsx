@@ -14,7 +14,6 @@ import { ValidationError } from "../../../core/Data/validate";
 import Papa from "papaparse";
 import { parseBool, parseNumber } from "../../../core/Operations/commonOps";
 import { UnitCommitmentScenario } from "../../../core/Data/types";
-import { tab } from "@testing-library/user-event/dist/tab";
 
 export interface ColumnSpec {
   title: string;
@@ -477,7 +476,11 @@ const DataTable = (props: DataTableProps) => {
     }
   }, [props, isTableBuilt]);
 
-  return <div className="tableContainer" ref={tableContainerRef} />;
+  return (
+    <div className="tableWrapper">
+      <div ref={tableContainerRef} />
+    </div>
+  );
 };
 
 export default DataTable;

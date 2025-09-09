@@ -4,17 +4,21 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
+.FormWrapper {
+    margin: 0 auto;
+    max-width: var(--site-max-width);
+}
+
 .Form {
   background-color: var(--contrast-0);
   border: var(--box-border);
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);
   min-height: 48px;
-  margin: 0 auto;
+    margin: 0 12px;
   min-width: var(--site-min-width);
-  max-width: var(--site-max-width);
   max-height: 500px;
-  padding: 12px 0;
+  padding: 12px;
 }
 
 .FormRow {
