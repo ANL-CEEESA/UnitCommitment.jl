@@ -407,7 +407,6 @@ const DataTable = (props: DataTableProps) => {
     const height = computeTableHeight(data);
 
     if (tableRef.current === null) {
-      console.log("new Tabulator");
       tableRef.current = new Tabulator(tableContainerRef.current, {
         layout: "fitColumns",
         data: data,
@@ -425,6 +424,10 @@ const DataTable = (props: DataTableProps) => {
       const oldRows = tableRef.current.getRows();
       const activeRowPosition = activeCell?.getRow().getPosition() as number;
       const activeField = activeCell?.getField();
+
+      if (activeCell) {
+        console.log(activeCell.getValue());
+      }
 
       // Update data
       tableRef.current.replaceData(newData).then(() => {});
@@ -472,7 +475,6 @@ const DataTable = (props: DataTableProps) => {
 
       // Set new callbacks
       tableRef.current.on("cellEditing", (cell) => {
-        console.log("cellEditing", cell);
         setActiveCell(cell);
       });
 
@@ -481,6 +483,7 @@ const DataTable = (props: DataTableProps) => {
       });
 
       tableRef.current.on("cellEdited", (cell) => {
+        setActiveCell(null);
         onCellEdited(cell);
       });
     }
