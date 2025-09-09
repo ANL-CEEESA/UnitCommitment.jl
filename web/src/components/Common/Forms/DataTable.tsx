@@ -396,6 +396,7 @@ const DataTable = (props: DataTableProps) => {
     const height = computeTableHeight(data);
 
     if (tableRef.current === null) {
+      console.log("new Tabulator");
       tableRef.current = new Tabulator(tableContainerRef.current, {
         layout: "fitColumns",
         data: data,
@@ -416,8 +417,16 @@ const DataTable = (props: DataTableProps) => {
       tableRef.current.replaceData(newData).then(() => {});
 
       // Update columns
-      if (newColumns.length !== tableRef.current.getColumns().length) {
+      let newColCount = 0;
+      newColumns.forEach((col) => {
+        if (col.columns) newColCount += col.columns.length;
+        else newColCount += 1;
+      });
+      if (newColCount !== tableRef.current.getColumns().length) {
         tableRef.current.setColumns(newColumns);
+        const rows = tableRef.current!.getRows()!;
+        const firstRow = rows[0];
+        if (firstRow) firstRow.scrollTo().then((r) => {});
       }
 
       // Update height
