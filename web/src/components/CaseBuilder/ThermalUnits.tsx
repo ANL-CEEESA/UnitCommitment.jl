@@ -228,7 +228,7 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
 
   return (
     <div>
-      <SectionHeader title="Thermal Units">
+      <SectionHeader title="Thermal units">
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
         <SectionButton
           icon={faDownload}

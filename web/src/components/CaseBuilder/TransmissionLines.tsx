@@ -163,7 +163,7 @@ const TransmissionLinesComponent = (props: CaseBuilderSectionProps) => {
 
   return (
     <div>
-      <SectionHeader title="Transmission Lines">
+      <SectionHeader title="Transmission lines">
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
         <SectionButton
           icon={faDownload}

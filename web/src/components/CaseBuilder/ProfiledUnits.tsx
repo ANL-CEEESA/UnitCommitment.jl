@@ -174,7 +174,7 @@ const ProfiledUnitsComponent = (props: CaseBuilderSectionProps) => {
 
   return (
     <div>
-      <SectionHeader title="Profiled Units">
+      <SectionHeader title="Profiled units">
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
         <SectionButton
           icon={faDownload}
