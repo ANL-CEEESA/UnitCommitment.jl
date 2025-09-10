@@ -80,6 +80,13 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
       "Last period maximum level (MWh)": 22.0,
     },
   },
+  "Price-sensitive loads": {
+    ps1: {
+      Bus: "b3",
+      "Revenue ($/MW)": 23.0,
+      "Demand (MW)": [50, 50, 50, 50, 50],
+    },
+  },
 };
 
 export const TEST_DATA_2: UnitCommitmentScenario = {
@@ -97,6 +104,7 @@ export const TEST_DATA_2: UnitCommitmentScenario = {
   Generators: {},
   "Transmission lines": {},
   "Storage units": {},
+  "Price-sensitive loads": {},
 };
 
 export const TEST_DATA_BLANK: UnitCommitmentScenario = {
@@ -110,6 +118,7 @@ export const TEST_DATA_BLANK: UnitCommitmentScenario = {
   Generators: {},
   "Transmission lines": {},
   "Storage units": {},
+  "Price-sensitive loads": {},
 };
 
 test("fixtures", () => {});

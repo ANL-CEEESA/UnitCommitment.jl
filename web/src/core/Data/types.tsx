@@ -63,6 +63,12 @@ export interface StorageUnit {
   "Last period maximum level (MWh)": number;
 }
 
+export interface PriceSensitiveLoad {
+  Bus: string;
+  "Revenue ($/MW)": number;
+  "Demand (MW)": number[];
+}
+
 export interface UnitCommitmentScenario {
   Parameters: {
     Version: string;
@@ -77,6 +83,9 @@ export interface UnitCommitmentScenario {
   };
   "Storage units": {
     [name: string]: StorageUnit;
+  };
+  "Price-sensitive loads": {
+    [name: string]: PriceSensitiveLoad;
   };
 }
 

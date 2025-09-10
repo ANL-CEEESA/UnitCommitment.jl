@@ -21,6 +21,7 @@ import ThermalUnitsComponent from "./ThermalUnits";
 import TransmissionLinesComponent from "./TransmissionLines";
 import { UnitCommitmentScenario } from "../../core/Data/types";
 import StorageComponent from "./StorageUnits";
+import PriceSensitiveLoadsComponent from "./Psload";
 
 export interface CaseBuilderSectionProps {
   scenario: UnitCommitmentScenario;
@@ -120,6 +121,11 @@ const CaseBuilder = () => {
           onError={setToastMessage}
         />
         <StorageComponent
+          scenario={scenario}
+          onDataChanged={onDataChanged}
+          onError={setToastMessage}
+        />
+        <PriceSensitiveLoadsComponent
           scenario={scenario}
           onDataChanged={onDataChanged}
           onError={setToastMessage}

@@ -35,6 +35,9 @@ export const changeTimeHorizon = (
         generator["Maximum power (MW)"] = generator["Maximum power (MW)"].slice(0, newT);
       }
     });
+    Object.values(newScenario["Price-sensitive loads"]).forEach((psLoad) => {
+      psLoad["Demand (MW)"] = psLoad["Demand (MW)"].slice(0, newT);
+    });
   } else {
     const padding = Array(newT - oldT).fill(0);
     Object.values(newScenario.Buses).forEach((bus) => {
@@ -45,6 +48,9 @@ export const changeTimeHorizon = (
         generator["Minimum power (MW)"] = generator["Minimum power (MW)"].concat(padding);
         generator["Maximum power (MW)"] = generator["Maximum power (MW)"].concat(padding);
       }
+    });
+    Object.values(newScenario["Price-sensitive loads"]).forEach((psLoad) => {
+      psLoad["Demand (MW)"] = psLoad["Demand (MW)"].concat(padding);
     });
   }
   return [newScenario, null];
@@ -156,6 +162,28 @@ export const changeTimeStep = (
     }
   }
 
+  const newPriceSensitiveLoads: { [name: string]: any } = {};
+  for (const psLoadName in scenario["Price-sensitive loads"]) {
+    const psLoad = scenario["Price-sensitive loads"][psLoadName]!;
+    
+    // Build data_y for demand
+    const demand = psLoad["Demand (MW)"];
+    const demandData_y = Array(oldT + 1).fill(0);
+    for (let i = 0; i < oldT; i++) demandData_y[i] = demand[i];
+    demandData_y[oldT] = demandData_y[0];
+
+    // Run interpolation for demand
+    const newDemand = Array(newT).fill(0);
+    for (let i = 0; i < newT; i++) {
+      newDemand[i] = evaluatePwlFunction(data_x, demandData_y, newTimeStep * i);
+    }
+
+    newPriceSensitiveLoads[psLoadName] = {
+      ...psLoad,
+      "Demand (MW)": newDemand,
+    };
+  }
+
   return [
     {
       ...scenario,
@@ -165,6 +193,7 @@ export const changeTimeStep = (
       },
       Buses: newBuses,
       Generators: newGenerators,
+      "Price-sensitive loads": newPriceSensitiveLoads,
     },
     null,
   ];

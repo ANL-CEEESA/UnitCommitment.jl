@@ -33,7 +33,7 @@ test("createThermalUnit", () => {
 test("createProfiledUnit with blank file", () => {
   const [, err] = createProfiledUnit(TEST_DATA_BLANK);
   assert(err !== null);
-  assert.equal(err.message, "Profiled unit requires an existing bus.");
+  assert.equal(err.message, "This component requires an existing bus.");
 });
 
 test("changeProfiledUnitData", () => {
