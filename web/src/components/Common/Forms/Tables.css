@@ -83,3 +83,14 @@
 .tabulator-col-group-cols {
   font-size: 12px;
 }
+
+.tabulator-placeholder {
+    width: 100px !important;
+}
+
+
+.tabulator-placeholder * {
+    font-weight: normal !important;
+    font-size: 14px !important;
+    color: var(--contrast-60) !important;
+}

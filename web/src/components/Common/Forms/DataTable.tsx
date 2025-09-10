@@ -372,7 +372,7 @@ interface DataTableProps {
 
 function computeTableHeight(data: any[]): string {
   const numRows = data.length;
-  const height = 70 + Math.min(numRows, 15) * 28;
+  const height = 70 + Math.max(Math.min(numRows, 15), 1) * 28;
   return `${height}px`;
 }
 
@@ -425,6 +425,7 @@ const DataTable = (props: DataTableProps) => {
         columns: columns,
         height: height,
         index: "Name",
+        placeholder: "No data",
       });
       tableRef.current.on("tableBuilt", () => {
         setTableBuilt(true);
