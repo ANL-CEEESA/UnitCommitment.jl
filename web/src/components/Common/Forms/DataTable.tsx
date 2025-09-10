@@ -370,6 +370,7 @@ const DataTable = (props: DataTableProps) => {
   const tableRef = useRef<Tabulator | null>(null);
   const [isTableBuilt, setTableBuilt] = useState<Boolean>(false);
   const [activeCell, setActiveCell] = useState<CellComponent | null>(null);
+  const [currentTableData, setCurrentTableData] = useState<any[]>([]);
 
   useEffect(() => {
     const onCellEdited = (cell: CellComponent) => {
@@ -412,25 +413,36 @@ const DataTable = (props: DataTableProps) => {
         data: data,
         columns: columns,
         height: height,
+        index: "Name",
       });
       tableRef.current.on("tableBuilt", () => {
         setTableBuilt(true);
       });
     }
+
     if (isTableBuilt) {
       const newHeight = height;
       const newColumns = columns;
-      const newData = data;
+      const newTableData = data;
       const oldRows = tableRef.current.getRows();
       const activeRowPosition = activeCell?.getRow().getPosition() as number;
       const activeField = activeCell?.getField();
 
-      if (activeCell) {
-        console.log(activeCell.getValue());
-      }
-
       // Update data
-      tableRef.current.replaceData(newData).then(() => {});
+      if (newTableData.length === currentTableData.length) {
+        const updatedRows = newTableData.filter((_, i) => {
+          return (
+            JSON.stringify(newTableData[i]) !==
+            JSON.stringify(currentTableData[i])
+          );
+        });
+        if (updatedRows.length > 0) {
+          tableRef.current.updateData(updatedRows).then(() => {});
+        }
+      } else {
+        tableRef.current.replaceData(newTableData).then(() => {});
+      }
+      setCurrentTableData(newTableData);
 
       // Restore active cell selection
       if (activeCell) {
