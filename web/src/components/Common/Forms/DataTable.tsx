@@ -437,7 +437,15 @@ const DataTable = (props: DataTableProps) => {
           );
         });
         if (updatedRows.length > 0) {
-          tableRef.current.updateData(updatedRows).then(() => {});
+          tableRef.current
+            .updateData(updatedRows)
+            .then(() => {})
+            .catch((e) => {
+              // WORKAROUND: Updating the same row twice triggers an exception.
+              // In that case, we just update the whole table.
+              console.log(e);
+              tableRef.current!!.replaceData(newTableData).then(() => {});
+            });
         }
       } else {
         tableRef.current.replaceData(newTableData).then(() => {});
