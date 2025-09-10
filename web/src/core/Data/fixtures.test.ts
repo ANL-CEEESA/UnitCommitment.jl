@@ -61,6 +61,25 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
       "Flow limit penalty ($/MW)": 5000.0,
     },
   },
+  "Storage units": {
+    su1: {
+      Bus: "b1",
+      "Minimum level (MWh)": 10.0,
+      "Maximum level (MWh)": 100.0,
+      "Charge cost ($/MW)": 2.0,
+      "Discharge cost ($/MW)": 1.0,
+      "Charge efficiency": 0.8,
+      "Discharge efficiency": 0.85,
+      "Loss factor": 0.01,
+      "Minimum charge rate (MW)": 5.0,
+      "Maximum charge rate (MW)": 10.0,
+      "Minimum discharge rate (MW)": 4.0,
+      "Maximum discharge rate (MW)": 8.0,
+      "Initial level (MWh)": 20.0,
+      "Last period minimum level (MWh)": 21.0,
+      "Last period maximum level (MWh)": 22.0,
+    },
+  },
 };
 
 export const TEST_DATA_2: UnitCommitmentScenario = {
@@ -77,6 +96,7 @@ export const TEST_DATA_2: UnitCommitmentScenario = {
   },
   Generators: {},
   "Transmission lines": {},
+  "Storage units": {},
 };
 
 export const TEST_DATA_BLANK: UnitCommitmentScenario = {
@@ -89,6 +109,7 @@ export const TEST_DATA_BLANK: UnitCommitmentScenario = {
   Buses: {},
   Generators: {},
   "Transmission lines": {},
+  "Storage units": {},
 };
 
 test("fixtures", () => {});

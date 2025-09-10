@@ -20,6 +20,7 @@ import ProfiledUnitsComponent from "./ProfiledUnits";
 import ThermalUnitsComponent from "./ThermalUnits";
 import TransmissionLinesComponent from "./TransmissionLines";
 import { UnitCommitmentScenario } from "../../core/Data/types";
+import StorageComponent from "./StorageUnits";
 
 export interface CaseBuilderSectionProps {
   scenario: UnitCommitmentScenario;
@@ -30,7 +31,13 @@ export interface CaseBuilderSectionProps {
 const CaseBuilder = () => {
   const [scenario, setScenario] = useState(() => {
     const savedScenario = localStorage.getItem("scenario");
-    return savedScenario ? JSON.parse(savedScenario) : BLANK_SCENARIO;
+    if (!savedScenario) return BLANK_SCENARIO;
+    const [processedScenario, err] = preprocess(JSON.parse(savedScenario));
+    if (err) {
+      console.log(err);
+      return BLANK_SCENARIO;
+    }
+    return processedScenario!!;
   });
   const [undoStack, setUndoStack] = useState<UnitCommitmentScenario[]>([]);
   const [toastMessage, setToastMessage] = useState<string>("");
@@ -108,6 +115,11 @@ const CaseBuilder = () => {
           onError={setToastMessage}
         />
         <ProfiledUnitsComponent
+          scenario={scenario}
+          onDataChanged={onDataChanged}
+          onError={setToastMessage}
+        />
+        <StorageComponent
           scenario={scenario}
           onDataChanged={onDataChanged}
           onError={setToastMessage}

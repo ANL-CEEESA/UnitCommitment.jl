@@ -20,7 +20,8 @@ export const PREPROCESSING_TEST_DATA_1: any = {
 };
 
 test("preprocess", () => {
-  const newScenario = preprocess(PREPROCESSING_TEST_DATA_1);
+  const [newScenario, err] = preprocess(PREPROCESSING_TEST_DATA_1);
+  assert(err === null);
   assert.deepEqual(newScenario, {
     Parameters: {
       Version: "0.4",
@@ -35,5 +36,11 @@ test("preprocess", () => {
       b2: { "Load (MW)": [10, 10, 10, 10, 10] },
       b3: { "Load (MW)": [27.3729, 26.29698, 25.58005, 25.15675, 25.4268] },
     },
+    "Price-sensitive loads": {},
+    "Storage units": {},
+    "Transmission lines": {},
+    Contingencies: {},
+    Generators: {},
+    Reserves: {},
   });
 });

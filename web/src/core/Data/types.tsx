@@ -45,6 +45,24 @@ export interface TransmissionLine {
   "Flow limit penalty ($/MW)": number;
 }
 
+export interface StorageUnit {
+  Bus: string;
+  "Minimum level (MWh)": number;
+  "Maximum level (MWh)": number;
+  "Charge cost ($/MW)": number;
+  "Discharge cost ($/MW)": number;
+  "Charge efficiency": number;
+  "Discharge efficiency": number;
+  "Loss factor": number;
+  "Minimum charge rate (MW)": number;
+  "Maximum charge rate (MW)": number;
+  "Minimum discharge rate (MW)": number;
+  "Maximum discharge rate (MW)": number;
+  "Initial level (MWh)": number;
+  "Last period minimum level (MWh)": number;
+  "Last period maximum level (MWh)": number;
+}
+
 export interface UnitCommitmentScenario {
   Parameters: {
     Version: string;
@@ -56,6 +74,9 @@ export interface UnitCommitmentScenario {
   Generators: Generators;
   "Transmission lines": {
     [name: string]: TransmissionLine;
+  };
+  "Storage units": {
+    [name: string]: StorageUnit;
   };
 }
 

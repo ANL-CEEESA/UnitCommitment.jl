@@ -253,6 +253,6 @@ export const assertBusesNotEmpty = (
   scenario: UnitCommitmentScenario,
 ): ValidationError | null => {
   if (Object.keys(scenario.Buses).length === 0)
-    return { message: "Profiled unit requires an existing bus." };
+    return { message: "This component requires an existing bus." };
   return null;
 };

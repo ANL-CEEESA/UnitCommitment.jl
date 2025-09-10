@@ -20,4 +20,5 @@ export const BLANK_SCENARIO: UnitCommitmentScenario = {
   Buses: {},
   Generators: {},
   "Transmission lines": {},
+  "Storage units": {},
 };

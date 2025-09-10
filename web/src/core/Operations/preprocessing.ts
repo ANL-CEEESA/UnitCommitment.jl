@@ -41,6 +41,21 @@ export const preprocess = (
     }
   }
 
+  // Add optional fields
+  for (let field of [
+    "Buses",
+    "Generators",
+    "Storage units",
+    "Price-sensitive loads",
+    "Transmission lines",
+    "Reserves",
+    "Contingencies",
+  ]) {
+    if (!result[field]) {
+      result[field] = {};
+    }
+  }
+
   const scenario = result as unknown as UnitCommitmentScenario;
   return [scenario, null];
 };
