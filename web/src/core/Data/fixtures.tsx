@@ -22,4 +22,5 @@ export const BLANK_SCENARIO: UnitCommitmentScenario = {
   "Transmission lines": {},
   "Storage units": {},
   "Price-sensitive loads": {},
+  Contingencies: {},
 };

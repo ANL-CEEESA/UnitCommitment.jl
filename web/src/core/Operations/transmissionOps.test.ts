@@ -10,6 +10,8 @@ import {
   changeTransmissionLineData,
   createTransmissionLine,
   deleteTransmissionLine,
+  getContingencyTransmissionLines,
+  rebuildContingencies,
   renameTransmissionLine,
 } from "./transmissionOps";
 import { ValidationError } from "../Data/validate";
@@ -31,6 +33,12 @@ test("renameTransmissionLine", () => {
     "Normal flow limit (MW)": 15000.0,
     "Emergency flow limit (MW)": 20000.0,
     "Flow limit penalty ($/MW)": 5000.0,
+  });
+  assert.deepEqual(newScenario["Contingencies"], {
+    l3: {
+      "Affected lines": ["l3"],
+      "Affected generators": [],
+    },
   });
   assert.equal(Object.keys(newScenario["Transmission lines"]).length, 1);
 });
@@ -72,4 +80,23 @@ test("changeTransmissionLineData", () => {
 test("deleteTransmissionLine", () => {
   const newScenario = deleteTransmissionLine("l1", TEST_DATA_1);
   assert.equal(Object.keys(newScenario["Transmission lines"]).length, 0);
+  assert.equal(Object.keys(newScenario["Contingencies"]).length, 0);
+});
+
+test("getContingencyTransmissionLines", () => {
+  const contLines = getContingencyTransmissionLines(TEST_DATA_1);
+  assert.deepEqual(contLines, new Set(["l1"]));
+});
+
+test("rebuildContingencies", () => {
+  assert.deepEqual(rebuildContingencies(new Set(["l1", "l2"])), {
+    l1: {
+      "Affected lines": ["l1"],
+      "Affected generators": [],
+    },
+    l2: {
+      "Affected lines": ["l2"],
+      "Affected generators": [],
+    },
+  });
 });

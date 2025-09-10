@@ -7,6 +7,10 @@
 import { validate, ValidationError } from "../Data/validate";
 import { UnitCommitmentScenario } from "../Data/types";
 import { migrate } from "../Data/migrate";
+import {
+  getContingencyTransmissionLines,
+  rebuildContingencies,
+} from "./transmissionOps";
 
 export const preprocess = (
   data: any,
@@ -57,5 +61,10 @@ export const preprocess = (
   }
 
   const scenario = result as unknown as UnitCommitmentScenario;
+
+  // Rebuild contingencies
+  const contingencyLines = getContingencyTransmissionLines(scenario);
+  scenario["Contingencies"] = rebuildContingencies(contingencyLines);
+
   return [scenario, null];
 };

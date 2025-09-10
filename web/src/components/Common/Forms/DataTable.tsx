@@ -18,6 +18,7 @@ import {
   parseNumber,
 } from "../../../core/Operations/commonOps";
 import { UnitCommitmentScenario } from "../../../core/Data/types";
+import { getContingencyTransmissionLines } from "../../../core/Operations/transmissionOps";
 
 export interface ColumnSpec {
   title: string;
@@ -28,7 +29,8 @@ export interface ColumnSpec {
     | "number[N]"
     | "number[T]"
     | "busRef"
-    | "boolean";
+    | "boolean"
+    | "lineContingency";
   length?: number;
   width: number;
 }
@@ -52,6 +54,7 @@ export const generateTableColumns = (
         });
         break;
       case "boolean":
+      case "lineContingency":
         columns.push({
           ...columnsCommonAttrs,
           title: spec.title,
@@ -117,6 +120,7 @@ export const generateTableData = (
 ): any[] => {
   const data: any[] = [];
   const timeslots = generateTimeslots(scenario);
+  let contingencyLines = null;
   for (const [entryName, entryData] of Object.entries(container) as [
     string,
     any,
@@ -134,6 +138,13 @@ export const generateTableData = (
         case "boolean":
         case "busRef":
           entry[spec.title] = entryData[spec.title];
+          break;
+        case "lineContingency":
+          if (contingencyLines === null) {
+            contingencyLines = getContingencyTransmissionLines(scenario);
+            console.log(contingencyLines);
+          }
+          entry[spec.title] = contingencyLines.has(entryName);
           break;
         case "number[T]":
           for (let i = 0; i < timeslots.length; i++) {
@@ -287,12 +298,12 @@ export const parseCsv = (
           }
           break;
         }
-        case "boolean": {
+        case "boolean":
+        case "lineContingency":
           const [val, err] = parseBool(row[spec.title]);
           if (err) return [data, { message: err.message + rowRef }];
           data[name][spec.title] = val;
           break;
-        }
         default:
           throw Error(`Unknown type: ${spec.type}`);
       }

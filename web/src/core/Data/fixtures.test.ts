@@ -87,6 +87,12 @@ export const TEST_DATA_1: UnitCommitmentScenario = {
       "Demand (MW)": [50, 50, 50, 50, 50],
     },
   },
+  Contingencies: {
+    l1: {
+      "Affected generators": [],
+      "Affected lines": ["l1"],
+    },
+  },
 };
 
 export const TEST_DATA_2: UnitCommitmentScenario = {
@@ -101,6 +107,7 @@ export const TEST_DATA_2: UnitCommitmentScenario = {
     b2: { "Load (MW)": [10, 20, 30, 40] },
     b3: { "Load (MW)": [0, 30, 0, 40] },
   },
+  Contingencies: {},
   Generators: {},
   "Transmission lines": {},
   "Storage units": {},
@@ -115,6 +122,7 @@ export const TEST_DATA_BLANK: UnitCommitmentScenario = {
     "Time step (min)": 60,
   },
   Buses: {},
+  Contingencies: {},
   Generators: {},
   "Transmission lines": {},
   "Storage units": {},

@@ -8,11 +8,16 @@ import {
   assertBusesNotEmpty,
   changeData,
   generateUniqueName,
+  parseBool,
   renameItemInObject,
 } from "./commonOps";
 import { ValidationError } from "../Data/validate";
 import { TransmissionLinesColumnSpec } from "../../components/CaseBuilder/TransmissionLines";
-import { TransmissionLine, UnitCommitmentScenario } from "../Data/types";
+import {
+  Contingency,
+  TransmissionLine,
+  UnitCommitmentScenario,
+} from "../Data/types";
 
 export const createTransmissionLine = (
   scenario: UnitCommitmentScenario,
@@ -51,7 +56,24 @@ export const renameTransmissionLine = (
     scenario["Transmission lines"],
   );
   if (err) return [scenario, err];
-  return [{ ...scenario, "Transmission lines": newLine }, null];
+
+  // Update transmission line contingencies
+  let newContingencies = scenario["Contingencies"];
+  const contingencyLines = getContingencyTransmissionLines(scenario);
+  if (contingencyLines.has(oldName)) {
+    contingencyLines.delete(oldName);
+    contingencyLines.add(newName);
+    newContingencies = rebuildContingencies(contingencyLines);
+  }
+
+  return [
+    {
+      ...scenario,
+      "Transmission lines": newLine,
+      Contingencies: newContingencies,
+    },
+    null,
+  ];
 };
 
 export const changeTransmissionLineData = (
@@ -60,24 +82,38 @@ export const changeTransmissionLineData = (
   newValueStr: string,
   scenario: UnitCommitmentScenario,
 ): [UnitCommitmentScenario, ValidationError | null] => {
-  const [newLine, err] = changeData(
-    field,
-    newValueStr,
-    scenario["Transmission lines"][line]!,
-    TransmissionLinesColumnSpec,
-    scenario,
-  );
-  if (err) return [scenario, err];
-  return [
-    {
-      ...scenario,
-      "Transmission lines": {
-        ...scenario["Transmission lines"],
-        [line]: newLine as TransmissionLine,
+  if (field === "Contingency?") {
+    // Parse boolean value
+    const [newValue, err] = parseBool(newValueStr);
+    if (err) return [scenario, err];
+
+    // Rebuild contingencies
+    const contLines = getContingencyTransmissionLines(scenario);
+    if (newValue) contLines.add(line);
+    else contLines.delete(line);
+    const newContingencies = rebuildContingencies(contLines);
+
+    return [{ ...scenario, Contingencies: newContingencies }, null];
+  } else {
+    const [newLine, err] = changeData(
+      field,
+      newValueStr,
+      scenario["Transmission lines"][line]!,
+      TransmissionLinesColumnSpec,
+      scenario,
+    );
+    if (err) return [scenario, err];
+    return [
+      {
+        ...scenario,
+        "Transmission lines": {
+          ...scenario["Transmission lines"],
+          [line]: newLine as TransmissionLine,
+        },
       },
-    },
-    null,
-  ];
+      null,
+    ];
+  }
 };
 
 export const deleteTransmissionLine = (
@@ -85,5 +121,43 @@ export const deleteTransmissionLine = (
   scenario: UnitCommitmentScenario,
 ): UnitCommitmentScenario => {
   const { [name]: _, ...newLines } = scenario["Transmission lines"];
-  return { ...scenario, "Transmission lines": newLines };
+
+  // Update transmission line contingencies
+  let newContingencies = scenario["Contingencies"];
+  const contingencyLines = getContingencyTransmissionLines(scenario);
+  if (contingencyLines.has(name)) {
+    contingencyLines.delete(name);
+    newContingencies = rebuildContingencies(contingencyLines);
+  }
+
+  return {
+    ...scenario,
+    "Transmission lines": newLines,
+    Contingencies: newContingencies,
+  };
+};
+
+export const getContingencyTransmissionLines = (
+  scenario: UnitCommitmentScenario,
+): Set<String> => {
+  let result: Set<String> = new Set();
+  Object.entries(scenario.Contingencies).forEach(([name, contingency]) => {
+    if (contingency["Affected lines"].length !== 1)
+      throw Error("not implemented");
+    result.add(contingency["Affected lines"][0]!!);
+  });
+  return result;
+};
+
+export const rebuildContingencies = (
+  contingencyLines: Set<String>,
+): { [name: string]: Contingency } => {
+  const result: { [name: string]: Contingency } = {};
+  contingencyLines.forEach((lineName) => {
+    result[lineName as string] = {
+      "Affected lines": [lineName as string],
+      "Affected generators": [],
+    };
+  });
+  return result;
 };

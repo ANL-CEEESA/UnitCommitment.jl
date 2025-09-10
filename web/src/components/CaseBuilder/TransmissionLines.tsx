@@ -27,6 +27,7 @@ import {
   changeTransmissionLineData,
   createTransmissionLine,
   deleteTransmissionLine,
+  rebuildContingencies,
   renameTransmissionLine,
 } from "../../core/Operations/transmissionOps";
 import { offerDownload } from "../Common/io";
@@ -68,6 +69,11 @@ export const TransmissionLinesColumnSpec: ColumnSpec[] = [
     type: "number",
     width: 60,
   },
+  {
+    title: "Contingency?",
+    type: "lineContingency",
+    width: 50,
+  },
 ];
 
 const generateTransmissionLinesData = (
@@ -93,6 +99,7 @@ const TransmissionLinesComponent = (props: CaseBuilderSectionProps) => {
 
   const onUpload = () => {
     fileUploadElem.current!.showFilePicker((csv: any) => {
+      // Parse the CSV data
       const [newLines, err] = parseCsv(
         csv,
         TransmissionLinesColumnSpec,
@@ -102,9 +109,19 @@ const TransmissionLinesComponent = (props: CaseBuilderSectionProps) => {
         props.onError(err.message);
         return;
       }
+
+      // Remove contingency field from line and rebuild the contingencies section
+      const lineContingencies = new Set<String>();
+      Object.entries(newLines).forEach(([lineName, line]: [string, any]) => {
+        if (line["Contingency?"]) lineContingencies.add(lineName);
+        delete line["Contingency?"];
+      });
+      const contingencies = rebuildContingencies(lineContingencies);
+
       const newScenario = {
         ...props.scenario,
         "Transmission lines": newLines,
+        Contingencies: contingencies,
       };
       props.onDataChanged(newScenario);
     });

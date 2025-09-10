@@ -69,6 +69,11 @@ export interface PriceSensitiveLoad {
   "Demand (MW)": number[];
 }
 
+export interface Contingency {
+  "Affected lines": string[];
+  "Affected generators": string[];
+}
+
 export interface UnitCommitmentScenario {
   Parameters: {
     Version: string;
@@ -86,6 +91,9 @@ export interface UnitCommitmentScenario {
   };
   "Price-sensitive loads": {
     [name: string]: PriceSensitiveLoad;
+  };
+  Contingencies: {
+    [name: string]: Contingency;
   };
 }
 
