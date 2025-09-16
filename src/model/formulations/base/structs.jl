@@ -97,3 +97,14 @@ struct ShiftFactorsFormulation <: TransmissionFormulation
         return new(isf_cutoff, lodf_cutoff, precomputed_isf, precomputed_lodf)
     end
 end
+
+"""
+    struct PhaseAngleFormulation <: TransmissionFormulation
+    end
+
+Transmission formulation based on susceptance (b). 
+Constraints are enforced in a lazy way.
+"""
+struct PhaseAngleFormulation <: TransmissionFormulation
+
+end

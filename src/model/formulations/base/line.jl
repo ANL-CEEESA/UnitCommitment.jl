@@ -59,3 +59,9 @@ function _setup_transmission(
     sc.lodf = lodf
     return
 end
+
+
+_setup_transmission(
+    ::PhaseAngleFormulation,
+    ::UnitCommitmentScenario,
+) = nothing

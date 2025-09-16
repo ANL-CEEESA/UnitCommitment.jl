@@ -4,7 +4,7 @@
 
 using UnitCommitment
 using JuMP
-using Cbc
+using HiGHS
 using JSON
 import UnitCommitment:
     ArrCon2000,
@@ -16,7 +16,8 @@ import UnitCommitment:
     MorLatRam2013,
     PanGua2016,
     XavQiuWanThi2019,
-    WanHob2016
+    WanHob2016,
+    PhaseAngleFormulation
 
 function _test(
     formulation::Formulation;
@@ -24,11 +25,12 @@ function _test(
     dump::Bool = false,
 )::Nothing
     for instance_name in instances
-        instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
+        # instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
+        instance = UnitCommitment.read(fixture("$(instance_name).json"))
         model = UnitCommitment.build_model(
             instance = instance,
             formulation = formulation,
-            optimizer = Cbc.Optimizer,
+            optimizer = HiGHS.Optimizer,
             variable_names = true,
         )
         set_silent(model)
@@ -80,6 +82,12 @@ function model_formulations_test()
             _test(
                 Formulation(ramping = WanHob2016.Ramping()),
                 instances = ["case14-flex"],
+            )
+        end
+        @testset "Planning" begin
+            _test(
+                Formulation(transmission=PhaseAngleFormulation()),
+                instances = ["garver6"],
             )
         end
     end

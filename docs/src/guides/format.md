@@ -281,7 +281,7 @@ This section describes the characteristics of transmission system, such as its t
 | `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line).                                                              | `+inf`   |      Y       |    Yes     |
 | `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` |     Yes      |    Yes     |
 | `Investment cost ($)`                | Cost to build a candidate transmission line. $0 for existing lines.                                                                                                                                                                      | `0.0` |      No      |    No     |
-| `Max number of parallel circuits`| Maximum number of lines can be built in this corridor.  | `0` |      No      |    No     |
+| `Max number of parallel circuits`| Maximum number of lines can be built in this corridor.  | `1` |      No      |    No     |
 
 #### Example
 
