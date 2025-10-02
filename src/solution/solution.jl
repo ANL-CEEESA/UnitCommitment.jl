@@ -65,6 +65,10 @@ function solution(model::JuMP.Model)::OrderedDict
 	sol = OrderedDict()
 	for sc in instance.scenarios
 		sol[sc.name] = OrderedDict()
+        sol[sc.name]["Net injection (MW)"] =
+            timeseries(model[:net_injection], sc.buses, sc = sc)
+        sol[sc.name]["Load curtail (MW)"] =
+            timeseries(model[:curtail], sc.buses, sc = sc)
 		if !isempty(sc.thermal_units)
 			sol[sc.name]["Thermal production (MW)"] = OrderedDict(
 				g.name => production(g, sc) for g in sc.thermal_units
@@ -80,10 +84,6 @@ function solution(model::JuMP.Model)::OrderedDict
 				timeseries(model[:switch_on], sc.thermal_units)
 			sol[sc.name]["Switch off"] =
 				timeseries(model[:switch_off], sc.thermal_units)
-			sol[sc.name]["Net injection (MW)"] =
-				timeseries(model[:net_injection], sc.buses, sc = sc)
-			sol[sc.name]["Load curtail (MW)"] =
-				timeseries(model[:curtail], sc.buses, sc = sc)
 		end
 		if !isempty(sc.lines)
 			sol[sc.name]["Line overflow (MW)"] =
