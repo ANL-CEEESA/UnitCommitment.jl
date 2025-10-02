@@ -28,8 +28,9 @@ function validate(
     instance::UnitCommitmentInstance,
     solution::Union{Dict,OrderedDict},
 )::Bool
-    "Thermal production (MW)" ∈ keys(solution) ?
-    solution = Dict("s1" => solution) : nothing
+    if "Spinning reserve (MW)" ∈ keys(solution)
+        solution = Dict("s1" => solution)
+    end
     err_count = 0
     err_count += _validate_units(instance, solution)
     err_count += _validate_reserve_and_demand(instance, solution)
