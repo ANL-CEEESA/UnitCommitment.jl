@@ -32,7 +32,8 @@
             "Bus": "b1",
             "Type": "Profiled",
             "Maximum power (MW)": 150.0,
-            "Cost ($/MW)": 0.0
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 1000000.0
         },
         "gen2": {
             "Bus": "b3",

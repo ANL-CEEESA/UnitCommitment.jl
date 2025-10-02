@@ -60,7 +60,7 @@ mutable struct TransmissionLine
     normal_flow_limit::Vector{Float64}
     emergency_flow_limit::Vector{Float64}
     flow_limit_penalty::Vector{Float64}
-    invest::Float64 #TODO: make this a vector
+    invest::Vector{Float64}
     max_copy::Int
 end
 
@@ -83,7 +83,7 @@ mutable struct ProfiledUnit
     min_power::Vector{Float64}
     max_power::Vector{Float64}
     cost::Vector{Float64}
-    invest::Float64
+    invest::Vector{Float64}
 end
 
 mutable struct StorageUnit

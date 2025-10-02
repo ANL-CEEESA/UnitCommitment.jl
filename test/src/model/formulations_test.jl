@@ -17,6 +17,7 @@ import UnitCommitment:
     PanGua2016,
     XavQiuWanThi2019,
     WanHob2016,
+    ShiftFactorsFormulation,
     PhaseAngleFormulation
 
 function _test(
@@ -25,8 +26,7 @@ function _test(
     dump::Bool = false,
 )::Nothing
     for instance_name in instances
-        # instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
-        instance = UnitCommitment.read(fixture("$(instance_name).json"))
+        instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
         model = UnitCommitment.build_model(
             instance = instance,
             formulation = formulation,
@@ -84,10 +84,17 @@ function model_formulations_test()
                 instances = ["case14-flex"],
             )
         end
-        @testset "Planning" begin
+        @testset "Planning-phaseangle" begin
             _test(
-                Formulation(transmission=PhaseAngleFormulation()),
+                Formulation(transmission = PhaseAngleFormulation()),
                 instances = ["garver6"],
+                dump = true,
+            )
+        end
+        @testset "Planning-shiftfactor" begin
+            _test(
+                Formulation(transmission = ShiftFactorsFormulation()),
+                # instances = ["garver6"],
             )
         end
     end

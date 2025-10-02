@@ -21,6 +21,7 @@ function _add_transmission_line!(
 end
 
 function _setup_transmission(
+    model::JuMP.Model,
     formulation::ShiftFactorsFormulation,
     sc::UnitCommitmentScenario,
 )::Nothing
@@ -59,9 +60,3 @@ function _setup_transmission(
     sc.lodf = lodf
     return
 end
-
-
-_setup_transmission(
-    ::PhaseAngleFormulation,
-    ::UnitCommitmentScenario,
-) = nothing

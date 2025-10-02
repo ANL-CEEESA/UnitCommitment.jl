@@ -9,6 +9,8 @@ abstract type StartupCostsFormulation end
 abstract type StatusVarsFormulation end
 abstract type ProductionVarsFormulation end
 
+using JuMP
+
 """
     struct Formulation
         prod_vars::ProductionVarsFormulation
@@ -105,6 +107,7 @@ end
 Transmission formulation based on susceptance (b). 
 Constraints are enforced in a lazy way.
 """
-struct PhaseAngleFormulation <: TransmissionFormulation
-
+Base.@kwdef struct PhaseAngleFormulation <: TransmissionFormulation
+    phase_angle_limit::Float64 = pi
+    bigM::Float64 = 1e6
 end
