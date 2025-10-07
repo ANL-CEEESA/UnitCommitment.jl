@@ -109,5 +109,6 @@ Constraints are enforced in a lazy way.
 """
 Base.@kwdef struct PhaseAngleFormulation <: TransmissionFormulation
     phase_angle_limit::Float64 = pi
+    s_base::Float64 = 100.0
     bigM::Float64 = 1e6
 end

@@ -170,6 +170,8 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
     probability !== nothing || (probability = 1)
     scenario_name = json["Parameters"]["Scenario name"]
     scenario_name !== nothing || (scenario_name = "")
+    operation_cost_weight = json["Parameters"]["Operation cost weight"]
+    operation_cost_weight !== nothing || (operation_cost_weight = 1.0)
 
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
@@ -369,7 +371,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                     default = [5000.0 for t in 1:T],
                 ),
                 timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
-                scalar(dict["Maximum number of copies"], default = 1),
+                scalar(dict["Max number of parallel circuits"], default = 1),
             )
             name_to_line[line_name] = line
             push!(lines, line)
@@ -464,6 +466,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         contingencies = contingencies,
         lines_by_name = Dict(l.name => l for l in lines),
         lines = lines,
+        operation_cost_weight = operation_cost_weight,
         power_balance_penalty = power_balance_penalty,
         price_sensitive_loads_by_name = Dict(ps.name => ps for ps in loads),
         price_sensitive_loads = loads,

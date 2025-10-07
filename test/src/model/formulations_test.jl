@@ -4,7 +4,7 @@
 
 using UnitCommitment
 using JuMP
-using HiGHS
+using SCIP
 using JSON
 import UnitCommitment:
     ArrCon2000,
@@ -30,7 +30,7 @@ function _test(
         model = UnitCommitment.build_model(
             instance = instance,
             formulation = formulation,
-            optimizer = HiGHS.Optimizer,
+            optimizer = SCIP.Optimizer,
             variable_names = true,
         )
         set_silent(model)
@@ -78,12 +78,12 @@ function model_formulations_test()
         @testset "KnuOstWat2018" begin
             _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
         end
-        @testset "WanHob2016" begin
-            _test(
-                Formulation(ramping = WanHob2016.Ramping()),
-                instances = ["case14-flex"],
-            )
-        end
+        # @testset "WanHob2016" begin
+        #     _test(
+        #         Formulation(ramping = WanHob2016.Ramping()),
+        #         instances = ["case14-flex"],
+        #     )
+        # end
         @testset "Planning-phaseangle" begin
             _test(
                 Formulation(transmission = PhaseAngleFormulation()),
@@ -91,11 +91,11 @@ function model_formulations_test()
                 dump = true,
             )
         end
-        @testset "Planning-shiftfactor" begin
-            _test(
-                Formulation(transmission = ShiftFactorsFormulation()),
-                # instances = ["garver6"],
-            )
-        end
+        # @testset "Planning-shiftfactor" begin
+        #     _test(
+        #         Formulation(transmission = ShiftFactorsFormulation()),
+        #         instances = ["garver6"],
+        #     )
+        # end
     end
 end

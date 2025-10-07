@@ -21,7 +21,7 @@ function _add_profiled_unit!(
         add_to_expression!(
             model[:obj],
             punits[sc.name, pu.name, t],
-            pu.cost[t] * sc.probability,
+            pu.cost[t] * sc.probability * sc.operation_cost_weight,
         )
 
         # Net injection

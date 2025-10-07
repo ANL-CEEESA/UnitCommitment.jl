@@ -39,7 +39,11 @@ function _add_transmission_line!(
 
 		for t in 1:model[:instance].time
 			# Decision variable
-			invest_line[lm.name, t] = @variable(model, upper_bound = lm.max_copy, integer = true)
+			invest_line[lm.name, t] = @variable(
+				model, 
+				upper_bound = lm.max_copy, 
+				integer = true
+			)
 			flow[sc.name, lm.name, t] = @variable(model)
 
 			# Objective function terms
@@ -60,18 +64,18 @@ function _add_transmission_line!(
 				eq_invest_line_flow[sc.name, lm.name, t] = @constraint(
 					model,
 					model[:flow][sc.name, lm.name, t] ==
-					invest_line[lm.name, t] * lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t])
+					invest_line[lm.name, t] * f.s_base * lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t])
 				)
             else
                 eq_invest_line_flow_upper[sc.name, lm.name, t] = @constraint(
                     model,
                     model[:flow][sc.name, lm.name, t] <=
-                    lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t]) + f.bigM * (1 - invest_line[lm.name, t])
+                    f.s_base * lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t]) + f.bigM * (1 - invest_line[lm.name, t])
                 )
                 eq_invest_line_flow_lower[sc.name, lm.name, t] = @constraint(
                     model,
                     model[:flow][sc.name, lm.name, t] >=
-                    lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t]) - f.bigM * (1 - invest_line[lm.name, t])
+                    f.s_base * lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t]) - f.bigM * (1 - invest_line[lm.name, t])
                 )
 			end
 			eq_invest_line_flow_limit_upper[sc.name, lm.name, t] = @constraint(
@@ -95,7 +99,7 @@ function _add_transmission_line!(
 			eq_invest_line_flow[sc.name, lm.name, t] = @constraint(
 				model,
 				model[:flow][sc.name, lm.name, t] ==
-				lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t])
+				f.s_base * lm.susceptance * (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t])
 			)
 			eq_invest_line_flow_limit_upper[sc.name, lm.name, t] = @constraint(
 				model,
@@ -125,6 +129,7 @@ function _setup_transmission(
 				upper_bound = formulation.phase_angle_limit
 			)
 		end
+		θ[sc.name, sc.buses[1].name, t] = 0.0 # reference bus
 	end
 	return
 end

@@ -226,7 +226,7 @@ function instance_read_test()
     end
 
     @testset "read_benchmark tep" begin
-        instance = UnitCommitment.read(fixture("garver6.json"))
+        instance = UnitCommitment.read(fixture("garver6.json.gz"))
 
         @test repr(instance) == (
             "UnitCommitmentInstance(1 scenarios, 0 thermal units, 3 profiled units, 6 buses, " *
@@ -240,6 +240,7 @@ function instance_read_test()
         @test length(sc.profiled_units) == 3
         @test instance.time == 1
         @test sc.time_step == 60
+        @test sc.operation_cost_weight == 1.0e6
 
         @test sc.lines[1].name == "l1"
         @test sc.lines[1].source.name == "b1"

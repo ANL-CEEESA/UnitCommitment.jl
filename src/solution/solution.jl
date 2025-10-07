@@ -88,7 +88,7 @@ function solution(model::JuMP.Model)::OrderedDict
 		if !isempty(sc.lines)
 			sol[sc.name]["Line overflow (MW)"] =
 				timeseries(model[:overflow], sc.lines, sc = sc)
-			sol[sc.name]["Investment status"] =
+			sol[sc.name]["Lines investment status"] =
 				OrderedDict(
 					lm.name => [
 						value(model[:invest_line][lm.name, t]) for t in 1:T
@@ -108,7 +108,7 @@ function solution(model::JuMP.Model)::OrderedDict
 					pu.cost[t] for t in 1:instance.time
 				] for pu in sc.profiled_units
 			)
-			sol[sc.name]["Invesment status"] =
+			sol[sc.name]["Units investment status"] =
 				OrderedDict(
 					pu.name => [
                         value(model[:invest_unit][pu.name, t]) for t in 1:T
