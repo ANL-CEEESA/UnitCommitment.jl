@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Getting started · UnitCommitment.jl</title><meta name="title" content="Getting started · UnitCommitment.jl"/><meta property="og:title" content="Getting started · UnitCommitment.jl"/><meta property="twitter:title" content="Getting started · UnitCommitment.jl"/><meta name="description" content="Documentation for UnitCommitment.jl."/><meta property="og:description" content="Documentation for UnitCommitment.jl."/><meta property="twitter:description" content="Documentation for UnitCommitment.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">UnitCommitment.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Tutorials</span><ul><li class="is-active"><a class="tocitem" href>Getting started</a><ul class="internal"><li><a class="tocitem" href="#Installing-the-package"><span>Installing the package</span></a></li><li><a class="tocitem" href="#Solving-a-benchmark-instance"><span>Solving a benchmark instance</span></a></li><li><a class="tocitem" href="#Solving-a-custom-deterministic-instance"><span>Solving a custom deterministic instance</span></a></li><li><a class="tocitem" href="#Solving-a-custom-stochastic-instance"><span>Solving a custom stochastic instance</span></a></li></ul></li><li><a class="tocitem" href="../customizing/">Model customization</a></li><li><a class="tocitem" href="../lmp/">Locational Marginal Prices</a></li><li><a class="tocitem" href="../market/">Market Clearing</a></li><li><a class="tocitem" href="../decomposition/">Decomposition methods</a></li></ul></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../guides/problem/">Problem definition</a></li><li><a class="tocitem" href="../../guides/format/">JSON data format</a></li><li><a class="tocitem" href="../../guides/instances/">Benchmark instances</a></li></ul></li><li><a class="tocitem" href="../../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Getting started</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Getting started</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/docs/src/tutorials/usage.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Getting-started"><a class="docs-heading-anchor" href="#Getting-started">Getting started</a><a id="Getting-started-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-started" title="Permalink"></a></h1><h2 id="Installing-the-package"><a class="docs-heading-anchor" href="#Installing-the-package">Installing the package</a><a id="Installing-the-package-1"></a><a class="docs-heading-anchor-permalink" href="#Installing-the-package" title="Permalink"></a></h2><p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.10</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p><pre><code class="language-text hljs">pkg&gt; add UnitCommitment@0.4</code></pre><p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a href="https://github.com/jump-dev/HiGHS.jl">HiGHS</a>, <a href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, HiGHS will be used, but any other MILP solver should also be compatible.</p><h2 id="Solving-a-benchmark-instance"><a class="docs-heading-anchor" href="#Solving-a-benchmark-instance">Solving a benchmark instance</a><a id="Solving-a-benchmark-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-benchmark-instance" title="Permalink"></a></h2><p>We start this tutorial by illustrating how to use UnitCommitment.jl to solve one of the provided benchmark instances. The package contains a large number of deterministic benchmark instances collected from the literature and converted into a common data format, which can be used to evaluate the performance of different solution methods. See <a href="../../guides/instances/">Instances</a> for more details. The first step is to import <code>UnitCommitment</code> and HiGHS.</p><pre><code class="language-julia hljs">using HiGHS
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Getting started · UnitCommitment.jl</title><meta name="title" content="Getting started · UnitCommitment.jl"/><meta property="og:title" content="Getting started · UnitCommitment.jl"/><meta property="twitter:title" content="Getting started · UnitCommitment.jl"/><meta name="description" content="Documentation for UnitCommitment.jl."/><meta property="og:description" content="Documentation for UnitCommitment.jl."/><meta property="twitter:description" content="Documentation for UnitCommitment.jl."/><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../search_index.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-mocha.css" data-theme-name="catppuccin-mocha"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-macchiato.css" data-theme-name="catppuccin-macchiato"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-frappe.css" data-theme-name="catppuccin-frappe"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/catppuccin-latte.css" data-theme-name="catppuccin-latte"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script><link href="../../assets/custom.css" rel="stylesheet" type="text/css"/></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../">UnitCommitment.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li><span class="tocitem">Tutorials</span><ul><li class="is-active"><a class="tocitem" href>Getting started</a><ul class="internal"><li><a class="tocitem" href="#Installing-the-package"><span>Installing the package</span></a></li><li><a class="tocitem" href="#Solving-a-benchmark-instance"><span>Solving a benchmark instance</span></a></li><li><a class="tocitem" href="#Solving-a-custom-deterministic-instance"><span>Solving a custom deterministic instance</span></a></li><li><a class="tocitem" href="#Solving-a-custom-stochastic-instance"><span>Solving a custom stochastic instance</span></a></li></ul></li><li><a class="tocitem" href="../customizing/">Model customization</a></li><li><a class="tocitem" href="../lmp/">Locational Marginal Prices</a></li><li><a class="tocitem" href="../market/">Market Clearing</a></li><li><a class="tocitem" href="../decomposition/">Decomposition methods</a></li></ul></li><li><span class="tocitem">User guide</span><ul><li><a class="tocitem" href="../../guides/problem/">Problem definition</a></li><li><a class="tocitem" href="../../guides/format/">JSON data format</a></li><li><a class="tocitem" href="../../guides/instances/">Benchmark instances</a></li></ul></li><li><a class="tocitem" href="../../api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Tutorials</a></li><li class="is-active"><a href>Getting started</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Getting started</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/ANL-CEEESA/UnitCommitment.jl/blob/dev/docs/src/tutorials/usage.jl" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Getting-started"><a class="docs-heading-anchor" href="#Getting-started">Getting started</a><a id="Getting-started-1"></a><a class="docs-heading-anchor-permalink" href="#Getting-started" title="Permalink"></a></h1><h2 id="Installing-the-package"><a class="docs-heading-anchor" href="#Installing-the-package">Installing the package</a><a id="Installing-the-package-1"></a><a class="docs-heading-anchor-permalink" href="#Installing-the-package" title="Permalink"></a></h2><p>UnitCommitment.jl was tested and developed with <a href="https://julialang.org/">Julia 1.10</a>. To install Julia, please follow the <a href="https://julialang.org/downloads/">installation guide on the official Julia website</a>. To install UnitCommitment.jl, run the Julia interpreter, type <code>]</code> to open the package manager, then type:</p><pre><code class="language-text hljs">pkg&gt; add UnitCommitment@0.4</code></pre><p>To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the <a href="https://jump.dev/JuMP.jl/stable/installation/">JuMP installation guide</a> for more instructions on installing a solver. Typical open-source choices are <a href="https://github.com/jump-dev/HiGHS.jl">HiGHS</a>, <a href="https://github.com/JuliaOpt/Cbc.jl">Cbc</a> and <a href="https://github.com/JuliaOpt/GLPK.jl">GLPK</a>. In the instructions below, HiGHS will be used, but any other MILP solver should also be compatible.</p><h2 id="Solving-a-benchmark-instance"><a class="docs-heading-anchor" href="#Solving-a-benchmark-instance">Solving a benchmark instance</a><a id="Solving-a-benchmark-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-benchmark-instance" title="Permalink"></a></h2><p>We start this tutorial by illustrating how to use UnitCommitment.jl to solve one of the provided benchmark instances. The package contains a large number of deterministic benchmark instances collected from the literature and converted into a common data format, which can be used to evaluate the performance of different solution methods. See <a href="../../guides/instances/">Instances</a> for more details. The first step is to import <code>UnitCommitment</code> and HiGHS.</p><pre><code class="language-julia hljs">using HiGHS
 using UnitCommitment</code></pre><p>Next, we use the function <code>UnitCommitment.read_benchmark</code> to read the instance.</p><pre><code class="language-julia hljs">instance = UnitCommitment.read_benchmark(&quot;matpower/case14/2017-01-01&quot;);</code></pre><p>Now that we have the instance loaded in memory, we build the JuMP optimization model using <code>UnitCommitment.build_model</code>:</p><pre><code class="language-julia hljs">model =
     UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s1 with probability 1.0
@@ -10,38 +10,52 @@ using UnitCommitment</code></pre><p>Next, we use the function <code>UnitCommitme
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Applying PTDF and LODF cutoffs (0.00500, 0.00100)
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.01 seconds</code></pre><p>Next, we run the optimization process, with <code>UnitCommitment.optimize!</code>:</p><pre><code class="language-julia hljs">UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
-Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Running HiGHS 1.12.0 (git hash: 755a8e027a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP has 4744 rows; 4104 cols; 15633 nonzeros; 1080 integer variables (1080 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 3e+02]
+  Cost    [3e+01, 3e+04]
+  Bound   [1e+00, 1e+02]
+  RHS     [1e+00, 4e+02]
 Presolving model
-4382 rows, 2704 cols, 14776 nonzeros
-3279 rows, 2195 cols, 11913 nonzeros
-3160 rows, 2085 cols, 12983 nonzeros
+4382 rows, 2704 cols, 14776 nonzeros  0s
+3177 rows, 1985 cols, 11301 nonzeros  0s
+3148 rows, 1965 cols, 11570 nonzeros  0s
+Presolve reductions: rows 3148(-1596); columns 1965(-2139); nonzeros 11570(-4063)
 
 Solving MIP model with:
-   3160 rows
-   2085 cols (865 binary, 0 integer, 0 implied int., 1220 continuous)
-   12983 nonzeros
+   3148 rows
+   1965 cols (862 binary, 0 integer, 0 implied int., 1103 continuous, 0 domain fixed)
+   11570 nonzeros
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic;
+     I =&gt; Shifting; J =&gt; Feasibility jump; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding;
+     S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution; Y =&gt; HiGHS solution;
+     Z =&gt; ZI Round; l =&gt; Trivial lower; p =&gt; Trivial point; u =&gt; Trivial upper; z =&gt; Trivial zero
 
         Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
-     Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
 
-         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.0s
- R       0       0         0   0.00%   360642.328869   360642.544974      0.00%        0      0      0       861     0.1s
+         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.1s
+ R       0       0         0   0.00%   360642.328869   360642.544974      0.00%        0      0      0       958     0.1s
+         1       0         1 100.00%   360642.328869   360642.544974      0.00%        0      0      0       958     0.1s
 
 Solving report
   Status            Optimal
   Primal bound      360642.544974
   Dual bound        360642.328869
   Gap               6e-05% (tolerance: 0.01%)
+  P-D integral      4.76315069837e-10
   Solution status   feasible
                     360642.544974 (objective)
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.05 (total)
-                    0.03 (presolve)
-                    0.00 (postsolve)
+  Timing            0.10
+  Max sub-MIP depth 0
   Nodes             1
-  LP iterations     861 (total)
+  Repair LPs        0
+  LP iterations     958
                     0 (strong br.)
                     0 (separation)
                     0 (heuristics)
@@ -65,24 +79,24 @@ Solving report
   &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre><p>We can then explore the solution using Julia:</p><pre><code class="language-julia hljs">@show solution[&quot;Thermal production (MW)&quot;][&quot;g1&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">36-element Vector{Float64}:
  181.92024301829747
  172.8503730182975
- 166.8067830182975
- 163.2384530182975
+ 166.80678301829755
+ 163.23845301829746
  165.5149530182975
  169.95052301829747
  182.3719130182975
- 191.43277301829744
- 196.67234301829745
- 202.53524301829742
+ 191.4327730182975
+ 196.6723430182975
+ 202.53524301829748
    ⋮
  165.0181030182975
- 167.24040301829746
+ 167.2404030182975
  180.89039301829752
- 196.95238301829744
+ 196.9523830182975
  206.5552530182975
- 214.18877301829747
- 225.48092301829746
- 226.81792301829745
- 222.7256530182974</code></pre><p>Or export the entire solution to a JSON file:</p><pre><code class="language-julia hljs">UnitCommitment.write(&quot;solution.json&quot;, solution)</code></pre><h2 id="Solving-a-custom-deterministic-instance"><a class="docs-heading-anchor" href="#Solving-a-custom-deterministic-instance">Solving a custom deterministic instance</a><a id="Solving-a-custom-deterministic-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-custom-deterministic-instance" title="Permalink"></a></h2><p>In the previous example, we solved a benchmark instance provided by the package. To solve a custom instance, the first step is to create an input file describing the list of elements (generators, loads and transmission lines) in the network. See <a href="../../guides/format/">Data Format</a> for a complete description of the data format UC.jl expects. To keep this tutorial self-contained, we will create the input JSON file using Julia; however, this step can also be done with a simple text editor. First, we define the contents of the file:</p><pre><code class="language-julia hljs">json_contents = &quot;&quot;&quot;
+ 214.18877301829752
+ 225.48092301829752
+ 226.8179230182975
+ 222.72565301829746</code></pre><p>Or export the entire solution to a JSON file:</p><pre><code class="language-julia hljs">UnitCommitment.write(&quot;solution.json&quot;, solution)</code></pre><h2 id="Solving-a-custom-deterministic-instance"><a class="docs-heading-anchor" href="#Solving-a-custom-deterministic-instance">Solving a custom deterministic instance</a><a id="Solving-a-custom-deterministic-instance-1"></a><a class="docs-heading-anchor-permalink" href="#Solving-a-custom-deterministic-instance" title="Permalink"></a></h2><p>In the previous example, we solved a benchmark instance provided by the package. To solve a custom instance, the first step is to create an input file describing the list of elements (generators, loads and transmission lines) in the network. See <a href="../../guides/format/">Data Format</a> for a complete description of the data format UC.jl expects. To keep this tutorial self-contained, we will create the input JSON file using Julia; however, this step can also be done with a simple text editor. First, we define the contents of the file:</p><pre><code class="language-julia hljs">json_contents = &quot;&quot;&quot;
 {
     &quot;Parameters&quot;: {
         &quot;Version&quot;: &quot;0.4&quot;,
@@ -122,36 +136,47 @@ UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-outpu
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
-Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Running HiGHS 1.12.0 (git hash: 755a8e027a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP has 108 rows; 64 cols; 230 nonzeros; 32 integer variables (32 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 3e+02]
+  Cost    [5e+00, 1e+03]
+  Bound   [1e+00, 3e+02]
+  RHS     [1e+00, 1e+06]
 Presolving model
-74 rows, 36 cols, 166 nonzeros
-63 rows, 29 cols, 164 nonzeros
-49 rows, 25 cols, 120 nonzeros
-39 rows, 19 cols, 97 nonzeros
-32 rows, 15 cols, 90 nonzeros
-24 rows, 13 cols, 64 nonzeros
-8 rows, 6 cols, 21 nonzeros
-0 rows, 0 cols, 0 nonzeros
+74 rows, 36 cols, 166 nonzeros  0s
+47 rows, 21 cols, 121 nonzeros  0s
+28 rows, 12 cols, 78 nonzeros  0s
+0 rows, 0 cols, 0 nonzeros  0s
+Presolve reductions: rows 0(-108); columns 0(-64); nonzeros 0(-230) - Reduced to empty
 Presolve: Optimal
+
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic;
+     I =&gt; Shifting; J =&gt; Feasibility jump; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding;
+     S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution; Y =&gt; HiGHS solution;
+     Z =&gt; ZI Round; l =&gt; Trivial lower; p =&gt; Trivial point; u =&gt; Trivial upper; z =&gt; Trivial zero
+
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   3750            3750               0.00%        0      0      0         0     0.0s
 
 Solving report
   Status            Optimal
   Primal bound      3750
   Dual bound        3750
   Gap               0% (tolerance: 0.01%)
+  P-D integral      0
   Solution status   feasible
                     3750 (objective)
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.00 (total)
-                    0.00 (presolve)
-                    0.00 (postsolve)
+  Timing            0.00
+  Max sub-MIP depth 0
   Nodes             0
-  LP iterations     0 (total)
-                    0 (strong br.)
-                    0 (separation)
-                    0 (heuristics)</code></pre><p>Finally, we extract and display the solution:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 14 entries:
+  Repair LPs        0
+  LP iterations     0</code></pre><p>Finally, we extract and display the solution:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 14 entries:
   &quot;Thermal production (MW)&quot;         =&gt; OrderedDict(&quot;g1&quot;=&gt;[100.0, 150.0, 200.0, …
   &quot;Thermal production cost (\$)&quot;    =&gt; OrderedDict(&quot;g1&quot;=&gt;[500.0, 750.0, 1000.0,…
   &quot;Startup cost (\$)&quot;               =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
@@ -249,54 +274,63 @@ instance = UnitCommitment.read(glob(&quot;example_s*.json&quot;))</code></pre><p
 UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Building model...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s1 with probability 0.75
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Building scenario s2 with probability 0.25
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.01 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
-Running HiGHS 1.6.0: Copyright (c) 2023 HiGHS under MIT licence terms
+Running HiGHS 1.12.0 (git hash: 755a8e027a): Copyright (c) 2025 HiGHS under MIT licence terms
+MIP has 174 rows; 96 cols; 366 nonzeros; 32 integer variables (32 binary)
+Coefficient ranges:
+  Matrix  [1e+00, 3e+02]
+  Cost    [1e+00, 8e+02]
+  Bound   [1e+00, 5e+02]
+  RHS     [1e+00, 1e+06]
 Presolving model
-115 rows, 47 cols, 251 nonzeros
-47 rows, 43 cols, 113 nonzeros
-33 rows, 33 cols, 93 nonzeros
-23 rows, 25 cols, 61 nonzeros
-7 rows, 9 cols, 21 nonzeros
-5 rows, 7 cols, 13 nonzeros
+115 rows, 47 cols, 251 nonzeros  0s
+47 rows, 43 cols, 113 nonzeros  0s
+31 rows, 29 cols, 96 nonzeros  0s
+5 rows, 9 cols, 13 nonzeros  0s
+Presolve reductions: rows 5(-169); columns 9(-87); nonzeros 13(-353)
 
 Solving MIP model with:
    5 rows
-   7 cols (4 binary, 0 integer, 0 implied int., 3 continuous)
+   9 cols (3 binary, 0 integer, 0 implied int., 6 continuous, 0 domain fixed)
    13 nonzeros
 
-        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
-     Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&gt; Heuristic;
+     I =&gt; Shifting; J =&gt; Feasibility jump; L =&gt; Sub-MIP; P =&gt; Empty MIP; R =&gt; Randomized rounding;
+     S =&gt; Solve LP; T =&gt; Evaluate node; U =&gt; Unbounded; X =&gt; User solution; Y =&gt; HiGHS solution;
+     Z =&gt; ZI Round; l =&gt; Trivial lower; p =&gt; Trivial point; u =&gt; Trivial upper; z =&gt; Trivial zero
 
-         0       0         0   0.00%   4562.5          inf                  inf        0      0      0         0     0.0s
- T       0       0         0   0.00%   4562.5          5312.5            14.12%        0      0      0         2     0.0s
+        Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+ J       0       0         0   0.00%   -inf            30312.5            Large        0      0      0         0     0.0s
+ T       0       0         0   0.00%   4300            5312.5            19.06%        0      0      0         0     0.0s
+         1       0         1 100.00%   5312.5          5312.5             0.00%        0      0      0         0     0.0s
 
 Solving report
   Status            Optimal
   Primal bound      5312.5
   Dual bound        5312.5
   Gap               0% (tolerance: 0.01%)
+  P-D integral      0.000122052910402
   Solution status   feasible
                     5312.5 (objective)
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.00 (total)
-                    0.00 (presolve)
-                    0.00 (postsolve)
+  Timing            0.00
+  Max sub-MIP depth 0
   Nodes             1
-  LP iterations     2 (total)
-                    0 (strong br.)
-                    0 (separation)
-                    0 (heuristics)</code></pre><p>The solution to stochastic instances follows a slightly different format, as shown below:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 2 entries:
+  Repair LPs        0
+  LP iterations     0</code></pre><p>The solution to stochastic instances follows a slightly different format, as shown below:</p><pre><code class="language-julia hljs">solution = UnitCommitment.solution(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 2 entries:
   &quot;s1&quot; =&gt; OrderedDict{Any, Any}(&quot;Thermal production (MW)&quot;=&gt;OrderedDict(&quot;g1&quot;=&gt;[1…
   &quot;s2&quot; =&gt; OrderedDict{Any, Any}(&quot;Thermal production (MW)&quot;=&gt;OrderedDict(&quot;g1&quot;=&gt;[2…</code></pre><p>The solution for each scenario can be accessed through <code>solution[scenario_name]</code>. For conveniance, this includes both first- and second-stage optimal decisions:</p><pre><code class="language-julia hljs">solution[&quot;s1&quot;]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">OrderedCollections.OrderedDict{Any, Any} with 14 entries:
   &quot;Thermal production (MW)&quot;         =&gt; OrderedDict(&quot;g1&quot;=&gt;[100.0, 150.0, 200.0, …
   &quot;Thermal production cost (\$)&quot;    =&gt; OrderedDict(&quot;g1&quot;=&gt;[500.0, 750.0, 1000.0,…
   &quot;Startup cost (\$)&quot;               =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
   &quot;Is on&quot;                           =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, 1.0, 1.0, 1.0], …
-  &quot;Switch on&quot;                       =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, -0.0, 0.0, 0.0],…
+  &quot;Switch on&quot;                       =&gt; OrderedDict(&quot;g1&quot;=&gt;[1.0, 0.0, 0.0, 0.0], …
   &quot;Switch off&quot;                      =&gt; OrderedDict(&quot;g1&quot;=&gt;[0.0, 0.0, 0.0, 0.0], …
   &quot;Net injection (MW)&quot;              =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0])
   &quot;Load curtail (MW)&quot;               =&gt; OrderedDict(&quot;b1&quot;=&gt;[0.0, 0.0, 0.0, 0.0])
@@ -305,4 +339,4 @@ Solving report
   &quot;Up-flexiramp (MW)&quot;               =&gt; OrderedDict{Any, Any}()
   &quot;Up-flexiramp shortfall (MW)&quot;     =&gt; OrderedDict{Any, Any}()
   &quot;Down-flexiramp (MW)&quot;             =&gt; OrderedDict{Any, Any}()
-  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../customizing/">Model customization »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.2.1 on <span class="colophon-date" title="Tuesday 21 May 2024 10:56">Tuesday 21 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../customizing/">Model customization »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Wednesday 5 November 2025 09:58">Wednesday 5 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
