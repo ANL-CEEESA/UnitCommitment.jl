@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-import Base.Threads: @threads
+import Base.Threads: @threads, maxthreadid
 
 function _find_violations(
     model::JuMP.Model,
@@ -71,7 +71,7 @@ function _find_violations(;
     B = length(sc.buses) - 1
     L = length(sc.lines)
     T = instance.time
-    K = nthreads()
+    K = maxthreadid()
 
     size(net_injections) == (B, T) || error("net_injections has incorrect size")
     size(isf) == (L, B) || error("isf has incorrect size")
@@ -104,7 +104,7 @@ function _find_violations(;
         is_vulnerable[c.lines[1].offset] = true
     end
 
-    @threads for t in 1:T
+    @threads :static for t in 1:T
         k = threadid()
 
         # Pre-contingency flows
