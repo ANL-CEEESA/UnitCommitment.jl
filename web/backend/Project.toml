@@ -1,0 +1,17 @@
+name = "Backend"
+uuid = "948642ed-e3f9-4642-9296-0f1eaf40c938"
+version = "0.1.0"
+authors = ["Alinson S. Xavier <git@axavier.org>"]
+
+[deps]
+CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+UnitCommitment = "64606440-39ea-11e9-0f29-3303a1d3d877"
+
+[compat]
+CodecZlib = "0.7.8"
+HTTP = "1.10.19"
+JSON = "0.21.4"
+Random = "1.11.0"
