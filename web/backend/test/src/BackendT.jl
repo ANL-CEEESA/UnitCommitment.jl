@@ -24,7 +24,7 @@ end
 function runtests()
     @testset "UCJL Backend" begin
         server_test_usage()
-        # jobs_test_usage()
+        jobs_test_usage()
     end
     return
 end

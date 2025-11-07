@@ -40,5 +40,5 @@ function server_test_usage()
     @test saved_data == compressed_data
 
     # Clean up: remove the job directory
-    # rm(job_dir, recursive=true)
+    rm(job_dir, recursive=true)
 end

@@ -24,17 +24,13 @@ function jobs_test_usage()
             # Push job to queue
             put!(processor, job_id)
 
-            # Wait until all jobs are processed
-            while isbusy(processor)
-                sleep(0.1)
-            end
+            # Stop worker (wait for jobs to finish)
+            sleep(0.1)
+            stop(processor)
 
             # Check that solution file exists
             output_path = joinpath(job_dir, "output.json")
             @test isfile(output_path)
-
-            # Stop the worker
-            stop(processor)
         finally
             # Cleanup
             rm(job_dir, recursive = true, force = true)
