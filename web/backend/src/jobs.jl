@@ -38,33 +38,11 @@ function run!(processor::JobProcessor)
         job_id = take!(processor.pending)
         put!(processor.processing, job_id)
 
-        # Prepare directories
-        job_dir = joinpath(basedir, "jobs", job_id)
-        log_path = joinpath(job_dir, "output.log")
-        mkpath(job_dir)
-
         # Run work function
-        try
-            @info "Processing job: $job_id"
-            open(log_path, "w") do io
-                redirect_stdout(io) do
-                    redirect_stderr(io) do
-                        processor.work_fn(job_id)
-                        @info "Job $job_id done"
-                    end
-                end
-            end
+        processor.work_fn(job_id)
 
-            # Remove job from processing queue
-            take!(processor.processing)
-        catch e
-            @error "Failed job: $job_id" e
-            open(log_path, "a") do io
-                println(io, "\nError: ", e)
-                println(io, "\nStacktrace:")
-                return Base.show_backtrace(io, catch_backtrace())
-            end
-        end
+        # Remove job from processing queue
+        take!(processor.processing)
     end
 end
 

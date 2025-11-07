@@ -10,7 +10,6 @@ function jobs_test_usage()
         # Define dummy work function
         received_job_id = []
         function work_fn(job_id)
-            @show received_job_id
             push!(received_job_id, job_id)
         end
 

@@ -44,7 +44,34 @@ function submit(req, processor::JobProcessor)
 end
 
 function jobs_view(req)
-    return HTTP.Response(200, "OK")
+    # Extract job_id from URL path /jobs/{job_id}/view
+    path_parts = split(req.target, '/')
+    job_id = path_parts[3]  # /jobs/{job_id}/view -> index 3
+
+    # Construct job directory path
+    job_dir = joinpath(basedir, "jobs", job_id)
+
+    # Check if job directory exists
+    if !isdir(job_dir)
+        return HTTP.Response(404, "Job not found")
+    end
+
+    # Read log file if it exists
+    log_path = joinpath(job_dir, "output.log")
+    log_content = isfile(log_path) ? read(log_path, String) : nothing
+
+    # Read output.json if it exists
+    output_path = joinpath(job_dir, "output.json")
+    output_content = isfile(output_path) ? read(output_path, String) : nothing
+
+    # Create response JSON
+    response_data = Dict(
+        "log" => log_content,
+        "solution" => output_content
+    )
+
+    response_body = JSON.json(response_data)
+    return HTTP.Response(200, response_body)
 end
 
 function start_server(port::Int = 8080; optimizer)
@@ -52,18 +79,34 @@ function start_server(port::Int = 8080; optimizer)
 
     function work_fn(job_id)
         job_dir = joinpath(basedir, "jobs", job_id)
-        json_path = joinpath(job_dir, "input.json.gz")
-        instance = UnitCommitment.read(json_path)
-        model = UnitCommitment.build_model(;
-            instance,
-            optimizer = optimizer,
-        )
-        UnitCommitment.optimize!(model)
-        solution = UnitCommitment.solution(model)
-        return UnitCommitment.write(
-            joinpath(job_dir, "output.json"),
-            solution,
-        )
+        mkpath(job_dir)
+        input_filename = joinpath(job_dir, "input.json.gz")
+        log_filename = joinpath(job_dir, "output.log")
+        solution_filename = joinpath(job_dir, "output.json")
+        try
+            open(log_filename, "w") do io
+                redirect_stdout(io) do
+                    redirect_stderr(io) do
+                        instance = UnitCommitment.read(input_filename)
+                        model = UnitCommitment.build_model(;
+                            instance,
+                            optimizer = optimizer,
+                        )
+                        UnitCommitment.optimize!(model)
+                        solution = UnitCommitment.solution(model)
+                        UnitCommitment.write(solution_filename, solution)
+                    end
+                end
+            end
+        catch e
+            @error "Failed job: $job_id" e
+            open(log_filename, "a") do io
+                println(io, "\nError: ", e)
+                println(io, "\nStacktrace:")
+                return Base.show_backtrace(io, catch_backtrace())
+            end
+        end
+        return
     end
 
     # Create and start job processor
