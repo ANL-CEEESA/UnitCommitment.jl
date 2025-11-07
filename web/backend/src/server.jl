@@ -50,8 +50,24 @@ end
 function start_server(port::Int = 8080; optimizer)
     Random.seed!()
 
+    function work_fn(job_id)
+        job_dir = joinpath(basedir, "jobs", job_id)
+        json_path = joinpath(job_dir, "input.json.gz")
+        instance = UnitCommitment.read(json_path)
+        model = UnitCommitment.build_model(;
+            instance,
+            optimizer = optimizer,
+        )
+        UnitCommitment.optimize!(model)
+        solution = UnitCommitment.solution(model)
+        return UnitCommitment.write(
+            joinpath(job_dir, "output.json"),
+            solution,
+        )
+    end
+
     # Create and start job processor
-    processor = JobProcessor(optimizer = optimizer)
+    processor = JobProcessor(; work_fn)
     start(processor)
 
     router = HTTP.Router()
