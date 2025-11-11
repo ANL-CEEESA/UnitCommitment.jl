@@ -12,7 +12,8 @@ import { BLANK_SCENARIO } from "../../core/Data/fixtures";
 import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
 import { useState } from "react";
-import Footer from "./Footer";
+import { useNavigate } from "react-router";
+import Footer from "../Common/Footer";
 import * as pako from "pako";
 import { offerDownload } from "../Common/io";
 import { preprocess } from "../../core/Operations/preprocessing";
@@ -31,6 +32,7 @@ export interface CaseBuilderSectionProps {
 }
 
 const CaseBuilder = () => {
+  const navigate = useNavigate();
   const [scenario, setScenario] = useState(() => {
     const savedScenario = localStorage.getItem("scenario");
     if (!savedScenario) return BLANK_SCENARIO;
@@ -116,7 +118,7 @@ const CaseBuilder = () => {
 
     // Parse response
     const data = await response.json();
-    console.log(data.job_id);
+    navigate(`/jobs/${data.job_id}`);
   };
 
   return (

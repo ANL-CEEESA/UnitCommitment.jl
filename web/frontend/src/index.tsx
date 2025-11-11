@@ -9,6 +9,7 @@ import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import CaseBuilder from "./components/CaseBuilder/CaseBuilder";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import Jobs from "./components/Jobs/Jobs";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
@@ -19,6 +20,7 @@ root.render(
     <React.StrictMode>
       <Routes>
         <Route path="/builder" element={<CaseBuilder />} />
+        <Route path="/jobs/:jobId" element={<Jobs />} />
         <Route path="/" element={<Navigate to="/builder" replace />} />
       </Routes>
     </React.StrictMode>

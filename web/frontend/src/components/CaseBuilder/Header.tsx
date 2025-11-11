@@ -4,7 +4,7 @@
  * Released under the modified BSD license. See COPYING.md for more details.
  */
 
-import styles from "./Header.module.css";
+import styles from "../Common/Header.module.css";
 import SiteHeaderButton from "../Common/Buttons/SiteHeaderButton";
 import { useRef } from "react";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
