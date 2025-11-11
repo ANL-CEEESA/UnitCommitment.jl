@@ -9,12 +9,19 @@ import styles from "./SiteHeaderButton.module.css";
 function SiteHeaderButton({
   title,
   onClick,
+  variant = "light",
 }: {
   title: string;
   onClick?: () => void;
+  variant?: "light" | "primary";
 }) {
+  const variantClass = variant === "primary" ? styles.primary : styles.light;
+
   return (
-    <button className={styles.SiteHeaderButton} onClick={onClick}>
+    <button
+      className={`${styles.SiteHeaderButton} ${variantClass}`}
+      onClick={onClick}
+    >
       {title}
     </button>
   );

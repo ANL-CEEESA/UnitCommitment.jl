@@ -8,15 +8,21 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import CaseBuilder from "./components/CaseBuilder/CaseBuilder";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,
 );
 
 root.render(
-  <React.StrictMode>
-    <CaseBuilder />
-  </React.StrictMode>,
+  <BrowserRouter>
+    <React.StrictMode>
+      <Routes>
+        <Route path="/builder" element={<CaseBuilder />} />
+        <Route path="/" element={<Navigate to="/builder" replace />} />
+      </Routes>
+    </React.StrictMode>
+  </BrowserRouter>,
 );
 
 reportWebVitals();

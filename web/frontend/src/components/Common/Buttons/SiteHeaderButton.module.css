@@ -12,17 +12,33 @@
   box-shadow: var(--box-shadow);
   border-radius: var(--border-radius);
   cursor: pointer;
-  color: var(--contrast-80);
   text-transform: uppercase;
   font-weight: bold;
   font-size: 12px;
+}
+
+.light {
+  color: var(--contrast-80);
   background: linear-gradient(var(--contrast-0) 25%, var(--contrast-10) 100%);
 }
 
-.SiteHeaderButton:hover {
+.light:hover {
   background: rgb(245, 245, 245);
 }
 
-.SiteHeaderButton:active {
+.light:active {
   background: rgba(220, 220, 220);
+}
+
+.primary {
+  color: white;
+  background: linear-gradient(var(--primary) 25%, color-mix(in hsl, #000, var(--primary) 90%) 100%);
+}
+
+.primary:hover {
+  background: color-mix(in hsl, #fff, var(--primary) 90%);
+}
+
+.primary:active {
+  background: color-mix(in hsl, #000, var(--primary) 90%);
 }

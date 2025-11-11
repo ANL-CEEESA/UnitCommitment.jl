@@ -15,6 +15,7 @@ interface HeaderProps {
   onSave: () => void;
   onUndo: () => void;
   onLoad: (data: UnitCommitmentScenario) => void;
+  onSolve: () => void;
 }
 
 function Header(props: HeaderProps) {
@@ -36,6 +37,11 @@ function Header(props: HeaderProps) {
           <SiteHeaderButton title="Clear" onClick={props.onClear} />
           <SiteHeaderButton title="Load" onClick={onLoad} />
           <SiteHeaderButton title="Save" onClick={props.onSave} />
+          <SiteHeaderButton
+            title="Solve"
+            variant="primary"
+            onClick={props.onSolve}
+          />
         </div>
         <FileUploadElement ref={fileElem} accept=".json,.json.gz" />
       </div>

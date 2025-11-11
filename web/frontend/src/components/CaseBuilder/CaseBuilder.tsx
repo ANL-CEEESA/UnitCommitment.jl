@@ -91,6 +91,10 @@ const CaseBuilder = () => {
     setAndSaveScenario(undoStack[undoStack.length - 1]!, false);
   };
 
+  const onSolve = () => {
+    console.log("Solve!");
+  };
+
   return (
     <div>
       <Header
@@ -98,6 +102,7 @@ const CaseBuilder = () => {
         onSave={onSave}
         onLoad={onLoad}
         onUndo={onUndo}
+        onSolve={onSolve}
       />
       <div className="content">
         <Parameters
