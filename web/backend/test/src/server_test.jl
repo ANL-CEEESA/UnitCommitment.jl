@@ -2,17 +2,18 @@
 # Copyright (C) 2025, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+const HOST = "127.0.0.1"
 const PORT = 32617
 
 function server_test_usage()
-    server = Backend.start_server(PORT; optimizer = HiGHS.Optimizer)
+    server = Backend.start_server(HOST, PORT; optimizer = HiGHS.Optimizer)
     try
         # Read the compressed fixture file
         compressed_data = read(fixture("case14.json.gz"))
 
         # Submit test case
         response = HTTP.post(
-            "http://localhost:$PORT/submit",
+            "http://$HOST:$PORT/submit",
             ["Content-Type" => "application/gzip"],
             compressed_data,
         )
@@ -42,7 +43,7 @@ function server_test_usage()
         @test saved_data == compressed_data
 
         # Query job information
-        view_response = HTTP.get("http://localhost:$PORT/jobs/$job_id/view")
+        view_response = HTTP.get("http://$HOST:$PORT/jobs/$job_id/view")
         @test view_response.status == 200
 
         # Check response

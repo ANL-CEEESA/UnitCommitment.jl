@@ -74,7 +74,7 @@ function jobs_view(req)
     return HTTP.Response(200, response_body)
 end
 
-function start_server(port::Int = 8080; optimizer)
+function start_server(host, port; optimizer)
     Random.seed!()
 
     function work_fn(job_id)
@@ -121,7 +121,7 @@ function start_server(port::Int = 8080; optimizer)
     # Register job/*/view endpoint
     HTTP.register!(router, "GET", "/jobs/*/view", jobs_view)
 
-    server = HTTP.serve!(router, port; verbose = false)
+    server = HTTP.serve!(router, host, port; verbose = false)
     return ServerHandle(server, processor)
 end
 
