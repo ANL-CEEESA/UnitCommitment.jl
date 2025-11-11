@@ -54,7 +54,7 @@ function server_test_usage()
         @test view_data["solution"] !== nothing
 
         # Clean up
-        rm(job_dir, recursive=true)
+        rm(job_dir, recursive = true)
     finally
         stop(server)
     end

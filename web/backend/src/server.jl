@@ -9,11 +9,17 @@ struct ServerHandle
     processor::JobProcessor
 end
 
+RESPONSE_HEADERS = [
+    "Access-Control-Allow-Origin" => "*",
+    "Access-Control-Allow-Methods" => "GET, POST, OPTIONS",
+    "Access-Control-Allow-Headers" => "Content-Type",
+]
+
 function submit(req, processor::JobProcessor)
     # Check if request body is empty
     compressed_body = HTTP.payload(req)
     if isempty(compressed_body)
-        return HTTP.Response(400, "Error: No file provided")
+        return HTTP.Response(400, RESPONSE_HEADERS, "Error: No file provided")
     end
 
     # Validate compressed JSON by decompressing and parsing
@@ -21,7 +27,11 @@ function submit(req, processor::JobProcessor)
         decompressed_data = transcode(GzipDecompressor, compressed_body)
         JSON.parse(String(decompressed_data))
     catch e
-        return HTTP.Response(400, "Error: Invalid compressed JSON")
+        return HTTP.Response(
+            400,
+            RESPONSE_HEADERS,
+            "Error: Invalid compressed JSON",
+        )
     end
 
     # Generate random job ID (lowercase letters and numbers)
@@ -40,7 +50,7 @@ function submit(req, processor::JobProcessor)
 
     # Return job ID as JSON
     response_body = JSON.json(Dict("job_id" => job_id))
-    return HTTP.Response(200, response_body)
+    return HTTP.Response(200, RESPONSE_HEADERS, response_body)
 end
 
 function jobs_view(req)
@@ -53,7 +63,7 @@ function jobs_view(req)
 
     # Check if job directory exists
     if !isdir(job_dir)
-        return HTTP.Response(404, "Job not found")
+        return HTTP.Response(404, RESPONSE_HEADERS, "Job not found")
     end
 
     # Read log file if it exists
@@ -65,13 +75,10 @@ function jobs_view(req)
     output_content = isfile(output_path) ? read(output_path, String) : nothing
 
     # Create response JSON
-    response_data = Dict(
-        "log" => log_content,
-        "solution" => output_content
-    )
+    response_data = Dict("log" => log_content, "solution" => output_content)
 
     response_body = JSON.json(response_data)
-    return HTTP.Response(200, response_body)
+    return HTTP.Response(200, RESPONSE_HEADERS, response_body)
 end
 
 function start_server(host, port; optimizer)
@@ -95,6 +102,7 @@ function start_server(host, port; optimizer)
                         UnitCommitment.optimize!(model)
                         solution = UnitCommitment.solution(model)
                         UnitCommitment.write(solution_filename, solution)
+                        return
                     end
                 end
             end
@@ -114,6 +122,14 @@ function start_server(host, port; optimizer)
     start(processor)
 
     router = HTTP.Router()
+
+    # Register CORS preflight endpoint
+    HTTP.register!(
+        router,
+        "OPTIONS",
+        "/**",
+        req -> HTTP.Response(200, RESPONSE_HEADERS, ""),
+    )
 
     # Register /submit endpoint
     HTTP.register!(router, "POST", "/submit", req -> submit(req, processor))

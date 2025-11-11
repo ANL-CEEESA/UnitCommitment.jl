@@ -11,6 +11,7 @@ function jobs_test_usage()
         received_job_id = []
         function work_fn(job_id)
             push!(received_job_id, job_id)
+            return
         end
 
         # Create processor with work function
