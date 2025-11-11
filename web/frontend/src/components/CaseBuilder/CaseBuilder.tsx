@@ -13,6 +13,7 @@ import "tabulator-tables/dist/css/tabulator.min.css";
 import "../Common/Forms/Tables.css";
 import { useState } from "react";
 import Footer from "./Footer";
+import * as pako from "pako";
 import { offerDownload } from "../Common/io";
 import { preprocess } from "../../core/Operations/preprocessing";
 import Toast from "../Common/Forms/Toast";
@@ -91,8 +92,31 @@ const CaseBuilder = () => {
     setAndSaveScenario(undoStack[undoStack.length - 1]!, false);
   };
 
-  const onSolve = () => {
-    console.log("Solve!");
+  const onSolve = async () => {
+    // Compress scenario
+    const jsonString = JSON.stringify(scenario);
+    const compressed = pako.gzip(jsonString);
+
+    // POST to backend
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+    const response = await fetch(`${backendUrl}/submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/gzip",
+      },
+      body: compressed,
+    });
+
+    // Error handling
+    if (!response.ok) {
+      setToastMessage("Failed to submit file. See console for more details.");
+      console.log(response);
+      return;
+    }
+
+    // Parse response
+    const data = await response.json();
+    console.log(data.job_id);
   };
 
   return (

@@ -8,7 +8,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import reportWebVitals from "./reportWebVitals";
 import CaseBuilder from "./components/CaseBuilder/CaseBuilder";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement,

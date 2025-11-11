@@ -142,7 +142,6 @@ export const generateTableData = (
         case "lineContingency":
           if (contingencyLines === null) {
             contingencyLines = getContingencyTransmissionLines(scenario);
-            console.log(contingencyLines);
           }
           entry[spec.title] = contingencyLines.has(entryName);
           break;
