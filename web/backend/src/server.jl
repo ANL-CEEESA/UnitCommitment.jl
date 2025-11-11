@@ -54,9 +54,9 @@ function submit(req, processor::JobProcessor)
 end
 
 function jobs_view(req)
-    # Extract job_id from URL path /jobs/{job_id}/view
+    # Extract job_id from URL path /api/jobs/{job_id}/view
     path_parts = split(req.target, '/')
-    job_id = path_parts[3]  # /jobs/{job_id}/view -> index 3
+    job_id = path_parts[4]
 
     # Construct job directory path
     job_dir = joinpath(basedir, "jobs", job_id)
@@ -132,10 +132,10 @@ function start_server(host, port; optimizer)
     )
 
     # Register /submit endpoint
-    HTTP.register!(router, "POST", "/submit", req -> submit(req, processor))
+    HTTP.register!(router, "POST", "/api/submit", req -> submit(req, processor))
 
     # Register job/*/view endpoint
-    HTTP.register!(router, "GET", "/jobs/*/view", jobs_view)
+    HTTP.register!(router, "GET", "/api/jobs/*/view", jobs_view)
 
     server = HTTP.serve!(router, host, port; verbose = false)
     return ServerHandle(server, processor)
