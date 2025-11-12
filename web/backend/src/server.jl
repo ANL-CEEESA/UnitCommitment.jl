@@ -107,7 +107,6 @@ function start_server(host, port; optimizer)
                 end
             end
         catch e
-            @error "Failed job: $job_id" e
             open(log_filename, "a") do io
                 println(io, "\nError: ", e)
                 println(io, "\nStacktrace:")

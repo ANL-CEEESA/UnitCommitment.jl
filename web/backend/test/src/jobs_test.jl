@@ -7,10 +7,14 @@ using Test
 
 function jobs_test_usage()
     @testset "JobProcessor" begin
-        # Define dummy work function
-        received_job_id = []
+        # Create a temporary directory for test output
+        test_dir = mktempdir()
+
+        # Define dummy work function that writes to a file
+        # Note: This function will be executed on a worker process
         function work_fn(job_id)
-            push!(received_job_id, job_id)
+            output_file = joinpath(test_dir, job_id * ".txt")
+            write(output_file, job_id)
             return
         end
 
@@ -24,10 +28,16 @@ function jobs_test_usage()
         put!(processor, "test")
 
         # Wait for job to complete
-        sleep(0.1)
+        # Increased timeout to account for worker process startup
+        sleep(2)
         stop(processor)
 
         # Check that the work function was called with correct job_id
-        @test received_job_id[1] == "test"
+        output_file = joinpath(test_dir, "test.txt")
+        @test isfile(output_file)
+        @test read(output_file, String) == "test"
+
+        # Clean up
+        rm(test_dir; recursive = true)
     end
 end

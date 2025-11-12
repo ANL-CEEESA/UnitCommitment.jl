@@ -13,7 +13,7 @@ function server_test_usage()
 
         # Submit test case
         response = HTTP.post(
-            "http://$HOST:$PORT/submit",
+            "http://$HOST:$PORT/api/submit",
             ["Content-Type" => "application/gzip"],
             compressed_data,
         )
@@ -26,7 +26,7 @@ function server_test_usage()
         @test length(job_id) == 16
 
         # Wait for jobs to finish
-        sleep(0.1)
+        sleep(5)
         while isbusy(server.processor)
             sleep(0.1)
         end
@@ -43,7 +43,7 @@ function server_test_usage()
         @test saved_data == compressed_data
 
         # Query job information
-        view_response = HTTP.get("http://$HOST:$PORT/jobs/$job_id/view")
+        view_response = HTTP.get("http://$HOST:$PORT/api/jobs/$job_id/view")
         @test view_response.status == 200
 
         # Check response

@@ -6,18 +6,18 @@ authors = ["Alinson S. Xavier <git@axavier.org>"]
 [deps]
 Backend = "948642ed-e3f9-4642-9296-0f1eaf40c938"
 CodecZlib = "944b1d66-785c-5afd-91f1-9de20f533193"
+Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 HiGHS = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuliaFormatter = "98e50ef6-434e-11e9-1051-2b60c6c9e899"
-Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 CodecZlib = "0.7.8"
+Distributed = "1.11.0"
 HTTP = "1.10.19"
 HiGHS = "1.20.1"
 JSON = "0.21.4"
 JuliaFormatter = "2.2.0"
-Revise = "3.12.0"
 Test = "1.11.0"

@@ -8,5 +8,6 @@ basedir = joinpath(dirname(@__FILE__), "..")
 
 include("jobs.jl")
 include("server.jl")
+include("log.jl")
 
 end

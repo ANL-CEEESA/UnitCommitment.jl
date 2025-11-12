@@ -2,18 +2,19 @@
 # Copyright (C) 2025, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+using Distributed
 import Base: put!
 
 Base.@kwdef mutable struct JobProcessor
-    pending::Channel{String} = Channel{String}(Inf)
-    processing::Channel{String} = Channel{String}(Inf)
-    shutdown::Channel{Bool} = Channel{Bool}(1)
-    worker_task::Union{Task,Nothing} = nothing
-    work_fn::Function
+    pending = RemoteChannel(() -> Channel{String}(Inf))
+    processing = RemoteChannel(() -> Channel{String}(Inf))
+    shutdown = RemoteChannel(() -> Channel{Bool}(1))
+    worker_pid = nothing
+    monitor_task = nothing
+    work_fn = nothing
 end
 
 function Base.put!(processor::JobProcessor, job_id::String)
-    @info "New job received: $job_id"
     return put!(processor.pending, job_id)
 end
 
@@ -21,46 +22,58 @@ function isbusy(processor::JobProcessor)
     return isready(processor.pending) || isready(processor.processing)
 end
 
-function run!(processor::JobProcessor)
+function worker_loop(pending, processing, shutdown, work_fn)
+    @info "Starting worker loop"
     while true
         # Check for shutdown signal
-        if isready(processor.shutdown)
+        if isready(shutdown)
+            @info "Shutdown signal received"
             break
         end
 
         # Wait for a job with timeout
-        if !isready(processor.pending)
+        if !isready(pending)
             sleep(0.1)
             continue
         end
 
         # Move job from pending to processing queue
-        job_id = take!(processor.pending)
-        put!(processor.processing, job_id)
+        job_id = take!(pending)
+        put!(processing, job_id)
+        @info "Job started: $job_id"
 
         # Run work function
-        processor.work_fn(job_id)
+        try
+            work_fn(job_id)
+        catch e
+            @error "Job failed: job $job_id"
+        end
 
         # Remove job from processing queue
-        take!(processor.processing)
+        take!(processing)
+        @info "Job finished: $job_id"
     end
 end
 
 function start(processor::JobProcessor)
-    processor.worker_task = Threads.@spawn run!(processor)
+    processor.monitor_task = @spawn begin
+        worker_loop(
+            processor.pending,
+            processor.processing,
+            processor.shutdown,
+            processor.work_fn,
+        )
+    end
     return
 end
 
 function stop(processor::JobProcessor)
-    # Signal worker to stop
     put!(processor.shutdown, true)
-
-    # Wait for worker to finish
-    if processor.worker_task !== nothing
+    if processor.monitor_task !== nothing
         try
-            wait(processor.worker_task)
-        catch
-            # Worker may have already exited
+            wait(processor.monitor_task)
+        catch e
+            @warn "Error waiting for worker task" exception=e
         end
     end
     return

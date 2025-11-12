@@ -4,6 +4,8 @@
 
 module BackendT
 
+using Distributed
+
 using Test
 using HTTP
 using JSON
@@ -22,6 +24,7 @@ function fixture(path::String)::String
 end
 
 function runtests()
+    Backend.setup_logger()
     @testset "UCJL Backend" begin
         server_test_usage()
         jobs_test_usage()
