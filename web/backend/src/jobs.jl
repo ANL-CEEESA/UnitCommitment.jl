@@ -74,12 +74,12 @@ function worker_loop(pending, processing, completed, shutdown, work_fn)
             put!(processing, job_id)
             @info "Job started: $job_id"
             try
-                work_fn(job_id)
+                work_time = @elapsed work_fn(job_id)
+                @info "Job finished: $job_id ($work_time s)"
                 put!(completed, job_id)
             catch e
                 @error "Job failed: job $job_id"
             end
-            @info "Job finished: $job_id"
         end
 
         sleep(0.1)
