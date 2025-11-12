@@ -26,10 +26,7 @@ function server_test_usage()
         @test length(job_id) == 16
 
         # Wait for jobs to finish
-        sleep(5)
-        while isbusy(server.processor)
-            sleep(0.1)
-        end
+        sleep(10)
 
         # Verify the compressed file was saved correctly
         job_dir = joinpath(Backend.basedir, "jobs", job_id)
@@ -52,6 +49,7 @@ function server_test_usage()
         @test haskey(view_data, "solution")
         @test view_data["log"] !== nothing
         @test view_data["solution"] !== nothing
+        @test view_data["status"] == "completed"
 
         # Clean up
         rm(job_dir, recursive = true)

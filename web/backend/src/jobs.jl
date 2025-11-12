@@ -8,50 +8,81 @@ import Base: put!
 Base.@kwdef mutable struct JobProcessor
     pending = RemoteChannel(() -> Channel{String}(Inf))
     processing = RemoteChannel(() -> Channel{String}(Inf))
+    completed = RemoteChannel(() -> Channel{String}(Inf))
     shutdown = RemoteChannel(() -> Channel{Bool}(1))
     worker_pids = []
     worker_tasks = []
     work_fn = nothing
+    master_task = nothing
+    job_status = Dict()
+    job_position = Dict()
+    pending_queue = []
+end
+
+function update_positions!(processor::JobProcessor)
+    for (i, job_id) in enumerate(processor.pending_queue)
+        processor.job_position[job_id] = i
+    end
 end
 
 function Base.put!(processor::JobProcessor, job_id::String)
-    return put!(processor.pending, job_id)
+    put!(processor.pending, job_id)
+    processor.job_status[job_id] = "pending"
+    push!(processor.pending_queue, job_id)
+    update_positions!(processor)
 end
 
-function isbusy(processor::JobProcessor)
-    return isready(processor.pending) || isready(processor.processing)
+function master_loop(processor)
+    @info "Starting master loop"
+    while true
+        # Check for shutdown signal
+        if isready(processor.shutdown)
+            break
+        end
+
+        # Check for processing jobs
+        while isready(processor.processing)
+            job_id = take!(processor.processing)
+            processor.job_status[job_id] = "processing"
+            filter!(x -> x != job_id, processor.pending_queue)
+            delete!(processor.job_position, job_id)
+            update_positions!(processor)
+        end
+
+        # Check for completed jobs
+        while isready(processor.completed)
+            job_id = take!(processor.completed)
+            delete!(processor.job_status, job_id)
+            delete!(processor.job_position, job_id)
+        end
+
+        sleep(0.1)
+    end
 end
 
-function worker_loop(pending, processing, shutdown, work_fn)
+function worker_loop(pending, processing, completed, shutdown, work_fn)
     @info "Starting worker loop"
     while true
         # Check for shutdown signal
         if isready(shutdown)
-            @info "Shutdown signal received"
             break
         end
 
-        # Wait for a job with timeout
-        if !isready(pending)
-            sleep(0.1)
-            continue
+        # Check for pending tasks
+        if isready(pending)
+            job_id = take!(pending)
+            put!(processing, job_id)
+            @info "Job started: $job_id"
+            try
+                work_fn(job_id)
+                put!(completed, job_id)
+            catch e
+                @error "Job failed: job $job_id"
+            end
+            @info "Job finished: $job_id"
         end
 
-        # Move job from pending to processing queue
-        job_id = take!(pending)
-        put!(processing, job_id)
-        @info "Job started: $job_id"
-
-        # Run work function
-        try
-            work_fn(job_id)
-        catch e
-            @error "Job failed: job $job_id"
-        end
-
-        # Remove job from processing queue
-        take!(processing)
-        @info "Job finished: $job_id"
+        sleep(0.1)
     end
 end
 
@@ -66,6 +97,7 @@ function start(processor::JobProcessor)
             worker_loop(
                 processor.pending,
                 processor.processing,
+                processor.completed,
                 processor.shutdown,
                 processor.work_fn,
             )
@@ -73,23 +105,19 @@ function start(processor::JobProcessor)
         push!(processor.worker_pids, pid)
         push!(processor.worker_tasks, task)
     end
+
+    # Start master loop (after spawning workers to avoid serialization issues)
+    processor.master_task = @async master_loop(processor)
+
     return
 end
 
 function stop(processor::JobProcessor)
-    # Send shutdown signal (all workers will see it)
     put!(processor.shutdown, true)
-
-    # Wait for all worker tasks to complete
+    wait(processor.master_task)
     for (i, task) in enumerate(processor.worker_tasks)
-        try
-            wait(task)
-            @info "Worker $(processor.worker_pids[i]) stopped"
-        catch e
-            @warn "Error waiting for worker $(processor.worker_pids[i])" exception=e
-        end
+        wait(task)
     end
-
     return
 end
 

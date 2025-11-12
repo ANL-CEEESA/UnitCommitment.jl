@@ -13,3 +13,11 @@ docker-run:
 		--memory 16g \
 		--cpus 4 \
 		ucjl-backend
+
+test:
+	clear; julia --threads 1 --procs 1 --project=test -e "using BackendT; runtests()"
+
+run:
+	julia --procs 1 --project=. startup.jl
+
+.PHONY: test

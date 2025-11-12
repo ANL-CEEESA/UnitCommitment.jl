@@ -53,7 +53,7 @@ function submit(req, processor::JobProcessor)
     return HTTP.Response(200, RESPONSE_HEADERS, response_body)
 end
 
-function jobs_view(req)
+function jobs_view(req, processor)
     # Extract job_id from URL path /api/jobs/{job_id}/view
     path_parts = split(req.target, '/')
     job_id = path_parts[4]
@@ -74,9 +74,19 @@ function jobs_view(req)
     output_path = joinpath(job_dir, "output.json")
     output_content = isfile(output_path) ? read(output_path, String) : nothing
 
-    # Create response JSON
-    response_data = Dict("log" => log_content, "solution" => output_content)
+    # Read job status
+    job_status = "unknown"
+    if output_content !== nothing
+        job_status = "completed"
+    elseif haskey(processor.job_status, job_id)
+        job_status = processor.job_status[job_id]
+    end
 
+    # Read job position (0 if already processed or not found)
+    job_position = get(processor.job_position, job_id, 0)
+
+    # Create response JSON
+    response_data = Dict("log" => log_content, "solution" => output_content, "status" => job_status, "position" => job_position)
     response_body = JSON.json(response_data)
     return HTTP.Response(200, RESPONSE_HEADERS, response_body)
 end
@@ -134,7 +144,7 @@ function start_server(host, port; optimizer)
     HTTP.register!(router, "POST", "/api/submit", req -> submit(req, processor))
 
     # Register job/*/view endpoint
-    HTTP.register!(router, "GET", "/api/jobs/*/view", jobs_view)
+    HTTP.register!(router, "GET", "/api/jobs/*/view", req -> jobs_view(req, processor))
 
     server = HTTP.serve!(router, host, port; verbose = false)
     return ServerHandle(server, processor)

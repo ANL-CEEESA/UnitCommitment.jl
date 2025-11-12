@@ -31,6 +31,8 @@ end
 
 function setup_logger()
     global_logger(TimeLogger())
-    @spawn global_logger(TimeLogger())
+    for pid in workers()
+        @spawnat pid global_logger(TimeLogger())
+    end
     return
 end

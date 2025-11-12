@@ -15,6 +15,7 @@ import formStyles from "../Common/Forms/Form.module.css";
 interface JobData {
   log: string;
   solution: any;
+  position: number;
 }
 
 const Jobs = () => {
@@ -81,7 +82,9 @@ const Jobs = () => {
         <SectionHeader title="Optimization log"></SectionHeader>
         <div className={formStyles.FormWrapper}>
           <div className={styles.SolverLog} ref={logRef}>
-            {jobData ? jobData.log : "Loading..."}
+            {jobData
+              ? jobData.log || `Waiting for ${jobData.position} other optimization job(s) to finish...`
+              : "Loading..."}
           </div>
         </div>
       </div>
