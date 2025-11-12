@@ -99,7 +99,7 @@ function start_server(host, port; optimizer)
                             instance,
                             optimizer = optimizer,
                         )
-                        UnitCommitment.optimize!(model)
+                        UnitCommitment.optimize!(model, UnitCommitment.XavQiuWanThi2019.Method(time_limit=900.0))
                         solution = UnitCommitment.solution(model)
                         UnitCommitment.write(solution_filename, solution)
                         return

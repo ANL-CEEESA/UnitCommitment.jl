@@ -6,6 +6,7 @@
 
 # Load required packages
 using HiGHS
+using JuMP
 using Backend
 
 const UCJL_HOST = get(ENV, "HOST", "0.0.0.0")
@@ -16,7 +17,8 @@ println("Host: $UCJL_HOST")
 println("Port: $UCJL_PORT")
 println("Press Ctrl+C to stop the server")
 
-server = Backend.start_server(UCJL_HOST, UCJL_PORT; optimizer = HiGHS.Optimizer)
+Backend.setup_logger()
+server = Backend.start_server(UCJL_HOST, UCJL_PORT; optimizer = optimizer_with_attributes(HiGHS.Optimizer, "mip_rel_gap" => 0.001))
 try
     wait()
 catch e

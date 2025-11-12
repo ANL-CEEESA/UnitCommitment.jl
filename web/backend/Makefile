@@ -2,4 +2,14 @@ docker-build:
 	docker build . -t ucjl-backend
 
 docker-run:
-	docker run --publish 9000:9000 --rm -it ucjl-backend
+	docker stop ucjl-backend
+	docker rm ucjl-backend
+	docker run \
+		--restart always \
+		--detach \
+		--network custom \
+		--name ucjl-backend \
+		--volume ucjl_data:/app/Backend/jobs \
+		--memory 16g \
+		--cpus 4 \
+		ucjl-backend
