@@ -6,7 +6,7 @@ WORKDIR /app
 COPY Project.toml /app/Backend/
 COPY src /app/Backend/src
 RUN julia --project=. -e 'using Pkg; Pkg.develop(path="Backend"); Pkg.add("HiGHS"); Pkg.add("JuMP"); Pkg.precompile()'
-COPY docker/startup.jl ./
+COPY startup.jl ./
 
 # Set timezone to Chicago
 ENV TZ=America/Chicago
@@ -17,4 +17,4 @@ ENV UCJL_HOST="0.0.0.0"
 ENV UCJL_PORT="9000"
 
 # Run the server
-CMD ["julia", "--threads", "1", "--procs", "1", "--project=.", "startup.jl"]
+CMD ["julia", "--threads", "1", "--procs", "4", "--project=.", "startup.jl"]

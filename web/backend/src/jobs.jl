@@ -9,8 +9,8 @@ Base.@kwdef mutable struct JobProcessor
     pending = RemoteChannel(() -> Channel{String}(Inf))
     processing = RemoteChannel(() -> Channel{String}(Inf))
     shutdown = RemoteChannel(() -> Channel{Bool}(1))
-    worker_pid = nothing
-    monitor_task = nothing
+    worker_pids = []
+    worker_tasks = []
     work_fn = nothing
 end
 
@@ -56,26 +56,40 @@ function worker_loop(pending, processing, shutdown, work_fn)
 end
 
 function start(processor::JobProcessor)
-    processor.monitor_task = @spawn begin
-        worker_loop(
-            processor.pending,
-            processor.processing,
-            processor.shutdown,
-            processor.work_fn,
-        )
+    # Get list of available worker processes
+    worker_pids = workers()
+    @info "Starting job processor with $(length(worker_pids)) worker(s)"
+
+    # Start a worker loop on each worker process
+    for pid in worker_pids
+        task = @spawnat pid begin
+            worker_loop(
+                processor.pending,
+                processor.processing,
+                processor.shutdown,
+                processor.work_fn,
+            )
+        end
+        push!(processor.worker_pids, pid)
+        push!(processor.worker_tasks, task)
     end
     return
 end
 
 function stop(processor::JobProcessor)
+    # Send shutdown signal (all workers will see it)
     put!(processor.shutdown, true)
-    if processor.monitor_task !== nothing
+
+    # Wait for all worker tasks to complete
+    for (i, task) in enumerate(processor.worker_tasks)
         try
-            wait(processor.monitor_task)
+            wait(task)
+            @info "Worker $(processor.worker_pids[i]) stopped"
         catch e
-            @warn "Error waiting for worker task" exception=e
+            @warn "Error waiting for worker $(processor.worker_pids[i])" exception=e
         end
     end
+
     return
 end
 
