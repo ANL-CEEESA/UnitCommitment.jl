@@ -47,7 +47,7 @@ function run!(processor::JobProcessor)
 end
 
 function start(processor::JobProcessor)
-    processor.worker_task = @async run!(processor)
+    processor.worker_task = Threads.@spawn run!(processor)
     return
 end
 
