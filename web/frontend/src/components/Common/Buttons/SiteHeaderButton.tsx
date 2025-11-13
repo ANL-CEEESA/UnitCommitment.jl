@@ -13,19 +13,23 @@ function SiteHeaderButton({
   icon,
   onClick,
   variant = "light",
+  disabled = false,
 }: {
   title: string;
   icon: IconDefinition;
   onClick?: () => void;
   variant?: "light" | "primary";
+  disabled?: boolean;
 }) {
   const variantClass = variant === "primary" ? styles.primary : styles.light;
+  const disabledClass = disabled ? styles.disabled : "";
 
   return (
     <button
-      className={`${styles.SiteHeaderButton} ${variantClass}`}
+      className={`${styles.SiteHeaderButton} ${variantClass} ${disabledClass}`}
       title={title}
       onClick={onClick}
+      disabled={disabled}
     >
       <FontAwesomeIcon icon={icon} />
     </button>

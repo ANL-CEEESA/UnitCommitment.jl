@@ -5,8 +5,8 @@
  */
 
 .SiteHeaderButton {
-  padding: 6px 20px;
-  margin: 0 0 0 0px;
+  padding: 6px 16px;
+  margin: 0 0 0 0;
   line-height: 24px;
   border: var(--box-border);
   box-shadow: var(--box-shadow);
@@ -58,4 +58,10 @@
 
 .primary:active {
   background: color-mix(in hsl, #000, var(--primary) 90%);
+}
+
+.disabled {
+  color: var(--contrast-20);
+  cursor: not-allowed;
+  pointer-events: none;
 }

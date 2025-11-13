@@ -44,11 +44,13 @@ const CaseBuilder = () => {
     return processedScenario!!;
   });
   const [undoStack, setUndoStack] = useState<UnitCommitmentScenario[]>([]);
+  const [redoStack, setRedoStack] = useState<UnitCommitmentScenario[]>([]);
   const [toastMessage, setToastMessage] = useState<string>("");
 
   const setAndSaveScenario = (
     newScenario: UnitCommitmentScenario,
     updateUndoStack = true,
+    clearRedoStack = true,
   ) => {
     if (updateUndoStack) {
       const newUndoStack = [...undoStack, scenario];
@@ -56,6 +58,9 @@ const CaseBuilder = () => {
         newUndoStack.splice(0, newUndoStack.length - 25);
       }
       setUndoStack(newUndoStack);
+    }
+    if (clearRedoStack) {
+      setRedoStack([]);
     }
     setScenario(newScenario);
     localStorage.setItem("scenario", JSON.stringify(newScenario));
@@ -90,8 +95,19 @@ const CaseBuilder = () => {
 
   const onUndo = () => {
     if (undoStack.length === 0) return;
+    const newRedoStack = [...redoStack, scenario];
+    if (newRedoStack.length > 25) {
+      newRedoStack.splice(0, newRedoStack.length - 25);
+    }
+    setRedoStack(newRedoStack);
     setUndoStack(undoStack.slice(0, -1));
-    setAndSaveScenario(undoStack[undoStack.length - 1]!, false);
+    setAndSaveScenario(undoStack[undoStack.length - 1]!, false, false);
+  };
+
+  const onRedo = () => {
+    if (redoStack.length === 0) return;
+    setRedoStack(redoStack.slice(0, -1));
+    setAndSaveScenario(redoStack[redoStack.length - 1]!, true, false);
   };
 
   const onSolve = async () => {
@@ -128,7 +144,10 @@ const CaseBuilder = () => {
         onSave={onSave}
         onLoad={onLoad}
         onUndo={onUndo}
+        onRedo={onRedo}
         onSolve={onSolve}
+        canUndo={undoStack.length > 0}
+        canRedo={redoStack.length > 0}
       />
       <div className="content">
         <Parameters

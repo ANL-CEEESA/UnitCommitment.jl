@@ -9,14 +9,17 @@ import SiteHeaderButton from "../Common/Buttons/SiteHeaderButton";
 import { useRef } from "react";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { UnitCommitmentScenario } from "../../core/Data/types";
-import { faDownload, faGear, faRotateLeft, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faGear, faRotateLeft, faRotateRight, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
 
 interface HeaderProps {
   onClear: () => void;
   onSave: () => void;
   onUndo: () => void;
+  onRedo: () => void;
   onLoad: (data: UnitCommitmentScenario) => void;
   onSolve: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 }
 
 function Header(props: HeaderProps) {
@@ -44,6 +47,13 @@ function Header(props: HeaderProps) {
             title="Undo"
             icon={faRotateLeft}
             onClick={props.onUndo}
+            disabled={!props.canUndo}
+          />
+          <SiteHeaderButton
+            title="Redo"
+            icon={faRotateRight}
+            onClick={props.onRedo}
+            disabled={!props.canRedo}
           />
           <SiteHeaderButton
             title="Clear"
