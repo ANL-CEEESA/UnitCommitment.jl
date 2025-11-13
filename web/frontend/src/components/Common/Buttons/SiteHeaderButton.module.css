@@ -5,16 +5,33 @@
  */
 
 .SiteHeaderButton {
-  padding: 6px 24px;
-  margin: 0 0 0 8px;
+  padding: 6px 20px;
+  margin: 0 0 0 0px;
   line-height: 24px;
   border: var(--box-border);
   box-shadow: var(--box-shadow);
-  border-radius: var(--border-radius);
+  border-radius: 0;
   cursor: pointer;
   text-transform: uppercase;
   font-weight: bold;
-  font-size: 12px;
+  font-size: 14px;
+}
+
+.SiteHeaderButton:not(:last-child) {
+  border-right: none;
+}
+
+.SiteHeaderButton:first-child {
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
+}
+
+.SiteHeaderButton:last-child {
+  border-radius: 0 var(--border-radius) var(--border-radius) 0;
+}
+
+.SiteHeaderButton:only-child {
+  border-radius: var(--border-radius);
+  border-right: var(--box-border);
 }
 
 .light {

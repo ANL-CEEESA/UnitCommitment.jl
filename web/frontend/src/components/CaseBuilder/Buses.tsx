@@ -6,11 +6,7 @@
 
 import SectionHeader from "../Common/SectionHeader/SectionHeader";
 import SectionButton from "../Common/Buttons/SectionButton";
-import {
-  faDownload,
-  faPlus,
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { offerDownload } from "../Common/io";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { useRef } from "react";
@@ -20,16 +16,11 @@ import DataTable, {
   generateCsv,
   generateTableColumns,
   generateTableData,
-  parseCsv,
+  parseCsv
 } from "../Common/Forms/DataTable";
 
 import { ColumnDefinition } from "tabulator-tables";
-import {
-  changeBusData,
-  createBus,
-  deleteBus,
-  renameBus,
-} from "../../core/Operations/busOps";
+import { changeBusData, createBus, deleteBus, renameBus } from "../../core/Operations/busOps";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
 import { UnitCommitmentScenario } from "../../core/Data/types";
 
@@ -128,13 +119,13 @@ function BusesComponent(props: CaseBuilderSectionProps) {
   return (
     <div>
       <SectionHeader title="Buses">
-        <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
+        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
         <SectionButton
           icon={faDownload}
           tooltip="Download"
           onClick={onDownload}
         />
-        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
+        <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
       </SectionHeader>
       <DataTable
         onRowDeleted={onDelete}

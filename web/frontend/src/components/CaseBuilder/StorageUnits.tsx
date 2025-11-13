@@ -213,13 +213,13 @@ const StorageUnitsComponent = (props: CaseBuilderSectionProps) => {
   return (
     <div>
       <SectionHeader title="Storage units">
-        <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
+        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
         <SectionButton
           icon={faDownload}
           tooltip="Download"
           onClick={onDownload}
         />
-        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
+        <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
       </SectionHeader>
       <DataTable
         onRowDeleted={onDelete}

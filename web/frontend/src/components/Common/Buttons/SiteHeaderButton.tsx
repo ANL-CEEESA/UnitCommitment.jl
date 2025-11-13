@@ -5,13 +5,17 @@
  */
 
 import styles from "./SiteHeaderButton.module.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
 
 function SiteHeaderButton({
   title,
+  icon,
   onClick,
   variant = "light",
 }: {
   title: string;
+  icon: IconDefinition;
   onClick?: () => void;
   variant?: "light" | "primary";
 }) {
@@ -20,9 +24,10 @@ function SiteHeaderButton({
   return (
     <button
       className={`${styles.SiteHeaderButton} ${variantClass}`}
+      title={title}
       onClick={onClick}
     >
-      {title}
+      <FontAwesomeIcon icon={icon} />
     </button>
   );
 }
