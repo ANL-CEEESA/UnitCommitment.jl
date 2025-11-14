@@ -71,7 +71,7 @@
 .tabulator-row .tabulator-cell.tabulator-editing {
   border: 0;
   padding: 0 4px;
-  background-color: #cee;
+  background-color: color-mix(in hsl, #fff, var(--primary) 50%);
 }
 
 .tabulator-row .tabulator-cell.tabulator-editing input {

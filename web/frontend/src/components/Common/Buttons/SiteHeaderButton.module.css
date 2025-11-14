@@ -36,7 +36,7 @@
 
 .light {
   color: var(--contrast-80);
-  background: linear-gradient(var(--contrast-0) 25%, var(--contrast-10) 100%);
+  background-color: var(--contrast-0)
 }
 
 .light:hover {
@@ -49,11 +49,13 @@
 
 .primary {
   color: white;
-  background: linear-gradient(var(--primary) 25%, color-mix(in hsl, #000, var(--primary) 90%) 100%);
+  border-color: color-mix(in hsl, #000, var(--primary) 90%);
+  background-color: var(--primary);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .primary:hover {
-  background: color-mix(in hsl, #fff, var(--primary) 90%);
+  background: color-mix(in hsl, #000, var(--primary) 95%);
 }
 
 .primary:active {

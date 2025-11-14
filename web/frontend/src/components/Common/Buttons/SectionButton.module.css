@@ -7,12 +7,12 @@
 .SectionButton {
   height: 48px;
   width: 48px;
-  font-size: 16px;
+  font-size: 14px;
   border: 0;
   background-color: transparent;
   margin: 8px 0 8px 0px;
   cursor: pointer;
-  color: var(--contrast-60);
+  color: var(--contrast-80);
 }
 
 .SectionButton:hover {
@@ -22,5 +22,5 @@
 }
 
 .SectionButton:active {
-  background-color: var(--contrast-60);
+  background-color: var(--contrast-80);
 }
