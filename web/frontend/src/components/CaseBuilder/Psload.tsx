@@ -9,7 +9,7 @@ import DataTable, {
   generateCsv,
   generateTableColumns,
   generateTableData,
-  parseCsv,
+  parseCsv
 } from "../Common/Forms/DataTable";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
 import { useRef } from "react";
@@ -17,18 +17,14 @@ import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { ValidationError } from "../../core/Data/validate";
 import SectionHeader from "../Common/SectionHeader/SectionHeader";
 import SectionButton from "../Common/Buttons/SectionButton";
-import {
-  faDownload,
-  faPlus,
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { UnitCommitmentScenario } from "../../core/Data/types";
 import { ColumnDefinition } from "tabulator-tables";
 import {
   changePriceSensitiveLoadData,
   createPriceSensitiveLoad,
   deletePriceSensitiveLoad,
-  renamePriceSensitiveLoad,
+  renamePriceSensitiveLoad
 } from "../../core/Operations/psloadOps";
 import { offerDownload } from "../Common/io";
 
@@ -70,13 +66,13 @@ export const generatePriceSensitiveLoadsData = (
 const PriceSensitiveLoadsComponent = (props: CaseBuilderSectionProps) => {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
-  const onDownload = () => {
+  const onSave = () => {
     const [data, columns] = generatePriceSensitiveLoadsData(props.scenario);
     const csvContents = generateCsv(data, columns);
     offerDownload(csvContents, "text/csv", "psloads.csv");
   };
 
-  const onUpload = () => {
+  const onLoad = () => {
     fileUploadElem.current!.showFilePicker((csv: any) => {
       // Parse provided CSV file
       const [psloads, err] = parseCsv(
@@ -153,11 +149,11 @@ const PriceSensitiveLoadsComponent = (props: CaseBuilderSectionProps) => {
   return (
     <div>
       <SectionHeader title="Price-sensitive loads">
-        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
+        <SectionButton icon={faUpload} tooltip="Load" onClick={onLoad} />
         <SectionButton
           icon={faDownload}
-          tooltip="Download"
-          onClick={onDownload}
+          tooltip="Save"
+          onClick={onSave}
         />
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
       </SectionHeader>

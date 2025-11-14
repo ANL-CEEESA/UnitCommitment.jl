@@ -48,13 +48,13 @@ export const generateBusesData = (
 function BusesComponent(props: CaseBuilderSectionProps) {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
-  const onDownload = () => {
+  const onSave = () => {
     const [data, columns] = generateBusesData(props.scenario);
     const csvContents = generateCsv(data, columns);
     offerDownload(csvContents, "text/csv", "buses.csv");
   };
 
-  const onUpload = () => {
+  const onLoad = () => {
     fileUploadElem.current!.showFilePicker((csvContents: any) => {
       const [newBuses, err] = parseCsv(
         csvContents,
@@ -119,11 +119,11 @@ function BusesComponent(props: CaseBuilderSectionProps) {
   return (
     <div>
       <SectionHeader title="Buses">
-        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
+        <SectionButton icon={faUpload} tooltip="Load" onClick={onLoad} />
         <SectionButton
           icon={faDownload}
-          tooltip="Download"
-          onClick={onDownload}
+          tooltip="Save"
+          onClick={onSave}
         />
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
       </SectionHeader>

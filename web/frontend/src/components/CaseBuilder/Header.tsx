@@ -9,7 +9,7 @@ import SiteHeaderButton from "../Common/Buttons/SiteHeaderButton";
 import { useRef } from "react";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { UnitCommitmentScenario } from "../../core/Data/types";
-import { faDownload, faGear, faRotateLeft, faRotateRight, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faRotateLeft, faRotateRight, faTrash, faUpload } from "@fortawesome/free-solid-svg-icons";
 
 interface HeaderProps {
   onClear: () => void;
@@ -63,7 +63,6 @@ function Header(props: HeaderProps) {
           <SiteHeaderButton
             title="Solve"
             variant="primary"
-            icon={faGear}
             onClick={props.onSolve}
           />
         </div>

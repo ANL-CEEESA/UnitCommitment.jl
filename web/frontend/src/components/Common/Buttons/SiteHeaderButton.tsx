@@ -16,7 +16,7 @@ function SiteHeaderButton({
   disabled = false,
 }: {
   title: string;
-  icon: IconDefinition;
+  icon?: IconDefinition;
   onClick?: () => void;
   variant?: "light" | "primary";
   disabled?: boolean;
@@ -31,7 +31,7 @@ function SiteHeaderButton({
       onClick={onClick}
       disabled={disabled}
     >
-      <FontAwesomeIcon icon={icon} />
+      {!icon ? title : <FontAwesomeIcon icon={icon} />}
     </button>
   );
 }

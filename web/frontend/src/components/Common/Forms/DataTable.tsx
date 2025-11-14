@@ -5,18 +5,10 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import {
-  CellComponent,
-  ColumnDefinition,
-  TabulatorFull as Tabulator,
-} from "tabulator-tables";
+import { CellComponent, ColumnDefinition, TabulatorFull as Tabulator } from "tabulator-tables";
 import { ValidationError } from "../../../core/Data/validate";
 import Papa from "papaparse";
-import {
-  parseBool,
-  parseNullableNumber,
-  parseNumber,
-} from "../../../core/Operations/commonOps";
+import { parseBool, parseNullableNumber, parseNumber } from "../../../core/Operations/commonOps";
 import { UnitCommitmentScenario } from "../../../core/Data/types";
 import { getContingencyTransmissionLines } from "../../../core/Operations/transmissionOps";
 

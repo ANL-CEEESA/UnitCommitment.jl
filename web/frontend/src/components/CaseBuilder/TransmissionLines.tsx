@@ -6,17 +6,13 @@
 
 import SectionHeader from "../Common/SectionHeader/SectionHeader";
 import SectionButton from "../Common/Buttons/SectionButton";
-import {
-  faDownload,
-  faPlus,
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
 import DataTable, {
   ColumnSpec,
   generateCsv,
   generateTableColumns,
   generateTableData,
-  parseCsv,
+  parseCsv
 } from "../Common/Forms/DataTable";
 import { ColumnDefinition } from "tabulator-tables";
 import FileUploadElement from "../Common/Buttons/FileUploadElement";
@@ -28,7 +24,7 @@ import {
   createTransmissionLine,
   deleteTransmissionLine,
   rebuildContingencies,
-  renameTransmissionLine,
+  renameTransmissionLine
 } from "../../core/Operations/transmissionOps";
 import { offerDownload } from "../Common/io";
 import { UnitCommitmentScenario } from "../../core/Data/types";
@@ -91,13 +87,13 @@ const generateTransmissionLinesData = (
 const TransmissionLinesComponent = (props: CaseBuilderSectionProps) => {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
-  const onDownload = () => {
+  const onSave = () => {
     const [data, columns] = generateTransmissionLinesData(props.scenario);
     const csvContents = generateCsv(data, columns);
     offerDownload(csvContents, "text/csv", "transmission.csv");
   };
 
-  const onUpload = () => {
+  const onLoad = () => {
     fileUploadElem.current!.showFilePicker((csv: any) => {
       // Parse the CSV data
       const [newLines, err] = parseCsv(
@@ -181,11 +177,11 @@ const TransmissionLinesComponent = (props: CaseBuilderSectionProps) => {
   return (
     <div>
       <SectionHeader title="Transmission lines">
-        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
+        <SectionButton icon={faUpload} tooltip="Load" onClick={onLoad} />
         <SectionButton
           icon={faDownload}
-          tooltip="Download"
-          onClick={onDownload}
+          tooltip="Save"
+          onClick={onSave}
         />
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
       </SectionHeader>

@@ -9,7 +9,7 @@ import DataTable, {
   generateCsv,
   generateTableColumns,
   generateTableData,
-  parseCsv,
+  parseCsv
 } from "../Common/Forms/DataTable";
 import { CaseBuilderSectionProps } from "./CaseBuilder";
 import { useRef } from "react";
@@ -17,24 +17,16 @@ import FileUploadElement from "../Common/Buttons/FileUploadElement";
 import { ValidationError } from "../../core/Data/validate";
 import SectionHeader from "../Common/SectionHeader/SectionHeader";
 import SectionButton from "../Common/Buttons/SectionButton";
-import {
-  faDownload,
-  faPlus,
-  faUpload,
-} from "@fortawesome/free-solid-svg-icons";
+import { faDownload, faPlus, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { ColumnDefinition } from "tabulator-tables";
 import { offerDownload } from "../Common/io";
 import {
   changeThermalUnitData,
   createThermalUnit,
   deleteGenerator,
-  renameGenerator,
+  renameGenerator
 } from "../../core/Operations/generatorOps";
-import {
-  getProfiledGenerators,
-  getThermalGenerators,
-  UnitCommitmentScenario,
-} from "../../core/Data/types";
+import { getProfiledGenerators, getThermalGenerators, UnitCommitmentScenario } from "../../core/Data/types";
 
 export const ThermalUnitsColumnSpec: ColumnSpec[] = [
   {
@@ -158,13 +150,13 @@ export const parseThermalUnitsCsv = (
 const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
   const fileUploadElem = useRef<FileUploadElement>(null);
 
-  const onDownload = () => {
+  const onSave = () => {
     const [data, columns] = generateThermalUnitsData(props.scenario);
     const csvContents = generateCsv(data, columns);
     offerDownload(csvContents, "text/csv", "thermal_units.csv");
   };
 
-  const onUpload = () => {
+  const onLoad = () => {
     fileUploadElem.current!.showFilePicker((csv: any) => {
       const [newScenario, err] = parseThermalUnitsCsv(csv, props.scenario);
       if (err) {
@@ -229,11 +221,11 @@ const ThermalUnitsComponent = (props: CaseBuilderSectionProps) => {
   return (
     <div>
       <SectionHeader title="Thermal units">
-        <SectionButton icon={faUpload} tooltip="Upload" onClick={onUpload} />
+        <SectionButton icon={faUpload} tooltip="Load" onClick={onLoad} />
         <SectionButton
           icon={faDownload}
-          tooltip="Download"
-          onClick={onDownload}
+          tooltip="Save"
+          onClick={onSave}
         />
         <SectionButton icon={faPlus} tooltip="Add" onClick={onAdd} />
       </SectionHeader>
