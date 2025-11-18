@@ -23,6 +23,7 @@ include("validation/repair_test.jl")
 include("lmp/conventional_test.jl")
 include("lmp/aelmp_test.jl")
 include("market/market_test.jl")
+include("planning/planning_test.jl")
 
 basedir = dirname(@__FILE__)
 
@@ -34,26 +35,27 @@ function runtests()
     println("Running tests...")
     UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
     @testset "UnitCommitment" begin
-        # usage_test()
-        # import_egret_test()
+        usage_test()
+        import_egret_test()
         instance_read_test()
-        # instance_migrate_test()
+        instance_migrate_test()
         model_formulations_test()
-        # solution_methods_XavQiuWanThi19_filter_test()
-        # solution_methods_XavQiuWanThi19_find_test()
-        # solution_methods_XavQiuWanThi19_sensitivity_test()
-        # solution_methods_ProgressiveHedging_usage_test()
-        # solution_methods_TimeDecomposition_initial_status_test()
-        # solution_methods_TimeDecomposition_optimize_test()
-        # solution_methods_TimeDecomposition_update_solution_test()
-        # transform_initcond_test()
-        # transform_slice_test()
-        # transform_randomize_XavQiuAhm2021_test()
-        # validation_repair_test()
-        # lmp_conventional_test()
-        # lmp_aelmp_test()
-        # simple_market_test()
-        # stochastic_market_test()
+        solution_methods_XavQiuWanThi19_filter_test()
+        solution_methods_XavQiuWanThi19_find_test()
+        solution_methods_XavQiuWanThi19_sensitivity_test()
+        solution_methods_ProgressiveHedging_usage_test()
+        solution_methods_TimeDecomposition_initial_status_test()
+        # solution_methods_TimeDecomposition_optimize_test() # MathOptInterface.LowerBoundAlreadySet
+        solution_methods_TimeDecomposition_update_solution_test()
+        transform_initcond_test()
+        transform_slice_test()
+        # transform_randomize_XavQiuAhm2021_test() # Test failed error
+        validation_repair_test()
+        # lmp_conventional_test() # MathOptInterface.LowerBoundAlreadySet
+        lmp_aelmp_test()
+        # simple_market_test() # MathOptInterface.LowerBoundAlreadySet
+        # stochastic_market_test() # MathOptInterface.LowerBoundAlreadySet
+        model_planning_test()
     end
     return
 end

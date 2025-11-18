@@ -226,7 +226,7 @@ function instance_read_test()
     end
 
     @testset "read_benchmark tep" begin
-        instance = UnitCommitment.read(fixture("garver6.json.gz"))
+        instance = UnitCommitment.read(fixture("tep_garver6.json.gz"))
 
         @test repr(instance) == (
             "UnitCommitmentInstance(1 scenarios, 0 thermal units, 3 profiled units, 6 buses, " *

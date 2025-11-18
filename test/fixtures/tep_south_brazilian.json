@@ -1,0 +1,1207 @@
+{
+    "Parameters": {
+        "Version": "0.4",
+        "Time horizon (h)": 1
+    },
+    "Buses": {
+        "b1": {
+            "Load (MW)": 0.0
+        },
+        "b2": {
+            "Load (MW)": 443.1
+        },
+        "b3": {
+            "Load (MW)": 0.0
+        },
+        "b4": {
+            "Load (MW)": 300.7
+        },
+        "b5": {
+            "Load (MW)": 238.0
+        },
+        "b6": {
+            "Load (MW)": 0.0
+        },
+        "b7": {
+            "Load (MW)": 0.0
+        },
+        "b8": {
+            "Load (MW)": 72.2
+        },
+        "b9": {
+            "Load (MW)": 0.0
+        },
+        "b10": {
+            "Load (MW)": 0.0
+        },
+        "b11": {
+            "Load (MW)": 0.0
+        },
+        "b12": {
+            "Load (MW)": 511.9
+        },
+        "b13": {
+            "Load (MW)": 185.8
+        },
+        "b14": {
+            "Load (MW)": 0.0
+        },
+        "b15": {
+            "Load (MW)": 0.0
+        },
+        "b16": {
+            "Load (MW)": 0.0
+        },
+        "b17": {
+            "Load (MW)": 0.0
+        },
+        "b18": {
+            "Load (MW)": 0.0
+        },
+        "b19": {
+            "Load (MW)": 0.0
+        },
+        "b20": {
+            "Load (MW)": 1091.2
+        },
+        "b21": {
+            "Load (MW)": 0.0
+        },
+        "b22": {
+            "Load (MW)": 81.9
+        },
+        "b23": {
+            "Load (MW)": 458.1
+        },
+        "b24": {
+            "Load (MW)": 478.2
+        },
+        "b25": {
+            "Load (MW)": 0.0
+        },
+        "b26": {
+            "Load (MW)": 231.9
+        },
+        "b27": {
+            "Load (MW)": 0.0
+        },
+        "b28": {
+            "Load (MW)": 0.0
+        },
+        "b29": {
+            "Load (MW)": 0.0
+        },
+        "b30": {
+            "Load (MW)": 0.0
+        },
+        "b31": {
+            "Load (MW)": 0.0
+        },
+        "b32": {
+            "Load (MW)": 0.0
+        },
+        "b33": {
+            "Load (MW)": 229.1
+        },
+        "b34": {
+            "Load (MW)": 0.0
+        },
+        "b35": {
+            "Load (MW)": 216.0
+        },
+        "b36": {
+            "Load (MW)": 90.1
+        },
+        "b37": {
+            "Load (MW)": 0.0
+        },
+        "b38": {
+            "Load (MW)": 216.0
+        },
+        "b39": {
+            "Load (MW)": 0.0
+        },
+        "b40": {
+            "Load (MW)": 262.1
+        },
+        "b41": {
+            "Load (MW)": 0.0
+        },
+        "b42": {
+            "Load (MW)": 1607.9
+        },
+        "b43": {
+            "Load (MW)": 0.0
+        },
+        "b44": {
+            "Load (MW)": 79.1
+        },
+        "b45": {
+            "Load (MW)": 86.7
+        },
+        "b46": {
+            "Load (MW)": 0.0
+        }
+    },
+    "Generators": {
+        "gen14": {
+            "Bus": "b14",
+            "Type": "Profiled",
+            "Maximum power (MW)": 1257.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen16": {
+            "Bus": "b16",
+            "Type": "Profiled",
+            "Maximum power (MW)": 2000.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen17": {
+            "Bus": "b17",
+            "Type": "Profiled",
+            "Maximum power (MW)": 1050.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen19": {
+            "Bus": "b19",
+            "Type": "Profiled",
+            "Maximum power (MW)": 1670.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen27": {
+            "Bus": "b27",
+            "Type": "Profiled",
+            "Maximum power (MW)": 220.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen28": {
+            "Bus": "b28",
+            "Type": "Profiled",
+            "Maximum power (MW)": 800.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen31": {
+            "Bus": "b31",
+            "Type": "Profiled",
+            "Maximum power (MW)": 700.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen32": {
+            "Bus": "b32",
+            "Type": "Profiled",
+            "Maximum power (MW)": 500.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen34": {
+            "Bus": "b34",
+            "Type": "Profiled",
+            "Maximum power (MW)": 748.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen37": {
+            "Bus": "b37",
+            "Type": "Profiled",
+            "Maximum power (MW)": 300.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen39": {
+            "Bus": "b39",
+            "Type": "Profiled",
+            "Maximum power (MW)": 600.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen46": {
+            "Bus": "b46",
+            "Type": "Profiled",
+            "Maximum power (MW)": 700.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        }
+    },
+    "Transmission lines": {
+        "l1": {
+            "Source bus": "b1",
+            "Target bus": "b7",
+            "Susceptance (S)": 16.233766233766232,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l1": {
+            "Source bus": "b1",
+            "Target bus": "b7",
+            "Susceptance (S)": 16.233766233766232,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 4349000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l2": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 9.389671361502348,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "l3": {
+            "Source bus": "b4",
+            "Target bus": "b9",
+            "Susceptance (S)": 10.822510822510823,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l2": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 9.389671361502348,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 7076000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l3": {
+            "Source bus": "b4",
+            "Target bus": "b9",
+            "Susceptance (S)": 10.822510822510823,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6217000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l4": {
+            "Source bus": "b5",
+            "Target bus": "b9",
+            "Susceptance (S)": 8.525149190110827,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l4": {
+            "Source bus": "b5",
+            "Target bus": "b9",
+            "Susceptance (S)": 8.525149190110827,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 7732000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l5": {
+            "Source bus": "b5",
+            "Target bus": "b8",
+            "Susceptance (S)": 8.8339222614841,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l5": {
+            "Source bus": "b5",
+            "Target bus": "b8",
+            "Susceptance (S)": 8.8339222614841,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 7480000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l6": {
+            "Source bus": "b7",
+            "Target bus": "b8",
+            "Susceptance (S)": 9.775171065493646,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l6": {
+            "Source bus": "b7",
+            "Target bus": "b8",
+            "Susceptance (S)": 9.775171065493646,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6823000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l7": {
+            "Source bus": "b4",
+            "Target bus": "b5",
+            "Susceptance (S)": 17.6678445229682,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "l8": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 30.8641975308642,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l7": {
+            "Source bus": "b4",
+            "Target bus": "b5",
+            "Susceptance (S)": 17.6678445229682,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 4046000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l9": {
+            "Source bus": "b8",
+            "Target bus": "b13",
+            "Susceptance (S)": 7.4183976261127595,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l8": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 30.8641975308642,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 2581000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l9": {
+            "Source bus": "b8",
+            "Target bus": "b13",
+            "Susceptance (S)": 7.4183976261127595,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 8793000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l10": {
+            "Source bus": "b9",
+            "Target bus": "b14",
+            "Susceptance (S)": 5.694760820045558,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 0.0
+        },
+        "l11": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 13.513513513513514,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l10": {
+            "Source bus": "b9",
+            "Target bus": "b14",
+            "Susceptance (S)": 5.694760820045558,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 11267000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l12": {
+            "Source bus": "b14",
+            "Target bus": "b18",
+            "Susceptance (S)": 6.605019815059445,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l11": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 13.513513513513514,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 5106000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l13": {
+            "Source bus": "b13",
+            "Target bus": "b18",
+            "Susceptance (S)": 5.54016620498615,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l12": {
+            "Source bus": "b14",
+            "Target bus": "b18",
+            "Susceptance (S)": 6.605019815059445,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 9803000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l13": {
+            "Source bus": "b13",
+            "Target bus": "b18",
+            "Susceptance (S)": 5.54016620498615,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 11570000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l14": {
+            "Source bus": "b13",
+            "Target bus": "b20",
+            "Susceptance (S)": 9.319664492078285,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l14": {
+            "Source bus": "b13",
+            "Target bus": "b20",
+            "Susceptance (S)": 9.319664492078285,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 7126000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l15": {
+            "Source bus": "b18",
+            "Target bus": "b20",
+            "Susceptance (S)": 5.007511266900351,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l15": {
+            "Source bus": "b18",
+            "Target bus": "b20",
+            "Susceptance (S)": 5.007511266900351,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 12732000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l16": {
+            "Source bus": "b19",
+            "Target bus": "b21",
+            "Susceptance (S)": 35.97122302158274,
+            "Normal flow limit (MW)": 1500.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l16": {
+            "Source bus": "b19",
+            "Target bus": "b21",
+            "Susceptance (S)": 35.97122302158274,
+            "Normal flow limit (MW)": 1500.0,
+            "Investment cost ($)": 32632000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l17": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 128.2051282051282,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l17": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 128.2051282051282,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 10505000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l18": {
+            "Source bus": "b17",
+            "Target bus": "b19",
+            "Susceptance (S)": 163.93442622950818,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l18": {
+            "Source bus": "b17",
+            "Target bus": "b19",
+            "Susceptance (S)": 163.93442622950818,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 8715000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l19": {
+            "Source bus": "b14",
+            "Target bus": "b26",
+            "Susceptance (S)": 6.195786864931847,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l19": {
+            "Source bus": "b14",
+            "Target bus": "b26",
+            "Susceptance (S)": 6.195786864931847,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 10409000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l20": {
+            "Source bus": "b14",
+            "Target bus": "b22",
+            "Susceptance (S)": 11.904761904761903,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l20": {
+            "Source bus": "b14",
+            "Target bus": "b22",
+            "Susceptance (S)": 11.904761904761903,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 5712000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l21": {
+            "Source bus": "b22",
+            "Target bus": "b26",
+            "Susceptance (S)": 12.658227848101266,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l21": {
+            "Source bus": "b22",
+            "Target bus": "b26",
+            "Susceptance (S)": 12.658227848101266,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 5409000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l22": {
+            "Source bus": "b20",
+            "Target bus": "b23",
+            "Susceptance (S)": 10.729613733905579,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "l23": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 12.919896640826874,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l22": {
+            "Source bus": "b20",
+            "Target bus": "b23",
+            "Susceptance (S)": 10.729613733905579,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6268000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l24": {
+            "Source bus": "b26",
+            "Target bus": "b27",
+            "Susceptance (S)": 12.01923076923077,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l23": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 12.919896640826874,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 5308000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l25": {
+            "Source bus": "b24",
+            "Target bus": "b34",
+            "Susceptance (S)": 6.07164541590771,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l24": {
+            "Source bus": "b26",
+            "Target bus": "b27",
+            "Susceptance (S)": 12.01923076923077,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 5662000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l25": {
+            "Source bus": "b24",
+            "Target bus": "b34",
+            "Susceptance (S)": 6.07164541590771,
+            "Normal flow limit (MW)": 220.0,
+            "Investment cost ($)": 10611000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l26": {
+            "Source bus": "b24",
+            "Target bus": "b33",
+            "Susceptance (S)": 6.906077348066297,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l26": {
+            "Source bus": "b24",
+            "Target bus": "b33",
+            "Susceptance (S)": 6.906077348066297,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 9399000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l27": {
+            "Source bus": "b33",
+            "Target bus": "b34",
+            "Susceptance (S)": 7.905138339920948,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l27": {
+            "Source bus": "b33",
+            "Target bus": "b34",
+            "Susceptance (S)": 7.905138339920948,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 8288000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l28": {
+            "Source bus": "b27",
+            "Target bus": "b36",
+            "Susceptance (S)": 10.92896174863388,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l28": {
+            "Source bus": "b27",
+            "Target bus": "b36",
+            "Susceptance (S)": 10.92896174863388,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6167000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l29": {
+            "Source bus": "b27",
+            "Target bus": "b38",
+            "Susceptance (S)": 4.8076923076923075,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 0.0
+        },
+        "l30": {
+            "Source bus": "b36",
+            "Target bus": "b37",
+            "Susceptance (S)": 9.460737937559129,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l29": {
+            "Source bus": "b27",
+            "Target bus": "b38",
+            "Susceptance (S)": 4.8076923076923075,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 13237000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l30": {
+            "Source bus": "b36",
+            "Target bus": "b37",
+            "Susceptance (S)": 9.460737937559129,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 7025000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l31": {
+            "Source bus": "b34",
+            "Target bus": "b35",
+            "Susceptance (S)": 20.366598778004075,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "l32": {
+            "Source bus": "b35",
+            "Target bus": "b38",
+            "Susceptance (S)": 5.05050505050505,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l31": {
+            "Source bus": "b34",
+            "Target bus": "b35",
+            "Susceptance (S)": 20.366598778004075,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 3591000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l32": {
+            "Source bus": "b35",
+            "Target bus": "b38",
+            "Susceptance (S)": 5.05050505050505,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 12631000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l33": {
+            "Source bus": "b37",
+            "Target bus": "b39",
+            "Susceptance (S)": 35.3356890459364,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l33": {
+            "Source bus": "b37",
+            "Target bus": "b39",
+            "Susceptance (S)": 35.3356890459364,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 2329000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l34": {
+            "Source bus": "b37",
+            "Target bus": "b40",
+            "Susceptance (S)": 7.8064012490242005,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l34": {
+            "Source bus": "b37",
+            "Target bus": "b40",
+            "Susceptance (S)": 7.8064012490242005,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 8389000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l35": {
+            "Source bus": "b37",
+            "Target bus": "b42",
+            "Susceptance (S)": 4.750593824228028,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l35": {
+            "Source bus": "b37",
+            "Target bus": "b42",
+            "Susceptance (S)": 4.750593824228028,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 13388000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l36": {
+            "Source bus": "b39",
+            "Target bus": "b42",
+            "Susceptance (S)": 4.926108374384236,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 0.0
+        },
+        "l37": {
+            "Source bus": "b40",
+            "Target bus": "b42",
+            "Susceptance (S)": 10.729613733905579,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "l38": {
+            "Source bus": "b38",
+            "Target bus": "b42",
+            "Susceptance (S)": 11.025358324145534,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l36": {
+            "Source bus": "b39",
+            "Target bus": "b42",
+            "Susceptance (S)": 4.926108374384236,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 12934000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l37": {
+            "Source bus": "b40",
+            "Target bus": "b42",
+            "Susceptance (S)": 10.729613733905579,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6268000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l39": {
+            "Source bus": "b32",
+            "Target bus": "b43",
+            "Susceptance (S)": 32.362459546925564,
+            "Normal flow limit (MW)": 1400.0,
+            "Investment cost ($)": 0.0
+        },
+        "l40": {
+            "Source bus": "b44",
+            "Target bus": "b44",
+            "Susceptance (S)": 8.291873963515755,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l38": {
+            "Source bus": "b38",
+            "Target bus": "b42",
+            "Susceptance (S)": 11.025358324145534,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6116000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l39": {
+            "Source bus": "b32",
+            "Target bus": "b43",
+            "Susceptance (S)": 32.362459546925564,
+            "Normal flow limit (MW)": 1400.0,
+            "Investment cost ($)": 35957000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l40": {
+            "Source bus": "b44",
+            "Target bus": "b44",
+            "Susceptance (S)": 8.291873963515755,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 7934000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l41": {
+            "Source bus": "b44",
+            "Target bus": "b45",
+            "Susceptance (S)": 5.364806866952789,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l41": {
+            "Source bus": "b44",
+            "Target bus": "b45",
+            "Susceptance (S)": 5.364806866952789,
+            "Normal flow limit (MW)": 200.0,
+            "Investment cost ($)": 11924000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l42": {
+            "Source bus": "b19",
+            "Target bus": "b32",
+            "Susceptance (S)": 51.282051282051285,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l42": {
+            "Source bus": "b19",
+            "Target bus": "b32",
+            "Susceptance (S)": 51.282051282051285,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 23423000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l43": {
+            "Source bus": "b46",
+            "Target bus": "b19",
+            "Susceptance (S)": 45.04504504504504,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l43": {
+            "Source bus": "b46",
+            "Target bus": "b19",
+            "Susceptance (S)": 45.04504504504504,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 26365000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l44": {
+            "Source bus": "b46",
+            "Target bus": "b16",
+            "Susceptance (S)": 49.26108374384237,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l44": {
+            "Source bus": "b46",
+            "Target bus": "b16",
+            "Susceptance (S)": 49.26108374384237,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 24319000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l45": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l45": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l46": {
+            "Source bus": "b20",
+            "Target bus": "b21",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l46": {
+            "Source bus": "b20",
+            "Target bus": "b21",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "l47": {
+            "Source bus": "b42",
+            "Target bus": "b43",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_l47": {
+            "Source bus": "b42",
+            "Target bus": "b43",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l48": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 11.337868480725623,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 5965000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l49": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 26.7379679144385,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 2884000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l50": {
+            "Source bus": "b46",
+            "Target bus": "b10",
+            "Susceptance (S)": 123.4567901234568,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 10889000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l51": {
+            "Source bus": "b4",
+            "Target bus": "b11",
+            "Susceptance (S)": 4.4523597506678545,
+            "Normal flow limit (MW)": 240.0,
+            "Investment cost ($)": 12447000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l52": {
+            "Source bus": "b5",
+            "Target bus": "b11",
+            "Susceptance (S)": 10.92896174863388,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6167000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l53": {
+            "Source bus": "b46",
+            "Target bus": "b6",
+            "Susceptance (S)": 78.125,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 16005000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l54": {
+            "Source bus": "b46",
+            "Target bus": "b3",
+            "Susceptance (S)": 49.26108374384237,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 24319000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l55": {
+            "Source bus": "b16",
+            "Target bus": "b28",
+            "Susceptance (S)": 45.04504504504504,
+            "Normal flow limit (MW)": 1800.0,
+            "Investment cost ($)": 26365000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l56": {
+            "Source bus": "b16",
+            "Target bus": "b32",
+            "Susceptance (S)": 32.154340836012864,
+            "Normal flow limit (MW)": 1400.0,
+            "Investment cost ($)": 36213000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l57": {
+            "Source bus": "b17",
+            "Target bus": "b32",
+            "Susceptance (S)": 43.10344827586207,
+            "Normal flow limit (MW)": 1700.0,
+            "Investment cost ($)": 27516000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l58": {
+            "Source bus": "b19",
+            "Target bus": "b25",
+            "Susceptance (S)": 30.769230769230766,
+            "Normal flow limit (MW)": 1400.0,
+            "Investment cost ($)": 37748000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l59": {
+            "Source bus": "b21",
+            "Target bus": "b25",
+            "Susceptance (S)": 57.4712643678161,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 21121000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l60": {
+            "Source bus": "b25",
+            "Target bus": "b32",
+            "Susceptance (S)": 31.347962382445143,
+            "Normal flow limit (MW)": 1400.0,
+            "Investment cost ($)": 37109000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l61": {
+            "Source bus": "b31",
+            "Target bus": "b32",
+            "Susceptance (S)": 217.3913043478261,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 7052000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l62": {
+            "Source bus": "b28",
+            "Target bus": "b31",
+            "Susceptance (S)": 188.67924528301887,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 7819000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l63": {
+            "Source bus": "b28",
+            "Target bus": "b30",
+            "Susceptance (S)": 172.41379310344828,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 8331000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l64": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 10.02004008016032,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 6672000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l65": {
+            "Source bus": "b26",
+            "Target bus": "b29",
+            "Susceptance (S)": 18.484288354898336,
+            "Normal flow limit (MW)": 270.0,
+            "Investment cost ($)": 3894000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l66": {
+            "Source bus": "b28",
+            "Target bus": "b41",
+            "Susceptance (S)": 29.498525073746315,
+            "Normal flow limit (MW)": 1300.0,
+            "Investment cost ($)": 39283000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l67": {
+            "Source bus": "b28",
+            "Target bus": "b43",
+            "Susceptance (S)": 24.630541871921185,
+            "Normal flow limit (MW)": 1200.0,
+            "Investment cost ($)": 46701000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l68": {
+            "Source bus": "b31",
+            "Target bus": "b41",
+            "Susceptance (S)": 35.97122302158274,
+            "Normal flow limit (MW)": 1500.0,
+            "Investment cost ($)": 32632000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l69": {
+            "Source bus": "b32",
+            "Target bus": "b41",
+            "Susceptance (S)": 32.362459546925564,
+            "Normal flow limit (MW)": 1400.0,
+            "Investment cost ($)": 35957000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l70": {
+            "Source bus": "b41",
+            "Target bus": "b43",
+            "Susceptance (S)": 71.94244604316548,
+            "Normal flow limit (MW)": 2000.0,
+            "Investment cost ($)": 17284000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l71": {
+            "Source bus": "b40",
+            "Target bus": "b45",
+            "Susceptance (S)": 4.535147392290249,
+            "Normal flow limit (MW)": 180.0,
+            "Investment cost ($)": 13994000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l72": {
+            "Source bus": "b15",
+            "Target bus": "b16",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l73": {
+            "Source bus": "b46",
+            "Target bus": "b11",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l74": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l75": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l76": {
+            "Source bus": "b40",
+            "Target bus": "b41",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l77": {
+            "Source bus": "b2",
+            "Target bus": "b3",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l78": {
+            "Source bus": "b5",
+            "Target bus": "b6",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        },
+        "new_l79": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 80.0,
+            "Normal flow limit (MW)": 600.0,
+            "Investment cost ($)": 8178000.0,
+            "Max number of parallel circuits": 2
+        }
+    }
+}

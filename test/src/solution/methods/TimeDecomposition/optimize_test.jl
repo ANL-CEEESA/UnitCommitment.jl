@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, DataStructures, Cbc, HiGHS
+using UnitCommitment, DataStructures, SCIP, HiGHS
 import UnitCommitment: TimeDecomposition, ConventionalLMP
 
 function solution_methods_TimeDecomposition_optimize_test()
@@ -12,10 +12,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
-            ),
+            optimizer = optimizer_with_attributes(SCIP.Optimizer),
         )
         @test length(solution["Thermal production (MW)"]["g1"]) == 4
         @test length(solution["Is on"]["g2"]) == 4
@@ -46,10 +43,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
-            ),
+            optimizer = optimizer_with_attributes(SCIP.Optimizer),
             after_build = after_build,
             after_optimize = after_optimize,
         )
@@ -67,10 +61,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(
-                Cbc.Optimizer,
-                "logLevel" => 0,
-            ),
+            optimizer = optimizer_with_attributes(SCIP.Optimizer),
         )
         @test length(solution["case14"]["Thermal production (MW)"]["g3"]) == 4
         @test length(solution["case14"]["Is on"]["g4"]) == 4

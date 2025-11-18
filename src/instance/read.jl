@@ -325,6 +325,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 startup_categories,
                 unit_reserves,
                 commitment_status,
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
             )
             push!(bus.thermal_units, unit)
             for r in unit_reserves

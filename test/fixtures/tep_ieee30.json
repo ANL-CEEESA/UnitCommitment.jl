@@ -1,0 +1,2988 @@
+{
+    "Parameters": {
+        "Version": "0.4",
+        "Time horizon (h)": 1
+    },
+    "Buses": {
+        "b1": {
+            "Load (MW)": 0.0
+        },
+        "b2": {
+            "Load (MW)": 21.7
+        },
+        "b3": {
+            "Load (MW)": 2.4
+        },
+        "b4": {
+            "Load (MW)": 7.6
+        },
+        "b5": {
+            "Load (MW)": 94.2
+        },
+        "b6": {
+            "Load (MW)": 0.0
+        },
+        "b7": {
+            "Load (MW)": 22.8
+        },
+        "b8": {
+            "Load (MW)": 30.0
+        },
+        "b9": {
+            "Load (MW)": 0.0
+        },
+        "b10": {
+            "Load (MW)": 5.8
+        },
+        "b11": {
+            "Load (MW)": 0.0
+        },
+        "b12": {
+            "Load (MW)": 11.2
+        },
+        "b13": {
+            "Load (MW)": 0.0
+        },
+        "b14": {
+            "Load (MW)": 6.2
+        },
+        "b15": {
+            "Load (MW)": 8.2
+        },
+        "b16": {
+            "Load (MW)": 3.5
+        },
+        "b17": {
+            "Load (MW)": 9.0
+        },
+        "b18": {
+            "Load (MW)": 3.2
+        },
+        "b19": {
+            "Load (MW)": 9.5
+        },
+        "b20": {
+            "Load (MW)": 2.2
+        },
+        "b21": {
+            "Load (MW)": 17.5
+        },
+        "b22": {
+            "Load (MW)": 0.0
+        },
+        "b23": {
+            "Load (MW)": 3.2
+        },
+        "b24": {
+            "Load (MW)": 8.7
+        },
+        "b25": {
+            "Load (MW)": 0.0
+        },
+        "b26": {
+            "Load (MW)": 3.5
+        },
+        "b27": {
+            "Load (MW)": 0.0
+        },
+        "b28": {
+            "Load (MW)": 0.0
+        },
+        "b29": {
+            "Load (MW)": 2.4
+        },
+        "b30": {
+            "Load (MW)": 10.6
+        }
+    },
+    "Generators": {
+        "gen1": {
+            "Bus": "b1",
+            "Type": "Profiled",
+            "Maximum power (MW)": 271.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        },
+        "gen2": {
+            "Bus": "b2",
+            "Type": "Profiled",
+            "Maximum power (MW)": 92.0,
+            "Minimum power (MW)": 0.0,
+            "Cost ($/MW)": 0.0,
+            "Investment cost ($)": 0.0
+        }
+    },
+    "Transmission lines": {
+        "l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 17.391304347826086,
+            "Normal flow limit (MW)": 138.0,
+            "Investment cost ($)": 0.0
+        },
+        "l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 6.053268765133171,
+            "Normal flow limit (MW)": 152.0,
+            "Investment cost ($)": 0.0
+        },
+        "l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 5.757052389176741,
+            "Normal flow limit (MW)": 139.0,
+            "Investment cost ($)": 0.0
+        },
+        "l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 26.38522427440633,
+            "Normal flow limit (MW)": 135.0,
+            "Investment cost ($)": 0.0
+        },
+        "l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 5.042864346949067,
+            "Normal flow limit (MW)": 144.0,
+            "Investment cost ($)": 0.0
+        },
+        "l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 5.672149744753261,
+            "Normal flow limit (MW)": 139.0,
+            "Investment cost ($)": 0.0
+        },
+        "l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 24.154589371980677,
+            "Normal flow limit (MW)": 148.0,
+            "Investment cost ($)": 0.0
+        },
+        "l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 8.620689655172413,
+            "Normal flow limit (MW)": 127.0,
+            "Investment cost ($)": 0.0
+        },
+        "l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 12.195121951219512,
+            "Normal flow limit (MW)": 140.0,
+            "Investment cost ($)": 0.0
+        },
+        "l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 23.809523809523807,
+            "Normal flow limit (MW)": 148.0,
+            "Investment cost ($)": 0.0
+        },
+        "l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 4.8076923076923075,
+            "Normal flow limit (MW)": 142.0,
+            "Investment cost ($)": 0.0
+        },
+        "l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 1.7985611510791366,
+            "Normal flow limit (MW)": 53.0,
+            "Investment cost ($)": 0.0
+        },
+        "l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 4.8076923076923075,
+            "Normal flow limit (MW)": 142.0,
+            "Investment cost ($)": 0.0
+        },
+        "l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 9.090909090909092,
+            "Normal flow limit (MW)": 267.0,
+            "Investment cost ($)": 0.0
+        },
+        "l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 3.90625,
+            "Normal flow limit (MW)": 115.0,
+            "Investment cost ($)": 0.0
+        },
+        "l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 7.142857142857142,
+            "Normal flow limit (MW)": 210.0,
+            "Investment cost ($)": 0.0
+        },
+        "l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 3.907776475185619,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 7.668711656441719,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 5.032712632108707,
+            "Normal flow limit (MW)": 30.0,
+            "Investment cost ($)": 0.0
+        },
+        "l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 5.007511266900351,
+            "Normal flow limit (MW)": 20.0,
+            "Investment cost ($)": 0.0
+        },
+        "l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 5.200208008320333,
+            "Normal flow limit (MW)": 38.0,
+            "Investment cost ($)": 0.0
+        },
+        "l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 4.576659038901602,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 7.739938080495356,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 14.705882352941176,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 4.784688995215311,
+            "Normal flow limit (MW)": 30.0,
+            "Investment cost ($)": 0.0
+        },
+        "l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 11.834319526627219,
+            "Normal flow limit (MW)": 33.0,
+            "Investment cost ($)": 0.0
+        },
+        "l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 13.35113484646195,
+            "Normal flow limit (MW)": 30.0,
+            "Investment cost ($)": 0.0
+        },
+        "l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 6.6711140760507,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 42.37288135593221,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 4.9504950495049505,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 5.58659217877095,
+            "Normal flow limit (MW)": 26.0,
+            "Investment cost ($)": 0.0
+        },
+        "l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 3.7037037037037033,
+            "Normal flow limit (MW)": 29.0,
+            "Investment cost ($)": 0.0
+        },
+        "l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 3.037667071688943,
+            "Normal flow limit (MW)": 27.0,
+            "Investment cost ($)": 0.0
+        },
+        "l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 2.6315789473684212,
+            "Normal flow limit (MW)": 25.0,
+            "Investment cost ($)": 0.0
+        },
+        "l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 4.791566842357451,
+            "Normal flow limit (MW)": 28.0,
+            "Investment cost ($)": 0.0
+        },
+        "l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 2.525252525252525,
+            "Normal flow limit (MW)": 75.0,
+            "Investment cost ($)": 0.0
+        },
+        "l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 2.4078979051288227,
+            "Normal flow limit (MW)": 28.0,
+            "Investment cost ($)": 0.0
+        },
+        "l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 1.6592002654720424,
+            "Normal flow limit (MW)": 28.0,
+            "Investment cost ($)": 0.0
+        },
+        "l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 2.2060445621001543,
+            "Normal flow limit (MW)": 28.0,
+            "Investment cost ($)": 0.0
+        },
+        "l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 140.0,
+            "Investment cost ($)": 0.0
+        },
+        "l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 16.69449081803005,
+            "Normal flow limit (MW)": 149.0,
+            "Investment cost ($)": 0.0
+        },
+        "new_techA_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l3": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l4": {
+            "Source bus": "b3",
+            "Target bus": "b4",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l5": {
+            "Source bus": "b2",
+            "Target bus": "b5",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l6": {
+            "Source bus": "b2",
+            "Target bus": "b6",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l7": {
+            "Source bus": "b4",
+            "Target bus": "b6",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l8": {
+            "Source bus": "b5",
+            "Target bus": "b7",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l9": {
+            "Source bus": "b6",
+            "Target bus": "b7",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l10": {
+            "Source bus": "b6",
+            "Target bus": "b8",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l11": {
+            "Source bus": "b6",
+            "Target bus": "b9",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l12": {
+            "Source bus": "b6",
+            "Target bus": "b10",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l13": {
+            "Source bus": "b9",
+            "Target bus": "b11",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l14": {
+            "Source bus": "b9",
+            "Target bus": "b10",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l15": {
+            "Source bus": "b4",
+            "Target bus": "b12",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l16": {
+            "Source bus": "b12",
+            "Target bus": "b13",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l17": {
+            "Source bus": "b12",
+            "Target bus": "b14",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l18": {
+            "Source bus": "b12",
+            "Target bus": "b15",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l19": {
+            "Source bus": "b12",
+            "Target bus": "b16",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l20": {
+            "Source bus": "b14",
+            "Target bus": "b15",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l21": {
+            "Source bus": "b16",
+            "Target bus": "b17",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l22": {
+            "Source bus": "b15",
+            "Target bus": "b18",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l23": {
+            "Source bus": "b18",
+            "Target bus": "b19",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l24": {
+            "Source bus": "b19",
+            "Target bus": "b20",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l25": {
+            "Source bus": "b10",
+            "Target bus": "b20",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l26": {
+            "Source bus": "b10",
+            "Target bus": "b17",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l27": {
+            "Source bus": "b10",
+            "Target bus": "b21",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l28": {
+            "Source bus": "b10",
+            "Target bus": "b22",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l29": {
+            "Source bus": "b21",
+            "Target bus": "b22",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l30": {
+            "Source bus": "b15",
+            "Target bus": "b23",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l31": {
+            "Source bus": "b22",
+            "Target bus": "b24",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l32": {
+            "Source bus": "b23",
+            "Target bus": "b24",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l33": {
+            "Source bus": "b24",
+            "Target bus": "b25",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l34": {
+            "Source bus": "b25",
+            "Target bus": "b26",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l35": {
+            "Source bus": "b25",
+            "Target bus": "b27",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l36": {
+            "Source bus": "b28",
+            "Target bus": "b27",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l37": {
+            "Source bus": "b27",
+            "Target bus": "b29",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l38": {
+            "Source bus": "b27",
+            "Target bus": "b30",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l39": {
+            "Source bus": "b29",
+            "Target bus": "b30",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l40": {
+            "Source bus": "b8",
+            "Target bus": "b28",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        },
+        "new_techA_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 50,
+            "Investment cost ($)": 8000000.0,
+            "Technology type": "A",
+            "Max number of parallel circuits": 3
+        },
+        "new_techB_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 80,
+            "Investment cost ($)": 10000000.0,
+            "Technology type": "B",
+            "Max number of parallel circuits": 3
+        },
+        "new_techC_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 14.285714285714285,
+            "Normal flow limit (MW)": 100,
+            "Investment cost ($)": 14000000.0,
+            "Technology type": "C",
+            "Max number of parallel circuits": 3
+        },
+        "new_techD_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 120,
+            "Investment cost ($)": 18000000.0,
+            "Technology type": "D",
+            "Max number of parallel circuits": 3
+        },
+        "new_techE_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 7.692307692307692,
+            "Normal flow limit (MW)": 150,
+            "Investment cost ($)": 20000000.0,
+            "Technology type": "E",
+            "Max number of parallel circuits": 3
+        },
+        "new_techF_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 5.88235294117647,
+            "Normal flow limit (MW)": 200,
+            "Investment cost ($)": 25000000.0,
+            "Technology type": "F",
+            "Max number of parallel circuits": 3
+        },
+        "new_techG_l41": {
+            "Source bus": "b6",
+            "Target bus": "b28",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 250,
+            "Investment cost ($)": 30000000.0,
+            "Technology type": "G",
+            "Max number of parallel circuits": 3
+        }
+    }
+}

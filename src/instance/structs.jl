@@ -49,6 +49,7 @@ mutable struct ThermalUnit
     startup_categories::Vector{StartupCategory}
     reserves::Vector{Reserve}
     commitment_status::Vector{Union{Bool,Nothing}}
+    invest::Vector{Float64}
 end
 
 mutable struct TransmissionLine

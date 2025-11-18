@@ -121,6 +121,7 @@ and start-up and shutdown limits.
 | $Z^{\text{pmin}}_{gt}$          | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
 | $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
 | $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
+| $Z^{\text{invest}}_{gt}$         | \$     | Cost to invest unit $g$ at time $t$.                                            |
 | $G^\text{therm}$                |        | Set of thermal generators.                                                                 |
 
 ### Decision variables
@@ -131,6 +132,7 @@ and start-up and shutdown limits.
 | $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`    | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
 | $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`   | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
 | $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`    | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
+| $x^{\text{invest}}_{gt}$       | `invest_thermal[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
 | $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]` | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
 | $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`  | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
 | $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`  | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
@@ -151,6 +153,12 @@ and start-up and shutdown limits.
 
 ```math
 \sum_{g \in G} \sum_{t \in T} \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk} Z^{\text{start}}_{gk}
+```
+
+- Investment costs:
+
+```math
+\sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
 ```
 
 ### Constraints
@@ -287,6 +295,18 @@ max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g}\right\}
 x^{\text{switch-off}}_{g,t+1}
 ```
 
+- Unit cannot be on if not invested (`eq_invest_thermal_on_after_invest[g, t]`):
+
+```math
+x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
+```
+
+- Unit is permanently built once invested (`eq_invest_thermal_nondecreasing[g, t]`):
+
+```math
+x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
+```
+
 ## 3. Profiled generators
 
 A _profiled generator_ is a simplified generator model that can be used to
@@ -304,11 +324,13 @@ much simpler than thermal units.
 | $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$. |
 | $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$. |
 | $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.      |
+| $Z^{\text{invest}}_{gt}$         | \$     | Cost to invest unit $g$ at time $t$.                                            |
 
 ### Decision variables
 
 | Symbol                | JuMP name              | Unit | Description                                                   | Stage |
 | :-------------------- | :--------------------- | :--- | :------------------------------------------------------------ | :---- |
+| $x^{\text{invest}}_{gt}$       | `invest_unit[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
 | $y^\text{prod}_{sgt}$ | `prod_profiled[s,g,t]` | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
@@ -327,6 +349,18 @@ much simpler than thermal units.
 
 ```math
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
+```
+
+- Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
+
+```math
+x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
+```
+
+- Unit generation bounds are zero if not invested (`eq_invest_unit_capacity_upper[s, g, t]` and `eq_invest_unit_capacity_lower[s, g, t]`):
+
+```math
+
 ```
 
 ## 4. Conventional loads
@@ -350,6 +384,7 @@ curtailed, at a penalty.
 
 | Symbol                   | JuMP name        | Unit | Description                                                      | Stage |
 | :----------------------- | :--------------- | :--- | :--------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{gt}$       | `invest_unit[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
 | $y^\text{curtail}_{sbt}$ | `curtail[s,b,t]` | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
