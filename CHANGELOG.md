@@ -11,6 +11,10 @@ All notable changes to this project will be documented in this file.
 [semver]: https://semver.org/spec/v2.0.0.html
 [pkjjl]: https://pkgdocs.julialang.org/v1/compatibility/#compat-pre-1.0
 
+## [0.4.2] - 2025-11-27
+### Fixed
+- KnuOstWat2018: Fixed a bug in `eq_segprod_limit` constraint (#17)
+
 ## [0.4.0] - 2024-05-21
 ### Added
 - Add support for two-stage stochastic problems
