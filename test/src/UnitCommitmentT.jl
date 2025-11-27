@@ -23,6 +23,7 @@ include("validation/repair_test.jl")
 include("lmp/conventional_test.jl")
 include("lmp/aelmp_test.jl")
 include("market/market_test.jl")
+include("regression.jl")
 
 basedir = dirname(@__FILE__)
 
@@ -54,6 +55,7 @@ function runtests()
         lmp_aelmp_test()
         simple_market_test()
         stochastic_market_test()
+        regression_test()
     end
     return
 end
