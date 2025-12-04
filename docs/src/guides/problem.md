@@ -132,7 +132,7 @@ and start-up and shutdown limits.
 | $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`    | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
 | $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`   | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
 | $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`    | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
-| $x^{\text{invest}}_{gt}$       | `invest_thermal[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
+| $x^{\text{invest}}_{gt}$       | `invest_unit[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
 | $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]` | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
 | $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`  | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
 | $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`  | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
@@ -155,7 +155,7 @@ and start-up and shutdown limits.
 \sum_{g \in G} \sum_{t \in T} \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk} Z^{\text{start}}_{gk}
 ```
 
-- Investment costs:
+- (Expansion planning) Investment costs:
 
 ```math
 \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
@@ -295,13 +295,13 @@ max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g}\right\}
 x^{\text{switch-off}}_{g,t+1}
 ```
 
-- Unit cannot be on if not invested (`eq_invest_thermal_on_after_invest[g, t]`):
+- (Expansion planning) Unit cannot be on if not invested (`eq_invest_unit_on_after_invest[g, t]`):
 
 ```math
 x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
 ```
 
-- Unit is permanently built once invested (`eq_invest_thermal_nondecreasing[g, t]`):
+- (Expansion planning) Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
@@ -324,13 +324,11 @@ much simpler than thermal units.
 | $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$. |
 | $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$. |
 | $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.      |
-| $Z^{\text{invest}}_{gt}$         | \$     | Cost to invest unit $g$ at time $t$.                                            |
 
 ### Decision variables
 
 | Symbol                | JuMP name              | Unit | Description                                                   | Stage |
 | :-------------------- | :--------------------- | :--- | :------------------------------------------------------------ | :---- |
-| $x^{\text{invest}}_{gt}$       | `invest_unit[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
 | $y^\text{prod}_{sgt}$ | `prod_profiled[s,g,t]` | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
@@ -343,6 +341,13 @@ much simpler than thermal units.
 \right]
 ```
 
+- (Expansion planning) Investment costs:
+
+```math
+\sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
+```
+
+
 ### Constraints
 
 - Variable bounds:
@@ -351,16 +356,16 @@ much simpler than thermal units.
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
 ```
 
-- Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
+- (Expansion planning) Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
 ```
 
-- Unit generation bounds are zero if not invested (`eq_invest_unit_capacity_upper[s, g, t]` and `eq_invest_unit_capacity_lower[s, g, t]`):
+- (Expansion planning) Unit generation bounds are zero if not invested (`eq_invest_unit_capacity_upper[s, g, t]` and `eq_invest_unit_capacity_lower[s, g, t]`):
 
 ```math
-
+M^{\text{pmin}}_{sgt} x^{\text{invest}}_{gt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt} x^{\text{invest}}_{gt}
 ```
 
 ## 4. Conventional loads
@@ -384,7 +389,6 @@ curtailed, at a penalty.
 
 | Symbol                   | JuMP name        | Unit | Description                                                      | Stage |
 | :----------------------- | :--------------- | :--- | :--------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{gt}$       | `invest_unit[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
 | $y^\text{curtail}_{sbt}$ | `curtail[s,b,t]` | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
 
 ### Objective function terms
@@ -607,6 +611,8 @@ injection at bus $b$.
 | :------------------------ | :---- | :---------------------------------------------------------- |
 | $M^\text{limit}_{slt}$    | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.       |
 | $Z^\text{overflow}_{slt}$ | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$. |
+| $Z^{\text{invest}}_{lt}$         | \$     | Cost to invest line $l$ at time $t$.                                            |
+| $Z^{\text{susceptance}}_{l}$         | p.u.     | Susceptance of line $l$.                                            |
 | $L$                       |       | Set of transmission lines.                                  |
 | $B$                       |       | Set of buses.                                               |
 
@@ -614,9 +620,11 @@ injection at bus $b$.
 
 | Symbol                    | JuMP name              | Unit | Description                                                           | Stage |
 | :------------------------ | :--------------------- | :--- | :-------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$       | `invest_line[l,t]`        | Number of line $l$ invested at or before $t$.                                                       | Integer | 1     |
 | $y^\text{flow}_{slt}$     | _(added on-the-fly)_   | MW   | Flow in line $l$ at time $t$ and scenario $s$.                        | 2     |
 | $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW   | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
 | $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW   | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
+| $\theta_{sbt}$ | `theta[s,b,t]`      | rad   | Phase angle for bus $b$ at time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
 
@@ -628,6 +636,12 @@ injection at bus $b$.
   \right]
 ```
 
+- (Expansion planning) Investment costs:
+
+```math
+\sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{\text{invest}}_{lt} - x^{\text{invest}}_{l,t-1} \right)
+```
+
 ### Constraints
 
 - Power produced equal power consumed (`eq_power_balance[s,t]`):
@@ -636,7 +650,7 @@ injection at bus $b$.
 \sum_{b \in B} \sum_{t \in T} y^\text{inj}_{sbt} = 0
 ```
 
-- Definition of flow (_enforced on-the-fly_):
+- Definition of flow by shift factor (_enforced on-the-fly_):
 
 ```math
 y^\text{flow}_{slt} = \sum_{b \in B} \delta_{sbl} y^\text{inj}_{sbt}
@@ -651,3 +665,17 @@ y^\text{flow}_{slt} = \sum_{b \in B} \delta_{sbl} y^\text{inj}_{sbt}
 \end{align*}
 ```
 
+- (Expansion planning) Definition of flow by phase angle (`eq_invest_line_flow[s,l,t]`): for no investment lines, the investment variable is fixed to 1; for investment lines with max copy of 1, this constraint is linearized. Here $b$ and $b'$ are source bus and target bus of line $l$, respectively.
+
+```math
+y^\text{flow}_{slt} = x^{\text{invest}}_{lt} Z^{\text{susceptance}}_{l} (\theta_{sbt} - \theta_{sb't})
+```
+
+- (Expansion planning) Flow limits (`eq_invest_line_flow_limit_lower[s,l,t]` and `eq_invest_line_flow_limit_upper[s,l,t]`):
+
+```math
+\begin{align*}
+ y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt}\\
+-y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt}
+\end{align*}
+```

@@ -65,10 +65,10 @@ function solution(model::JuMP.Model)::OrderedDict
 	sol = OrderedDict()
 	for sc in instance.scenarios
 		sol[sc.name] = OrderedDict()
-        sol[sc.name]["Net injection (MW)"] =
-            timeseries(model[:net_injection], sc.buses, sc = sc)
-        sol[sc.name]["Load curtail (MW)"] =
-            timeseries(model[:curtail], sc.buses, sc = sc)
+		sol[sc.name]["Net injection (MW)"] =
+			timeseries(model[:net_injection], sc.buses, sc = sc)
+		sol[sc.name]["Load curtail (MW)"] =
+			timeseries(model[:curtail], sc.buses, sc = sc)
 		if !isempty(sc.thermal_units)
 			sol[sc.name]["Thermal production (MW)"] = OrderedDict(
 				g.name => production(g, sc) for g in sc.thermal_units
@@ -84,11 +84,16 @@ function solution(model::JuMP.Model)::OrderedDict
 				timeseries(model[:switch_on], sc.thermal_units)
 			sol[sc.name]["Switch off"] =
 				timeseries(model[:switch_off], sc.thermal_units)
+			sol[sc.name]["Thermal investment status"] = OrderedDict(
+				g.name => [
+					value(model[:invest_unit][g.name, t]) for t in 1:T
+				] for g in sc.thermal_units if g.invest[1] > 0.0
+			)
 		end
 		if !isempty(sc.lines)
 			sol[sc.name]["Line overflow (MW)"] =
 				timeseries(model[:overflow], sc.lines, sc = sc)
-			sol[sc.name]["Lines investment status"] =
+			sol[sc.name]["Line investment status"] =
 				OrderedDict(
 					lm.name => [
 						value(model[:invest_line][lm.name, t]) for t in 1:T
@@ -108,12 +113,11 @@ function solution(model::JuMP.Model)::OrderedDict
 					pu.cost[t] for t in 1:instance.time
 				] for pu in sc.profiled_units
 			)
-			sol[sc.name]["Units investment status"] =
-				OrderedDict(
-					pu.name => [
-                        value(model[:invest_unit][pu.name, t]) for t in 1:T
-                    ] for pu in sc.profiled_units if pu.invest[1] > 0.0
-				)
+			sol[sc.name]["Unit investment status"] = OrderedDict(
+				pu.name => [
+					value(model[:invest_unit][pu.name, t]) for t in 1:T
+				] for pu in sc.profiled_units if pu.invest[1] > 0.0
+			)
 		end
 		if !isempty(sc.storage_units)
 			sol[sc.name]["Storage level (MWh)"] =

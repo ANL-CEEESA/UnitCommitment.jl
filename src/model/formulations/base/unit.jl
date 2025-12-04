@@ -328,33 +328,38 @@ function _add_expansion!(model, g)::Nothing
 		return
 	end
 
-	invest_thermal = _init(model, :invest_thermal)
-	eq_invest_thermal_on_after_invest = _init(model, :eq_invest_thermal_on_after_invest)
-	eq_invest_thermal_nondecreasing = _init(model, :eq_invest_thermal_nondecreasing)
+	invest_unit = _init(model, :invest_unit)
+	if haskey(invest_unit, (g.name, 1))
+		return
+	end
 
-	invest_thermal[g.name, 0] = 0.0
+	eq_invest_unit_on_after_invest = _init(model, :eq_invest_unit_on_after_invest)
+	eq_invest_unit_nondecreasing = _init(model, :eq_invest_unit_nondecreasing)
+
+	invest_unit[g.name, 0] = 0.0
 	is_on = model[:is_on]
 
 	for t in 1:model[:instance].time
 		# Decision variable
-		invest_thermal[g.name, t] = @variable(model, binary = true)
+		invest_unit[g.name, t] = @variable(model, binary = true)
 
 		# Objective function terms
 		add_to_expression!(
 			model[:obj],
-			invest_thermal[g.name, t] - invest_thermal[g.name, t-1],
+			invest_unit[g.name, t] - invest_unit[g.name, t-1],
 			g.invest[t],
 		)
 
 		# Investment constraints
-		eq_invest_thermal_on_after_invest[g.name, t] = @constraint(
+		eq_invest_unit_on_after_invest[g.name, t] = @constraint(
 			model,
-			is_on[g.name, t] <= invest_thermal[g.name, t]
+			is_on[g.name, t] <= invest_unit[g.name, t]
 		)
-		eq_invest_thermal_nondecreasing[g.name, t] = @constraint(
+		eq_invest_unit_nondecreasing[g.name, t] = @constraint(
 			model,
-			invest_thermal[g.name, t-1] <= invest_thermal[g.name, t]
+			invest_unit[g.name, t-1] <= invest_unit[g.name, t]
 		)
+
 
 	end
 	return

@@ -12,11 +12,16 @@ import UnitCommitment:
 
 function _test_plan(
 	; formulation::Formulation = Formulation(transmission = PhaseAngleFormulation()),
-	instances = ["tep_ieee14"],
+	instances = ["tep_garver6"],
 	dump::Bool = false,
+	stochastic::Bool = false,
 )::Nothing
 	for instance_name in instances
-		instance = UnitCommitment.read([fixture("$(instance_name).json"), fixture("$(instance_name).json")]) # add .gz before shipping
+		if stochastic
+			instance = UnitCommitment.read([fixture("$(instance_name).json.gz"), fixture("$(instance_name).json.gz")])
+		else
+			instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
+		end
 		model = UnitCommitment.build_model(
 			instance = instance,
 			formulation = formulation,
@@ -58,7 +63,7 @@ function model_planning_test()
 			_test_plan(instances = ["tep_ieee300"])
 		end
 		@testset "north_brazilian" begin
-			_test_plan(instances = ["tep_north_brazilian"])
+			_test_plan(instances = ["tep_north_brazilian"], dump = true)
 		end
 		@testset "south_brazilian" begin
 			_test_plan(instances = ["tep_south_brazilian"])
@@ -66,23 +71,23 @@ function model_planning_test()
 		@testset "polish2383" begin
 			_test_plan(instances = ["tep_polish2383"])
 		end
-
-		@testset "unitcommitment_ieee14" begin
+		@testset "unitcommitment_ieee24" begin
 			_test_plan(
 				formulation = Formulation(
 					transmission = PhaseAngleFormulation(),
 				),
-				instances = ["tep_ieee14"],
+				instances = ["tep_ieee24_uc"],
+				# dump = true,
 			)
 		end
-
-		@testset "stochastic_ieee14" begin
+		@testset "stochastic_ieee24" begin
 			_test_plan(
 				formulation = Formulation(
 					transmission = PhaseAngleFormulation(),
 				),
-				instances = ["tep_ieee14"],
-				dump = true,
+				instances = ["tep_ieee24"],
+				# dump = true,
+				stochastic = true,
 			)
 		end
 	end

@@ -1,38 +1,42 @@
 {
     "Parameters": {
         "Version": "0.4",
-        "Time horizon (h)": 1
+        "Time horizon (h)": 1,
+        "Power balance penalty ($/MW)": 1000.0,
+        "Scenario name": "s2",
+        "Scenario weight": 1.0,
+        "Operation cost weight": 1.0
     },
     "Buses": {
         "b1": {
-            "Load (MW)": 324.0
+            "Load (MW)": 108.0
         },
         "b2": {
-            "Load (MW)": 291.0
+            "Load (MW)": 97.0
         },
         "b3": {
-            "Load (MW)": 540.0
+            "Load (MW)": 180.0
         },
         "b4": {
-            "Load (MW)": 222.0
+            "Load (MW)": 74.0
         },
         "b5": {
-            "Load (MW)": 213.0
+            "Load (MW)": 71.0
         },
         "b6": {
-            "Load (MW)": 408.0
+            "Load (MW)": 136.0
         },
         "b7": {
-            "Load (MW)": 375.0
+            "Load (MW)": 125.0
         },
         "b8": {
-            "Load (MW)": 513.0
+            "Load (MW)": 171.0
         },
         "b9": {
-            "Load (MW)": 525.0
+            "Load (MW)": 175.0
         },
         "b10": {
-            "Load (MW)": 585.0
+            "Load (MW)": 195.0
         },
         "b11": {
             "Load (MW)": 0.0
@@ -41,28 +45,28 @@
             "Load (MW)": 0.0
         },
         "b13": {
-            "Load (MW)": 795.0
+            "Load (MW)": 265.0
         },
         "b14": {
-            "Load (MW)": 582.0
+            "Load (MW)": 194.0
         },
         "b15": {
-            "Load (MW)": 951.0
+            "Load (MW)": 317.0
         },
         "b16": {
-            "Load (MW)": 300.0
+            "Load (MW)": 100.0
         },
         "b17": {
             "Load (MW)": 0.0
         },
         "b18": {
-            "Load (MW)": 999.0
+            "Load (MW)": 333.0
         },
         "b19": {
-            "Load (MW)": 543.0
+            "Load (MW)": 181.0
         },
         "b20": {
-            "Load (MW)": 384.0
+            "Load (MW)": 128.0
         },
         "b21": {
             "Load (MW)": 0.0
@@ -81,7 +85,7 @@
         "gen1": {
             "Bus": "b1",
             "Type": "Profiled",
-            "Maximum power (MW)": 60.0,
+            "Maximum power (MW)": 20.0,
             "Minimum power (MW)": 16.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -89,7 +93,7 @@
         "gen2": {
             "Bus": "b1",
             "Type": "Profiled",
-            "Maximum power (MW)": 60.0,
+            "Maximum power (MW)": 20.0,
             "Minimum power (MW)": 16.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -97,7 +101,7 @@
         "gen3": {
             "Bus": "b1",
             "Type": "Profiled",
-            "Maximum power (MW)": 228.0,
+            "Maximum power (MW)": 76.0,
             "Minimum power (MW)": 15.2,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -105,7 +109,7 @@
         "gen4": {
             "Bus": "b1",
             "Type": "Profiled",
-            "Maximum power (MW)": 228.0,
+            "Maximum power (MW)": 76.0,
             "Minimum power (MW)": 15.2,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -113,7 +117,7 @@
         "gen5": {
             "Bus": "b2",
             "Type": "Profiled",
-            "Maximum power (MW)": 60.0,
+            "Maximum power (MW)": 20.0,
             "Minimum power (MW)": 16.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -121,7 +125,7 @@
         "gen6": {
             "Bus": "b2",
             "Type": "Profiled",
-            "Maximum power (MW)": 60.0,
+            "Maximum power (MW)": 20.0,
             "Minimum power (MW)": 16.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -129,7 +133,7 @@
         "gen7": {
             "Bus": "b2",
             "Type": "Profiled",
-            "Maximum power (MW)": 228.0,
+            "Maximum power (MW)": 76.0,
             "Minimum power (MW)": 15.2,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -137,7 +141,7 @@
         "gen8": {
             "Bus": "b2",
             "Type": "Profiled",
-            "Maximum power (MW)": 228.0,
+            "Maximum power (MW)": 76.0,
             "Minimum power (MW)": 15.2,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -145,7 +149,7 @@
         "gen9": {
             "Bus": "b7",
             "Type": "Profiled",
-            "Maximum power (MW)": 300.0,
+            "Maximum power (MW)": 100.0,
             "Minimum power (MW)": 25.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -153,7 +157,7 @@
         "gen10": {
             "Bus": "b7",
             "Type": "Profiled",
-            "Maximum power (MW)": 300.0,
+            "Maximum power (MW)": 100.0,
             "Minimum power (MW)": 25.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -161,7 +165,7 @@
         "gen11": {
             "Bus": "b7",
             "Type": "Profiled",
-            "Maximum power (MW)": 300.0,
+            "Maximum power (MW)": 100.0,
             "Minimum power (MW)": 25.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -169,7 +173,7 @@
         "gen12": {
             "Bus": "b13",
             "Type": "Profiled",
-            "Maximum power (MW)": 591.0,
+            "Maximum power (MW)": 197.0,
             "Minimum power (MW)": 69.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -177,7 +181,7 @@
         "gen13": {
             "Bus": "b13",
             "Type": "Profiled",
-            "Maximum power (MW)": 591.0,
+            "Maximum power (MW)": 197.0,
             "Minimum power (MW)": 69.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -185,7 +189,7 @@
         "gen14": {
             "Bus": "b13",
             "Type": "Profiled",
-            "Maximum power (MW)": 591.0,
+            "Maximum power (MW)": 197.0,
             "Minimum power (MW)": 69.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -193,7 +197,7 @@
         "gen15": {
             "Bus": "b15",
             "Type": "Profiled",
-            "Maximum power (MW)": 36.0,
+            "Maximum power (MW)": 12.0,
             "Minimum power (MW)": 2.4,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -201,7 +205,7 @@
         "gen16": {
             "Bus": "b15",
             "Type": "Profiled",
-            "Maximum power (MW)": 36.0,
+            "Maximum power (MW)": 12.0,
             "Minimum power (MW)": 2.4,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -209,7 +213,7 @@
         "gen17": {
             "Bus": "b15",
             "Type": "Profiled",
-            "Maximum power (MW)": 36.0,
+            "Maximum power (MW)": 12.0,
             "Minimum power (MW)": 2.4,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -217,7 +221,7 @@
         "gen18": {
             "Bus": "b15",
             "Type": "Profiled",
-            "Maximum power (MW)": 36.0,
+            "Maximum power (MW)": 12.0,
             "Minimum power (MW)": 2.4,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -225,7 +229,7 @@
         "gen19": {
             "Bus": "b15",
             "Type": "Profiled",
-            "Maximum power (MW)": 36.0,
+            "Maximum power (MW)": 12.0,
             "Minimum power (MW)": 2.4,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -233,7 +237,7 @@
         "gen20": {
             "Bus": "b15",
             "Type": "Profiled",
-            "Maximum power (MW)": 465.0,
+            "Maximum power (MW)": 155.0,
             "Minimum power (MW)": 54.3,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -241,7 +245,7 @@
         "gen21": {
             "Bus": "b16",
             "Type": "Profiled",
-            "Maximum power (MW)": 465.0,
+            "Maximum power (MW)": 155.0,
             "Minimum power (MW)": 54.3,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -249,7 +253,7 @@
         "gen22": {
             "Bus": "b18",
             "Type": "Profiled",
-            "Maximum power (MW)": 1200.0,
+            "Maximum power (MW)": 400.0,
             "Minimum power (MW)": 100.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -257,7 +261,7 @@
         "gen23": {
             "Bus": "b21",
             "Type": "Profiled",
-            "Maximum power (MW)": 1200.0,
+            "Maximum power (MW)": 400.0,
             "Minimum power (MW)": 100.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -265,7 +269,7 @@
         "gen24": {
             "Bus": "b22",
             "Type": "Profiled",
-            "Maximum power (MW)": 150.0,
+            "Maximum power (MW)": 50.0,
             "Minimum power (MW)": 10.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -273,7 +277,7 @@
         "gen25": {
             "Bus": "b22",
             "Type": "Profiled",
-            "Maximum power (MW)": 150.0,
+            "Maximum power (MW)": 50.0,
             "Minimum power (MW)": 10.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -281,7 +285,7 @@
         "gen26": {
             "Bus": "b22",
             "Type": "Profiled",
-            "Maximum power (MW)": 150.0,
+            "Maximum power (MW)": 50.0,
             "Minimum power (MW)": 10.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -289,7 +293,7 @@
         "gen27": {
             "Bus": "b22",
             "Type": "Profiled",
-            "Maximum power (MW)": 150.0,
+            "Maximum power (MW)": 50.0,
             "Minimum power (MW)": 10.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -297,7 +301,7 @@
         "gen28": {
             "Bus": "b22",
             "Type": "Profiled",
-            "Maximum power (MW)": 150.0,
+            "Maximum power (MW)": 50.0,
             "Minimum power (MW)": 10.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -305,7 +309,7 @@
         "gen29": {
             "Bus": "b22",
             "Type": "Profiled",
-            "Maximum power (MW)": 150.0,
+            "Maximum power (MW)": 50.0,
             "Minimum power (MW)": 10.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -313,7 +317,7 @@
         "gen30": {
             "Bus": "b23",
             "Type": "Profiled",
-            "Maximum power (MW)": 465.0,
+            "Maximum power (MW)": 155.0,
             "Minimum power (MW)": 54.3,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -321,7 +325,7 @@
         "gen31": {
             "Bus": "b23",
             "Type": "Profiled",
-            "Maximum power (MW)": 465.0,
+            "Maximum power (MW)": 155.0,
             "Minimum power (MW)": 54.3,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
@@ -329,7 +333,7 @@
         "gen32": {
             "Bus": "b23",
             "Type": "Profiled",
-            "Maximum power (MW)": 1050.0,
+            "Maximum power (MW)": 350.0,
             "Minimum power (MW)": 140.0,
             "Cost ($/MW)": 0.0,
             "Investment cost ($)": 0.0
