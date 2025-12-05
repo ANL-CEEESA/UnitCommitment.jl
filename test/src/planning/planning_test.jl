@@ -44,34 +44,10 @@ end
 
 function model_planning_test()
 	@testset "planning" begin
-		# @testset "default" begin
-		# 	_test_plan()
-		# end
-		# @testset "ieee14" begin
-		# 	_test_plan(instances = ["tep_ieee14"])
-		# end
 		@testset "ieee24" begin
 			_test_plan(instances = ["tep_ieee24"])
 		end
-		# @testset "ieee30" begin
-		# 	_test_plan(instances = ["tep_ieee30"])
-		# end
-		# @testset "ieee118" begin
-		# 	_test_plan(instances = ["tep_ieee118"])
-		# end
-		# @testset "ieee300" begin
-		# 	_test_plan(instances = ["tep_ieee300"])
-		# end
-		# @testset "north_brazilian" begin
-		# 	_test_plan(instances = ["tep_north_brazilian"], dump = true)
-		# end
-		# @testset "south_brazilian" begin
-		# 	_test_plan(instances = ["tep_south_brazilian"])
-		# end
-		# @testset "polish2383" begin
-		# 	_test_plan(instances = ["tep_polish2383"])
-		# end
-		@testset "unitcommitment_ieee24" begin
+		@testset "tep_ieee24_uc" begin
 			_test_plan(
 				formulation = Formulation(
 					transmission = PhaseAngleFormulation(),
@@ -79,7 +55,7 @@ function model_planning_test()
 				instances = ["tep_ieee24_uc"],
 			)
 		end
-		@testset "stochastic_ieee24" begin
+		@testset "tep_ieee24_stoch" begin
 			_test_plan(
 				formulation = Formulation(
 					transmission = PhaseAngleFormulation(),

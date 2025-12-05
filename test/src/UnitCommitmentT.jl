@@ -24,7 +24,6 @@ include("lmp/conventional_test.jl")
 include("lmp/aelmp_test.jl")
 include("market/market_test.jl")
 include("planning/planning_test.jl")
-include("planning/planning_bench.jl")
 include("regression.jl")
 
 basedir = dirname(@__FILE__)
