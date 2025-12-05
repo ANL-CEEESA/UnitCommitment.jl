@@ -110,7 +110,7 @@ Note that this curve also specifies the production limits. Specifically, the fir
 
 ```@raw html
 <center>
-    <img src="../assets/cost_curve.png" style="max-width: 500px"/>
+    <img src="../../assets/cost_curve.png" style="max-width: 500px"/>
     <div><b>Figure 1.</b> Piecewise-linear production cost curve.</div>
     <br/>
 </center>
