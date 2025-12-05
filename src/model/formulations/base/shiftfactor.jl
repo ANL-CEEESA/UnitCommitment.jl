@@ -27,7 +27,9 @@ function _setup_transmission(
 )::Nothing
     # if any lines have positive "investment_cost", then this is a planning model
     if any(l -> any(x -> x > 0, l.invest), sc.lines)
-        error("Solving for planning model but shift factor formulation is selected.")
+        error(
+            "Solving for planning model but shift factor formulation is selected.",
+        )
     end
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf

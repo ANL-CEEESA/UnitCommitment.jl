@@ -54,23 +54,22 @@ function _add_nodal_balance!(
     sc::UnitCommitmentScenario,
 )::Nothing
     # Nodal balance for phase angle formulation
-	eq_nodal_balance = _init(model, :eq_nodal_balance)
-	for t in 1:model[:instance].time
-		for b in sc.buses
-			eq_nodal_balance[sc.name, b.name, t] = @constraint(
-				model,
-				sum(
-					model[:flow][sc.name, lm.name, t] for lm in sc.lines if lm.source == b
-				) -
-				sum(
-					model[:flow][sc.name, lm.name, t] for lm in sc.lines if lm.target == b
-				) +
-				model[:net_injection][sc.name, b.name, t] ==
-				0
-			)
-		end
-	end
-    return 
+    eq_nodal_balance = _init(model, :eq_nodal_balance)
+    for t in 1:model[:instance].time
+        for b in sc.buses
+            eq_nodal_balance[sc.name, b.name, t] = @constraint(
+                model,
+                sum(
+                    model[:flow][sc.name, lm.name, t] for
+                    lm in sc.lines if lm.source == b
+                ) - sum(
+                    model[:flow][sc.name, lm.name, t] for
+                    lm in sc.lines if lm.target == b
+                ) + model[:net_injection][sc.name, b.name, t] == 0
+            )
+        end
+    end
+    return
 end
 
 function _add_spinning_reserve_eqs!(

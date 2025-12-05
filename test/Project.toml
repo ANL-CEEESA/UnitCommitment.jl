@@ -26,3 +26,4 @@ UnitCommitment = {path = ".."}
 
 [compat]
 SCIP = "0.12.7"
+JuliaFormatter = "0.14.4"
