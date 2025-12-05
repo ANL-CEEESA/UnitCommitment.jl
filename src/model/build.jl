@@ -21,7 +21,7 @@ Arguments
 - `instance`:
     the instance.
 - `optimizer`:
-    the optimizer factory that should be attached to this model (e.g. Cbc.Optimizer).
+    the optimizer factory that should be attached to this model (e.g. HiGHS.Optimizer).
     If not provided, no optimizer will be attached.
 - `formulation`:
     the MIP formulation to use. By default, uses a formulation that combines
@@ -43,13 +43,13 @@ instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
 # Construct model (using state-of-the-art defaults)
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
 )
 
 # Construct model (using customized formulation)
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
     formulation = Formulation(
         pwl_costs = KnuOstWat2018.PwlCosts(),
         ramping = MorLatRam2013.Ramping(),

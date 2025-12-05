@@ -4,7 +4,6 @@ version = "0.1.0"
 authors = ["Alinson S. Xavier <git@axavier.org>"]
 
 [deps]
-Cbc = "9961bab8-2fa3-5c5a-9d89-47fab24efd76"
 CompatHelper = "aa819f21-2bde-4658-8897-bab36330d9b7"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
@@ -25,5 +24,5 @@ UnitCommitment = "64606440-39ea-11e9-0f29-3303a1d3d877"
 UnitCommitment = {path = ".."}
 
 [compat]
-SCIP = "0.12.7"
 JuliaFormatter = "0.14.4"
+SCIP = "0.12.7"

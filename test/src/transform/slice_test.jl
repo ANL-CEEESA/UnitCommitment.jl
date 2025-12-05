@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, SCIP, JuMP, JSON
+using UnitCommitment, LinearAlgebra, JuMP, JSON
 
 function transform_slice_test()
     @testset "slice" begin
@@ -38,8 +38,10 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer =
-            optimizer_with_attributes(SCIP.Optimizer, "display/verblevel" => 0)
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -59,8 +61,10 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer =
-            optimizer_with_attributes(SCIP.Optimizer, "display/verblevel" => 0)
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -90,8 +94,10 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer =
-            optimizer_with_attributes(SCIP.Optimizer, "display/verblevel" => 0)
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,

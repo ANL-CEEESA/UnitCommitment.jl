@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, SCIP, JuMP, JSON
+using UnitCommitment, LinearAlgebra, HiGHS, JuMP, JSON
 
 function _set_flow_limits!(instance)
     for sc in instance.scenarios
@@ -19,8 +19,8 @@ function usage_test()
             instance = UnitCommitment.read(fixture("case14.json.gz"))
             _set_flow_limits!(instance)
             optimizer = optimizer_with_attributes(
-                SCIP.Optimizer,
-                "display/verblevel" => 0,
+                HiGHS.Optimizer,
+                "log_to_console" => false,
             )
             model = UnitCommitment.build_model(
                 instance = instance,
@@ -56,8 +56,8 @@ function usage_test()
             _set_flow_limits!(instance)
             @test length(instance.scenarios) == 2
             optimizer = optimizer_with_attributes(
-                SCIP.Optimizer,
-                "display/verblevel" => 0,
+                HiGHS.Optimizer,
+                "log_to_console" => false,
             )
             model = UnitCommitment.build_model(
                 instance = instance,

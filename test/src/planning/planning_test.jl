@@ -12,7 +12,7 @@ function _test_plan(;
     formulation::Formulation = Formulation(
         transmission = PhaseAngleFormulation(),
     ),
-    instances = ["tep_garver6"],
+    instances,
     dump::Bool = false,
     stochastic::Bool = false,
 )::Nothing
@@ -51,21 +51,10 @@ function model_planning_test()
             _test_plan(instances = ["tep_ieee24"])
         end
         @testset "tep_ieee24_uc" begin
-            _test_plan(
-                formulation = Formulation(
-                    transmission = PhaseAngleFormulation(),
-                ),
-                instances = ["tep_ieee24_uc"],
-            )
+            _test_plan(instances = ["tep_ieee24_uc"])
         end
         @testset "tep_ieee24_stoch" begin
-            _test_plan(
-                formulation = Formulation(
-                    transmission = PhaseAngleFormulation(),
-                ),
-                instances = ["tep_ieee24"],
-                stochastic = true,
-            )
+            _test_plan(instances = ["tep_ieee24"], stochastic = true)
         end
     end
 end

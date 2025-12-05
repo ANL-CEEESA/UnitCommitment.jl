@@ -59,7 +59,7 @@ Examples
 --------
 
 ```julia
-using UnitCommitment, Cbc, HiGHS
+using UnitCommitment, HiGHS, HiGHS
 
 import UnitCommitment: 
     MarketSettings,
@@ -75,7 +75,7 @@ solution = UnitCommitment.solve_market(
         lmp_method = ConventionalLMP(),
         formulation = Formulation(),
     ),
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
     lp_optimizer = HiGHS.Optimizer,
 )
 """
