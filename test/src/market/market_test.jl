@@ -19,7 +19,7 @@ function simple_market_test()
 			da_path,
 			rt_paths,
 			settings = MarketSettings(), # keep everything default
-			optimizer = optimizer_with_attributes(SCIP.Optimizer),
+			optimizer = optimizer_with_attributes(SCIP.Optimizer, "display/verblevel" => 0),
 			lp_optimizer = optimizer_with_attributes(
 				HiGHS.Optimizer,
 				"log_to_console" => false,
@@ -48,7 +48,7 @@ function simple_market_test()
 			da_path,
 			rt_paths,
 			settings = MarketSettings(lmp_method = nothing), # no lmp
-			optimizer = optimizer_with_attributes(SCIP.Optimizer),
+			optimizer = optimizer_with_attributes(SCIP.Optimizer, "display/verblevel" => 0),
 		)
 
 		# the commitment status must agree with DA market
@@ -108,7 +108,7 @@ function stochastic_market_test()
 			da_path,
 			rt_paths,
 			settings = MarketSettings(), # keep everything default
-			optimizer = optimizer_with_attributes(SCIP.Optimizer),
+			optimizer = optimizer_with_attributes(SCIP.Optimizer, "display/verblevel" => 0),
 			lp_optimizer = optimizer_with_attributes(
 				HiGHS.Optimizer,
 				"log_to_console" => false,

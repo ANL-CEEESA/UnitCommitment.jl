@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, SCIP, JuMP, JSON, GZip
+using UnitCommitment, LinearAlgebra, SCIP, JuMP, JSON
 
 function transform_slice_test()
 	@testset "slice" begin

@@ -5,7 +5,7 @@
 using Printf
 using JSON
 using DataStructures
-using GZip
+using CodecZlib
 import Base: getindex, time
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
@@ -51,7 +51,7 @@ function _repair_scenario_names_and_probabilities!(
 	name_counts = Dict{String, Int}()
 
 	for (sc_path, sc) in zip(path, scenarios)
-		base = sc.name == "" ? splitext(basename(sc_path))[1] : sc.name
+		base = sc.name == "" ? first(split(last(split(sc_path, "/")), ".")) : sc.name
 
 		k = get(name_counts, base, 0)
         name_counts[base] = k + 1
@@ -107,15 +107,18 @@ function read(paths::Vector{String})::UnitCommitmentInstance
 	return instance
 end
 
-function _read_scenario(path::String)::UnitCommitmentScenario
+function _open(f::Function, path::String)
 	if endswith(path, ".gz")
-		scenario = _read(gzopen(path))
-	elseif endswith(path, ".json")
-		scenario = _read(open(path))
+		return Base.open(f, CodecZlib.GzipDecompressorStream, path, "r")
 	else
-		error("Unsupported input format")
+		return Base.open(f, path, "r")
 	end
-	return scenario
+end
+
+function _read_scenario(path::String)::UnitCommitmentScenario
+	_open(path) do file
+		return _read(file)
+	end
 end
 
 function _read(file::IO)::UnitCommitmentScenario
@@ -125,12 +128,9 @@ function _read(file::IO)::UnitCommitmentScenario
 end
 
 function _read_json(path::String)::OrderedDict
-	if endswith(path, ".gz")
-		file = GZip.gzopen(path)
-	else
-		file = open(path)
+	_open(path) do file
+		return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
 	end
-	return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
 end
 
 function _from_json(json; repair = true)::UnitCommitmentScenario
