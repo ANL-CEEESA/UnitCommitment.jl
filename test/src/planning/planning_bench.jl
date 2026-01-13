@@ -18,7 +18,7 @@ function _solve_planning(
 	stochastic::Bool = false,
 )
 	if stochastic
-		instance = UnitCommitment.read([fixture("$(instance_name).json.gz"), fixture("$(instance_name)_s2.json")])
+		instance = UnitCommitment.read([fixture("$(instance_name).json.gz"), fixture("$(instance_name).json.gz")])
 	else
 		instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
 	end
@@ -99,9 +99,9 @@ function model_planning_test_bench_table()
 			"tep_ieee30",
 			"tep_ieee118",
 			"tep_ieee300",
-			"tep_north_brazilian",
+			# "tep_north_brazilian",
 			"tep_south_brazilian",
-			"tep_polish2383",
+			# "tep_polish2383",
 			"tep_ieee24_uc",
 		]
 

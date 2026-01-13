@@ -25,7 +25,7 @@ function _add_bus!(
         add_to_expression!(
             model[:obj],
             curtail[sc.name, b.name, t],
-            sc.power_balance_penalty[t] * sc.probability * sc.operation_cost_weight,
+            sc.power_balance_penalty[t] * sc.probability,
         )
     end
     return
