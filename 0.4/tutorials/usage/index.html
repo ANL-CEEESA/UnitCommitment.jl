@@ -8,7 +8,7 @@ using UnitCommitment</code></pre><p>Next, we use the function <code>UnitCommitme
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computing line outage factors...
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Computed LODF in 0.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Applying PTDF and LODF cutoffs (0.00500, 0.00100)
-<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.01 seconds</code></pre><p>Next, we run the optimization process, with <code>UnitCommitment.optimize!</code>:</p><pre><code class="language-julia hljs">UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
+<span class="sgr36"><span class="sgr1">[ Info: </span></span>Built model in 0.08 seconds</code></pre><p>Next, we run the optimization process, with <code>UnitCommitment.optimize!</code>:</p><pre><code class="language-julia hljs">UnitCommitment.optimize!(model)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi"><span class="sgr36"><span class="sgr1">[ Info: </span></span>Setting MILP time limit to 86400.00 seconds
 <span class="sgr36"><span class="sgr1">[ Info: </span></span>Solving MILP...
 Running HiGHS 1.12.0 (git hash: 755a8e027a): Copyright (c) 2025 HiGHS under MIT licence terms
 MIP has 4744 rows; 4104 cols; 15633 nonzeros; 1080 integer variables (1080 binary)
@@ -45,13 +45,13 @@ Solving report
   Primal bound      360642.544974
   Dual bound        360642.328869
   Gap               6e-05% (tolerance: 0.01%)
-  P-D integral      4.76315069837e-10
+  P-D integral      5.74892573793e-10
   Solution status   feasible
                     360642.544974 (objective)
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.10
+  Timing            0.11
   Max sub-MIP depth 0
   Nodes             1
   Repair LPs        0
@@ -313,7 +313,7 @@ Solving report
   Primal bound      5312.5
   Dual bound        5312.5
   Gap               0% (tolerance: 0.01%)
-  P-D integral      0.000122052910402
+  P-D integral      0.000140943926273
   Solution status   feasible
                     5312.5 (objective)
                     0 (bound viol.)
@@ -339,4 +339,4 @@ Solving report
   &quot;Up-flexiramp (MW)&quot;               =&gt; OrderedDict{Any, Any}()
   &quot;Up-flexiramp shortfall (MW)&quot;     =&gt; OrderedDict{Any, Any}()
   &quot;Down-flexiramp (MW)&quot;             =&gt; OrderedDict{Any, Any}()
-  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../customizing/">Model customization »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Wednesday 5 November 2025 09:58">Wednesday 5 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+  &quot;Down-flexiramp shortfall (MW)&quot;   =&gt; OrderedDict{Any, Any}()</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../customizing/">Model customization »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Monday 26 January 2026 10:40">Monday 26 January 2026</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>

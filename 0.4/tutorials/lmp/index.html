@@ -41,22 +41,22 @@ Src: B =&gt; Branching; C =&gt; Central rounding; F =&gt; Feasibility pump; H =&
         Nodes      |    B&amp;B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work
 Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
 
-         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.1s
- R       0       0         0   0.00%   360642.328869   360642.544974      0.00%        0      0      0       958     0.1s
-         1       0         1 100.00%   360642.328869   360642.544974      0.00%        0      0      0       958     0.1s
+         0       0         0   0.00%   1.86264515e-09  inf                  inf        0      0      0         0     0.3s
+ R       0       0         0   0.00%   360642.328869   360642.544974      0.00%        0      0      0       958     0.3s
+         1       0         1 100.00%   360642.328869   360642.544974      0.00%        0      0      0       958     0.3s
 
 Solving report
   Status            Optimal
   Primal bound      360642.544974
   Dual bound        360642.328869
   Gap               6e-05% (tolerance: 0.01%)
-  P-D integral      5.20032049852e-10
+  P-D integral      7.19472912927e-10
   Solution status   feasible
                     360642.544974 (objective)
                     0 (bound viol.)
                     0 (int. viol.)
                     0 (row viol.)
-  Timing            0.11
+  Timing            0.34
   Max sub-MIP depth 0
   Nodes             1
   Repair LPs        0
@@ -106,4 +106,4 @@ lmp = UnitCommitment.compute_lmp(
     optimizer = HiGHS.Optimizer,
 )
 
-@show lmp[&quot;s1&quot;, &quot;B1&quot;, 1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">274.3333333333333</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../customizing/">« Model customization</a><a class="docs-footer-nextpage" href="../market/">Market Clearing »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Wednesday 5 November 2025 09:58">Wednesday 5 November 2025</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+@show lmp[&quot;s1&quot;, &quot;B1&quot;, 1]</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">274.3333333333333</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../customizing/">« Model customization</a><a class="docs-footer-nextpage" href="../market/">Market Clearing »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.15.0 on <span class="colophon-date" title="Monday 26 January 2026 10:40">Monday 26 January 2026</span>. Using Julia version 1.12.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
