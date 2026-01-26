@@ -200,7 +200,7 @@ x^{\text{switch-on}}_{gt} = \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk}
   if category should be allowed based on initial status.
 
 ```math
-x^{\text{start}}_{gtk} \leq L^{\text{start}}_{gtk} + \sum_{i=min\left(1,t - M^{\text{delay}}_{g,k+1} + 1\right)}^{t - M^{\text{delay}}_{kg}} x^{\text{switch-off}}_{gi}
+x^{\text{start}}_{gtk} \leq L^{\text{start}}_{gtk} + \sum_{i=min\left(1,t - M^{\text{delay}}_{g,k+1} + 1\right)}^{t - M^{\text{delay}}_{gk}} x^{\text{switch-off}}_{gi}
 ```
 
 - Link the binary variables together (`eq_binary_link[g,t]`):
@@ -358,7 +358,7 @@ curtailed, at a penalty.
 
 ```math
 \sum_{s \in S} p(s) \left[
-  \sum_{b \in B} \sum_{t \in T} y^\text{curtail}_{sbt} Z^\text{curtail}_{ts}
+  \sum_{b \in B} \sum_{t \in T} y^\text{curtail}_{sbt} Z^\text{curtail}_{st}
 \right]
 ```
 
@@ -367,7 +367,7 @@ curtailed, at a penalty.
 - Variable bounds:
 
 ```math
-0 \leq y^\text{curtail}_{sbt} \leq M^\text{load}_{bts}
+0 \leq y^\text{curtail}_{sbt} \leq M^\text{load}_{sbt}
 ```
 
 ## 5. Price-sensitive loads
@@ -530,7 +530,7 @@ y^\text{discharge}_{sut} \geq x^\text{is-discharging}_{sut} M^\text{discharge-mi
 y^\text{level}_{sut} =
 (1 - \gamma^\text{loss}_{s,u,t}) y^\text{level}_{su,t-1} +
  \gamma^\text{time-step} \gamma^\text{charge-eff}_{s,u,t} y^\text{charge}_{sut} -
-\frac{\gamma^\text{time-step}}{\gamma^\text{discharge-eff}_{s,u,t}} y^\text{charge}_{sut}
+\frac{\gamma^\text{time-step}}{\gamma^\text{discharge-eff}_{s,u,t}} y^\text{discharge}_{sut}
 ```
 
 - Enforce storage level at last time step (`eq_ending_level[s,u]`):
@@ -598,7 +598,7 @@ injection at bus $b$.
 - Power produced equal power consumed (`eq_power_balance[s,t]`):
 
 ```math
-\sum_{b \in B} \sum_{t \in T} y^\text{inj}_{sbt} = 0
+\sum_{b \in B} y^\text{inj}_{sbt} = 0 \;\; \forall t \in T
 ```
 
 - Definition of flow (_enforced on-the-fly_):
