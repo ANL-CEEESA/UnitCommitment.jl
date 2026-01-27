@@ -240,7 +240,7 @@ function instance_read_test()
         @test length(sc.profiled_units) == 32
         @test instance.time == 1
         @test sc.time_step == 60
-        @test sc.operation_cost_weight == 1.0
+        @test sc.investment_cost_weight == 1.0
 
         @test sc.lines[1].name == "l1"
         @test sc.lines[1].source.name == "b1"

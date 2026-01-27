@@ -122,6 +122,7 @@ and start-up and shutdown limits.
 | $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
 | $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
 | $Z^{\text{invest}}_{gt}$         | \$     | Cost to invest unit $g$ at time $t$.                                            |
+| $W^{\text{invest}}$             |        | Investment cost weight (multiplier applied to all investment costs).                       |
 | $G^\text{therm}$                |        | Set of thermal generators.                                                                 |
 
 ### Decision variables
@@ -158,7 +159,7 @@ and start-up and shutdown limits.
 - (Expansion planning) Investment costs:
 
 ```math
-\sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
+W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
 ```
 
 ### Constraints
@@ -319,17 +320,20 @@ much simpler than thermal units.
 
 ### Constants
 
-| Symbol                  | Unit  | Description                                        |
-| :---------------------- | :---- | :------------------------------------------------- |
-| $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$. |
-| $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$. |
-| $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.      |
+| Symbol                  | Unit  | Description                                                      |
+| :---------------------- | :---- | :--------------------------------------------------------------- |
+| $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$.               |
+| $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$.               |
+| $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.                    |
+| $Z^{\text{invest}}_{gt}$| \$    | Cost to invest unit $g$ at time $t$.                             |
+| $W^{\text{invest}}$     |       | Investment cost weight (multiplier applied to all investment costs). |
 
 ### Decision variables
 
-| Symbol                | JuMP name              | Unit | Description                                                   | Stage |
-| :-------------------- | :--------------------- | :--- | :------------------------------------------------------------ | :---- |
-| $y^\text{prod}_{sgt}$ | `prod_profiled[s,g,t]` | MW   | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
+| Symbol                     | JuMP name              | Unit   | Description                                                   | Stage |
+| :------------------------- | :--------------------- | :----- | :------------------------------------------------------------ | :---- |
+| $x^{\text{invest}}_{gt}$   | `invest_unit[g,t]`     | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
+| $y^\text{prod}_{sgt}$      | `prod_profiled[s,g,t]` | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
 
@@ -344,7 +348,7 @@ much simpler than thermal units.
 - (Expansion planning) Investment costs:
 
 ```math
-\sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
+W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
 ```
 
 
@@ -609,12 +613,13 @@ injection at bus $b$.
 
 | Symbol                    | Unit  | Description                                                 |
 | :------------------------ | :---- | :---------------------------------------------------------- |
-| $M^\text{limit}_{slt}$    | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.       |
-| $Z^\text{overflow}_{slt}$ | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$. |
-| $Z^{\text{invest}}_{lt}$         | \$     | Cost to invest line $l$ at time $t$.                                            |
-| $Z^{\text{susceptance}}_{l}$         | p.u.     | Susceptance of line $l$.                                            |
-| $L$                       |       | Set of transmission lines.                                  |
-| $B$                       |       | Set of buses.                                               |
+| $M^\text{limit}_{slt}$       | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.                |
+| $Z^\text{overflow}_{slt}$    | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$.          |
+| $Z^{\text{invest}}_{lt}$     | \$    | Cost to invest line $l$ at time $t$.                                 |
+| $Z^{\text{susceptance}}_{l}$ | p.u.  | Susceptance of line $l$.                                             |
+| $W^{\text{invest}}$          |       | Investment cost weight (multiplier applied to all investment costs). |
+| $L$                          |       | Set of transmission lines.                                           |
+| $B$                          |       | Set of buses.                                                        |
 
 ### Decision variables
 
@@ -639,7 +644,7 @@ injection at bus $b$.
 - (Expansion planning) Investment costs:
 
 ```math
-\sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{\text{invest}}_{lt} - x^{\text{invest}}_{l,t-1} \right)
+W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{\text{invest}}_{lt} - x^{\text{invest}}_{l,t-1} \right)
 ```
 
 ### Constraints

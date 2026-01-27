@@ -25,7 +25,7 @@ This section describes system-wide parameters, such as power balance penalty, an
 | `Power balance penalty ($/MW)`             | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.                       | `1000.0` |      No      |    Yes     |
 | `Scenario name`                            | Name of the scenario.                                                                                                                                                                                                                |  `"s1"`  |      No      |    ---     |
 | `Scenario weight`                          | Weight of the scenario. The scenario weight can be any positive real number, that is, it does not have to be between zero and one. The package normalizes the weights to ensure that the probability of all scenarios sum up to one. |   `1.0`    |      No      |    ---     |
-| `Operation cost weight`                          | Weighting factor to make operation costs comparable to investment costs. Required for transmission expansion planning problem. |   `1.0`    |      No      |    ---     |
+| `Investment cost weight`                          | Weighting factor applied to investment costs. For transmission expansion planning problems, this can be used to scale investment costs relative to operation costs (e.g., convert one-time investment costs to hourly). |   `1.0`    |      No      |    ---     |
 
 #### Example
 
@@ -37,7 +37,7 @@ This section describes system-wide parameters, such as power balance penalty, an
     "Power balance penalty ($/MW)": 1000.0,
     "Scenario name": "s1",
     "Scenario weight": 0.5,
-    "Operation cost weight": 1.0
+    "Investment cost weight": 1.0
   }
 }
 ```
@@ -91,7 +91,7 @@ This section describes all generators in the system. Two types of units can be s
 | `Must run?`                                                  | If `true`, the generator should be committed, even if that is not economical (Boolean).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `false`           |     Yes      |    Yes     |
 | `Reserve eligibility`                                        | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `[]`              |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be commited at that time period; if `false`, the generator must not be commited at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                         | `null`            |     Yes      |    Yes     |
-| `Investment cost ($)`                | Cost to build a candidate generation unit. $0.0 for existing units.                                                                                                                                                                     | `0.0` |      No      |    No     |
+| `Investment cost ($)`                | Cost to build a candidate generation unit. Should be $0 for existing units.                                                                                                                                                                     | `0.0` |      No      |    No     |
 
 #### Profiled Units
 

@@ -339,6 +339,7 @@ function _add_expansion!(model, g)::Nothing
 
     invest_unit[g.name, 0] = 0.0
     is_on = model[:is_on]
+    investment_cost_weight = model[:instance].scenarios[1].investment_cost_weight
 
     for t in 1:model[:instance].time
         # Decision variable
@@ -348,7 +349,7 @@ function _add_expansion!(model, g)::Nothing
         add_to_expression!(
             model[:obj],
             invest_unit[g.name, t] - invest_unit[g.name, t-1],
-            g.invest[t],
+            g.invest[t] * investment_cost_weight,
         )
 
         # Investment constraints

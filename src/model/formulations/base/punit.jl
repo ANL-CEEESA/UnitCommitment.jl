@@ -21,7 +21,7 @@ function _add_profiled_unit!(
         add_to_expression!(
             model[:obj],
             punits[sc.name, pu.name, t],
-            pu.cost[t] * sc.probability * sc.operation_cost_weight,
+            pu.cost[t] * sc.probability,
         )
 
         # Net injection
@@ -57,7 +57,7 @@ function _add_profiled_unit!(
                 add_to_expression!(
                     model[:obj],
                     invest_unit[pu.name, t] - invest_unit[pu.name, t-1],
-                    pu.invest[t],
+                    pu.invest[t] * sc.investment_cost_weight,
                 )
 
                 # Investment constraints

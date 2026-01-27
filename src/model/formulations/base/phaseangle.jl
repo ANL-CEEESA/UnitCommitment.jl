@@ -58,7 +58,7 @@ function _add_transmission_line!(
                 add_to_expression!(
                     model[:obj],
                     invest_line[lm.name, t] - invest_line[lm.name, t-1],
-                    lm.invest[t],
+                    lm.invest[t] * sc.investment_cost_weight,
                 )
 
                 # Investment constraints
