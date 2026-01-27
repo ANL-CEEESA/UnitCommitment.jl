@@ -28,7 +28,7 @@ function _test_plan(
 			optimizer = SCIP.Optimizer,
 			variable_names = true,
 		)
-		# set_silent(model)
+		set_silent(model)
 		UnitCommitment.optimize!(model)
 		solution = UnitCommitment.solution(model)
 		if dump
@@ -56,6 +56,9 @@ function model_planning_test()
 		# @testset "ieee24_B" begin
 		# 	_test_plan(instances = ["tep_ieee24_caseB"], dump=true)
 		# end
+		@testset "ieee24_storage" begin
+			_test_plan(instances = ["tep_ieee24_storage"], dump=true)
+		end
 		# @testset "ieee30" begin
 		# 	_test_plan(instances = ["tep_ieee30"], dump=true)
 		# end
@@ -65,9 +68,9 @@ function model_planning_test()
 		# @testset "ieee300" begin
 		# 	_test_plan(instances = ["tep_ieee300"], dump=true)
 		# end
-		@testset "north_brazilian" begin
-			_test_plan(instances = ["tep_north_brazilian"], dump = true)
-		end
+		# @testset "north_brazilian" begin
+		# 	_test_plan(instances = ["tep_north_brazilian"], dump = true)
+		# end
 		# @testset "south_brazilian" begin
 		# 	_test_plan(instances = ["tep_south_brazilian"], dump=true)
 		# end

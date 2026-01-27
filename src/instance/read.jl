@@ -458,6 +458,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
 					dict["Last period maximum level (MWh)"],
 					default = max_level[T],
 				),
+				timeseries(scalar(dict["Investment cost (\$)"], default = 0.0) / operation_cost_weight),
 			)
 			push!(bus.storage_units, storage)
 			push!(storage_units, storage)

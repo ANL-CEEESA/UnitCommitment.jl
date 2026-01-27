@@ -105,6 +105,7 @@ mutable struct StorageUnit
     initial_level::Float64
     min_ending_level::Float64
     max_ending_level::Float64
+    invest::Vector{Float64}
 end
 
 Base.@kwdef mutable struct UnitCommitmentScenario

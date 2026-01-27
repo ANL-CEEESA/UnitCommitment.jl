@@ -190,6 +190,7 @@ This section describes energy storage units in the system which charge and disch
 | `Initial level (MWh)`                         | Amount of energy this storage unit at time step `-1`, immediately before the planning horizon starts.                                                       |         `0.0`         |      No      |    Yes     |
 | `Last period minimum level (MWh)`             | Minimum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Minimum level (MWh)`. | `Minimum level (MWh)` |      No      |    Yes     |
 | `Last period maximum level (MWh)`             | Maximum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Maximum level (MWh)`. | `Maximum level (MWh)` |      No      |    Yes     |
+| `Investment cost ($)`| Cost to build a candidate storage unit. $0.0 for existing units.               |  `0.0`.  |      No      |     No     |
 
 #### Example
 
@@ -220,7 +221,8 @@ This section describes energy storage units in the system which charge and disch
       "Maximum discharge rate (MW)": 10.0,
       "Initial level (MWh)": 70.0,
       "Last period minimum level (MWh)": 80.0,
-      "Last period maximum level (MWh)": 85.0
+      "Last period maximum level (MWh)": 85.0,
+      "Investment cost ($)": 2300000.0,
     },
     "su3": {
       "Bus": "b9",

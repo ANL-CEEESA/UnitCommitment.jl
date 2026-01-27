@@ -517,6 +517,7 @@ integration of renewable energy resources.
 | $\gamma^\text{charge-eff}_{s,u,t}$    |       | Charging efficiency factor.                                                                           |
 | $\gamma^\text{discharge-eff}_{s,u,t}$ |       | Discharging efficiency factor.                                                                        |
 | $\gamma^\text{time-step}$             |       | Length of a time step, in hours. Should be 1.0 for hourly time steps, 0.5 for 30-min half steps, etc. |
+| $Z^{\text{invest}}_{s,u,t}$ | \$ | Investment cost for unit $u$ at time $t$ and scenario $s$.      |
 
 ### Decision variables
 
@@ -527,12 +528,15 @@ integration of renewable energy resources.
 | $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      | 2     |
 | $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    | 2     |
 | $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. | 2     |
+| $x^\text{invest}_{sut}$ | `invest[s,u,t]` | Binary | True if unit $u$ is installed at time $t$ in scenario $s$. | 1     |
 
 ### Objective function terms
 
 - Charge and discharge cost/revenue:
 
 ```math
+\sum_{u \in \text{SU}} \sum_{t \in T}
+  x^\text{invest}_{sut} Z^{\text{invest}}_{sut} +
 \sum_{s \in S} p(s) \left[
   \sum_{u \in \text{SU}} \sum_{t \in T} \left(
     y^\text{charge}_{sut} Z^\text{charge}_{sut} +
@@ -576,6 +580,18 @@ y^\text{level}_{sut} =
 
 ```math
 M^\text{min-end-level}_{su} \leq y^\text{level}_{sut} \leq M^\text{max-end-level}_{su}
+```
+
+- (Expansion planning) Storage is permanently built once invested (`eq_invest_storage_nondecreasing[u, t]`):
+
+```math
+x^{\text{invest}}_{u,t-1} \leq x^{\text{invest}}_{ut}
+```
+
+- (Expansion planning) Storage level bounds are zero if not invested (`eq_invest_storage_level_upper[s, u, t]` and `eq_invest_storage_level_lower[s, u, t]`). Lower bound of $y^\text{level}_{sut}$ is updated as well.
+
+```math
+M^\text{min-end-level}_{su} x^{\text{invest}}_{ut} \leq y^\text{level}_{sut} \leq M^\text{max-end-level}_{su} x^{\text{invest}}_{ut}
 ```
 
 ## 7. Buses and transmission lines

@@ -22,6 +22,12 @@ function _solve_planning(
 	else
 		instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
 	end
+
+	sc = instance.scenarios[1]
+	cand_lines = sum(l -> l.invest[1] > 1e-5 ? l.max_copy : 0, sc.lines)
+	cand_gens = count(u -> u.invest[1] > 1e-5, sc.thermal_units) +
+				count(u -> u.invest[1] > 1e-5, sc.profiled_units)
+
 	model = UnitCommitment.build_model(
 		instance = instance,
 		formulation = formulation,
@@ -76,6 +82,8 @@ function _solve_planning(
 		(
 			Instance = instance_name,
 			SolveTime = solve_time_sec,
+			CandidateLines = cand_lines,
+			CandidateGens = cand_gens,
 			OptimalCost = opt_cost,
 			LinesBuilt = lines_built,
 			ProfiledsBuilt = punits_built,
@@ -113,9 +121,9 @@ function model_planning_test_bench_table()
 		_solve_planning(results, instance_name = "tep_ieee24", stochastic = true)
 
 		open("/tmp/planning_bench.csv", "w") do f
-			println(f, "Instance,SolveTime,OptimalCost,LinesBuilt,ProfiledsBuilt,ThermalsBuilt,Vars,Constrs,IsStochastic")
+			println(f, "Instance,SolveTime,OptimalCost,CandidateLines,CandidateGens,LinesBuilt,ProfiledsBuilt,ThermalsBuilt,Vars,Constrs,IsStochastic")
 			for r in results
-				println(f, "$(r.Instance),$(r.SolveTime),$(r.OptimalCost),$(r.LinesBuilt),$(r.ProfiledsBuilt),$(r.ThermalsBuilt),$(r.Vars),$(r.Constrs),$(r.IsStochastic)")
+				println(f, "$(r.Instance),$(r.SolveTime),$(r.OptimalCost),$(r.CandidateLines),$(r.CandidateGens),$(r.LinesBuilt),$(r.ProfiledsBuilt),$(r.ThermalsBuilt),$(r.Vars),$(r.Constrs),$(r.IsStochastic)")
 			end
 		end
 
