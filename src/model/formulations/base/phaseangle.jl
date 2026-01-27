@@ -8,7 +8,7 @@ function _add_transmission_line!(
     f::PhaseAngleFormulation,
     sc::UnitCommitmentScenario,
 )::Nothing
-    # Overflow (same as in shiftfactor.jl)
+    # Overflow variable for soft flow limit constraints
     overflow = _init(model, :overflow)
     for t in 1:model[:instance].time
         overflow[sc.name, lm.name, t] = @variable(model, lower_bound = 0)
@@ -76,7 +76,6 @@ function _add_transmission_line!(
                     model,
                     model[:flow][sc.name, lm.name, t] ==
                     invest_line[lm.name, t] *
-                    f.s_base *
                     lm.susceptance *
                     (
                         θ[sc.name, lm.source.name, t] -
@@ -87,7 +86,6 @@ function _add_transmission_line!(
                 eq_invest_line_flow_upper[sc.name, lm.name, t] = @constraint(
                     model,
                     model[:flow][sc.name, lm.name, t] <=
-                    f.s_base *
                     lm.susceptance *
                     (
                         θ[sc.name, lm.source.name, t] -
@@ -97,7 +95,6 @@ function _add_transmission_line!(
                 eq_invest_line_flow_lower[sc.name, lm.name, t] = @constraint(
                     model,
                     model[:flow][sc.name, lm.name, t] >=
-                    f.s_base *
                     lm.susceptance *
                     (
                         θ[sc.name, lm.source.name, t] -
@@ -108,12 +105,14 @@ function _add_transmission_line!(
             eq_invest_line_flow_limit_upper[sc.name, lm.name, t] = @constraint(
                 model,
                 model[:flow][sc.name, lm.name, t] <=
-                lm.normal_flow_limit[t] * invest_line[lm.name, t]
+                lm.normal_flow_limit[t] * invest_line[lm.name, t] +
+                overflow[sc.name, lm.name, t]
             )
             eq_invest_line_flow_limit_lower[sc.name, lm.name, t] = @constraint(
                 model,
                 model[:flow][sc.name, lm.name, t] >=
-                -lm.normal_flow_limit[t] * invest_line[lm.name, t]
+                -lm.normal_flow_limit[t] * invest_line[lm.name, t] -
+                overflow[sc.name, lm.name, t]
             )
         end
     else
@@ -126,17 +125,18 @@ function _add_transmission_line!(
             eq_invest_line_flow[sc.name, lm.name, t] = @constraint(
                 model,
                 model[:flow][sc.name, lm.name, t] ==
-                f.s_base *
                 lm.susceptance *
                 (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t])
             )
             eq_invest_line_flow_limit_upper[sc.name, lm.name, t] = @constraint(
                 model,
-                model[:flow][sc.name, lm.name, t] <= lm.normal_flow_limit[t]
+                model[:flow][sc.name, lm.name, t] <=
+                lm.normal_flow_limit[t] + overflow[sc.name, lm.name, t]
             )
             eq_invest_line_flow_limit_lower[sc.name, lm.name, t] = @constraint(
                 model,
-                model[:flow][sc.name, lm.name, t] >= -lm.normal_flow_limit[t]
+                model[:flow][sc.name, lm.name, t] >=
+                -lm.normal_flow_limit[t] - overflow[sc.name, lm.name, t]
             )
         end
     end

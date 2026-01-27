@@ -99,6 +99,17 @@ and start-up and shutdown limits.
   some units must remain operational regardless of whether it is economical for
   them to do so. Must-run constraints are used to enforce such requirements.
 
+- **Investment decisions:** If investment costs are provided, the model decides
+  not only how to operate existing generators, but
+  also whether to invest in new units. An investment decision is
+  represented by a binary variable indicating whether the generator has been
+  built by a given time period. Once invested, a unit remains permanently
+  available (the investment decision is irreversible). A generator can only be
+  committed (turned on) after it has been invested in. Investment costs are
+  incurred at the time of the investment and can be scaled using an investment
+  cost weight to balance short-term operational costs against long-term capital
+  expenditures.
+
 ### Sets and constants
 
 | Symbol                          | Unit   | Description                                                                                |
@@ -156,7 +167,7 @@ and start-up and shutdown limits.
 \sum_{g \in G} \sum_{t \in T} \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk} Z^{\text{start}}_{gk}
 ```
 
-- (Expansion planning) Investment costs:
+- Investment costs:
 
 ```math
 W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
@@ -296,13 +307,13 @@ max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g}\right\}
 x^{\text{switch-off}}_{g,t+1}
 ```
 
-- (Expansion planning) Unit cannot be on if not invested (`eq_invest_unit_on_after_invest[g, t]`):
+- Unit cannot be on if not invested (`eq_invest_unit_on_after_invest[g, t]`):
 
 ```math
 x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
 ```
 
-- (Expansion planning) Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
+- Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
@@ -317,6 +328,14 @@ have status variables; the only optimization decision is on their power output
 level, which must remain between minimum and maximum time-varying amounts.
 Production cost curves for profiled generators are linear, making them again
 much simpler than thermal units.
+
+If investment costs are provided, the model
+decides not only how to operate the profiled generators, but also what new units to invest in.
+Profiled generators have their output bounds set to zero when not invested. Once a profiled
+generator is invested in, it remains permanently available, and its output is
+constrained by the time-varying minimum and maximum power profiles. Investment
+costs are incurred at the time of the investment and scaled by an investment
+cost weight.
 
 ### Constants
 
@@ -345,7 +364,7 @@ much simpler than thermal units.
 \right]
 ```
 
-- (Expansion planning) Investment costs:
+- Investment costs:
 
 ```math
 W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
@@ -360,13 +379,13 @@ W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
 ```
 
-- (Expansion planning) Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
+- Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
 ```
 
-- (Expansion planning) Unit generation bounds are zero if not invested (`eq_invest_unit_capacity_upper[s, g, t]` and `eq_invest_unit_capacity_lower[s, g, t]`):
+- Unit generation bounds are zero if not invested (`eq_invest_unit_capacity_upper[s, g, t]` and `eq_invest_unit_capacity_lower[s, g, t]`):
 
 ```math
 M^{\text{pmin}}_{sgt} x^{\text{invest}}_{gt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt} x^{\text{invest}}_{gt}
@@ -597,39 +616,59 @@ zero.
 
 Besides the net balance equations, we must also enforce flow limits on the
 transmission lines. Unlike flows in other optimization problems, power flows are
-directly determined by net injections and transmission line parameters, and must
-follow physical laws. UC.jl uses the DC linearization of AC power flow
-equations. Under this linearization, the flow $f_l$ in transmission line $l$ is
-given by $\sum_{b \in B} \delta_{bl} n_b$, where $\delta_{bl}$ is a constant
-known as _injection shift factor_ (also commonly called _power transfer
-distribution factor_), computed from the line parameters, and $n_b$ is the net
-injection at bus $b$.
+directly determined by voltage phase angles and transmission line parameters,
+and must follow physical laws. UC.jl uses the DC linearization of AC power flow
+equations. Under this linearization, the flow $f_l$ in transmission line $l$
+connecting buses $b$ (source) and $b'$ (target) is given by
+$B_l (\theta_b - \theta_{b'})$, where $B_l$ is the line susceptance (in
+siemens), and $\theta_b$, $\theta_{b'}$ are the voltage phase angles (in
+radians) at the source and target buses, respectively. One bus in the system is
+designated as the reference bus, with its phase angle fixed to zero.
+
+If investment costs are provided, the model decides whether to invest
+in new transmission lines or additional copies of existing lines. Investment
+decisions for lines are represented by integer variables indicating the number
+of line copies built by a given time period. Once invested, lines remain
+permanently available. The flow on a line is determined by the phase angle
+difference between its endpoints and the line's susceptance, multiplied by the
+number of invested copies. Flow limits are also scaled by the number of invested
+copies. Investment costs are incurred at the time of investment and scaled by an
+investment cost weight.
 
 !!! warning
 
-    To improve computational performance, power flow variables and constraints are generated on-the-fly, during `UnitCommitment.optimize!`; they are **not** added by `UnitCommitment.build_model`.
+    By default, UC.jl uses `ShiftFactorsFormulation` to compute power flows, which
+    has better computational performance and supports N-1 line contingencies. Under
+    this formulation, power flow variables and constraints are generated on-the-fly
+    during `UnitCommitment.optimize!`; they are **not** added by
+    `UnitCommitment.build_model`. When transmission expansion is enabled, UC.jl
+    must use `PhaseAngleFormulation` instead, since shift factors depend on the
+    network topology and would need to be recomputed for each investment decision.
 
 ### Sets and constants
 
-| Symbol                    | Unit  | Description                                                 |
-| :------------------------ | :---- | :---------------------------------------------------------- |
+| Symbol                       | Unit  | Description                                                          |
+| :--------------------------- | :---- | :------------------------------------------------------------------- |
+| $B$                          |       | Set of buses.                                                        |
+| $B_l$                        | S     | Susceptance of line $l$.                                             |
+| $L$                          |       | Set of transmission lines.                                           |
+| $M$                          | MW    | Big-M constant used in linearization of flow constraints.            |
 | $M^\text{limit}_{slt}$       | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.                |
+| $M^\text{max-copy}_{l}$      |       | Maximum number of copies of line $l$ that can be invested.           |
+| $M^\text{phase-limit}$       | rad   | Maximum absolute value of phase angles.                              |
+| $W^{\text{invest}}$          |       | Investment cost weight (multiplier applied to all investment costs). |
 | $Z^\text{overflow}_{slt}$    | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$.          |
 | $Z^{\text{invest}}_{lt}$     | \$    | Cost to invest line $l$ at time $t$.                                 |
-| $Z^{\text{susceptance}}_{l}$ | p.u.  | Susceptance of line $l$.                                             |
-| $W^{\text{invest}}$          |       | Investment cost weight (multiplier applied to all investment costs). |
-| $L$                          |       | Set of transmission lines.                                           |
-| $B$                          |       | Set of buses.                                                        |
 
 ### Decision variables
 
-| Symbol                    | JuMP name              | Unit | Description                                                           | Stage |
-| :------------------------ | :--------------------- | :--- | :-------------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{lt}$       | `invest_line[l,t]`        | Number of line $l$ invested at or before $t$.                                                       | Integer | 1     |
-| $y^\text{flow}_{slt}$     | _(added on-the-fly)_   | MW   | Flow in line $l$ at time $t$ and scenario $s$.                        | 2     |
-| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW   | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
-| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW   | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
-| $\theta_{sbt}$ | `theta[s,b,t]`      | rad   | Phase angle for bus $b$ at time $t$ and scenario $s$. | 2     |
+| Symbol                    | JuMP name              | Unit    | Description                                                           | Stage |
+| :------------------------ | :--------------------- | :------ | :-------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]`     | Integer | Number of copies of line $l$ invested at or before $t$.               | 1     |
+| $y^\text{flow}_{slt}$     | `flow[s,l,t]`          | MW      | Flow in line $l$ at time $t$ and scenario $s$.                        | 2     |
+| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW      | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
+| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
+| $\theta_{sbt}$            | `theta[s,b,t]`         | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
 
 ### Objective function terms
 
@@ -641,7 +680,7 @@ injection at bus $b$.
   \right]
 ```
 
-- (Expansion planning) Investment costs:
+- Investment costs:
 
 ```math
 W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{\text{invest}}_{lt} - x^{\text{invest}}_{l,t-1} \right)
@@ -649,38 +688,67 @@ W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{
 
 ### Constraints
 
-- Power produced equal power consumed (`eq_power_balance[s,t]`):
+- Power produced equals power consumed (`eq_power_balance[s,t]`):
 
 ```math
-\sum_{b \in B} \sum_{t \in T} y^\text{inj}_{sbt} = 0
+\sum_{b \in B} y^\text{inj}_{sbt} = 0
 ```
 
-- Definition of flow by shift factor (_enforced on-the-fly_):
-
-```math
-y^\text{flow}_{slt} = \sum_{b \in B} \delta_{sbl} y^\text{inj}_{sbt}
-```
-
-- Flow limits (_enforced on-the-fly_):
+- Phase angle bounds. The first bus is the reference bus, with its phase angle
+  fixed to zero:
 
 ```math
 \begin{align*}
- y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt} \\
--y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt}
+-M^\text{phase-limit} & \leq \theta_{sbt} \leq M^\text{phase-limit} \\
+\theta_{s,b_1,t} & = 0
 \end{align*}
 ```
 
-- (Expansion planning) Definition of flow by phase angle (`eq_invest_line_flow[s,l,t]`): for no investment lines, the investment variable is fixed to 1; for investment lines with max copy of 1, this constraint is linearized. Here $b$ and $b'$ are source bus and target bus of line $l$, respectively.
+- Line is permanently built once invested (`eq_invest_line_nondecreasing[l,t]`).
+  Only applies to candidate lines.
 
 ```math
-y^\text{flow}_{slt} = x^{\text{invest}}_{lt} Z^{\text{susceptance}}_{l} (\theta_{sbt} - \theta_{sb't})
+x^{\text{invest}}_{l,t-1} \leq x^{\text{invest}}_{lt}
 ```
 
-- (Expansion planning) Flow limits (`eq_invest_line_flow_limit_lower[s,l,t]` and `eq_invest_line_flow_limit_upper[s,l,t]`):
+- Definition of flow by phase angle. Here $b$ and $b'$ are the source and target
+  buses of line $l$, respectively. For existing lines, the flow is directly
+  determined by the phase angle difference (`eq_invest_line_flow[s,l,t]`):
+
+```math
+y^\text{flow}_{slt} = B_{l} (\theta_{sbt} - \theta_{sb't})
+```
+
+- For candidate lines with $M^\text{max-copy}_l > 1$, the flow is scaled by the
+  number of invested copies (`eq_invest_line_flow[s,l,t]`):
+
+```math
+y^\text{flow}_{slt} = x^{\text{invest}}_{lt} B_{l} (\theta_{sbt} - \theta_{sb't})
+```
+
+- For candidate lines with $M^\text{max-copy}_l = 1$, the constraint is
+  linearized using a big-M formulation (`eq_invest_line_flow_upper[s,l,t]` and
+  `eq_invest_line_flow_lower[s,l,t]`):
 
 ```math
 \begin{align*}
- y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt}\\
--y^\text{flow}_{slt} & \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt}
+y^\text{flow}_{slt} & \leq B_{l} (\theta_{sbt} - \theta_{sb't}) + M (1 - x^{\text{invest}}_{lt}) \\
+y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\text{invest}}_{lt})
 \end{align*}
+```
+
+- Flow limits for existing lines (`eq_invest_line_flow_limit_upper[s,l,t]` and
+  `eq_invest_line_flow_limit_lower[s,l,t]`). These are soft constraints that
+  allow overflow at a penalty:
+
+```math
+-M^\text{limit}_{slt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt}
+```
+
+- Flow limits for candidate lines, scaled by the number of invested copies
+  (`eq_invest_line_flow_limit_upper[s,l,t]` and
+  `eq_invest_line_flow_limit_lower[s,l,t]`). These are also soft constraints:
+
+```math
+-M^\text{limit}_{slt} x^{\text{invest}}_{lt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt} + y^\text{overflow}_{slt}
 ```
