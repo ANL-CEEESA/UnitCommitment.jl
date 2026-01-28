@@ -5,11 +5,11 @@
 using JuMP
 
 """
-    function compute_lmp(
-        model::JuMP.Model,
-        method::ConventionalLMP;
-        optimizer,
-    )::OrderedDict{Tuple{String,String,Int},Float64}
+	function compute_lmp(
+		model::JuMP.Model,
+		method::ConventionalLMP;
+		optimizer,
+	)::OrderedDict{Tuple{String,String,Int},Float64}
 
 Calculates conventional locational marginal prices of the given unit commitment
 instance. Returns a dictionary mapping `(bus_name, time)` to the marginal price.
@@ -18,13 +18,13 @@ Arguments
 ---------
 
 - `model`:
-    the UnitCommitment model, must be solved before calling this function.
+	the UnitCommitment model, must be solved before calling this function.
 
 - `method`:
-    the LMP method.
+	the LMP method.
 
 - `optimizer`:
-    the optimizer for solving the LP problem.
+	the optimizer for solving the LP problem.
 
 Examples
 --------
@@ -40,8 +40,8 @@ instance = UnitCommitment.read_benchmark("matpower/case118/2018-01-01")
 
 # Build the model
 model = UnitCommitment.build_model(
-    instance = instance,
-    optimizer = HiGHS.Optimizer,
+	instance = instance,
+	optimizer = HiGHS.Optimizer,
 )
 
 # Optimize the model
@@ -49,9 +49,9 @@ UnitCommitment.optimize!(model)
 
 # Compute the LMPs using the conventional method
 lmp = UnitCommitment.compute_lmp(
-    model,
-    ConventionalLMP(),
-    optimizer = HiGHS.Optimizer,
+	model,
+	ConventionalLMP(),
+	optimizer = HiGHS.Optimizer,
 )
 
 # Access the LMPs

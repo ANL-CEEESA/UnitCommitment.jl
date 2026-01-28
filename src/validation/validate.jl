@@ -28,8 +28,9 @@ function validate(
     instance::UnitCommitmentInstance,
     solution::Union{Dict,OrderedDict},
 )::Bool
-    "Thermal production (MW)" ∈ keys(solution) ?
-    solution = Dict("s1" => solution) : nothing
+    if "Spinning reserve (MW)" ∈ keys(solution)
+        solution = Dict("s1" => solution)
+    end
     err_count = 0
     err_count += _validate_units(instance, solution)
     err_count += _validate_reserve_and_demand(instance, solution)
@@ -565,7 +566,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                     for su in sc.storage_units
                 )
             end
-            if "Load curtail (MW)" in keys(solution)
+            if "Load curtail (MW)" in keys(solution[sc.name])
                 load_curtail = sum(
                     solution[sc.name]["Load curtail (MW)"][b.name][t] for
                     b in sc.buses

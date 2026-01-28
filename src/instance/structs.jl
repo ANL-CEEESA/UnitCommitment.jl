@@ -49,6 +49,7 @@ mutable struct ThermalUnit
     startup_categories::Vector{StartupCategory}
     reserves::Vector{Reserve}
     commitment_status::Vector{Union{Bool,Nothing}}
+    invest::Vector{Float64}
 end
 
 mutable struct TransmissionLine
@@ -60,6 +61,8 @@ mutable struct TransmissionLine
     normal_flow_limit::Vector{Float64}
     emergency_flow_limit::Vector{Float64}
     flow_limit_penalty::Vector{Float64}
+    invest::Vector{Float64}
+    max_copy::Int
 end
 
 mutable struct Contingency
@@ -81,6 +84,7 @@ mutable struct ProfiledUnit
     min_power::Vector{Float64}
     max_power::Vector{Float64}
     cost::Vector{Float64}
+    invest::Vector{Float64}
 end
 
 mutable struct StorageUnit
@@ -113,6 +117,7 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     lines::Vector{TransmissionLine}
     lodf::Array{Float64,2}
     name::String
+    investment_cost_weight::Float64
     power_balance_penalty::Vector{Float64}
     price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}

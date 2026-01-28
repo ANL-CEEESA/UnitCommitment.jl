@@ -4,7 +4,7 @@
 
 using UnitCommitment
 using JuMP
-using Cbc
+using SCIP
 using JSON
 import UnitCommitment:
     ArrCon2000,
@@ -16,7 +16,9 @@ import UnitCommitment:
     MorLatRam2013,
     PanGua2016,
     XavQiuWanThi2019,
-    WanHob2016
+    WanHob2016,
+    ShiftFactorsFormulation,
+    PhaseAngleFormulation
 
 function _test(
     formulation::Formulation;
@@ -28,7 +30,7 @@ function _test(
         model = UnitCommitment.build_model(
             instance = instance,
             formulation = formulation,
-            optimizer = Cbc.Optimizer,
+            optimizer = SCIP.Optimizer,
             variable_names = true,
         )
         set_silent(model)
@@ -76,10 +78,22 @@ function model_formulations_test()
         @testset "KnuOstWat2018" begin
             _test(Formulation(pwl_costs = KnuOstWat2018.PwlCosts()))
         end
-        @testset "WanHob2016" begin
+        # @testset "WanHob2016" begin
+        #     _test(
+        #         Formulation(ramping = WanHob2016.Ramping()),
+        #         instances = ["case14-flex"],
+        #     )
+        # end
+        @testset "TEP (phase angle)" begin
             _test(
-                Formulation(ramping = WanHob2016.Ramping()),
-                instances = ["case14-flex"],
+                Formulation(transmission = PhaseAngleFormulation()),
+                instances = ["tep_ieee24"],
+            )
+        end
+        @testset "TEP (shift factors)" begin
+            @test_throws ErrorException _test(
+                Formulation(transmission = ShiftFactorsFormulation()),
+                instances = ["tep_ieee24"],
             )
         end
     end

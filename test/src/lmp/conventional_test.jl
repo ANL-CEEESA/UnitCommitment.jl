@@ -2,13 +2,16 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, Cbc, HiGHS, JuMP
+using UnitCommitment, HiGHS, JuMP
 
 function solve_conventional_testcase(path::String)
     instance = UnitCommitment.read(path)
     model = UnitCommitment.build_model(
         instance = instance,
-        optimizer = optimizer_with_attributes(Cbc.Optimizer, "logLevel" => 0),
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        ),
         variable_names = true,
     )
     JuMP.set_silent(model)

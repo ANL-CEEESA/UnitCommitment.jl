@@ -40,7 +40,7 @@ Examples
 --------
 
 ```julia
-using UnitCommitment, JuMP, Cbc, HiGHS
+using UnitCommitment, JuMP, HiGHS
 
 import UnitCommitment: 
     TimeDecomposition,
@@ -77,7 +77,7 @@ solution = UnitCommitment.optimize!(
         inner_method = XavQiuWanThi2019.Method(),
         formulation = Formulation(),
     ),
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
     after_build = after_build,
     after_optimize = after_optimize,
 )

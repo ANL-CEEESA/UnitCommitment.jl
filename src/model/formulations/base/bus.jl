@@ -15,7 +15,7 @@ function _add_bus!(
 
         # Load curtailment
         curtail[sc.name, b.name, t] =
-            @variable(model, lower_bound = 0, upper_bound = b.load[t])
+            @variable(model, lower_bound = 0, upper_bound = max(0, b.load[t]))
 
         add_to_expression!(
             net_injection[sc.name, b.name, t],

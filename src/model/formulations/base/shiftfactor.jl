@@ -21,9 +21,16 @@ function _add_transmission_line!(
 end
 
 function _setup_transmission(
+    model::JuMP.Model,
     formulation::ShiftFactorsFormulation,
     sc::UnitCommitmentScenario,
 )::Nothing
+    # if any lines have positive "investment_cost", then this is a planning model
+    if any(l -> any(x -> x > 0, l.invest), sc.lines)
+        error(
+            "ShiftFactorsFormulation does not support positive investment costs. Use PhaseAngleFormulation instead.",
+        )
+    end
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf
     if length(sc.buses) == 1

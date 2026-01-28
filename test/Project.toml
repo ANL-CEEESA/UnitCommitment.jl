@@ -1,13 +1,12 @@
 name = "UnitCommitmentT"
 uuid = "a3b7a17a-ab64-45e4-a924-cd5ae7dc644e"
-authors = ["Alinson S. Xavier <git@axavier.org>"]
 version = "0.1.0"
+authors = ["Alinson S. Xavier <git@axavier.org>"]
 
 [deps]
-Cbc = "9961bab8-2fa3-5c5a-9d89-47fab24efd76"
+CompatHelper = "aa819f21-2bde-4658-8897-bab36330d9b7"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
-GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 HiGHS = "87dc4568-4c63-4d18-b0c0-bb2238e4078b"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
@@ -17,5 +16,13 @@ MPI = "da04e1cc-30fd-572f-bb4f-1f8673147195"
 MathOptInterface = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
+SCIP = "82193955-e24f-5292-bf16-6f2c5261a85f"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UnitCommitment = "64606440-39ea-11e9-0f29-3303a1d3d877"
+
+[sources]
+UnitCommitment = {path = ".."}
+
+[compat]
+JuliaFormatter = "0.14.4"
+SCIP = "0.12.7"

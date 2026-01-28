@@ -21,7 +21,7 @@ Arguments
 - `instance`:
     the instance.
 - `optimizer`:
-    the optimizer factory that should be attached to this model (e.g. Cbc.Optimizer).
+    the optimizer factory that should be attached to this model (e.g. HiGHS.Optimizer).
     If not provided, no optimizer will be attached.
 - `formulation`:
     the MIP formulation to use. By default, uses a formulation that combines
@@ -43,13 +43,13 @@ instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
 # Construct model (using state-of-the-art defaults)
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
 )
 
 # Construct model (using customized formulation)
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
     formulation = Formulation(
         pwl_costs = KnuOstWat2018.PwlCosts(),
         ramping = MorLatRam2013.Ramping(),
@@ -83,7 +83,7 @@ function build_model(;
         for sc in instance.scenarios
             @info "Building scenario $(sc.name) with " *
                   "probability $(sc.probability)"
-            _setup_transmission(formulation.transmission, sc)
+            _setup_transmission(model, formulation.transmission, sc)
             for l in sc.lines
                 _add_transmission_line!(model, l, formulation.transmission, sc)
             end
@@ -102,7 +102,7 @@ function build_model(;
             for su in sc.storage_units
                 _add_storage_unit!(model, su, sc)
             end
-            _add_system_wide_eqs!(model, sc)
+            _add_system_wide_eqs!(model, formulation.transmission, sc)
         end
         @objective(model, Min, model[:obj])
     end

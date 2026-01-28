@@ -25,6 +25,7 @@ function _add_unit_commitment!(
     _add_startup_cost_eqs!(model, g, formulation.startup_costs)
     _add_status_eqs!(model, g, formulation.status_vars)
     _add_commitment_status_eqs!(model, g)
+    _add_expansion!(model, g)
     return
 end
 
@@ -320,4 +321,44 @@ function _total_reserves(model, g, sc)::Vector
         ]
     end
     return reserve
+end
+
+function _add_expansion!(model, g)::Nothing
+    if g.invest[1] == 0.0
+        return
+    end
+
+    invest_unit = _init(model, :invest_unit)
+    if haskey(invest_unit, (g.name, 1))
+        return
+    end
+
+    eq_invest_unit_on_after_invest =
+        _init(model, :eq_invest_unit_on_after_invest)
+    eq_invest_unit_nondecreasing = _init(model, :eq_invest_unit_nondecreasing)
+
+    invest_unit[g.name, 0] = 0.0
+    is_on = model[:is_on]
+    investment_cost_weight = model[:instance].scenarios[1].investment_cost_weight
+
+    for t in 1:model[:instance].time
+        # Decision variable
+        invest_unit[g.name, t] = @variable(model, binary = true)
+
+        # Objective function terms
+        add_to_expression!(
+            model[:obj],
+            invest_unit[g.name, t] - invest_unit[g.name, t-1],
+            g.invest[t] * investment_cost_weight,
+        )
+
+        # Investment constraints
+        eq_invest_unit_on_after_invest[g.name, t] =
+            @constraint(model, is_on[g.name, t] <= invest_unit[g.name, t])
+        eq_invest_unit_nondecreasing[g.name, t] = @constraint(
+            model,
+            invest_unit[g.name, t-1] <= invest_unit[g.name, t]
+        )
+    end
+    return
 end

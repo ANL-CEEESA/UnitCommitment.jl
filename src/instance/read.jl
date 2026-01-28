@@ -5,13 +5,13 @@
 using Printf
 using JSON
 using DataStructures
-using GZip
+using CodecZlib
 import Base: getindex, time
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
 
 """
-    read_benchmark(name::AbstractString)::UnitCommitmentInstance
+	read_benchmark(name::AbstractString)::UnitCommitmentInstance
 
 Read one of the benchmark instances included in the package. See
 [Instances](guides/instances.md) for the entire list of benchmark instances available.
@@ -48,16 +48,24 @@ function _repair_scenario_names_and_probabilities!(
     path::Vector{String},
 )::Nothing
     total_weight = sum([sc.probability for sc in scenarios])
+    name_counts = Dict{String,Int}()
+
     for (sc_path, sc) in zip(path, scenarios)
-        sc.name !== "" ||
-            (sc.name = first(split(last(split(sc_path, "/")), ".")))
+        base =
+            sc.name == "" ? first(split(last(split(sc_path, "/")), ".")) :
+            sc.name
+
+        k = get(name_counts, base, 0)
+        name_counts[base] = k + 1
+        sc.name = k == 0 ? base : "$(base)_$k"
+
         sc.probability = (sc.probability / total_weight)
     end
     return
 end
 
 """
-    read(path::AbstractString)::UnitCommitmentInstance
+	read(path::AbstractString)::UnitCommitmentInstance
 
 Read a deterministic test case from the given file. The file may be gzipped.
 
@@ -79,7 +87,7 @@ function read(path::String)::UnitCommitmentInstance
 end
 
 """
-    read(path::Vector{String})::UnitCommitmentInstance
+	read(path::Vector{String})::UnitCommitmentInstance
 
 Read a stochastic unit commitment instance from the given files. Each file
 describes a scenario. The files may be gzipped.
@@ -101,15 +109,18 @@ function read(paths::Vector{String})::UnitCommitmentInstance
     return instance
 end
 
-function _read_scenario(path::String)::UnitCommitmentScenario
+function _open(f::Function, path::String)
     if endswith(path, ".gz")
-        scenario = _read(gzopen(path))
-    elseif endswith(path, ".json")
-        scenario = _read(open(path))
+        return Base.open(f, CodecZlib.GzipDecompressorStream, path, "r")
     else
-        error("Unsupported input format")
+        return Base.open(f, path, "r")
     end
-    return scenario
+end
+
+function _read_scenario(path::String)::UnitCommitmentScenario
+    _open(path) do file
+        return _read(file)
+    end
 end
 
 function _read(file::IO)::UnitCommitmentScenario
@@ -119,12 +130,9 @@ function _read(file::IO)::UnitCommitmentScenario
 end
 
 function _read_json(path::String)::OrderedDict
-    if endswith(path, ".gz")
-        file = GZip.gzopen(path)
-    else
-        file = open(path)
+    _open(path) do file
+        return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
     end
-    return JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing))
 end
 
 function _from_json(json; repair = true)::UnitCommitmentScenario
@@ -170,6 +178,8 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
     probability !== nothing || (probability = 1)
     scenario_name = json["Parameters"]["Scenario name"]
     scenario_name !== nothing || (scenario_name = "")
+    investment_cost_weight = json["Parameters"]["Investment cost weight"]
+    investment_cost_weight !== nothing || (investment_cost_weight = 1.0)
 
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
@@ -323,6 +333,9 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 startup_categories,
                 unit_reserves,
                 commitment_status,
+                timeseries(
+                    scalar(dict["Investment cost (\$)"], default = 0.0),
+                ),
             )
             push!(bus.thermal_units, unit)
             for r in unit_reserves
@@ -338,6 +351,9 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 timeseries(scalar(dict["Minimum power (MW)"], default = 0.0)),
                 timeseries(dict["Maximum power (MW)"]),
                 timeseries(dict["Cost (\$/MW)"]),
+                timeseries(
+                    scalar(dict["Investment cost (\$)"], default = 0.0),
+                ),
             )
             push!(bus.profiled_units, pu)
             push!(profiled_units, pu)
@@ -367,6 +383,10 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                     dict["Flow limit penalty (\$/MW)"],
                     default = [5000.0 for t in 1:T],
                 ),
+                timeseries(
+                    scalar(dict["Investment cost (\$)"], default = 0.0),
+                ),
+                scalar(dict["Max number of parallel circuits"], default = 1),
             )
             name_to_line[line_name] = line
             push!(lines, line)
@@ -461,6 +481,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         contingencies = contingencies,
         lines_by_name = Dict(l.name => l for l in lines),
         lines = lines,
+        investment_cost_weight = investment_cost_weight,
         power_balance_penalty = power_balance_penalty,
         price_sensitive_loads_by_name = Dict(ps.name => ps for ps in loads),
         price_sensitive_loads = loads,
