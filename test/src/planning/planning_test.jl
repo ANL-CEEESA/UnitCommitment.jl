@@ -6,40 +6,43 @@ using UnitCommitment
 using JuMP
 using SCIP
 using JSON
-import UnitCommitment:
-	PhaseAngleFormulation
+import UnitCommitment: PhaseAngleFormulation
 
-
-function _test_plan(
-	; formulation::Formulation = Formulation(transmission = PhaseAngleFormulation()),
-	instances = ["tep_garver6"],
-	dump::Bool = false,
-	stochastic::Bool = false,
+function _test_plan(;
+    formulation::Formulation = Formulation(
+        transmission = PhaseAngleFormulation(),
+    ),
+    instances,
+    dump::Bool = false,
+    stochastic::Bool = false,
 )::Nothing
-	for instance_name in instances
-		if stochastic
-			instance = UnitCommitment.read([fixture("$(instance_name).json.gz"), fixture("$(instance_name).json.gz")])
-		else
-			instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
-		end
-		model = UnitCommitment.build_model(
-			instance = instance,
-			formulation = formulation,
-			optimizer = SCIP.Optimizer,
-			variable_names = true,
-		)
-		set_silent(model)
-		UnitCommitment.optimize!(model)
-		solution = UnitCommitment.solution(model)
-		if dump
-			open("/tmp/ucjl.json", "w") do f
-				return write(f, JSON.json(solution, 2))
-			end
-			write_to_file(model, "/tmp/ucjl.lp")
-		end
-		@test UnitCommitment.validate(instance, solution)
-	end
-	return
+    for instance_name in instances
+        if stochastic
+            instance = UnitCommitment.read([
+                fixture("$(instance_name).json.gz"),
+                fixture("$(instance_name).json.gz"),
+            ])
+        else
+            instance = UnitCommitment.read(fixture("$(instance_name).json.gz"))
+        end
+        model = UnitCommitment.build_model(
+            instance = instance,
+            formulation = formulation,
+            optimizer = SCIP.Optimizer,
+            variable_names = true,
+        )
+        set_silent(model)
+        UnitCommitment.optimize!(model)
+        solution = UnitCommitment.solution(model)
+        if dump
+            open("/tmp/ucjl.json", "w") do f
+                return write(f, JSON.json(solution, 2))
+            end
+            write_to_file(model, "/tmp/ucjl.lp")
+        end
+        @test UnitCommitment.validate(instance, solution)
+    end
+    return
 end
 
 function model_planning_test()

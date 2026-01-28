@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, DataStructures, SCIP, HiGHS
+using UnitCommitment, DataStructures, HiGHS
 import UnitCommitment: TimeDecomposition, ConventionalLMP
 
 function solution_methods_TimeDecomposition_optimize_test()
@@ -12,7 +12,10 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(SCIP.Optimizer),
+            optimizer = optimizer_with_attributes(
+                HiGHS.Optimizer,
+                "log_to_console" => false,
+            ),
         )
         @test length(solution["Thermal production (MW)"]["g1"]) == 4
         @test length(solution["Is on"]["g2"]) == 4
@@ -43,7 +46,10 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(SCIP.Optimizer),
+            optimizer = optimizer_with_attributes(
+                HiGHS.Optimizer,
+                "log_to_console" => false,
+            ),
             after_build = after_build,
             after_optimize = after_optimize,
         )
@@ -61,7 +67,10 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(SCIP.Optimizer),
+            optimizer = optimizer_with_attributes(
+                HiGHS.Optimizer,
+                "log_to_console" => false,
+            ),
         )
         @test length(solution["case14"]["Thermal production (MW)"]["g3"]) == 4
         @test length(solution["case14"]["Is on"]["g4"]) == 4

@@ -118,7 +118,7 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     lines::Vector{TransmissionLine}
     lodf::Array{Float64,2}
     name::String
-    operation_cost_weight::Float64
+    investment_cost_weight::Float64
     power_balance_penalty::Vector{Float64}
     price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
     price_sensitive_loads::Vector{PriceSensitiveLoad}

@@ -2,7 +2,7 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, LinearAlgebra, Cbc, JuMP, JSON, GZip
+using UnitCommitment, LinearAlgebra, JuMP, JSON
 
 function instance_read_test()
     @testset "read_benchmark" begin
@@ -226,36 +226,36 @@ function instance_read_test()
     end
 
     @testset "read_benchmark tep" begin
-        instance = UnitCommitment.read(fixture("tep_garver6.json.gz"))
+        instance = UnitCommitment.read(fixture("tep_ieee24.json.gz"))
 
         @test repr(instance) == (
-            "UnitCommitmentInstance(1 scenarios, 0 thermal units, 3 profiled units, 6 buses, " *
-            "21 lines, 0 contingencies, 0 price sensitive loads, 1 time steps)"
+            "UnitCommitmentInstance(1 scenarios, 0 thermal units, 32 profiled " *
+            "units, 24 buses, 77 lines, 0 contingencies, 0 price sensitive loads, 1 time steps)"
         )
 
         @test length(instance.scenarios) == 1
         sc = instance.scenarios[1]
-        @test length(sc.lines) == 21
-        @test length(sc.buses) == 6
-        @test length(sc.profiled_units) == 3
+        @test length(sc.lines) == 77
+        @test length(sc.buses) == 24
+        @test length(sc.profiled_units) == 32
         @test instance.time == 1
         @test sc.time_step == 60
-        @test sc.operation_cost_weight == 1.0e6
+        @test sc.investment_cost_weight == 1.0
 
         @test sc.lines[1].name == "l1"
         @test sc.lines[1].source.name == "b1"
         @test sc.lines[1].target.name == "b2"
-        @test sc.lines[1].susceptance ≈ 2.5
-        @test sc.lines[1].normal_flow_limit == [100]
+        @test sc.lines[1].susceptance ≈ 71.94244604316548
+        @test sc.lines[1].normal_flow_limit == [175.0]
 
         @test sc.buses[3].name == "b3"
-        @test sc.buses[3].load == [40.0]
+        @test sc.buses[3].load == [540.0]
         @test sc.buses_by_name["b3"].name == "b3"
 
         unit = sc.profiled_units[1]
         @test unit.name == "gen1"
         @test unit.bus.name == "b1"
         @test sc.profiled_units_by_name["gen1"].name == "gen1"
-        @test sc.profiled_units_by_name["gen1"].invest[1] == 1000000.0
+        @test sc.profiled_units_by_name["gen1"].invest[1] == 0.0
     end
 end

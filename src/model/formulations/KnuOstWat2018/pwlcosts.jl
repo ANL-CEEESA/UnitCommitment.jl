@@ -67,21 +67,19 @@ function _add_production_piecewise_linear_eqs!(
                     (t < T ? Cw * switch_off[gn, t+1] : 0.0)
                 )
             else
-                # Equation (47a)/(48a) in Kneuven et al. (2020)
+                # Equation (47a) in Kneuven et al. (2020)
                 eq_segprod_limit_b[sc.name, gn, t, k] = @constraint(
                     model,
                     segprod[sc.name, gn, t, k] <=
                     g.cost_segments[k].mw[t] * is_on[gn, t] -
-                    Cv * switch_on[gn, t] -
-                    (t < T ? max(0, Cv - Cw) * switch_off[gn, t+1] : 0.0)
+                    Cv * switch_on[gn, t]
                 )
 
-                # Equation (47b)/(48b) in Kneuven et al. (2020)
+                # Equation (47b) in Kneuven et al. (2020)
                 eq_segprod_limit_c[sc.name, gn, t, k] = @constraint(
                     model,
                     segprod[sc.name, gn, t, k] <=
                     g.cost_segments[k].mw[t] * is_on[gn, t] -
-                    max(0, Cw - Cv) * switch_on[gn, t] -
                     (t < T ? Cw * switch_off[gn, t+1] : 0.0)
                 )
             end

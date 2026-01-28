@@ -1,3 +1,4 @@
+*-off.md
 *.bak
 *.gz
 *.ipynb
@@ -19,6 +20,7 @@
 .apdisk
 .com.apple.timemachine.donotpresent
 .fseventsd
+.idea
 .ipy*
 .vscode
 Icon
@@ -32,12 +34,11 @@ benchmark/tables
 benchmark/tmp.json
 build
 docs/_build
+docs/src/tutorials/customizing.md
+docs/src/tutorials/lmp.md
+docs/src/tutorials/market.md
+docs/src/tutorials/usage.md
 instances/**/*.json
 instances/_source
 local
 notebooks
-docs/src/tutorials/usage.md
-docs/src/tutorials/customizing.md
-docs/src/tutorials/market.md
-docs/src/tutorials/lmp.md
-*-off.md

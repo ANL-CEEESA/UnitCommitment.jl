@@ -84,17 +84,16 @@ function model_formulations_test()
         #         instances = ["case14-flex"],
         #     )
         # end
-        @testset "Planning-phaseangle" begin
+        @testset "TEP (phase angle)" begin
             _test(
                 Formulation(transmission = PhaseAngleFormulation()),
-                instances = ["tep_garver6"],
-                dump = true,
+                instances = ["tep_ieee24"],
             )
         end
-        @testset "Planning-shiftfactor" begin
+        @testset "TEP (shift factors)" begin
             @test_throws ErrorException _test(
                 Formulation(transmission = ShiftFactorsFormulation()),
-                instances = ["tep_garver6"],
+                instances = ["tep_ieee24"],
             )
         end
     end

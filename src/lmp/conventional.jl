@@ -60,33 +60,33 @@ lmp = UnitCommitment.compute_lmp(
 ```
 """
 function compute_lmp(
-	model::JuMP.Model,
-	::ConventionalLMP;
-	optimizer,
-)::OrderedDict{Tuple{String, String, Int}, Float64}
-	if !has_values(model)
-		error("The UC model must be solved before calculating the LMPs.")
-	end
-	lmp = OrderedDict()
+    model::JuMP.Model,
+    ::ConventionalLMP;
+    optimizer,
+)::OrderedDict{Tuple{String,String,Int},Float64}
+    if !has_values(model)
+        error("The UC model must be solved before calculating the LMPs.")
+    end
+    lmp = OrderedDict()
 
-	@info "Fixing binary variables and relaxing integrality..."
-	vals = Dict(v => value(v) for v in all_variables(model))
-	for v in all_variables(model)
-		if is_binary(v)
-			unset_binary(v)
-			fix(v, vals[v])
-		end
-	end
-	relax_integrality(model)
-	set_optimizer(model, optimizer)
+    @info "Fixing binary variables and relaxing integrality..."
+    vals = Dict(v => value(v) for v in all_variables(model))
+    for v in all_variables(model)
+        if is_binary(v)
+            unset_binary(v)
+            fix(v, vals[v])
+        end
+    end
+    relax_integrality(model)
+    set_optimizer(model, optimizer)
 
-	@info "Solving the LP..."
-	JuMP.optimize!(model)
+    @info "Solving the LP..."
+    JuMP.optimize!(model)
 
-	@info "Getting dual values (LMPs)..."
-	for (key, val) in model[:eq_net_injection]
-		lmp[key] = dual(val)
-	end
+    @info "Getting dual values (LMPs)..."
+    for (key, val) in model[:eq_net_injection]
+        lmp[key] = dual(val)
+    end
 
-	return lmp
+    return lmp
 end

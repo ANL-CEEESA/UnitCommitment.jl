@@ -35,7 +35,7 @@
 ## Sample Usage
 
 ```julia
-using Cbc
+using HiGHS
 using JuMP
 using UnitCommitment
 
@@ -53,13 +53,13 @@ instance = UnitCommitment.read_benchmark(
 # Construct model (using state-of-the-art defaults)
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
 )
 
 # Construct model (using customized formulation)
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = Cbc.Optimizer,
+    optimizer = HiGHS.Optimizer,
     formulation = Formulation(
         pwl_costs = KnuOstWat2018.PwlCosts(),
         ramping = MorLatRam2013.Ramping(),
