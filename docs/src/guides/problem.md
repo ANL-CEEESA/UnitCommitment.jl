@@ -498,12 +498,12 @@ integration of renewable energy resources.
 
 - **Operational costs:** Charging and discharging energy storage units may incur
   a cost/revenue. We assume that this cost/revenue is linear on the
-  charge/discharte rate ($/MW).
+  charge/discharge rate ($/MW).
 
 - **Efficiency:** Charging an energy storage unit for one hour with an input of
   1 MW might not result in an increase of the energy level in the device by
-  exactly 1 MWh, due to various inneficiencies in the charging process,
-  including coversion losses and heat generation. For similar reasons,
+  exactly 1 MWh, due to various inefficiencies in the charging process,
+  including conversion losses and heat generation. For similar reasons,
   discharging a storage unit for one hour at 1 MW might reduce the energy level
   by more than 1 MWh. Furthermore, even when the unit is not charging or
   discharging, some energy level may be gradually lost over time, due to
@@ -521,27 +521,44 @@ integration of renewable energy resources.
 - **Simultaneous charging and discharging:** Depending on charge and discharge
   costs/revenue, it may make sense mathematically to simultaneously charge and
   discharge the storage unit, thus keeping its energy level unchanged while
-  potentially collecting revenue. Additional binary variables and constraints
-  are required to prevent this incorrect model behavior.
+  potentially collecting revenue. By default, additional binary variables and
+  constraints are used to prevent this incorrect model behavior. This can be
+  controlled on a per-time-step basis using the $B^\text{simult}_{sut}$
+  parameter.
+
+- **Initial storage level:** Because the optimization considers a discrete time
+  window, the storage level at time $t=0$ (before the first time step) must be
+  provided as input data.
+
+- **Investment decisions:** Energy storage units may have a positive investment
+  cost, which indicates that the unit is only available if an investment is
+  made. Once invested, the unit remains permanently available. When not
+  invested, the storage level bounds are set to zero, preventing any charging or
+  discharging.
 
 ### Sets and constants
 
-| Symbol                                | Unit  | Description                                                                                           |
-| :------------------------------------ | :---- | :---------------------------------------------------------------------------------------------------- |
-| $\text{SU}$                           |       | Set of storage units                                                                                  |
-| $Z^\text{charge}_{sut}$               | \$/MW | Linear charge cost/revenue for unit $u$ at time $t$ in scenario $s$.                                  |
-| $Z^\text{discharge}_{sut}$            | \$/MW | Linear discharge cost/revenue for unit $u$ at time $t$ in scenario $s$.                               |
-| $M^\text{discharge-max}_{sut}$        | \$/MW | Maximum discharge rate for unit $u$ at time $t$ in scenario $s$.                                      |
-| $M^\text{discharge-min}_{sut}$        | \$/MW | Minimum discharge rate for unit $u$ at time $t$ in scenario $s$.                                      |
-| $M^\text{charge-max}_{sut}$           | \$/MW | Maximum charge rate for unit $u$ at time $t$ in scenario $s$.                                         |
-| $M^\text{charge-min}_{sut}$           | \$/MW | Minimum charge rate for unit $u$ at time $t$ in scenario $s$.                                         |
-| $M^\text{max-end-level}_{su}$         | MWh   | Maximum storage level of unit $u$ at the last time step in scenario $s$                               |
-| $M^\text{min-end-level}_{su}$         | MWh   | Minimum storage level of unit $u$ at the last time step in scenario $s$                               |
-| $\gamma^\text{loss}_{s,u,t}$          |       | Self-discharge factor.                                                                                |
-| $\gamma^\text{charge-eff}_{s,u,t}$    |       | Charging efficiency factor.                                                                           |
-| $\gamma^\text{discharge-eff}_{s,u,t}$ |       | Discharging efficiency factor.                                                                        |
-| $\gamma^\text{time-step}$             |       | Length of a time step, in hours. Should be 1.0 for hourly time steps, 0.5 for 30-min half steps, etc. |
-| $Z^{\text{invest}}_{s,u,t}$ | \$ | Investment cost for unit $u$ at time $t$ and scenario $s$.      |
+| Symbol                              | Unit  | Description                                                                                           |
+| :---------------------------------- | :---- | :---------------------------------------------------------------------------------------------------- |
+| $\text{SU}$                         |       | Set of storage units.                                                                                 |
+| $B^\text{simult}_{sut}$             |       | True if simultaneous charge and discharge is allowed for unit $u$ at time $t$ in scenario $s$.        |
+| $M^\text{init-level}_{su}$          | MWh   | Initial storage level of unit $u$ in scenario $s$ (at time $t=0$).                                    |
+| $M^\text{charge-max}_{sut}$         | MW    | Maximum charge rate for unit $u$ at time $t$ in scenario $s$.                                         |
+| $M^\text{charge-min}_{sut}$         | MW    | Minimum charge rate for unit $u$ at time $t$ in scenario $s$.                                         |
+| $M^\text{discharge-max}_{sut}$      | MW    | Maximum discharge rate for unit $u$ at time $t$ in scenario $s$.                                      |
+| $M^\text{discharge-min}_{sut}$      | MW    | Minimum discharge rate for unit $u$ at time $t$ in scenario $s$.                                      |
+| $M^\text{max-level}_{sut}$          | MWh   | Maximum storage level of unit $u$ at time $t$ in scenario $s$.                                        |
+| $M^\text{min-level}_{sut}$          | MWh   | Minimum storage level of unit $u$ at time $t$ in scenario $s$.                                        |
+| $M^\text{max-end-level}_{su}$       | MWh   | Maximum storage level of unit $u$ at the last time step in scenario $s$.                              |
+| $M^\text{min-end-level}_{su}$       | MWh   | Minimum storage level of unit $u$ at the last time step in scenario $s$.                              |
+| $W^{\text{invest}}$                 |       | Investment cost weight (multiplier applied to all investment costs).                                  |
+| $Z^\text{charge}_{sut}$             | \$/MW | Linear charge cost/revenue for unit $u$ at time $t$ in scenario $s$.                                  |
+| $Z^\text{discharge}_{sut}$          | \$/MW | Linear discharge cost/revenue for unit $u$ at time $t$ in scenario $s$.                               |
+| $Z^{\text{invest}}_{ut}$            | \$    | Investment cost for unit $u$ at time $t$.                                                             |
+| $\gamma^\text{charge-eff}_{sut}$    |       | Charging efficiency factor for unit $u$ at time $t$ in scenario $s$.                                  |
+| $\gamma^\text{discharge-eff}_{sut}$ |       | Discharging efficiency factor for unit $u$ at time $t$ in scenario $s$.                               |
+| $\gamma^\text{loss}_{sut}$          |       | Self-discharge factor for unit $u$ at time $t$ in scenario $s$.                                       |
+| $\gamma^\text{time-step}$           |       | Length of a time step, in hours. Should be 1.0 for hourly time steps, 0.5 for 30-min half steps, etc. |
 
 ### Decision variables
 
@@ -552,15 +569,13 @@ integration of renewable energy resources.
 | $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      | 2     |
 | $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    | 2     |
 | $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. | 2     |
-| $x^\text{invest}_{sut}$ | `invest[s,u,t]` | Binary | True if unit $u$ is installed at time $t$ in scenario $s$. | 1     |
+| $x^\text{invest}_{ut}$          | `invest[u,t]`           | Binary | True if unit $u$ is invested at or before time $t$.          | 1     |
 
 ### Objective function terms
 
 - Charge and discharge cost/revenue:
 
 ```math
-\sum_{u \in \text{SU}} \sum_{t \in T}
-  x^\text{invest}_{sut} Z^{\text{invest}}_{sut} +
 \sum_{s \in S} p(s) \left[
   \sum_{u \in \text{SU}} \sum_{t \in T} \left(
     y^\text{charge}_{sut} Z^\text{charge}_{sut} +
@@ -569,53 +584,73 @@ integration of renewable energy resources.
 \right]
 ```
 
+- Investment costs:
+
+```math
+W^{\text{invest}} \sum_{u \in \text{SU}} \sum_{t \in T} Z^{\text{invest}}_{ut} \left(x^{\text{invest}}_{ut} - x^{\text{invest}}_{u,t-1} \right)
+```
+
 ### Constraints
 
+- Variable bounds for storage level:
+
+```math
+M^\text{min-level}_{sut} \leq y^\text{level}_{sut} \leq M^\text{max-level}_{sut}
+```
+
 - Prevent simultaneous charge and discharge
-  (`eq_simultaneous_charge_and_discharge[s,u,t]`):
+  (`eq_simultaneous_charge_and_discharge[s,u,t]`). This constraint is only added
+  when $B^\text{simult}_{sut}$ is false:
 
 ```math
 x^\text{is-charging}_{sut} + x^\text{is-discharging}_{sut} \leq 1
 ```
 
-- Limit charge/discharge rate (`eq_min_charge_rate[s,u,t]`,
-  `eq_max_charge_rate[s,u,t]`, `eq_min_discharge_rate[s,u,t]` and
+- Limit charge rate (`eq_min_charge_rate[s,u,t]` and
+  `eq_max_charge_rate[s,u,t]`):
+
+```math
+x^\text{is-charging}_{sut} M^\text{charge-min}_{sut} \leq y^\text{charge}_{sut} \leq x^\text{is-charging}_{sut} M^\text{charge-max}_{sut}
+```
+
+- Limit discharge rate (`eq_min_discharge_rate[s,u,t]` and
   `eq_max_discharge_rate[s,u,t]`):
 
 ```math
-\begin{align*}
-y^\text{charge}_{sut} \leq x^\text{is-charging}_{sut} M^\text{charge-max}_{sut} \\
-y^\text{charge}_{sut} \geq x^\text{is-charging}_{sut} M^\text{charge-min}_{sut} \\
-y^\text{discharge}_{sut} \leq x^\text{is-discharging}_{sut} M^\text{discharge-max}_{sut} \\
-y^\text{discharge}_{sut} \geq x^\text{is-discharging}_{sut} M^\text{discharge-min}_{sut} \\
-\end{align*}
+x^\text{is-discharging}_{sut} M^\text{discharge-min}_{sut} \leq y^\text{discharge}_{sut} \leq x^\text{is-discharging}_{sut} M^\text{discharge-max}_{sut}
 ```
 
-- Calculate current storage level (`eq_storage_transition[s,u,t]`):
+- Calculate current storage level (`eq_storage_transition[s,u,t]`). For $t=1$,
+  $y^\text{level}_{su,t-1}$ is replaced by the initial level
+  $M^\text{init-level}_{su}$:
 
 ```math
 y^\text{level}_{sut} =
-(1 - \gamma^\text{loss}_{s,u,t}) y^\text{level}_{su,t-1} +
- \gamma^\text{time-step} \gamma^\text{charge-eff}_{s,u,t} y^\text{charge}_{sut} -
-\frac{\gamma^\text{time-step}}{\gamma^\text{discharge-eff}_{s,u,t}} y^\text{discharge}_{sut}
+(1 - \gamma^\text{loss}_{sut}) y^\text{level}_{su,t-1} +
+\gamma^\text{time-step} \gamma^\text{charge-eff}_{sut} y^\text{charge}_{sut} -
+\frac{\gamma^\text{time-step}}{\gamma^\text{discharge-eff}_{sut}} y^\text{discharge}_{sut}
 ```
 
 - Enforce storage level at last time step (`eq_ending_level[s,u]`):
 
 ```math
-M^\text{min-end-level}_{su} \leq y^\text{level}_{sut} \leq M^\text{max-end-level}_{su}
+M^\text{min-end-level}_{su} \leq y^\text{level}_{su,|T|} \leq M^\text{max-end-level}_{su}
 ```
 
-- (Expansion planning) Storage is permanently built once invested (`eq_invest_storage_nondecreasing[u, t]`):
+- Storage is permanently built once invested
+  (`eq_invest_storage_nondecreasing[u,t]`):
 
 ```math
 x^{\text{invest}}_{u,t-1} \leq x^{\text{invest}}_{ut}
 ```
 
-- (Expansion planning) Storage level bounds are zero if not invested (`eq_invest_storage_level_upper[s, u, t]` and `eq_invest_storage_level_lower[s, u, t]`). Lower bound of $y^\text{level}_{sut}$ is updated as well.
+- Storage level bounds depend on investment status
+  (`eq_invest_storage_level_upper[s,u,t]` and
+  `eq_invest_storage_level_lower[s,u,t]`). These constraints replace the
+  variable bounds above for units with investment decisions:
 
 ```math
-M^\text{min-end-level}_{su} x^{\text{invest}}_{ut} \leq y^\text{level}_{sut} \leq M^\text{max-end-level}_{su} x^{\text{invest}}_{ut}
+M^\text{min-level}_{sut} x^{\text{invest}}_{ut} \leq y^\text{level}_{sut} \leq M^\text{max-level}_{sut} x^{\text{invest}}_{ut}
 ```
 
 ## 7. Buses and transmission lines
@@ -665,28 +700,28 @@ of circuits cannot decrease.
 
 ### Sets and constants
 
-| Symbol                    | Unit  | Description                                                                |
-| :------------------------ | :---- | :------------------------------------------------------------------------- |
-| $B$                       |       | Set of buses.                                                              |
-| $B_l$                     | S     | Susceptance of line $l$.                                                   |
-| $L$                       |       | Set of transmission lines.                                                 |
-| $M$                       | MW    | Big-M constant used in linearization of flow constraints.                  |
-| $M^\text{limit}_{slt}$    | MW    | Flow limit per circuit for line $l$ at time $t$ and scenario $s$.          |
-| $M^\text{max-circuits}_{l}$ |     | Maximum number of circuits that can be invested along corridor $l$.        |
-| $M^\text{phase-limit}$    | rad   | Maximum absolute value of phase angles.                                    |
-| $W^{\text{invest}}$       |       | Investment cost weight (multiplier applied to all investment costs).       |
-| $Z^\text{overflow}_{slt}$ | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$.                |
-| $Z^{\text{invest}}_{lt}$  | \$    | Cost to invest in one circuit along corridor $l$ at time $t$.              |
+| Symbol                      | Unit  | Description                                                          |
+| :-------------------------- | :---- | :------------------------------------------------------------------- |
+| $B$                         |       | Set of buses.                                                        |
+| $B_l$                       | S     | Susceptance of line $l$.                                             |
+| $L$                         |       | Set of transmission lines.                                           |
+| $M$                         | MW    | Big-M constant used in linearization of flow constraints.            |
+| $M^\text{limit}_{slt}$      | MW    | Flow limit per circuit for line $l$ at time $t$ and scenario $s$.    |
+| $M^\text{max-circuits}_{l}$ |       | Maximum number of circuits that can be invested along corridor $l$.  |
+| $M^\text{phase-limit}$      | rad   | Maximum absolute value of phase angles.                              |
+| $W^{\text{invest}}$         |       | Investment cost weight (multiplier applied to all investment costs). |
+| $Z^\text{overflow}_{slt}$   | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$.          |
+| $Z^{\text{invest}}_{lt}$    | \$    | Cost to invest in one circuit along corridor $l$ at time $t$.        |
 
 ### Decision variables
 
-| Symbol                    | JuMP name              | Unit    | Description                                                              | Stage |
-| :------------------------ | :--------------------- | :------ | :----------------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]`     | Integer | Number of circuits invested along corridor $l$ at or before $t$.         | 1     |
-| $y^\text{flow}_{slt}$     | `flow[s,l,t]`          | MW      | Flow on line $l$ at time $t$ and scenario $s$.                           | 2     |
-| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW      | Total net injection at bus $b$, time $t$ and scenario $s$.               | 2     |
-| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$.    | 2     |
-| $\theta_{sbt}$            | `theta[s,b,t]`         | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                    | 2     |
+| Symbol                    | JuMP name              | Unit    | Description                                                           | Stage |
+| :------------------------ | :--------------------- | :------ | :-------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]`     | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
+| $y^\text{flow}_{slt}$     | `flow[s,l,t]`          | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
+| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW      | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
+| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
+| $\theta_{sbt}$            | `theta[s,b,t]`         | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
 
 ### Objective function terms
 
@@ -722,8 +757,8 @@ W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{
 \end{align*}
 ```
 
-- Circuits are permanently built once invested (`eq_invest_line_nondecreasing[l,t]`).
-  Only applies to candidate lines.
+- Circuits are permanently built once invested
+  (`eq_invest_line_nondecreasing[l,t]`). Only applies to candidate lines.
 
 ```math
 x^{\text{invest}}_{l,t-1} \leq x^{\text{invest}}_{lt}
@@ -737,8 +772,9 @@ x^{\text{invest}}_{l,t-1} \leq x^{\text{invest}}_{lt}
 y^\text{flow}_{slt} = B_{l} (\theta_{sbt} - \theta_{sb't})
 ```
 
-- For candidate lines with $M^\text{max-circuits}_l > 1$, the flow is scaled by the
-  number of invested circuits (`eq_invest_line_flow[s,l,t]`):
+- For candidate lines with $M^\text{max-circuits}_l > 1$, the flow is scaled by
+  the number of invested circuits (`eq_invest_line_flow[s,l,t]`):
+
 ```math
 y^\text{flow}_{slt} = x^{\text{invest}}_{lt} B_{l} (\theta_{sbt} - \theta_{sb't})
 ```
@@ -746,6 +782,7 @@ y^\text{flow}_{slt} = x^{\text{invest}}_{lt} B_{l} (\theta_{sbt} - \theta_{sb't}
 - For candidate lines with $M^\text{max-circuits}_l = 1$, the constraint is
   linearized using a big-M formulation (`eq_invest_line_flow_upper[s,l,t]` and
   `eq_invest_line_flow_lower[s,l,t]`):
+
 ```math
 \begin{align*}
 y^\text{flow}_{slt} & \leq B_{l} (\theta_{sbt} - \theta_{sb't}) + M (1 - x^{\text{invest}}_{lt}) \\
