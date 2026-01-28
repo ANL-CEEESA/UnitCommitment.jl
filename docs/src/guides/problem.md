@@ -99,16 +99,15 @@ and start-up and shutdown limits.
   some units must remain operational regardless of whether it is economical for
   them to do so. Must-run constraints are used to enforce such requirements.
 
-- **Investment decisions:** If investment costs are provided, the model decides
-  not only how to operate existing generators, but
-  also whether to invest in new units. An investment decision is
-  represented by a binary variable indicating whether the generator has been
-  built by a given time period. Once invested, a unit remains permanently
-  available (the investment decision is irreversible). A generator can only be
-  committed (turned on) after it has been invested in. Investment costs are
-  incurred at the time of the investment and can be scaled using an investment
-  cost weight to balance short-term operational costs against long-term capital
-  expenditures.
+- **Investment decisions:** Thermal generators may have a positive investment
+  cost, which indicates that this unit is only available if an investment is
+  made. An investment decision is represented by a binary variable indicating
+  whether the generator has been built at a given time period. Once invested,
+  the unit remains permanently available (the investment decision is
+  irreversible). A generator can only be committed (turned on) after it has been
+  invested in. Investment costs are incurred at the time of the investment and
+  can be scaled using an investment cost weight to balance short-term
+  operational costs against long-term capital expenditures.
 
 ### Sets and constants
 
@@ -132,7 +131,7 @@ and start-up and shutdown limits.
 | $Z^{\text{pmin}}_{gt}$          | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
 | $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
 | $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
-| $Z^{\text{invest}}_{gt}$         | \$     | Cost to invest unit $g$ at time $t$.                                            |
+| $Z^{\text{invest}}_{gt}$        | \$     | Cost to invest unit $g$ at time $t$.                                                       |
 | $W^{\text{invest}}$             |        | Investment cost weight (multiplier applied to all investment costs).                       |
 | $G^\text{therm}$                |        | Set of thermal generators.                                                                 |
 
@@ -144,7 +143,7 @@ and start-up and shutdown limits.
 | $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`    | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
 | $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`   | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
 | $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`    | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
-| $x^{\text{invest}}_{gt}$       | `invest_unit[g,t]`        | One if generator $g$ is invested at or before $t$.                                                       | Binary | 1     |
+| $x^{\text{invest}}_{gt}$      | `invest_unit[g,t]`  | One if generator $g$ is invested at or before $t$.                                            | Binary | 1     |
 | $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]` | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
 | $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`  | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
 | $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`  | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
@@ -313,7 +312,8 @@ x^{\text{switch-off}}_{g,t+1}
 x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
 ```
 
-- Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
+- Unit is permanently built once invested
+  (`eq_invest_unit_nondecreasing[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
@@ -329,30 +329,29 @@ level, which must remain between minimum and maximum time-varying amounts.
 Production cost curves for profiled generators are linear, making them again
 much simpler than thermal units.
 
-If investment costs are provided, the model
-decides not only how to operate the profiled generators, but also what new units to invest in.
-Profiled generators have their output bounds set to zero when not invested. Once a profiled
-generator is invested in, it remains permanently available, and its output is
-constrained by the time-varying minimum and maximum power profiles. Investment
-costs are incurred at the time of the investment and scaled by an investment
-cost weight.
+A profiled generator may have a positive investment cost, which indicates that
+the unit is only available if an investment is made to build it. Generators have
+their output bounds set to zero when not invested. Once a profiled generator is
+invested in, it remains permanently available, and its output is constrained by
+the time-varying minimum and maximum power profiles. Investment costs are
+incurred at the time of the investment and scaled by an investment cost weight.
 
 ### Constants
 
-| Symbol                  | Unit  | Description                                                      |
-| :---------------------- | :---- | :--------------------------------------------------------------- |
-| $M^{\text{pmax}}_{sgt}$ | MW    | Maximum power output at time $t$ and scenario $s$.               |
-| $M^{\text{pmin}}_{sgt}$ | MW    | Minimum power output at time $t$ and scenario $s$.               |
-| $Z^{\text{pvar}}_{sgt}$ | \$/MW | Generation cost at time $t$ and scenario $s$.                    |
-| $Z^{\text{invest}}_{gt}$| \$    | Cost to invest unit $g$ at time $t$.                             |
-| $W^{\text{invest}}$     |       | Investment cost weight (multiplier applied to all investment costs). |
+| Symbol                   | Unit  | Description                                                          |
+| :----------------------- | :---- | :------------------------------------------------------------------- |
+| $M^{\text{pmax}}_{sgt}$  | MW    | Maximum power output at time $t$ and scenario $s$.                   |
+| $M^{\text{pmin}}_{sgt}$  | MW    | Minimum power output at time $t$ and scenario $s$.                   |
+| $Z^{\text{pvar}}_{sgt}$  | \$/MW | Generation cost at time $t$ and scenario $s$.                        |
+| $Z^{\text{invest}}_{gt}$ | \$    | Cost to invest unit $g$ at time $t$.                                 |
+| $W^{\text{invest}}$      |       | Investment cost weight (multiplier applied to all investment costs). |
 
 ### Decision variables
 
-| Symbol                     | JuMP name              | Unit   | Description                                                   | Stage |
-| :------------------------- | :--------------------- | :----- | :------------------------------------------------------------ | :---- |
-| $x^{\text{invest}}_{gt}$   | `invest_unit[g,t]`     | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
-| $y^\text{prod}_{sgt}$      | `prod_profiled[s,g,t]` | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
+| Symbol                   | JuMP name              | Unit   | Description                                                   | Stage |
+| :----------------------- | :--------------------- | :----- | :------------------------------------------------------------ | :---- |
+| $x^{\text{invest}}_{gt}$ | `invest_unit[g,t]`     | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
+| $y^\text{prod}_{sgt}$    | `prod_profiled[s,g,t]` | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
 
@@ -370,7 +369,6 @@ cost weight.
 W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{\text{invest}}_{gt} - x^{\text{invest}}_{g,t-1} \right)
 ```
 
-
 ### Constraints
 
 - Variable bounds:
@@ -379,13 +377,16 @@ W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
 ```
 
-- Unit is permanently built once invested (`eq_invest_unit_nondecreasing[g, t]`):
+- Unit is permanently built once invested
+  (`eq_invest_unit_nondecreasing[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
 ```
 
-- Unit generation bounds are zero if not invested (`eq_invest_unit_capacity_upper[s, g, t]` and `eq_invest_unit_capacity_lower[s, g, t]`):
+- Unit generation bounds are zero if not invested
+  (`eq_invest_unit_capacity_upper[s, g, t]` and
+  `eq_invest_unit_capacity_lower[s, g, t]`):
 
 ```math
 M^{\text{pmin}}_{sgt} x^{\text{invest}}_{gt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt} x^{\text{invest}}_{gt}
@@ -625,15 +626,16 @@ siemens), and $\theta_b$, $\theta_{b'}$ are the voltage phase angles (in
 radians) at the source and target buses, respectively. One bus in the system is
 designated as the reference bus, with its phase angle fixed to zero.
 
-If investment costs are provided, the model decides whether to invest
-in new transmission lines or additional copies of existing lines. Investment
-decisions for lines are represented by integer variables indicating the number
-of line copies built by a given time period. Once invested, lines remain
-permanently available. The flow on a line is determined by the phase angle
-difference between its endpoints and the line's susceptance, multiplied by the
-number of invested copies. Flow limits are also scaled by the number of invested
-copies. Investment costs are incurred at the time of investment and scaled by an
-investment cost weight.
+For lines having a positive investment cost, the line is only present in the
+network if an investment is made to build it, represented by an integer variable
+indicating the number of parallel circuits constructed along a corridor by a
+given time period. Once built, lines/circuits remain permanently available. The
+flow on a line depends on the phase angle difference between its endpoints, the
+line's susceptance, and the number of invested circuits. Thermal limits are
+scaled proportionally with the number of circuits. Investment costs are incurred
+at the time of investment and scaled by a cost weight. Multiple circuits may be
+added over time (e.g., one at time 1, another at time 2), but the total number
+of circuits cannot decrease.
 
 !!! warning
 
@@ -647,28 +649,28 @@ investment cost weight.
 
 ### Sets and constants
 
-| Symbol                       | Unit  | Description                                                          |
-| :--------------------------- | :---- | :------------------------------------------------------------------- |
-| $B$                          |       | Set of buses.                                                        |
-| $B_l$                        | S     | Susceptance of line $l$.                                             |
-| $L$                          |       | Set of transmission lines.                                           |
-| $M$                          | MW    | Big-M constant used in linearization of flow constraints.            |
-| $M^\text{limit}_{slt}$       | MW    | Flow limit for line $l$ at time $t$ and scenario $s$.                |
-| $M^\text{max-copy}_{l}$      |       | Maximum number of copies of line $l$ that can be invested.           |
-| $M^\text{phase-limit}$       | rad   | Maximum absolute value of phase angles.                              |
-| $W^{\text{invest}}$          |       | Investment cost weight (multiplier applied to all investment costs). |
-| $Z^\text{overflow}_{slt}$    | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$.          |
-| $Z^{\text{invest}}_{lt}$     | \$    | Cost to invest line $l$ at time $t$.                                 |
+| Symbol                    | Unit  | Description                                                                |
+| :------------------------ | :---- | :------------------------------------------------------------------------- |
+| $B$                       |       | Set of buses.                                                              |
+| $B_l$                     | S     | Susceptance of line $l$.                                                   |
+| $L$                       |       | Set of transmission lines.                                                 |
+| $M$                       | MW    | Big-M constant used in linearization of flow constraints.                  |
+| $M^\text{limit}_{slt}$    | MW    | Flow limit per circuit for line $l$ at time $t$ and scenario $s$.          |
+| $M^\text{max-circuits}_{l}$ |     | Maximum number of circuits that can be invested along corridor $l$.        |
+| $M^\text{phase-limit}$    | rad   | Maximum absolute value of phase angles.                                    |
+| $W^{\text{invest}}$       |       | Investment cost weight (multiplier applied to all investment costs).       |
+| $Z^\text{overflow}_{slt}$ | \$/MW | Overflow penalty for line $l$ at time $t$ and scenario $s$.                |
+| $Z^{\text{invest}}_{lt}$  | \$    | Cost to invest in one circuit along corridor $l$ at time $t$.              |
 
 ### Decision variables
 
-| Symbol                    | JuMP name              | Unit    | Description                                                           | Stage |
-| :------------------------ | :--------------------- | :------ | :-------------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]`     | Integer | Number of copies of line $l$ invested at or before $t$.               | 1     |
-| $y^\text{flow}_{slt}$     | `flow[s,l,t]`          | MW      | Flow in line $l$ at time $t$ and scenario $s$.                        | 2     |
-| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW      | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
-| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
-| $\theta_{sbt}$            | `theta[s,b,t]`         | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
+| Symbol                    | JuMP name              | Unit    | Description                                                              | Stage |
+| :------------------------ | :--------------------- | :------ | :----------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]`     | Integer | Number of circuits invested along corridor $l$ at or before $t$.         | 1     |
+| $y^\text{flow}_{slt}$     | `flow[s,l,t]`          | MW      | Flow on line $l$ at time $t$ and scenario $s$.                           | 2     |
+| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW      | Total net injection at bus $b$, time $t$ and scenario $s$.               | 2     |
+| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$.    | 2     |
+| $\theta_{sbt}$            | `theta[s,b,t]`         | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                    | 2     |
 
 ### Objective function terms
 
@@ -704,7 +706,7 @@ W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{
 \end{align*}
 ```
 
-- Line is permanently built once invested (`eq_invest_line_nondecreasing[l,t]`).
+- Circuits are permanently built once invested (`eq_invest_line_nondecreasing[l,t]`).
   Only applies to candidate lines.
 
 ```math
@@ -719,17 +721,15 @@ x^{\text{invest}}_{l,t-1} \leq x^{\text{invest}}_{lt}
 y^\text{flow}_{slt} = B_{l} (\theta_{sbt} - \theta_{sb't})
 ```
 
-- For candidate lines with $M^\text{max-copy}_l > 1$, the flow is scaled by the
-  number of invested copies (`eq_invest_line_flow[s,l,t]`):
-
+- For candidate lines with $M^\text{max-circuits}_l > 1$, the flow is scaled by the
+  number of invested circuits (`eq_invest_line_flow[s,l,t]`):
 ```math
 y^\text{flow}_{slt} = x^{\text{invest}}_{lt} B_{l} (\theta_{sbt} - \theta_{sb't})
 ```
 
-- For candidate lines with $M^\text{max-copy}_l = 1$, the constraint is
+- For candidate lines with $M^\text{max-circuits}_l = 1$, the constraint is
   linearized using a big-M formulation (`eq_invest_line_flow_upper[s,l,t]` and
   `eq_invest_line_flow_lower[s,l,t]`):
-
 ```math
 \begin{align*}
 y^\text{flow}_{slt} & \leq B_{l} (\theta_{sbt} - \theta_{sb't}) + M (1 - x^{\text{invest}}_{lt}) \\
@@ -745,7 +745,7 @@ y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\tex
 -M^\text{limit}_{slt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt}
 ```
 
-- Flow limits for candidate lines, scaled by the number of invested copies
+- Flow limits for candidate lines, scaled by the number of invested circuits
   (`eq_invest_line_flow_limit_upper[s,l,t]` and
   `eq_invest_line_flow_limit_lower[s,l,t]`). These are also soft constraints:
 

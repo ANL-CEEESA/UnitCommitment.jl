@@ -1,6 +1,12 @@
 # JSON data format
 
-An instance of the stochastic security-constrained unit commitment (SCUC) problem is composed multiple scenarios. Each scenario should be described in an individual JSON file containing the main section belows. For deterministic instances, a single scenario file, following the same format below, may also be provided. Fields that are allowed to differ among scenarios are marked as "uncertain". Fields that are allowed to be time-dependent are marked as "time series".
+An instance of the stochastic security-constrained unit commitment (SCUC)
+problem is composed multiple scenarios. Each scenario should be described in an
+individual JSON file containing the main section belows. For deterministic
+instances, a single scenario file, following the same format below, may also be
+provided. Fields that are allowed to differ among scenarios are marked as
+"uncertain". Fields that are allowed to be time-dependent are marked as "time
+series".
 
 - [Parameters](#Parameters)
 - [Buses](#Buses)
@@ -11,11 +17,15 @@ An instance of the stochastic security-constrained unit commitment (SCUC) proble
 - [Reserves](#Reserves)
 - [Contingencies](#Contingencies)
 
-Each section is described in detail below. See [case118/2017-01-01.json.gz](https://axavier.org/UnitCommitment.jl/0.4/instances/matpower/case118/2017-01-01.json.gz) for a complete example.
+Each section is described in detail below. See
+[case118/2017-01-01.json.gz](https://axavier.org/UnitCommitment.jl/0.4/instances/matpower/case118/2017-01-01.json.gz)
+for a complete example.
 
 ### Parameters
 
-This section describes system-wide parameters, such as power balance penalty, and optimization parameters, such as the length of the planning horizon and the time.
+This section describes system-wide parameters, such as power balance penalty,
+and optimization parameters, such as the length of the planning horizon and the
+time.
 
 | Key                                        | Description                                                                                                                                                                                                                          | Default  | Time series? | Uncertain? |
 | :----------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
@@ -24,8 +34,8 @@ This section describes system-wide parameters, such as power balance penalty, an
 | `Time step (min)`                          | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc).                                                                                                                                           |   `60`   |      No      |     No     |
 | `Power balance penalty ($/MW)`             | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.                       | `1000.0` |      No      |    Yes     |
 | `Scenario name`                            | Name of the scenario.                                                                                                                                                                                                                |  `"s1"`  |      No      |    ---     |
-| `Scenario weight`                          | Weight of the scenario. The scenario weight can be any positive real number, that is, it does not have to be between zero and one. The package normalizes the weights to ensure that the probability of all scenarios sum up to one. |   `1.0`    |      No      |    ---     |
-| `Investment cost weight`                          | Weighting factor applied to investment costs. For transmission expansion planning problems, this can be used to scale investment costs relative to operation costs (e.g., convert one-time investment costs to hourly). |   `1.0`    |      No      |    ---     |
+| `Scenario weight`                          | Weight of the scenario. The scenario weight can be any positive real number, that is, it does not have to be between zero and one. The package normalizes the weights to ensure that the probability of all scenarios sum up to one. |  `1.0`   |      No      |    ---     |
+| `Investment cost weight`                   | Weighting factor applied to investment costs. For transmission expansion planning problems, this can be used to scale investment costs relative to operation costs (e.g., convert one-time investment costs to hourly).              |  `1.0`   |      No      |    ---     |
 
 #### Example
 
@@ -67,10 +77,16 @@ This section describes the characteristics of each bus in the system.
 
 ### Generators
 
-This section describes all generators in the system. Two types of units can be specified:
+This section describes all generators in the system. Two types of units can be
+specified:
 
-- **Thermal units:** Units that produce power by converting heat into electrical energy, such as coal and oil power plants. These units use a more complex model, with binary decision variables, and various constraints to enforce ramp rates and minimum up/down time.
-- **Profiled units:** Simplified model for units that do not require the constraints mentioned above, only a maximum and minimum power output for each time period. Typically used for renewables and hydro.
+- **Thermal units:** Units that produce power by converting heat into electrical
+  energy, such as coal and oil power plants. These units use a more complex
+  model, with binary decision variables, and various constraints to enforce ramp
+  rates and minimum up/down time.
+- **Profiled units:** Simplified model for units that do not require the
+  constraints mentioned above, only a maximum and minimum power output for each
+  time period. Typically used for renewables and hydro.
 
 #### Thermal Units
 
@@ -91,22 +107,30 @@ This section describes all generators in the system. Two types of units can be s
 | `Must run?`                                                  | If `true`, the generator should be committed, even if that is not economical (Boolean).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `false`           |     Yes      |    Yes     |
 | `Reserve eligibility`                                        | List of reserve products this generator is eligibe to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `[]`              |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be commited at that time period; if `false`, the generator must not be commited at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                         | `null`            |     Yes      |    Yes     |
-| `Investment cost ($)`                | Cost to build a candidate generation unit. Should be $0 for existing units.                                                                                                                                                                     | `0.0` |      No      |    No     |
+| `Investment cost ($)`                                        | Cost to build a candidate generation unit. Should be $0 for existing units.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | `0.0`             |      No      |     No     |
 
 #### Profiled Units
 
-| Key                  | Description                                                                       | Default  | Time series? | Uncertain? |
-| :------------------- | :-------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
-| `Bus`                | Identifier of the bus where this generator is located (string).                   | Required |      No      |    Yes     |
-| `Type`               | Type of the generator (string). For profiled generators, this must be `Profiled`. | Required |      No      |     No     |
-| `Cost ($/MW)`        | Cost incurred for serving each MW of power by this generator.                     | Required |     Yes      |    Yes     |
-| `Minimum power (MW)` | Minimum amount of power this generator may supply.                                |  `0.0`   |     Yes      |    Yes     |
-| `Maximum power (MW)` | Maximum amount of power this generator may supply.                                | Required |     Yes      |    Yes     |
-| `Investment cost ($)`| Cost to build a candidate generation unit. $0.0 for existing units.               |  `0.0`.  |      No      |     No     |
+| Key                   | Description                                                                       | Default  | Time series? | Uncertain? |
+| :-------------------- | :-------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Bus`                 | Identifier of the bus where this generator is located (string).                   | Required |      No      |    Yes     |
+| `Type`                | Type of the generator (string). For profiled generators, this must be `Profiled`. | Required |      No      |     No     |
+| `Cost ($/MW)`         | Cost incurred for serving each MW of power by this generator.                     | Required |     Yes      |    Yes     |
+| `Minimum power (MW)`  | Minimum amount of power this generator may supply.                                |  `0.0`   |     Yes      |    Yes     |
+| `Maximum power (MW)`  | Maximum amount of power this generator may supply.                                | Required |     Yes      |    Yes     |
+| `Investment cost ($)` | Cost to build a candidate generation unit. Should be $0 for existing units.       |  `0.0`.  |      No      |     No     |
+
 #### Production costs and limits
 
-Production costs are represented as piecewise-linear curves. Figure 1 shows an example cost curve with three segments, where it costs \$1400, \$1600, \$2200 and \$2400 to generate, respectively, 100, 110, 130 and 135 MW of power. To model this generator, `Production cost curve (MW)` should be set to `[100, 110, 130, 135]`, and `Production cost curve ($)` should be set to `[1400, 1600, 2200, 2400]`.
-Note that this curve also specifies the production limits. Specifically, the first point identifies the minimum power output when the unit is operational, while the last point identifies the maximum power output.
+Production costs are represented as piecewise-linear curves. Figure 1 shows an
+example cost curve with three segments, where it costs \$1400, \$1600, \$2200
+and \$2400 to generate, respectively, 100, 110, 130 and 135 MW of power. To
+model this generator, `Production cost curve (MW)` should be set to
+`[100, 110, 130, 135]`, and `Production cost curve ($)` should be set to
+`[1400, 1600, 2200, 2400]`. Note that this curve also specifies the production
+limits. Specifically, the first point identifies the minimum power output when
+the unit is operational, while the last point identifies the maximum power
+output.
 
 ```@raw html
 <center>
@@ -118,9 +142,19 @@ Note that this curve also specifies the production limits. Specifically, the fir
 
 #### Additional remarks:
 
-- For time-dependent production limits or time-dependent production costs, the usage of nested arrays is allowed. For example, if `Production cost curve (MW)` is set to `[5.0, [10.0, 12.0, 15.0, 20.0]]`, then the unit may generate at most 10, 12, 15 and 20 MW of power during time steps 1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed to at 5 MW.
-- There is no limit to the number of piecewise-linear segments, and different generators may have a different number of segments.
-- If `Production cost curve (MW)` and `Production cost curve ($)` both contain a single element, then the generator must produce exactly that amount of power when operational. To specify that the generator may produce any amount of power up to a certain limit `P`, the parameter `Production cost curve (MW)` should be set to `[0, P]`.
+- For time-dependent production limits or time-dependent production costs, the
+  usage of nested arrays is allowed. For example, if
+  `Production cost curve (MW)` is set to `[5.0, [10.0, 12.0, 15.0, 20.0]]`, then
+  the unit may generate at most 10, 12, 15 and 20 MW of power during time steps
+  1, 2, 3 and 4, respectively. The minimum output for all time periods is fixed
+  to at 5 MW.
+- There is no limit to the number of piecewise-linear segments, and different
+  generators may have a different number of segments.
+- If `Production cost curve (MW)` and `Production cost curve ($)` both contain a
+  single element, then the generator must produce exactly that amount of power
+  when operational. To specify that the generator may produce any amount of
+  power up to a certain limit `P`, the parameter `Production cost curve (MW)`
+  should be set to `[0, P]`.
 - Production cost curves must be convex.
 
 #### Example
@@ -170,7 +204,9 @@ Note that this curve also specifies the production limits. Specifically, the fir
 
 ### Storage units
 
-This section describes energy storage units in the system which charge and discharge power. The storage units consume power while charging, and generate power while discharging.
+This section describes energy storage units in the system which charge and
+discharge power. The storage units consume power while charging, and generate
+power while discharging.
 
 | Key                                           | Description                                                                                                                                                 |        Default        | Time series? | Uncertain? |
 | :-------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------: | :----------: | :--------: |
@@ -246,7 +282,12 @@ This section describes energy storage units in the system which charge and disch
 
 ### Price-sensitive loads
 
-This section describes components in the system which may increase or reduce their energy consumption according to the energy prices. Fixed loads (as described in the `buses` section) are always served, regardless of the price, unless there is significant congestion in the system or insufficient production capacity. Price-sensitive loads, on the other hand, are only served if it is economical to do so.
+This section describes components in the system which may increase or reduce
+their energy consumption according to the energy prices. Fixed loads (as
+described in the `buses` section) are always served, regardless of the price,
+unless there is significant congestion in the system or insufficient production
+capacity. Price-sensitive loads, on the other hand, are only served if it is
+economical to do so.
 
 | Key              | Description                                                                                  | Default  | Time series? | Uncertain? |
 | :--------------- | :------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
@@ -270,18 +311,19 @@ This section describes components in the system which may increase or reduce the
 
 ### Transmission lines
 
-This section describes the characteristics of transmission system, such as its topology and the susceptance of each transmission line.
+This section describes the characteristics of transmission system, such as its
+topology and the susceptance of each transmission line.
 
-| Key                         | Description                                                                                                                                                                                                                       | Default  | Time series? | Uncertain? |
-| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
-| `Source bus`                | Identifier of the bus where the transmission line originates.                                                                                                                                                                     | Required |      No      |    Yes     |
-| `Target bus`                | Identifier of the bus where the transmission line reaches.                                                                                                                                                                        | Required |      No      |    Yes     |
-| `Susceptance (S)`           | Susceptance of the transmission line (in siemens).                                                                                                                                                                                | Required |      No      |    Yes     |
-| `Normal flow limit (MW)`    | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state.                                                                                                      | `+inf`   |     Yes      |    Yes     |
-| `Emergency flow limit (MW)` | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line).                                                              | `+inf`   |      Y       |    Yes     |
-| `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. | `5000.0` |     Yes      |    Yes     |
-| `Investment cost ($)`                | Cost to build a candidate transmission line. $0 for existing lines.                                                                                                                                                                      | `0.0` |      No      |    No     |
-| `Max number of parallel circuits`| Maximum number of lines can be built in this corridor.  | `1` |      No      |    No     |
+| Key                               | Description                                                                                                                                                                                                                               | Default  | Time series? | Uncertain? |
+| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
+| `Source bus`                      | Identifier of the bus where the transmission line originates.                                                                                                                                                                             | Required |      No      |    Yes     |
+| `Target bus`                      | Identifier of the bus where the transmission line reaches.                                                                                                                                                                                | Required |      No      |    Yes     |
+| `Susceptance (S)`                 | Susceptance of the transmission line (in siemens).                                                                                                                                                                                        | Required |      No      |    Yes     |
+| `Normal flow limit (MW)`          | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state. For candidate lines, this represents the limit per invested circuit.                                         | `+inf`   |     Yes      |    Yes     |
+| `Emergency flow limit (MW)`       | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). For candidate lines, this represents the limit per invested circuit. | `+inf`   |      Y       |    Yes     |
+| `Flow limit penalty ($/MW)`       | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged.         | `5000.0` |     Yes      |    Yes     |
+| `Investment cost ($)`             | For candidate lines, the cost to build each parallel circuit along this corridor. For existing lines, this should be zero.                                                                                                                | `0.0`    |      No      |     No     |
+| `Max number of parallel circuits` | For candidate lines, the maximum number of parallel circuits that can be built along this corridor. Unused for existing lines.                                                                                                                                      | `1`      |      No      |     No     |
 
 #### Example
 
@@ -332,7 +374,8 @@ This section describes the hourly amount of reserves required.
 
 ### Contingencies
 
-This section describes credible contingency scenarios in the optimization, such as the loss of a transmission line or generator.
+This section describes credible contingency scenarios in the optimization, such
+as the loss of a transmission line or generator.
 
 | Key                   | Description                                                                                       | Default | Uncertain? |
 | :-------------------- | :------------------------------------------------------------------------------------------------ | :-----: | :--------: |
@@ -359,7 +402,11 @@ This section describes credible contingency scenarios in the optimization, such 
 
 #### Time series parameters
 
-Many numerical properties in the JSON file can be specified either as a single floating point number if they are time-independent, or as an array containing exactly `T` elements, if they are time-dependent, where `T` is the number of time steps in the planning horizon. For example, both formats below are valid when `T=3`:
+Many numerical properties in the JSON file can be specified either as a single
+floating point number if they are time-independent, or as an array containing
+exactly `T` elements, if they are time-dependent, where `T` is the number of
+time steps in the planning horizon. For example, both formats below are valid
+when `T=3`:
 
 ```json
 {
@@ -368,7 +415,8 @@ Many numerical properties in the JSON file can be specified either as a single f
 }
 ```
 
-The value `T` depends on both `Time horizon (h)` and `Time step (min)`, as the table below illustrates.
+The value `T` depends on both `Time horizon (h)` and `Time step (min)`, as the
+table below illustrates.
 
 | Time horizon (h) | Time step (min) |  T  |
 | :--------------: | :-------------: | :-: |
@@ -382,7 +430,10 @@ The value `T` depends on both `Time horizon (h)` and `Time step (min)`, as the t
 ## Current limitations
 
 - Network topology must remain the same for all time periods.
-- Only N-1 transmission contingencies are supported. Generator contingencies are not currently supported.
-- Time-varying minimum production amounts are not currently compatible with ramp/startup/shutdown limits.
-- Flexible ramping products can only be acquired under the `WanHob2016` formulation, which does not support spinning reserves.
+- Only N-1 transmission contingencies are supported. Generator contingencies are
+  not currently supported.
+- Time-varying minimum production amounts are not currently compatible with
+  ramp/startup/shutdown limits.
+- Flexible ramping products can only be acquired under the `WanHob2016`
+  formulation, which does not support spinning reserves.
 - The set of generators must be the same in all scenarios.
