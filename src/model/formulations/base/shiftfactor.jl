@@ -28,7 +28,7 @@ function _setup_transmission(
     # if any lines have positive "investment_cost", then this is a planning model
     if any(l -> any(x -> x > 0, l.invest), sc.lines)
         error(
-            "Solving for planning model but shift factor formulation is selected.",
+            "ShiftFactorsFormulation does not support positive investment costs. Use PhaseAngleFormulation instead.",
         )
     end
     isf = formulation.precomputed_isf

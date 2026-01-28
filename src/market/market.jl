@@ -59,7 +59,7 @@ Examples
 --------
 
 ```julia
-using UnitCommitment, HiGHS, HiGHS
+using UnitCommitment, HiGHS
 
 import UnitCommitment: 
     MarketSettings,

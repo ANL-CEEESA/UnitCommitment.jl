@@ -14,7 +14,7 @@ The code snippet below illustrates an example of solving an instance by decompos
 > Specifying `TimeDecomposition` as the value of the `inner_method` field of another `TimeDecomposition` causes errors when calling the `optimize!` function due to the different argument structures between the two `optimize!` functions.
 
 ```julia
-using UnitCommitment, JuMP, HiGHS, HiGHS
+using UnitCommitment, JuMP, HiGHS
 
 import UnitCommitment:
     TimeDecomposition,
