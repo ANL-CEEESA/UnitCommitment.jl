@@ -44,9 +44,9 @@ end
 
 function model_planning_test()
 	@testset "planning" begin
-		# @testset "default" begin
-		# 	_test_plan()
-		# end
+		@testset "default" begin
+			_test_plan()
+		end
 		# @testset "ieee14" begin
 		# 	_test_plan(instances = ["tep_ieee14"], dump=true)
 		# end
@@ -56,9 +56,9 @@ function model_planning_test()
 		# @testset "ieee24_B" begin
 		# 	_test_plan(instances = ["tep_ieee24_caseB"], dump=true)
 		# end
-		@testset "ieee24_storage" begin
-			_test_plan(instances = ["tep_ieee24_storage"], dump=true)
-		end
+		# @testset "ieee24_storage" begin
+		# 	_test_plan(instances = ["tep_ieee24_storage"], dump=true)
+		# end
 		# @testset "ieee30" begin
 		# 	_test_plan(instances = ["tep_ieee30"], dump=true)
 		# end
