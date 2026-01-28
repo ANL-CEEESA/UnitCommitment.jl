@@ -141,6 +141,11 @@ function solution(model::JuMP.Model)::OrderedDict
                     su.discharge_cost[t] for t in 1:instance.time
                 ] for su in sc.storage_units
             )
+            sol[sc.name]["Energy storage investment status"] = OrderedDict(
+                su.name => [
+                    value(model[:invest_storage][su.name, t]) for t in 1:T
+                ] for su in sc.storage_units if su.invest[1] > 0.0
+            )
         end
         sol[sc.name]["Spinning reserve (MW)"] = OrderedDict(
             r.name => OrderedDict(

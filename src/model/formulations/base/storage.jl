@@ -28,7 +28,7 @@ function _add_storage_unit!(
         # Decision variable
         storage_level[sc.name, su.name, t] = @variable(
             model,
-            lower_bound = su.min_level[t],
+            lower_bound = su.invest[1] > 0.0 ? 0.0 : su.min_level[t],
             upper_bound = su.max_level[t]
         )
         charge_rate[sc.name, su.name, t] = @variable(model)
@@ -118,6 +118,51 @@ function _add_storage_unit!(
                 su.min_ending_level <=
                 storage_level[sc.name, su.name, t] <=
                 su.max_ending_level
+            )
+        end
+    end
+
+    # Storage expansion
+    if su.invest[1] > 0.0
+        invest_storage = _init(model, :invest_storage)
+        eq_invest_storage_nondecreasing =
+            _init(model, :eq_invest_storage_nondecreasing)
+        eq_invest_storage_level_upper =
+            _init(model, :eq_invest_storage_level_upper)
+        eq_invest_storage_level_lower =
+            _init(model, :eq_invest_storage_level_lower)
+
+        add_first_stage = !haskey(invest_storage, (su.name, 1))
+        if add_first_stage
+            invest_storage[su.name, 0] = 0.0
+        end
+
+        for t in 1:model[:instance].time
+            if add_first_stage
+                invest_storage[su.name, t] = @variable(model, binary = true)
+
+                add_to_expression!(
+                    model[:obj],
+                    invest_storage[su.name, t] - invest_storage[su.name, t-1],
+                    su.invest_storage[t] * sc.investment_cost_weight,
+                )
+
+                eq_invest_storage_nondecreasing[su.name, t] = @constraint(
+                    model,
+                    invest_storage[su.name, t-1] <= invest_storage[su.name, t]
+                )
+            end
+
+            # Storage level constraints
+            eq_invest_storage_level_upper[sc.name, su.name, t] = @constraint(
+                model,
+                storage_level[sc.name, su.name, t] <=
+                su.max_level[t] * invest_storage[su.name, t]
+            )
+            eq_invest_storage_level_lower[sc.name, su.name, t] = @constraint(
+                model,
+                storage_level[sc.name, su.name, t] >=
+                su.min_level[t] * invest_storage[su.name, t]
             )
         end
     end
