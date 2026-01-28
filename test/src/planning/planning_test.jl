@@ -47,57 +47,14 @@ end
 
 function model_planning_test()
     @testset "planning" begin
-        @testset "default" begin
-            _test_plan()
+        @testset "ieee24" begin
+            _test_plan(instances = ["tep_ieee24"])
         end
-        # @testset "ieee14" begin
-        # 	_test_plan(instances = ["tep_ieee14"], dump=true)
-        # end
-        # @testset "ieee24" begin
-        # 	_test_plan(instances = ["tep_ieee24"], dump=true)
-        # end
-        # @testset "ieee24_B" begin
-        # 	_test_plan(instances = ["tep_ieee24_caseB"], dump=true)
-        # end
-        # @testset "ieee24_storage" begin
-        # 	_test_plan(instances = ["tep_ieee24_storage"], dump=true)
-        # end
-        # @testset "ieee30" begin
-        # 	_test_plan(instances = ["tep_ieee30"], dump=true)
-        # end
-        # @testset "ieee118" begin
-        # 	_test_plan(instances = ["tep_ieee118"], dump=true)
-        # end
-        # @testset "ieee300" begin
-        # 	_test_plan(instances = ["tep_ieee300"], dump=true)
-        # end
-        # @testset "north_brazilian" begin
-        # 	_test_plan(instances = ["tep_north_brazilian"], dump = true)
-        # end
-        # @testset "south_brazilian" begin
-        # 	_test_plan(instances = ["tep_south_brazilian"], dump=true)
-        # end
-        # @testset "polish2383" begin
-        # 	_test_plan(instances = ["tep_polish2383"], dump=true)
-        # end
-        # @testset "unitcommitment_ieee24" begin
-        # 	_test_plan(
-        # 		formulation = Formulation(
-        # 			transmission = PhaseAngleFormulation(),
-        # 		),
-        # 		instances = ["tep_ieee24_uc"],
-        # 		# dump = true,
-        # 	)
-        # end
-        # @testset "stochastic_ieee24" begin
-        # 	_test_plan(
-        # 		formulation = Formulation(
-        # 			transmission = PhaseAngleFormulation(),
-        # 		),
-        # 		instances = ["tep_ieee24"],
-        # 		dump = true,
-        # 		stochastic = true,
-        # 	)
-        # end
+        @testset "tep_ieee24_uc" begin
+            _test_plan(instances = ["tep_ieee24_uc"])
+        end
+        @testset "tep_ieee24_stoch" begin
+            _test_plan(instances = ["tep_ieee24"], stochastic = true)
+        end
     end
 end
