@@ -124,7 +124,7 @@ function _add_storage_unit!(
 
     # Storage expansion
     if su.invest[1] > 0.0
-        invest = _init(model, :invest)
+        invest_storage = _init(model, :invest_storage)
         eq_invest_storage_nondecreasing =
             _init(model, :eq_invest_storage_nondecreasing)
         eq_invest_storage_level_upper =
@@ -132,24 +132,24 @@ function _add_storage_unit!(
         eq_invest_storage_level_lower =
             _init(model, :eq_invest_storage_level_lower)
 
-        add_first_stage = !haskey(invest, (su.name, 1))
+        add_first_stage = !haskey(invest_storage, (su.name, 1))
         if add_first_stage
-            invest[su.name, 0] = 0.0
+            invest_storage[su.name, 0] = 0.0
         end
 
         for t in 1:model[:instance].time
             if add_first_stage
-                invest[su.name, t] = @variable(model, binary = true)
+                invest_storage[su.name, t] = @variable(model, binary = true)
 
                 add_to_expression!(
                     model[:obj],
-                    invest[su.name, t] - invest[su.name, t-1],
-                    su.invest[t] * sc.investment_cost_weight,
+                    invest_storage[su.name, t] - invest_storage[su.name, t-1],
+                    su.invest_storage[t] * sc.investment_cost_weight,
                 )
 
                 eq_invest_storage_nondecreasing[su.name, t] = @constraint(
                     model,
-                    invest[su.name, t-1] <= invest[su.name, t]
+                    invest_storage[su.name, t-1] <= invest_storage[su.name, t]
                 )
             end
 
@@ -157,12 +157,12 @@ function _add_storage_unit!(
             eq_invest_storage_level_upper[sc.name, su.name, t] = @constraint(
                 model,
                 storage_level[sc.name, su.name, t] <=
-                su.max_level[t] * invest[su.name, t]
+                su.max_level[t] * invest_storage[su.name, t]
             )
             eq_invest_storage_level_lower[sc.name, su.name, t] = @constraint(
                 model,
                 storage_level[sc.name, su.name, t] >=
-                su.min_level[t] * invest[su.name, t]
+                su.min_level[t] * invest_storage[su.name, t]
             )
         end
     end

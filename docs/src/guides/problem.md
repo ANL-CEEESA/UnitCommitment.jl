@@ -569,7 +569,7 @@ integration of renewable energy resources.
 | $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      | 2     |
 | $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    | 2     |
 | $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. | 2     |
-| $x^\text{invest}_{ut}$          | `invest[u,t]`           | Binary | True if unit $u$ is invested at or before time $t$.          | 1     |
+| $x^\text{invest}_{ut}$          | `invest_storage[u,t]`           | Binary | True if unit $u$ is invested at or before time $t$.          | 1     |
 
 ### Objective function terms
 
