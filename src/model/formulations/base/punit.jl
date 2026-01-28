@@ -17,12 +17,12 @@ function _add_profiled_unit!(
             upper_bound = pu.max_power[t]
         )
 
-		# Objective function terms
-		add_to_expression!(
-			model[:obj],
-			punits[sc.name, pu.name, t],
-			pu.cost[t] * sc.probability,
-		)
+        # Objective function terms
+        add_to_expression!(
+            model[:obj],
+            punits[sc.name, pu.name, t],
+            pu.cost[t] * sc.probability,
+        )
 
         # Net injection
         add_to_expression!(

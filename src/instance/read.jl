@@ -333,9 +333,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 startup_categories,
                 unit_reserves,
                 commitment_status,
-                timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                ),
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
             )
             push!(bus.thermal_units, unit)
             for r in unit_reserves
@@ -351,9 +349,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 timeseries(scalar(dict["Minimum power (MW)"], default = 0.0)),
                 timeseries(dict["Maximum power (MW)"]),
                 timeseries(dict["Cost (\$/MW)"]),
-                timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                ),
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
             )
             push!(bus.profiled_units, pu)
             push!(profiled_units, pu)
@@ -383,9 +379,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                     dict["Flow limit penalty (\$/MW)"],
                     default = [5000.0 for t in 1:T],
                 ),
-                timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                ),
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
                 scalar(dict["Max number of parallel circuits"], default = 1),
             )
             name_to_line[line_name] = line
@@ -426,52 +420,55 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
         end
     end
 
-	# Read storage units 
-	if "Storage units" in keys(json)
-		for (storage_name, dict) in json["Storage units"]
-			bus = name_to_bus[dict["Bus"]]
-			min_level =
-				timeseries(scalar(dict["Minimum level (MWh)"], default = 0.0))
-			max_level = timeseries(dict["Maximum level (MWh)"])
-			storage = StorageUnit(
-				storage_name,
-				bus,
-				min_level,
-				max_level,
-				timeseries(
-					scalar(
-						dict["Allow simultaneous charging and discharging"],
-						default = true,
-					),
-				),
-				timeseries(dict["Charge cost (\$/MW)"]),
-				timeseries(dict["Discharge cost (\$/MW)"]),
-				timeseries(scalar(dict["Charge efficiency"], default = 1.0)),
-				timeseries(scalar(dict["Discharge efficiency"], default = 1.0)),
-				timeseries(scalar(dict["Loss factor"], default = 0.0)),
-				timeseries(
-					scalar(dict["Minimum charge rate (MW)"], default = 0.0),
-				),
-				timeseries(dict["Maximum charge rate (MW)"]),
-				timeseries(
-					scalar(dict["Minimum discharge rate (MW)"], default = 0.0),
-				),
-				timeseries(dict["Maximum discharge rate (MW)"]),
-				scalar(dict["Initial level (MWh)"], default = 0.0),
-				scalar(
-					dict["Last period minimum level (MWh)"],
-					default = min_level[T],
-				),
-				scalar(
-					dict["Last period maximum level (MWh)"],
-					default = max_level[T],
-				),
-				timeseries(scalar(dict["Investment cost (\$)"], default = 0.0) / operation_cost_weight),
-			)
-			push!(bus.storage_units, storage)
-			push!(storage_units, storage)
-		end
-	end
+    # Read storage units 
+    if "Storage units" in keys(json)
+        for (storage_name, dict) in json["Storage units"]
+            bus = name_to_bus[dict["Bus"]]
+            min_level =
+                timeseries(scalar(dict["Minimum level (MWh)"], default = 0.0))
+            max_level = timeseries(dict["Maximum level (MWh)"])
+            storage = StorageUnit(
+                storage_name,
+                bus,
+                min_level,
+                max_level,
+                timeseries(
+                    scalar(
+                        dict["Allow simultaneous charging and discharging"],
+                        default = true,
+                    ),
+                ),
+                timeseries(dict["Charge cost (\$/MW)"]),
+                timeseries(dict["Discharge cost (\$/MW)"]),
+                timeseries(scalar(dict["Charge efficiency"], default = 1.0)),
+                timeseries(scalar(dict["Discharge efficiency"], default = 1.0)),
+                timeseries(scalar(dict["Loss factor"], default = 0.0)),
+                timeseries(
+                    scalar(dict["Minimum charge rate (MW)"], default = 0.0),
+                ),
+                timeseries(dict["Maximum charge rate (MW)"]),
+                timeseries(
+                    scalar(dict["Minimum discharge rate (MW)"], default = 0.0),
+                ),
+                timeseries(dict["Maximum discharge rate (MW)"]),
+                scalar(dict["Initial level (MWh)"], default = 0.0),
+                scalar(
+                    dict["Last period minimum level (MWh)"],
+                    default = min_level[T],
+                ),
+                scalar(
+                    dict["Last period maximum level (MWh)"],
+                    default = max_level[T],
+                ),
+                timeseries(
+                    scalar(dict["Investment cost (\$)"], default = 0.0) /
+                    operation_cost_weight,
+                ),
+            )
+            push!(bus.storage_units, storage)
+            push!(storage_units, storage)
+        end
+    end
 
     scenario = UnitCommitmentScenario(
         name = scenario_name,
