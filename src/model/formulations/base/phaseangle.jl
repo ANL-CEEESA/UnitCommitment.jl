@@ -86,8 +86,7 @@ function _add_transmission_line!(
                 eq_invest_line_flow_upper[sc.name, lm.name, t] = @constraint(
                     model,
                     model[:flow][sc.name, lm.name, t] <=
-                    lm.susceptance *
-                    (
+                    lm.susceptance * (
                         θ[sc.name, lm.source.name, t] -
                         θ[sc.name, lm.target.name, t]
                     ) + f.bigM * (1 - invest_line[lm.name, t])
@@ -95,8 +94,7 @@ function _add_transmission_line!(
                 eq_invest_line_flow_lower[sc.name, lm.name, t] = @constraint(
                     model,
                     model[:flow][sc.name, lm.name, t] >=
-                    lm.susceptance *
-                    (
+                    lm.susceptance * (
                         θ[sc.name, lm.source.name, t] -
                         θ[sc.name, lm.target.name, t]
                     ) - f.bigM * (1 - invest_line[lm.name, t])
@@ -125,8 +123,10 @@ function _add_transmission_line!(
             eq_invest_line_flow[sc.name, lm.name, t] = @constraint(
                 model,
                 model[:flow][sc.name, lm.name, t] ==
-                lm.susceptance *
-                (θ[sc.name, lm.source.name, t] - θ[sc.name, lm.target.name, t])
+                lm.susceptance * (
+                    θ[sc.name, lm.source.name, t] -
+                    θ[sc.name, lm.target.name, t]
+                )
             )
             eq_invest_line_flow_limit_upper[sc.name, lm.name, t] = @constraint(
                 model,

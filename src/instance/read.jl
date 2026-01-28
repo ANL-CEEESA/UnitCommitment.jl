@@ -333,9 +333,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 startup_categories,
                 unit_reserves,
                 commitment_status,
-                timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                ),
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
             )
             push!(bus.thermal_units, unit)
             for r in unit_reserves
@@ -351,9 +349,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                 timeseries(scalar(dict["Minimum power (MW)"], default = 0.0)),
                 timeseries(dict["Maximum power (MW)"]),
                 timeseries(dict["Cost (\$/MW)"]),
-                timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                ),
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
             )
             push!(bus.profiled_units, pu)
             push!(profiled_units, pu)
@@ -383,9 +379,7 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
                     dict["Flow limit penalty (\$/MW)"],
                     default = [5000.0 for t in 1:T],
                 ),
-                timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                ),
+                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
                 scalar(dict["Max number of parallel circuits"], default = 1),
             )
             name_to_line[line_name] = line
