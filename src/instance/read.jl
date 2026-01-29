@@ -7,6 +7,7 @@ using JSON
 using DataStructures
 using CodecZlib
 import Base: getindex, time
+using SparseArrays
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
 

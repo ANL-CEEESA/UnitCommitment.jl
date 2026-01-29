@@ -128,7 +128,10 @@ and start-up and shutdown limits.
 | $M^{\text{shutdown-limit}}_{g}$ | MW     | Maximum power unit $g$ produces immediately before shutting down                           |
 | $M^{\text{startup-limit}}_{g}$  | MW     | Maximum power unit $g$ produces immediately after starting up                              |
 | $R_g$                           |        | Set of spinning reserves that may be served by $g$.                                        |
+| $R$                             |        | Set of all spinning reserves.                                                              |
+| $R^+$                           |        | Set of spinning reserves that allow shortfall.                                             |
 | $Z^{\text{pmin}}_{gt}$          | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
+| $Z^{\text{res-short}}_{r}$      | \$/MW  | Penalty for reserve shortfall for spinning reserve $r$.                                    |
 | $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
 | $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
 | $Z^{\text{invest}}_{gt}$        | \$     | Cost to invest unit $g$ at time $t$.                                                       |
@@ -137,16 +140,17 @@ and start-up and shutdown limits.
 
 ### Decision variables
 
-| Symbol                        | JuMP name           | Description                                                                                   | Unit   | Stage |
-| :---------------------------- | :------------------ | :-------------------------------------------------------------------------------------------- | :----- | :---- |
-| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`        | One if generator $g$ is on at time $t$.                                                       | Binary | 1     |
-| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`    | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
-| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`   | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
-| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`    | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
-| $x^{\text{invest}}_{gt}$      | `invest_unit[g,t]`  | One if generator $g$ is invested at or before $t$.                                            | Binary | 1     |
-| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]` | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
-| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`  | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
-| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`  | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
+| Symbol                        | JuMP name                  | Description                                                                                   | Unit   | Stage |
+| :---------------------------- | :------------------------- | :-------------------------------------------------------------------------------------------- | :----- | :---- |
+| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`               | One if generator $g$ is on at time $t$.                                                       | Binary | 1     |
+| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`           | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
+| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`          | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
+| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`           | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
+| $x^{\text{invest}}_{gt}$      | `invest_unit[g,t]`         | One if generator $g$ is invested at or before $t$.                                            | Binary | 1     |
+| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
+| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
+| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
+| $y^{\text{res-short}}_{srt}$  | `reserve_shortfall[s,r,t]` | Amount of spinning reserve shortfall for reserve $r$ at time $t$ in scenario $s$. Only defined for reserves that allow shortfall.             | MW     | 2     |
 
 ### Objective function terms
 
@@ -166,6 +170,14 @@ and start-up and shutdown limits.
 \sum_{g \in G} \sum_{t \in T} \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk} Z^{\text{start}}_{gk}
 ```
 
+- Spinning reserve shortfall penalty:
+
+```math
+\sum_{s \in S} p(s) \left[
+    \sum_{r \in R^+} \sum_{t \in T} y^{\text{res-short}}_{srt} Z^{\text{res-short}}_{r}
+\right]
+```
+
 - Investment costs:
 
 ```math
@@ -174,10 +186,10 @@ W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{
 
 ### Constraints
 
-- Some units must remain on, even if it is not economical for them to do so:
+- Some units must remain on, even if it is not economical for them to do so (`eq_must_run[g,t]`):
 
 ```math
-x^{\text{is-on}}_{gt} \geq M^{\text{must-run}}_{gt}
+x^{\text{is-on}}_{gt} \geq 1 \quad \forall (g,t): M^{\text{must-run}}_{gt} = 1
 ```
 
 - After switching on, unit must remain on for some amount of time
@@ -219,7 +231,7 @@ x^{\text{switch-on}}_{gt} = \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk}
   if category should be allowed based on initial status.
 
 ```math
-x^{\text{start}}_{gtk} \leq L^{\text{start}}_{gtk} + \sum_{i=min\left(1,t - M^{\text{delay}}_{g,k+1} + 1\right)}^{t - M^{\text{delay}}_{gk}} x^{\text{switch-off}}_{gi}
+x^{\text{start}}_{gtk} \leq L^{\text{start}}_{gtk} + \sum_{i=\max\left(1,t - M^{\text{delay}}_{g,k+1} + 1\right)}^{t - M^{\text{delay}}_{gk}} x^{\text{switch-off}}_{gi}
 ```
 
 - Link the binary variables together (`eq_binary_link[g,t]`):
@@ -569,7 +581,7 @@ integration of renewable energy resources.
 | $y^\text{discharge}_{sut}$      | `discharge_rate[s,u,t]` | MW     | Discharge rate of unit $u$ at time $t$ in scenario $s$.      | 2     |
 | $x^\text{is-charging}_{sut}$    | `is_charging[s,u,t]`    | Binary | True if unit $u$ is charging at time $t$ in scenario $s$.    | 2     |
 | $x^\text{is-discharging}_{sut}$ | `is_discharging[s,u,t]` | Binary | True if unit $u$ is discharging at time $t$ in scenario $s$. | 2     |
-| $x^\text{invest}_{ut}$          | `invest_storage[u,t]`           | Binary | True if unit $u$ is invested at or before time $t$.          | 1     |
+| $x^\text{invest}_{ut}$          | `invest_storage[u,t]`   | Binary | True if unit $u$ is invested at or before time $t$.          | 1     |
 
 ### Objective function terms
 
