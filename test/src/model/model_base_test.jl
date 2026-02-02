@@ -7,7 +7,7 @@ using HiGHS, JuMP, UnitCommitment
 @testfunction model_base_test begin
     model = UnitCommitment.build_model(
         instance = UnitCommitment.read(fixture("base.json")),
-        formulation = UnitCommitment.Formulation(),
+        formulation = UnitCommitment.BaseFormulation,
         optimizer = HiGHS.Optimizer,
         variable_names = true,
     )
@@ -24,7 +24,9 @@ using HiGHS, JuMP, UnitCommitment
     @test ("g1", 1) ∉ keys(model[:invest])
     @test_binary_var model[:invest]["g2", 1]
     @test_continuous_var model[:prod_above]["s1", "g1", 1] lb = 0
-    @test_continuous_var model[:segprod]["s1", "g1", 1, 1] lb = 0
+    @test_continuous_var model[:segprod]["s1", "g1", 1, 1] lb = 0 ub = 10
+    @test_continuous_var model[:segprod]["s1", "g1", 1, 2] lb = 0 ub = 20
+    @test_continuous_var model[:segprod]["s1", "g1", 1, 3] lb = 0 ub = 5
     @test_continuous_var model[:reserve]["s1", "r1", "g2", 1] lb = 0
     @test_continuous_var model[:reserve]["s1", "r2", "g2", 1] lb = 0
     @test_continuous_var model[:reserve]["s1", "r1", "g3", 1] lb = 0
@@ -104,31 +106,31 @@ using HiGHS, JuMP, UnitCommitment
 
     # eq_min_downtime
     # -------------------------------------------------------------------------
-    # min_uptime=1, initial_status=-100
+    # g1: min_uptime=1, initial_status=-100
     @test_constr model[:eq_min_downtime]["g1", 0] "0 = 0"
     @test_constr model[:eq_min_downtime]["g1", 1] "is_on[g1,1] + switch_off[g1,1] ≤ 1"
     @test_constr model[:eq_min_downtime]["g1", 2] "is_on[g1,2] + switch_off[g1,2] ≤ 1"
     @test_constr model[:eq_min_downtime]["g1", 3] "is_on[g1,3] + switch_off[g1,3] ≤ 1"
     @test_constr model[:eq_min_downtime]["g1", 4] "is_on[g1,4] + switch_off[g1,4] ≤ 1"
 
-    # min_downtime=3, initial_status=-2
+    # g2: min_downtime=3, initial_status=-2
     @test_constr model[:eq_min_downtime]["g2", 0] "switch_on[g2,1] = 0"
     @test_constr model[:eq_min_downtime]["g2", 1] "is_on[g2,1] + switch_off[g2,1] ≤ 1"
     @test_constr model[:eq_min_downtime]["g2", 2] "switch_off[g2,1] + is_on[g2,2] + switch_off[g2,2] ≤ 1"
     @test_constr model[:eq_min_downtime]["g2", 3] "switch_off[g2,1] + switch_off[g2,2] + is_on[g2,3] + switch_off[g2,3] ≤ 1"
     @test_constr model[:eq_min_downtime]["g2", 4] "switch_off[g2,2] + switch_off[g2,3] + is_on[g2,4] + switch_off[g2,4] ≤ 1"
 
-    # min_downtime=4, initial_status=2
+    # g4: min_downtime=4, initial_status=2
     @test ("g4", 0) ∉ keys(model[:eq_min_downtime])
     @test_constr model[:eq_min_downtime]["g4", 1] "is_on[g4,1] + switch_off[g4,1] ≤ 1"
     @test_constr model[:eq_min_downtime]["g4", 2] "switch_off[g4,1] + is_on[g4,2] + switch_off[g4,2] ≤ 1"
     @test_constr model[:eq_min_downtime]["g4", 3] "switch_off[g4,1] + switch_off[g4,2] + is_on[g4,3] + switch_off[g4,3] ≤ 1"
     @test_constr model[:eq_min_downtime]["g4", 4] "switch_off[g4,1] + switch_off[g4,2] + switch_off[g4,3] + is_on[g4,4] + switch_off[g4,4] ≤ 1"
 
-    # min_downtime=3, initial_status=-3
+    # g7: min_downtime=3, initial_status=-3
     @test_constr model[:eq_min_downtime]["g7", 0] "0 = 0"
 
-    # min_downtime=10, initial_status=-3
+    # g8: min_downtime=10, initial_status=-3
     @test_constr model[:eq_min_downtime]["g8", 0] "switch_on[g8,1] + switch_on[g8,2] + switch_on[g8,3] + switch_on[g8,4] = 0"
 
     # eq_startup_choose
@@ -174,4 +176,39 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_startup_restrict]["g9", 3, 2] "startup[g9,3,2] ≤ 1"
     @test_constr model[:eq_startup_restrict]["g9", 4, 1] "-switch_off[g9,2] - switch_off[g9,3] + startup[g9,4,1] ≤ 0"
     @test_constr model[:eq_startup_restrict]["g9", 4, 2] "-switch_off[g9,1] + startup[g9,4,2] ≤ 0"
+
+    # eq_binary_link
+    # -------------------------------------------------------------------------
+    # g1: initial_status=-100 (initially off)
+    @test_constr model[:eq_binary_link]["g1", 1] "is_on[g1,1] - switch_on[g1,1] + switch_off[g1,1] = 0"
+    @test_constr model[:eq_binary_link]["g1", 2] "-is_on[g1,1] + is_on[g1,2] - switch_on[g1,2] + switch_off[g1,2] = 0"
+    @test_constr model[:eq_binary_link]["g1", 3] "-is_on[g1,2] + is_on[g1,3] - switch_on[g1,3] + switch_off[g1,3] = 0"
+    @test_constr model[:eq_binary_link]["g1", 4] "-is_on[g1,3] + is_on[g1,4] - switch_on[g1,4] + switch_off[g1,4] = 0"
+
+    # g4: initial_status=2 (initially on)
+    @test_constr model[:eq_binary_link]["g4", 1] "is_on[g4,1] - switch_on[g4,1] + switch_off[g4,1] = 1"
+    @test_constr model[:eq_binary_link]["g4", 2] "-is_on[g4,1] + is_on[g4,2] - switch_on[g4,2] + switch_off[g4,2] = 0"
+    @test_constr model[:eq_binary_link]["g4", 3] "-is_on[g4,2] + is_on[g4,3] - switch_on[g4,3] + switch_off[g4,3] = 0"
+    @test_constr model[:eq_binary_link]["g4", 4] "-is_on[g4,3] + is_on[g4,4] - switch_on[g4,4] + switch_off[g4,4] = 0"
+
+    # eq_switch_on_off
+    # -------------------------------------------------------------------------
+    @test_constr model[:eq_switch_on_off]["g1", 1] "switch_on[g1,1] + switch_off[g1,1] ≤ 1"
+    @test_constr model[:eq_switch_on_off]["g1", 2] "switch_on[g1,2] + switch_off[g1,2] ≤ 1"
+    @test_constr model[:eq_switch_on_off]["g4", 1] "switch_on[g4,1] + switch_off[g4,1] ≤ 1"
+    @test_constr model[:eq_switch_on_off]["g4", 2] "switch_on[g4,2] + switch_off[g4,2] ≤ 1"
+
+    # eq_prod_limit
+    # -------------------------------------------------------------------------
+    # g1: no reserves, max_power=135, min_power=100, capacity=35
+    @test_constr model[:eq_prod_limit]["s1", "g1", 1] "-35 is_on[g1,1] + prod_above[s1,g1,1] ≤ 0"
+    @test_constr model[:eq_prod_limit]["s1", "g1", 2] "-35 is_on[g1,2] + prod_above[s1,g1,2] ≤ 0"
+
+    # g2: reserves r1 and r2, max_power=140, min_power=0, capacity=140
+    @test_constr model[:eq_prod_limit]["s1", "g2", 1] "-140 is_on[g2,1] + prod_above[s1,g2,1] + reserve[s1,r1,g2,1] + reserve[s1,r2,g2,1] ≤ 0"
+    @test_constr model[:eq_prod_limit]["s1", "g2", 2] "-140 is_on[g2,2] + prod_above[s1,g2,2] + reserve[s1,r1,g2,2] + reserve[s1,r2,g2,2] ≤ 0"
+
+    # g10: no reserves, max_power=min_power=50, capacity=0
+    @test_constr model[:eq_prod_limit]["s1", "g10", 1] "prod_above[s1,g10,1] ≤ 0"
+    @test_constr model[:eq_prod_limit]["s1", "g10", 2] "prod_above[s1,g10,2] ≤ 0"
 end

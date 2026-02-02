@@ -102,8 +102,8 @@ end
 # include("market/market_test.jl")
 # include("planning/planning_test.jl")
 # include("regression.jl")
-
 include("model/model_base_test.jl")
+include("model/model_KnuOstWat2018_test.jl")
 
 basedir = dirname(@__FILE__)
 
@@ -117,6 +117,7 @@ function runtests()
     @testset "UnitCommitment" begin
         @testset "model" begin
             model_base_test()
+            model_KnuOstWat2018_test()
         end
         # model_planning_test()
         # usage_test()

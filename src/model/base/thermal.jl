@@ -1,16 +1,19 @@
 # UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
-# Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
+# Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
+
+using JuMP
 
 function _add_thermal_units!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
-    ::Formulation,
+    formulation::Formulation,
 )::Nothing
     _add_thermal_vars!(model, instance)
     _add_thermal_obj!(model, instance)
     _add_thermal_constr_status!(model, instance)
     _add_thermal_constr_startup!(model, instance)
+    _add_thermal_constr_pwl_costs!(model, instance, formulation.pwl_costs)
     return
 end
 
@@ -62,8 +65,11 @@ function _add_thermal_vars!(
             for g in sc.thermal_units
                 # Production
                 for k in 1:length(g.cost_segments)
-                    segprod[sc.name, g.name, t, k] =
-                        @variable(model, lower_bound = 0)
+                    segprod[sc.name, g.name, t, k] = @variable(
+                        model,
+                        lower_bound = 0,
+                        upper_bound = g.cost_segments[k].mw[t]
+                    )
                 end
                 prod_above[sc.name, g.name, t] =
                     @variable(model, lower_bound = 0)
@@ -164,10 +170,12 @@ function _add_thermal_constr_status!(
     switch_off = model[:switch_off]
     switch_on = model[:switch_on]
 
-    eq_min_uptime = _init(model, :eq_min_uptime)
-    eq_min_downtime = _init(model, :eq_min_downtime)
-    eq_must_run = _init(model, :eq_must_run)
+    eq_binary_link = _init(model, :eq_binary_link)
     eq_commitment_status = _init(model, :eq_commitment_status)
+    eq_min_downtime = _init(model, :eq_min_downtime)
+    eq_min_uptime = _init(model, :eq_min_uptime)
+    eq_must_run = _init(model, :eq_must_run)
+    eq_switch_on_off = _init(model, :eq_switch_on_off)
 
     for t in 1:T, g in instance.scenarios[1].thermal_units
         # Must-run
@@ -217,10 +225,30 @@ function _add_thermal_constr_status!(
                 )
             end
         end
+
+        # Link binary variables
+        if t == 1
+            eq_binary_link[g.name, t] = @constraint(
+                model,
+                is_on[g.name, t] - _is_initially_on(g) ==
+                switch_on[g.name, t] - switch_off[g.name, t]
+            )
+        else
+            eq_binary_link[g.name, t] = @constraint(
+                model,
+                is_on[g.name, t] - is_on[g.name, t-1] ==
+                switch_on[g.name, t] - switch_off[g.name, t]
+            )
+        end
+
+        # Cannot switch on and off at the same time
+        eq_switch_on_off[g.name, t] = @constraint(
+            model,
+            switch_on[g.name, t] + switch_off[g.name, t] <= 1
+        )
     end
     return
 end
-
 
 function _add_thermal_constr_startup!(
     model::JuMP.Model,
@@ -240,8 +268,7 @@ function _add_thermal_constr_startup!(
             S = length(g.startup_categories)
             eq_startup_choose[g.name, t] = @constraint(
                 model,
-                switch_on[g.name, t] ==
-                sum(startup[g.name, t, s] for s in 1:S)
+                switch_on[g.name, t] == sum(startup[g.name, t, s] for s in 1:S)
             )
 
             for s in 1:S
@@ -252,14 +279,14 @@ function _add_thermal_constr_startup!(
                     range_end = t - g.startup_categories[s].delay
                     range = (range_start:range_end)
                     initial_sum = (
-                        g.initial_status < 0 && (g.initial_status + 1 in range) ? 1.0 : 0.0
+                        g.initial_status < 0 &&
+                        (g.initial_status + 1 in range) ? 1.0 : 0.0
                     )
                     eq_startup_restrict[g.name, t, s] = @constraint(
                         model,
                         startup[g.name, t, s] <=
-                        initial_sum + sum(
-                            switch_off[g.name, i] for i in range if i >= 1
-                        )
+                        initial_sum +
+                        sum(switch_off[g.name, i] for i in range if i >= 1)
                     )
                 end
             end
@@ -267,3 +294,57 @@ function _add_thermal_constr_startup!(
     end
     return
 end
+
+function _add_thermal_constr_pwl_costs!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    ::BasePwlCosts,
+)::Nothing
+    T = instance.time
+    is_on = model[:is_on]
+    prod_above = model[:prod_above]
+    segprod = model[:segprod]
+
+    eq_prod_above_def = _init(model, :eq_prod_above_def)
+    eq_prod_limit = _init(model, :eq_prod_limit)
+
+    for sc in instance.scenarios
+        for g in sc.thermal_units
+            K = length(g.cost_segments)
+            reserve = _total_reserves(model, instance, g, sc)
+            for t in 1:T
+                # Production limits
+                eq_prod_limit[sc.name, g.name, t] = @constraint(
+                    model,
+                    prod_above[sc.name, g.name, t] + reserve[t] <=
+                    (g.max_power[t] - g.min_power[t]) * is_on[g.name, t]
+                )
+
+                # Break down production above into smaller segments
+                eq_prod_above_def[sc.name, g.name, t] = @constraint(
+                    model,
+                    prod_above[sc.name, g.name, t] ==
+                    sum(segprod[sc.name, g.name, t, k] for k in 1:K)
+                )
+            end
+        end
+    end
+    return
+end
+
+function _total_reserves(model, instance, g, sc)::Vector
+    T = instance.time
+    reserve = [0.0 for _ in 1:T]
+    spinning_reserves = [r for r in g.reserves if r.type == "spinning"]
+    if !isempty(spinning_reserves)
+        reserve += [
+            sum(
+                model[:reserve][sc.name, r.name, g.name, t] for
+                r in spinning_reserves
+            ) for t in 1:T
+        ]
+    end
+    return reserve
+end
+
+_is_initially_on(g::ThermalUnit)::Float64 = (g.initial_status > 0 ? 1.0 : 0.0)

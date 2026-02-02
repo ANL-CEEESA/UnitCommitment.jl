@@ -2,4 +2,10 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-Base.@kwdef struct Formulation end
+abstract type PiecewiseLinearCostsFormulation end
+
+struct BasePwlCosts <: PiecewiseLinearCostsFormulation end
+
+Base.@kwdef struct Formulation
+    pwl_costs::PiecewiseLinearCostsFormulation = KnuOstWat2018.PwlCosts()
+end

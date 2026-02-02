@@ -263,8 +263,7 @@ y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 y^{\text{prod-above}}_{gts} = \sum_{k=1}^{K^{cost}_g} y^{\text{seg-prod}}_{gtks}
 ```
 
-- Impose upper limit on segment production variables
-  (`eq_segprod_limit[s,g,t,k]`):
+- Impose upper limit on segment production variables (implemented as variable bound):
 
 ```math
 0 \leq y^{\text{seg-prod}}_{gtks} \leq M^{\text{seg-pmax}}_{gtks}

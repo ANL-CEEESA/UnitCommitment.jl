@@ -14,7 +14,11 @@
       "Initial status (h)": -100,
       "Initial power (MW)": 0,
       "Type": "Thermal",
-      "Must run?": true
+      "Must run?": true,
+      "Ramp up limit (MW)": 70.0,
+      "Ramp down limit (MW)": 60.0,
+      "Startup limit (MW)": 105.0,
+      "Shutdown limit (MW)": 120.0
     },
     "g2": {
       "Bus": "b2",
@@ -22,10 +26,10 @@
       "Production cost curve ($)": [0, 2256.0, 4733.37, 7395.39],
       "Startup delays (h)": [1, 4],
       "Startup costs ($)": [3000.0, 4000.0],
-      "Ramp up limit (MW)": 98.0,
-      "Ramp down limit (MW)": 98.0,
-      "Startup limit (MW)": 98.0,
-      "Shutdown limit (MW)": 98.0,
+      "Ramp up limit (MW)": 70.0,
+      "Ramp down limit (MW)": 60.0,
+      "Startup limit (MW)": 50.0,
+      "Shutdown limit (MW)": 40.0,
       "Minimum uptime (h)": 3,
       "Minimum downtime (h)": 3,
       "Maximum daily energy (MWh)": null,
@@ -115,6 +119,14 @@
       "Startup delays (h)": [1, 3, 5],
       "Startup costs ($)": [500.0, 1000.0, 1500.0],
       "Initial status (h)": -2,
+      "Initial power (MW)": 0,
+      "Type": "Thermal"
+    },
+    "g10": {
+      "Bus": "b8",
+      "Production cost curve (MW)": [50, 50],
+      "Production cost curve ($)": [1000.0, 1000.0],
+      "Initial status (h)": -1,
       "Initial power (MW)": 0,
       "Type": "Thermal"
     }
