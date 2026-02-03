@@ -5,18 +5,13 @@
 using JuMP, MathOptInterface, DataStructures
 import JuMP: value, fix, set_name
 
-const BaseFormulation = Formulation(
-    pwl_costs = BasePwlCosts(),
-)
-
-const DefaultFormulation = Formulation(
-    pwl_costs = KnuOstWat2018.PwlCosts(),
-)
+const BaseFormulation =
+    Formulation(pwl_costs = BasePwlCosts(), ramping = MorLatRam2013.Ramping())
 
 function build_model(;
     instance::UnitCommitmentInstance,
     optimizer = nothing,
-    formulation = DefaultFormulation,
+    formulation = Formulation(),
     variable_names::Bool = false,
 )::JuMP.Model
     model = Model()

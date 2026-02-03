@@ -3,9 +3,12 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 abstract type PiecewiseLinearCostsFormulation end
+abstract type RampingFormulation end
+abstract type StartupCostsFormulation end
 
 struct BasePwlCosts <: PiecewiseLinearCostsFormulation end
 
 Base.@kwdef struct Formulation
     pwl_costs::PiecewiseLinearCostsFormulation = KnuOstWat2018.PwlCosts()
+    ramping::RampingFormulation = MorLatRam2013.Ramping()
 end

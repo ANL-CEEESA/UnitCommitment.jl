@@ -14,6 +14,7 @@ function _add_thermal_units!(
     _add_thermal_constr_status!(model, instance)
     _add_thermal_constr_startup!(model, instance)
     _add_thermal_constr_pwl_costs!(model, instance, formulation.pwl_costs)
+    _add_thermal_constr_ramping!(model, instance, formulation.ramping)
     return
 end
 

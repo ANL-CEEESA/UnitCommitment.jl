@@ -276,11 +276,11 @@ y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 y^{\text{prod-above}}_{g,t-1,s} + M^{\text{ramp-up}}_{g}
 ```
 
-- Same as above, for initial time (`eq_ramp_up[s,g,1]`):
+- Same as above, for initial time (`eq_ramp_up[s,g,1]`). Only enforced when $M^{\text{init-status}}_{g} > 0$ (unit was on at $t=0$):
 
 ```math
 y^{\text{prod-above}}_{g,1,s} + \sum_{r \in R_g} y^{\text{res}}_{gr,1,s} \leq
-\left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{gt}\right) + M^{\text{ramp-up}}_{g}
+\left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{g,1}\right) + M^{\text{ramp-up}}_{g}
 ```
 
 - Unit cannot decrease its production too quickly (`eq_ramp_down[s,g,t]`):
@@ -290,11 +290,11 @@ y^{\text{prod-above}}_{gts} \geq
 y^{\text{prod-above}}_{g,t-1,s} - M^{\text{ramp-down}}_{g}
 ```
 
-- Same as above, for initial time (`eq_ramp_down[s,g,1]`):
+- Same as above, for initial time (`eq_ramp_down[s,g,1]`). Only enforced when $M^{\text{init-status}}_{g} > 0$ (unit was on at $t=0$):
 
 ```math
 y^{\text{prod-above}}_{g,1,s} \geq
-\left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{gt}\right) - M^{\text{ramp-down}}_{g}
+\left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{g,1}\right) - M^{\text{ramp-down}}_{g}
 ```
 
 - Unit cannot produce excessive amount of power immediately after starting up

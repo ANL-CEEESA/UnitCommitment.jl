@@ -23,7 +23,7 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_segprod_limit_a]["s1", "g2", 1, 1] "-47 is_on[g2,1] + segprod[s1,g2,1,1] + 7 switch_off[g2,2] ≤ 0"
     @test_constr model[:eq_segprod_limit_a]["s1", "g2", 1, 2] "-47 is_on[g2,1] + 44 switch_on[g2,1] + segprod[s1,g2,1,2] + 47 switch_off[g2,2] ≤ 0"
     @test_constr model[:eq_segprod_limit_a]["s1", "g2", 1, 3] "-46 is_on[g2,1] + 46 switch_on[g2,1] + segprod[s1,g2,1,3] + 46 switch_off[g2,2] ≤ 0"
-    
+
     @test_constr model[:eq_segprod_limit_a]["s1", "g2", 2, 1] "-47 is_on[g2,2] + segprod[s1,g2,2,1] + 7 switch_off[g2,3] ≤ 0"
     @test_constr model[:eq_segprod_limit_a]["s1", "g2", 2, 2] "-47 is_on[g2,2] + 44 switch_on[g2,2] + segprod[s1,g2,2,2] + 47 switch_off[g2,3] ≤ 0"
     @test_constr model[:eq_segprod_limit_a]["s1", "g2", 2, 3] "-46 is_on[g2,2] + 46 switch_on[g2,2] + segprod[s1,g2,2,3] + 46 switch_off[g2,3] ≤ 0"

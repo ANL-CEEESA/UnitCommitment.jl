@@ -18,11 +18,7 @@ function _add_thermal_constr_pwl_costs!(
     eq_segprod_limit_c = _init(model, :eq_segprod_limit_c)
 
     # Add base PWL cost constraints
-    _add_thermal_constr_pwl_costs!(
-        model,
-        instance,
-        BasePwlCosts(),
-    )
+    _add_thermal_constr_pwl_costs!(model, instance, BasePwlCosts())
 
     # Tighten bounds on segprod based on startup/shutdown limits
     for sc in instance.scenarios, g in sc.thermal_units
