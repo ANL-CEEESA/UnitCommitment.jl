@@ -15,6 +15,7 @@ function _add_thermal_units!(
     _add_thermal_constr_startup!(model, instance)
     _add_thermal_constr_pwl_costs!(model, instance, formulation.pwl_costs)
     _add_thermal_constr_ramping!(model, instance, formulation.ramping)
+    _add_thermal_constr_slimits!(model, instance, formulation.slimits)
     return
 end
 
@@ -22,6 +23,7 @@ function _add_thermal_vars!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
 )::Nothing
+    T = instance.time
     is_on = _init(model, :is_on)
     switch_on = _init(model, :switch_on)
     switch_off = _init(model, :switch_off)
@@ -32,13 +34,14 @@ function _add_thermal_vars!(
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall)
 
-    for t in 1:instance.time
+    for t in 1:T
         # First stage
         for g in instance.scenarios[1].thermal_units
             # Status variables
             is_on[g.name, t] = @variable(model, binary = true)
             switch_on[g.name, t] = @variable(model, binary = true)
             switch_off[g.name, t] = @variable(model, binary = true)
+            switch_off[g.name, T+1] = 0.0
 
             # Startup
             for s in 1:length(g.startup_categories)

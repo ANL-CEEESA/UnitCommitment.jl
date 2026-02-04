@@ -297,24 +297,46 @@ y^{\text{prod-above}}_{g,1,s} \geq
 \left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{g,1}\right) - M^{\text{ramp-down}}_{g}
 ```
 
-- Unit cannot produce excessive amount of power immediately after starting up
-  (`eq_startup_limit[s,g,t]`):
+- Combined startup and shutdown limit. When $M^{\text{min-up}}_g > 1$,
+  startup and shutdown cannot occur simultaneously, so both terms can be
+  combined into a single constraint (`eq_slimit_a[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 (M^{\text{pmax}}_{gt} - M^{\text{pmin}}_{gt}) x^{\text{is-on}}_{gt} -
-max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{startup-limit}}_{g}\right\}
+(M^{\text{pmax}}_{gt} - M^{\text{startup-limit}}_{g})
+x^{\text{switch-on}}_{gt} -
+(M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g})
+x^{\text{switch-off}}_{g,t+1}
+```
+
+- When $M^{\text{min-up}}_g \leq 1$, startup and shutdown may occur at the
+  same time step, so the limits must be imposed separately. Unit cannot
+  produce excessive amount of power immediately after starting up
+  (`eq_slimit_b[s,g,t]`):
+
+```math
+y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
+(M^{\text{pmax}}_{gt} - M^{\text{pmin}}_{gt}) x^{\text{is-on}}_{gt} -
+(M^{\text{pmax}}_{gt} - M^{\text{startup-limit}}_{g})
 x^{\text{switch-on}}_{gt}
 ```
 
-- Unit cannot shutoff it it's producing too much power
-  (`eq_shutdown_limit[s,g,t]`):
+- Unit cannot shut off if it is producing too much power
+  (`eq_slimit_c[s,g,t]`):
 
 ```math
-y^{\text{prod-above}}_{gts} \leq
+y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 (M^{\text{pmax}}_{gt} - M^{\text{pmin}}_{gt}) x^{\text{is-on}}_{gt} -
-max\left\{0,M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g}\right\}
+(M^{\text{pmax}}_{gt} - M^{\text{shutdown-limit}}_{g})
 x^{\text{switch-off}}_{g,t+1}
+```
+
+- If the unit's initial power output exceeds its shutdown limit, it cannot
+  shut down in the first time period (`eq_slimit_init[s,g]`):
+
+```math
+x^{\text{switch-off}}_{g,1} \leq 0 \quad \text{if } M^{\text{init-power}}_g > M^{\text{shutdown-limit}}_g
 ```
 
 - Unit cannot be on if not invested (`eq_invest_unit_on_after_invest[g, t]`):

@@ -13,8 +13,10 @@ module MorLatRam2013
 
 import ..RampingFormulation
 import ..StartupCostsFormulation
+import ..StartupShutdownLimitsFormulation
 
 struct Ramping <: RampingFormulation end
 struct StartupCosts <: StartupCostsFormulation end
+struct StartupShutdownLimits <: StartupShutdownLimitsFormulation end
 
 end

@@ -5,8 +5,11 @@
 using JuMP, MathOptInterface, DataStructures
 import JuMP: value, fix, set_name
 
-const BaseFormulation =
-    Formulation(pwl_costs = BasePwlCosts(), ramping = MorLatRam2013.Ramping())
+const BaseFormulation = Formulation(
+    pwl_costs = BasePwlCosts(),
+    ramping = MorLatRam2013.Ramping(),
+    slimits = MorLatRam2013.StartupShutdownLimits(),
+)
 
 function build_model(;
     instance::UnitCommitmentInstance,

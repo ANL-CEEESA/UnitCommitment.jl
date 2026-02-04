@@ -49,7 +49,7 @@
       "Ramp up limit (MW)": 70.0,
       "Ramp down limit (MW)": 70.0,
       "Startup limit (MW)": 70.0,
-      "Shutdown limit (MW)": 70.0,
+      "Shutdown limit (MW)": 60.0,
       "Must run?": true,
       "Minimum uptime (h)": 1,
       "Minimum downtime (h)": 1,
@@ -74,7 +74,7 @@
       "Ramp up limit (MW)": 70.0,
       "Ramp down limit (MW)": 60.0,
       "Startup limit (MW)": 105.0,
-      "Shutdown limit (MW)": 120.0
+      "Shutdown limit (MW)": 30.0
     },
     "g5": {
       "Bus": "b8",

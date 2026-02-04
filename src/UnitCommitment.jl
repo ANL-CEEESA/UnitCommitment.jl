@@ -70,6 +70,7 @@ include("model/jumpext.jl")
 # include("model/ArrCon2000/ramp.jl")
 include("model/KnuOstWat2018/pwlcosts.jl")
 include("model/MorLatRam2013/ramp.jl")
+include("model/MorLatRam2013/slimits.jl")
 include("validation/repair.jl")
 include("validation/validate.jl")
 
