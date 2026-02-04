@@ -16,6 +16,7 @@ function _add_thermal_units!(
     _add_thermal_constr_pwl_costs!(model, instance, formulation.pwl_costs)
     _add_thermal_constr_ramping!(model, instance, formulation.ramping)
     _add_thermal_constr_slimits!(model, instance, formulation.slimits)
+    _add_thermal_constr_invest!(model, instance)
     return
 end
 
@@ -335,6 +336,33 @@ function _add_thermal_constr_pwl_costs!(
     end
     return
 end
+
+function _add_thermal_constr_invest!(model::JuMP.Model, instance::UnitCommitmentInstance)::Nothing
+    T = instance.time
+    invest = model[:invest]
+    is_on = model[:is_on]
+    eq_invest_link = _init(model, :eq_invest_link)
+    eq_invest_nondec = _init(model, :eq_invest_nondec)
+
+    for g in instance.scenarios[1].thermal_units
+        g.invest[1] > 0 || continue
+
+        # A generator can only be committed if the investment has been made
+        for t in 1:T
+            eq_invest_link[g.name, t] = @constraint(model, is_on[g.name, t] <= invest[g.name, t])
+        end
+
+        # Once a generator is invested in, the investment is irreversible
+        for t in 2:T
+            eq_invest_nondec[g.name, t] = @constraint(
+                model,
+                invest[g.name, t-1] <= invest[g.name, t]
+            )
+        end
+    end
+    return
+end
+
 
 function _total_reserves(model, instance, g, sc)::Vector
     T = instance.time

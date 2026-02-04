@@ -146,7 +146,7 @@ and start-up and shutdown limits.
 | $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`           | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
 | $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`          | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
 | $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`           | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
-| $x^{\text{invest}}_{gt}$      | `invest_unit[g,t]`         | One if generator $g$ is invested at or before $t$.                                            | Binary | 1     |
+| $x^{\text{invest}}_{gt}$      | `invest[g,t]`              | One if generator $g$ is invested at or before $t$.                                            | Binary | 1     |
 | $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
 | $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
 | $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
@@ -339,14 +339,17 @@ x^{\text{switch-off}}_{g,t+1}
 x^{\text{switch-off}}_{g,1} \leq 0 \quad \text{if } M^{\text{init-power}}_g > M^{\text{shutdown-limit}}_g
 ```
 
-- Unit cannot be on if not invested (`eq_invest_unit_on_after_invest[g, t]`):
+- The unit can only be committed if the investment has been made
+  (`eq_invest_link[g, t]`). Only enforced for units with positive investment
+  cost:
 
 ```math
 x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
 ```
 
-- Unit is permanently built once invested
-  (`eq_invest_unit_nondecreasing[g, t]`):
+- Once the unit is invested in, the investment is irreversible
+  (`eq_invest_nondec[g, t]`). Only enforced for units with positive investment
+  cost:
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}

@@ -211,4 +211,26 @@ using HiGHS, JuMP, UnitCommitment
     # g10: no reserves, max_power=min_power=50, capacity=0
     @test_constr model[:eq_prod_limit]["s1", "g10", 1] "prod_above[s1,g10,1] ≤ 0"
     @test_constr model[:eq_prod_limit]["s1", "g10", 2] "prod_above[s1,g10,2] ≤ 0"
+
+    # eq_invest_link
+    # -------------------------------------------------------------------------
+    # g1: no investment cost, constraint should not exist
+    @test ("g1", 1) ∉ keys(model[:eq_invest_link])
+
+    # g2: positive investment cost
+    @test_constr model[:eq_invest_link]["g2", 1] "is_on[g2,1] - invest[g2,1] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 2] "is_on[g2,2] - invest[g2,2] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 3] "is_on[g2,3] - invest[g2,3] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 4] "is_on[g2,4] - invest[g2,4] ≤ 0"
+
+    # eq_invest_nondec
+    # -------------------------------------------------------------------------
+    # g1: no investment cost, constraint should not exist
+    @test ("g1", 2) ∉ keys(model[:eq_invest_nondec])
+
+    # g2: positive investment cost, enforced for t >= 2
+    @test ("g2", 1) ∉ keys(model[:eq_invest_nondec])
+    @test_constr model[:eq_invest_nondec]["g2", 2] "invest[g2,1] - invest[g2,2] ≤ 0"
+    @test_constr model[:eq_invest_nondec]["g2", 3] "invest[g2,2] - invest[g2,3] ≤ 0"
+    @test_constr model[:eq_invest_nondec]["g2", 4] "invest[g2,3] - invest[g2,4] ≤ 0"
 end
