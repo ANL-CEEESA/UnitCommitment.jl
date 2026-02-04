@@ -19,8 +19,10 @@ function build_model(;
 )::JuMP.Model
     model = Model()
     model[:obj] = AffExpr()
+    model[:net_injection] = AffExpr()
 
     _add_thermal_units!(model, instance, formulation)
+    _add_profiled_units!(model, instance)
 
     @objective(model, Min, model[:obj])
 

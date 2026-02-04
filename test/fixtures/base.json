@@ -133,6 +133,21 @@
       "Initial status (h)": -1,
       "Initial power (MW)": 0,
       "Type": "Thermal"
+    },
+    "p1": {
+      "Bus": "b1",
+      "Type": "Profiled",
+      "Cost ($/MW)": 50.0,
+      "Minimum power (MW)": 10.0,
+      "Maximum power (MW)": 100.0
+    },
+    "p2": {
+      "Bus": "b2",
+      "Type": "Profiled",
+      "Cost ($/MW)": 30.0,
+      "Minimum power (MW)": 5.0,
+      "Maximum power (MW)": 80.0,
+      "Investment cost ($)": [1000, 2000, 3000, 4000]
     }
   },
   "Buses": {

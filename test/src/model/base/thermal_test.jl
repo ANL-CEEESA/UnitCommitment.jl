@@ -4,16 +4,13 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction model_base_test begin
+@testfunction model_base_thermal_test begin
     model = UnitCommitment.build_model(
         instance = UnitCommitment.read(fixture("base.json")),
         formulation = UnitCommitment.BaseFormulation,
         optimizer = HiGHS.Optimizer,
         variable_names = true,
     )
-
-    # Thermal generators
-    # =========================================================================
 
     # Decision variables
     # -------------------------------------------------------------------------

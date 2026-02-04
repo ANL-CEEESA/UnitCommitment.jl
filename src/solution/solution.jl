@@ -105,10 +105,10 @@ function solution(model::JuMP.Model)::OrderedDict
         end
         if !isempty(sc.profiled_units)
             sol[sc.name]["Profiled production (MW)"] =
-                timeseries(model[:prod_profiled], sc.profiled_units, sc = sc)
+                timeseries(model[:prod], sc.profiled_units, sc = sc)
             sol[sc.name]["Profiled production cost (\$)"] = OrderedDict(
                 pu.name => [
-                    value(model[:prod_profiled][sc.name, pu.name, t]) *
+                    value(model[:prod][sc.name, pu.name, t]) *
                     pu.cost[t] for t in 1:instance.time
                 ] for pu in sc.profiled_units
             )

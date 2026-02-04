@@ -386,8 +386,8 @@ incurred at the time of the investment and scaled by an investment cost weight.
 
 | Symbol                   | JuMP name              | Unit   | Description                                                   | Stage |
 | :----------------------- | :--------------------- | :----- | :------------------------------------------------------------ | :---- |
-| $x^{\text{invest}}_{gt}$ | `invest_unit[g,t]`     | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
-| $y^\text{prod}_{sgt}$    | `prod_profiled[s,g,t]` | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
+| $x^{\text{invest}}_{gt}$ | `invest[g,t]`          | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
+| $y^\text{prod}_{sgt}$    | `prod[s,g,t]`          | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
 
@@ -414,15 +414,15 @@ M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
 ```
 
 - Unit is permanently built once invested
-  (`eq_invest_unit_nondecreasing[g, t]`):
+  (`eq_invest_nondec[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
 ```
 
 - Unit generation bounds are zero if not invested
-  (`eq_invest_unit_capacity_upper[s, g, t]` and
-  `eq_invest_unit_capacity_lower[s, g, t]`):
+  (`eq_invest_prod_ub[s, g, t]` and
+  `eq_invest_prod_lb[s, g, t]`):
 
 ```math
 M^{\text{pmin}}_{sgt} x^{\text{invest}}_{gt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt} x^{\text{invest}}_{gt}

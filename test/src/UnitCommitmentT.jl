@@ -102,7 +102,8 @@ end
 # include("market/market_test.jl")
 # include("planning/planning_test.jl")
 # include("regression.jl")
-include("model/model_base_test.jl")
+include("model/base/thermal_test.jl")
+include("model/base/profiled_test.jl")
 include("model/model_MorLatRam2013_test.jl")
 include("model/model_KnuOstWat2018_test.jl")
 
@@ -117,7 +118,8 @@ function runtests()
     # UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
     @testset "UnitCommitment" begin
         @testset "model" begin
-            model_base_test()
+            model_base_thermal_test()
+            model_base_profiled_test()
             model_MorLatRam2013_test()
             model_KnuOstWat2018_test()
         end
