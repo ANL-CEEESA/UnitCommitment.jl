@@ -4,19 +4,14 @@
 
 """
     solve_market(
-        da_path::Union{String, Vector{String}}, 
+        da_path::Union{String, Vector{String}},
         rt_paths::Vector{String},
         settings::MarketSettings;
         optimizer,
-        lp_optimizer = nothing,
-        after_build_da = nothing,
-        after_optimize_da = nothing,
-        after_build_rt = nothing,
-        after_optimize_rt = nothing,
     )::OrderedDict
 
 Solve the day-ahead and the real-time markets by the means of commitment status mapping.
-The method firstly acquires the commitment status outcomes through the resolution of the day-ahead market; 
+The method firstly acquires the commitment status outcomes through the resolution of the day-ahead market;
 and secondly resolves each real-time market based on the corresponding results obtained previously.
 
 Arguments
@@ -29,30 +24,10 @@ Arguments
     the list of data file paths of the real-time markets, must be deterministic for each market.
 
 - `settings`:
-    the MarketSettings which include the problem formulation, the solving method, and LMP method.
+    the MarketSettings which include the problem formulation, the solving method, and extensions.
 
 - `optimizer`:
     the optimizer for solving the problem.
-
-- `lp_optimizer`:
-    the linear programming optimizer for solving the LMP problem, defaults to `nothing`.
-    If not specified by the user, the program uses `optimizer` instead.
-
-- `after_build_da`:
-    a user-defined function that allows modifying the DA model after building,
-    must have 2 arguments `model` and `instance` in order.
-
-- `after_optimize_da`:
-    a user-defined function that allows handling additional steps after optimizing the DA model,
-    must have 3 arguments `solution`, `model` and `instance` in order.
-
-- `after_build_rt`:
-    a user-defined function that allows modifying each RT model after building,
-    must have 2 arguments `model` and `instance` in order.
-
-- `after_optimize_rt`:
-    a user-defined function that allows handling additional steps after optimizing each RT model,
-    must have 3 arguments `solution`, `model` and `instance` in order.
 
 
 Examples
@@ -61,7 +36,7 @@ Examples
 ```julia
 using UnitCommitment, HiGHS
 
-import UnitCommitment: 
+import UnitCommitment:
     MarketSettings,
     XavQiuWanThi2019,
     ConventionalLMP,
@@ -72,12 +47,12 @@ solution = UnitCommitment.solve_market(
     ["rt_instance_1.json", "rt_instance_2.json", "rt_instance_3.json"],
     MarketSettings(
         inner_method = XavQiuWanThi2019.Method(),
-        lmp_method = ConventionalLMP(),
+        extensions = [ConventionalLMP()],  # optional
         formulation = Formulation(),
     ),
     optimizer = HiGHS.Optimizer,
-    lp_optimizer = HiGHS.Optimizer,
 )
+```
 """
 
 function solve_market(
@@ -85,27 +60,17 @@ function solve_market(
     rt_paths::Vector{String};
     settings::MarketSettings = MarketSettings(),
     optimizer,
-    lp_optimizer = nothing,
-    after_build_da = nothing,
-    after_optimize_da = nothing,
-    after_build_rt = nothing,
-    after_optimize_rt = nothing,
 )::OrderedDict
     # solve da instance as usual
     @info "Solving the day-ahead market with file $da_path..."
-    instance_da = UnitCommitment.read(da_path)
-    # LP optimizer is optional: if not specified, use optimizer
-    lp_optimizer = lp_optimizer === nothing ? optimizer : lp_optimizer
+    instance_da = UnitCommitment.read(da_path, extensions = settings.extensions)
     # build and optimize the DA market
     model_da, solution_da = _build_and_optimize(
         instance_da,
         settings,
         optimizer = optimizer,
-        lp_optimizer = lp_optimizer,
-        after_build = after_build_da,
-        after_optimize = after_optimize_da,
     )
-    # prepare the final solution 
+    # prepare the final solution
     solution = OrderedDict()
     solution["DA"] = solution_da
     solution["RT"] = []
@@ -125,8 +90,8 @@ function solve_market(
     prev_initial_status = OrderedDict()
     for rt_path in rt_paths
         @info "Solving the real-time market with file $rt_path..."
-        instance_rt = UnitCommitment.read(rt_path)
-        # check instance time 
+        instance_rt = UnitCommitment.read(rt_path, extensions = settings.extensions)
+        # check instance time
         sc = instance_rt.scenarios[1]
         # check each time slot in the RT model
         for ts in 1:sc.time
@@ -142,7 +107,7 @@ function solve_market(
             # update thermal unit commitment status
             for g in sc.thermal_units
                 g.commitment_status[ts] =
-                    value(model_da[:is_on][g.name, da_time_slot]) == 1.0
+                    value(model_da[:is_on][g.name, da_time_slot]) ≈ 1.0
             end
         end
         # update current time by ONE slot only
@@ -163,9 +128,6 @@ function solve_market(
             instance_rt,
             settings,
             optimizer = optimizer,
-            lp_optimizer = lp_optimizer,
-            after_build = after_build_rt,
-            after_optimize = after_optimize_rt,
         )
         prev_initial_status =
             OrderedDict(g.name => g.initial_status for g in sc.thermal_units)
@@ -178,42 +140,15 @@ function _build_and_optimize(
     instance::UnitCommitmentInstance,
     settings::MarketSettings;
     optimizer,
-    lp_optimizer,
-    after_build = nothing,
-    after_optimize = nothing,
 )::Tuple{JuMP.Model,OrderedDict}
-    # build model with after build
+    # build model
     model = UnitCommitment.build_model(
         instance = instance,
         optimizer = optimizer,
         formulation = settings.formulation,
     )
-    if after_build !== nothing
-        after_build(model, instance)
-    end
     # optimize model
     UnitCommitment.optimize!(model, settings.inner_method)
     solution = UnitCommitment.solution(model)
-    # compute lmp and add to solution 
-    if settings.lmp_method !== nothing
-        lmp = UnitCommitment.compute_lmp(
-            model,
-            settings.lmp_method,
-            optimizer = lp_optimizer,
-        )
-        if length(instance.scenarios) == 1
-            solution["LMP (\$/MW)"] = lmp
-        else
-            for sc in instance.scenarios
-                solution[sc.name]["LMP (\$/MW)"] = OrderedDict(
-                    key => val for (key, val) in lmp if key[1] == sc.name
-                )
-            end
-        end
-    end
-    # run after optimize with solution
-    if after_optimize !== nothing
-        after_optimize(solution, model, instance)
-    end
     return model, solution
 end

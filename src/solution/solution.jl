@@ -15,6 +15,21 @@ solution = UnitCommitment.solution(model)
 ```
 """
 function solution(model::JuMP.Model)::OrderedDict
+    instance = model[:instance]
+    sol = model.ext[:ucjl][:solution]
+
+    for ext in instance.extensions
+        _solution!(sol, model, ext)
+    end
+
+    if length(instance.scenarios) == 1
+        sol = first(values(sol))
+    end
+
+    return sol
+end
+
+function _store_solution!(model::JuMP.Model)::Nothing
     instance, T = model[:instance], model[:instance].time
     function timeseries(vars, collection; sc = nothing)
         if sc === nothing
@@ -185,9 +200,6 @@ function solution(model::JuMP.Model)::OrderedDict
             ] for r in sc.reserves if r.type == "flexiramp"
         )
     end
-    if length(instance.scenarios) == 1
-        return first(values(sol))
-    else
-        return sol
-    end
+    model.ext[:ucjl][:solution] = sol
+    return
 end

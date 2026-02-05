@@ -112,13 +112,13 @@ solution = UnitCommitment.solve_market(
 
 @show solution["DA"]
 
-# To query each real-time market solution, we can query `solution["RT"][i]`. Note that LMPs are automativally calculated.
+# To query each real-time market solution, we can query `solution["RT"][i]`:
 
 @show solution["RT"][1]
 
-# ## Customizing the model and LMPs
+# ## Customizing the formulation and adding extensions
 
-# When using the `solve_market` function it is still possible to customize the problem formulation and the LMP calculation method. In the next example, we use a custom formulation and explicitly specify the LMP method through the `settings` keyword argument:
+# When using the `solve_market` function it is still possible to customize the problem formulation and to add extensions. Extensions handle additional computations such as LMP pricing automatically. In the next example, we use a custom formulation and add the `ConventionalLMP` extension through the `settings` keyword argument:
 
 UnitCommitment.solve_market(
     "da.json",
@@ -133,7 +133,7 @@ UnitCommitment.solve_market(
         "rt_8.json",
     ],
     settings = UnitCommitment.MarketSettings(
-        lmp_method = UnitCommitment.ConventionalLMP(),
+        extensions = [UnitCommitment.ConventionalLMP()],
         formulation = UnitCommitment.Formulation(
             pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
             ramping = UnitCommitment.MorLatRam2013.Ramping(),
@@ -147,37 +147,7 @@ UnitCommitment.solve_market(
     optimizer = HiGHS.Optimizer,
 )
 
-# It is also possible to add custom variables and constraints to either the DA or RT market problems, through the usage of `after_build_da` and `after_build_rt` callback functions. Similarly, the `after_optimize_da` and `after_optimize_rt` can be used to directly analyze the JuMP models, after they have been optimized:
-
-using JuMP
-
-function after_build_da(model, instance)
-    @constraint(model, model[:is_on]["g1", 1] <= model[:is_on]["g2", 1])
-end
-
-function after_optimize_da(solution, model, instance)
-    @show value(model[:is_on]["g1", 1])
-end
-
-UnitCommitment.solve_market(
-    "da.json",
-    [
-        "rt_1.json",
-        "rt_2.json",
-        "rt_3.json",
-        "rt_4.json",
-        "rt_5.json",
-        "rt_6.json",
-        "rt_7.json",
-        "rt_8.json",
-    ],
-    after_build_da = after_build_da,
-    after_optimize_da = after_optimize_da,
-    optimizer = HiGHS.Optimizer,
-)
-
 # ## Additional considerations
 
 # - UC.jl supports two-stage stochastic DA market problems. In this case, we need one file for each DA market scenario. All RT market problems must be deterministic.
 # - UC.jl also supports multi-period RT market problems. Assume, for example, that the DA market problem is an hourly problem with 24 time periods, whereas the RT market problem uses 5-minute granularity with 4 time periods. UC.jl assumes that the first RT file covers period `0:00` to `0:20`, the second covers `0:05` to `0:25` and so on. We therefore still need 288 RT market files. To avoid going beyond the 24-hour period covered by the DA market solution, however, the last few RT market problems must have only 3, 2, and 1 time periods, covering `23:45` to `24:00`, `23:50` to `24:00` and `23:55` to `24:00`, respectively.
-# - Some MILP solvers (such as Cbc) have issues handling linear programming problems, which are required for the RT market. In this case, a separate linear programming solver can be provided to `solve_market` using the `lp_optimizer` argument. For example, `solve_market(da_file, rt_files, optimizer=Cbc.Optimizer, lp_optimizer=Clp.Optimizer)`.

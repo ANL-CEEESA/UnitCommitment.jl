@@ -3,114 +3,55 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using JuMP
-
-"""
-    function compute_lmp(
-        model::JuMP.Model,
-        method::AELMP;
-        optimizer,
-    )::OrderedDict{Tuple{String,Int},Float64}
-
-Calculates the approximate extended locational marginal prices of the given unit commitment instance.
-
-The AELPM does the following three things:
-
-    1. It sets the minimum power output of each generator to zero
-    2. It averages the start-up cost over the offer blocks for each generator
-    3. It relaxes all integrality constraints
-
-Returns a dictionary mapping `(bus_name, time)` to the marginal price.
-
-WARNING: This approximation method is not fully developed. The implementation is based on MISO Phase I only.
-
-1. It only supports Fast Start resources. More specifically, the minimum up/down time has to be zero.
-2. The method does NOT support time-varying start-up costs.
-3. An asset is considered offline if it is never on throughout all time periods. 
-4. The method does NOT support multiple scenarios.
-
-Arguments
----------
-
-- `model`:
-    the UnitCommitment model, must be solved before calling this function if offline participation is not allowed.
-
-- `method`:
-    the AELMP method.
-
-- `optimizer`:
-    the optimizer for solving the LP problem.
-
-Examples
---------
-
-```julia
 using UnitCommitment
-using HiGHS
 
-import UnitCommitment: AELMP
-
-# Read benchmark instance
-instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
-
-# Build the model
-model = UnitCommitment.build_model(
-    instance = instance,
-    optimizer = HiGHS.Optimizer,
-)
-
-# Optimize the model
-UnitCommitment.optimize!(model)
-
-# Compute the AELMPs
-aelmp = UnitCommitment.compute_lmp(
-    model,
-    AELMP(
-        allow_offline_participation = false,
-        consider_startup_costs = true
-    ),
-    optimizer = HiGHS.Optimizer
-)
-
-# Access the AELMPs
-# Example: "s1" is the scenario name, "b1" is the bus name, 1 is the first time slot
-# Note: although scenario is supported, the query still keeps the scenario keys for consistency.
-@show aelmp["s1", "b1", 1]
-```
-"""
-function compute_lmp(
+function _after_optimize!(
     model::JuMP.Model,
-    method::AELMP;
-    optimizer,
-)::OrderedDict{Tuple{String,String,Int},Float64}
+    method::AELMP,
+)::Nothing
     @info "Building the approximation model..."
     instance = deepcopy(model[:instance])
     _aelmp_check_parameters(instance, model, method)
     _modify_scenario!(instance.scenarios[1], model, method)
 
-    # prepare the result dictionary and solve the model 
-    elmp = OrderedDict()
     @info "Solving the approximation model."
     approx_model = build_model(instance = instance, variable_names = true)
 
-    # relax the binary constraint, and relax integrality
+    # Relax the binary constraint, and relax integrality
     for v in all_variables(approx_model)
         if is_binary(v)
             unset_binary(v)
         end
     end
     relax_integrality(approx_model)
-    set_optimizer(approx_model, optimizer)
+    set_optimizer(approx_model, method.optimizer)
 
-    # solve the model 
+    # Solve the model
     set_silent(approx_model)
-    optimize!(approx_model)
+    JuMP.optimize!(approx_model)
 
-    # access the dual values
+    # Store dual values as LMPs
     @info "Getting dual values (AELMPs)."
+    model.ext[:lmp_values] = OrderedDict()
     for (key, val) in approx_model[:eq_net_injection]
-        elmp[key] = dual(val)
+        model.ext[:lmp_values][key] = dual(val)
     end
-    return elmp
+end
+
+function _solution!(
+    sol::AbstractDict,
+    model::JuMP.Model,
+    ::AELMP,
+)::Nothing
+    instance = model[:instance]
+    T = instance.time
+    for sc in instance.scenarios
+        lmp = sol[sc.name]["Locational marginal price (\$/MWh)"] = Dict()
+        for b in sc.buses, t in 1:T
+            lmp[b.name, t] = model.ext[:lmp_values][sc.name, b.name, t]
+        end
+    end
+    return
 end
 
 function _aelmp_check_parameters(
@@ -163,7 +104,7 @@ function _modify_scenario!(
             # remove based on the solved UC model result
             # remove the unit if it is never on
             if all(t -> value(model[:is_on][unit.name, t]) == 0, sc.time)
-                # unregister from the bus 
+                # unregister from the bus
                 filter!(x -> x.name != unit.name, unit.bus.thermal_units)
                 # unregister from the reserve
                 for r in unit.reserves
@@ -178,7 +119,7 @@ function _modify_scenario!(
     end
 
     for unit in sc.thermal_units
-        # 2. set min generation requirement to 0 by adding 0 to production curve and cost 
+        # 2. set min generation requirement to 0 by adding 0 to production curve and cost
         # min_power & min_costs are vectors with dimension T
         if unit.min_power[1] != 0
             first_cost_segment = unit.cost_segments[1]

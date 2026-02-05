@@ -72,6 +72,7 @@ function build_model(;
     @info "Building model..."
     time_model = @elapsed begin
         model = Model()
+        model.ext[:ucjl] = Dict()
         if optimizer !== nothing
             set_optimizer(model, optimizer)
         end

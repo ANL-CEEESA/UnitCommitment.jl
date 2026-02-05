@@ -72,6 +72,32 @@ function transform_slice_test()
         )
     end
 
+    @testset "slice with extensions" begin
+        instance = UnitCommitment.read(
+            fixture("case14.json.gz"),
+            extensions = [UnitCommitment.ConventionalLMP()],
+        )
+        modified = UnitCommitment.slice(instance, 1:2)
+
+        # Extensions should survive through slice
+        @test length(modified.extensions) == 1
+        @test modified.extensions[1] isa UnitCommitment.ConventionalLMP
+
+        # Should be able to optimize and get LMPs in the solution
+        optimizer = optimizer_with_attributes(
+            HiGHS.Optimizer,
+            "log_to_console" => false,
+        )
+        model = UnitCommitment.build_model(
+            instance = modified,
+            optimizer = optimizer,
+            variable_names = true,
+        )
+        UnitCommitment.optimize!(model)
+        solution = UnitCommitment.solution(model)
+        @test haskey(solution, "Locational marginal price (\$/MWh)")
+    end
+
     @testset "slice storage units" begin
         instance = UnitCommitment.read(fixture("case14-storage.json.gz"))
         modified = UnitCommitment.slice(instance, 2:4)

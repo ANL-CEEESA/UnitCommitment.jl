@@ -133,11 +133,13 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     storage_units::Vector{StorageUnit}
     time::Int
     time_step::Int
+    data::Dict = Dict()
 end
 
 Base.@kwdef mutable struct UnitCommitmentInstance
     time::Int
     scenarios::Vector{UnitCommitmentScenario}
+    extensions::Vector
 end
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)
