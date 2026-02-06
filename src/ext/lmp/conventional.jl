@@ -44,10 +44,69 @@ function _solution!(
     instance = model[:instance]
     T = instance.time
     for sc in instance.scenarios
-        lmp = sol[sc.name]["Locational marginal price (\$/MWh)"] = Dict()
+        lmp_total = sol[sc.name]["LMP: Total (\$/MWh)"] = Dict()
+        lmp_energy = sol[sc.name]["LMP: Energy (\$/MWh)"] = Dict()
+        lmp_congestion = sol[sc.name]["LMP: Congestion (\$/MWh)"] = Dict()
         for b in sc.buses, t in 1:T
-            lmp[b.name, t] = model.ext[:lmp_values][sc.name, b.name, t]
+            lmp_total[b.name, t] =
+                model.ext[:lmp_values][sc.name, b.name, t]
         end
+        for t in 1:T
+            energy = minimum(lmp_total[b.name, t] for b in sc.buses)
+            for b in sc.buses
+                lmp_energy[b.name, t] = energy
+                lmp_congestion[b.name, t] = lmp_total[b.name, t] - energy
+            end
+        end
+        sol[sc.name]["Thermal: Gross revenue (\$)"] = OrderedDict(
+            g.name => [
+                sol[sc.name]["Thermal: Production (MW)"][g.name][t] *
+                lmp_total[g.bus.name, t] for t in 1:T
+            ] for g in sc.thermal_units
+        )
+        sol[sc.name]["Thermal: Net revenue (\$)"] = OrderedDict(
+            g.name => [
+                sol[sc.name]["Thermal: Gross revenue (\$)"][g.name][t] -
+                sol[sc.name]["Thermal: Production cost (\$)"][g.name][t] -
+                sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t] for t in 1:T
+            ] for g in sc.thermal_units
+        )
+        sol[sc.name]["Thermal: Uplift payment (\$)"] = OrderedDict(
+            g.name => max(
+                0.0,
+                -sum(sol[sc.name]["Thermal: Net revenue (\$)"][g.name]),
+            ) for g in sc.thermal_units
+        )
+        sol[sc.name]["Profiled: Gross revenue (\$)"] = OrderedDict(
+            pu.name => [
+                sol[sc.name]["Profiled: Production (MW)"][pu.name][t] *
+                lmp_total[pu.bus.name, t] for t in 1:T
+            ] for pu in sc.profiled_units
+        )
+        sol[sc.name]["Profiled: Net revenue (\$)"] = OrderedDict(
+            pu.name => [
+                sol[sc.name]["Profiled: Gross revenue (\$)"][pu.name][t] -
+                sol[sc.name]["Profiled: Production cost (\$)"][pu.name][t]
+                for t in 1:T
+            ] for pu in sc.profiled_units
+        )
+        sol[sc.name]["Profiled: Uplift payment (\$)"] = OrderedDict(
+            pu.name => max(
+                0.0,
+                -sum(sol[sc.name]["Profiled: Net revenue (\$)"][pu.name]),
+            ) for pu in sc.profiled_units
+        )
+        sol[sc.name]["Bus: Fixed load expense (\$)"] = OrderedDict(
+            b.name => [
+                b.load[t] * lmp_total[b.name, t] for t in 1:T
+            ] for b in sc.buses
+        )
+        sol[sc.name]["Price-sensitive load: Expense (\$)"] = OrderedDict(
+            ps.name => [
+                sol[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t] *
+                lmp_total[ps.bus.name, t] for t in 1:T
+            ] for ps in sc.price_sensitive_loads
+        )
     end
     return
 end

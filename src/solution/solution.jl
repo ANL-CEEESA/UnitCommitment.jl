@@ -31,7 +31,9 @@ end
 
 function _store_solution!(model::JuMP.Model)::Nothing
     instance, T = model[:instance], model[:instance].time
-    function timeseries(vars, collection; sc = nothing)
+    function timeseries(sym::Symbol, collection; sc = nothing)
+        isempty(collection) && return OrderedDict{String,Vector{Float64}}()
+        vars = model[sym]
         if sc === nothing
             return OrderedDict(
                 b.name =>
@@ -80,121 +82,111 @@ function _store_solution!(model::JuMP.Model)::Nothing
     sol = OrderedDict()
     for sc in instance.scenarios
         sol[sc.name] = OrderedDict()
-        sol[sc.name]["Net injection (MW)"] =
-            timeseries(model[:net_injection], sc.buses, sc = sc)
-        sol[sc.name]["Load curtail (MW)"] =
-            timeseries(model[:curtail], sc.buses, sc = sc)
-        if !isempty(sc.thermal_units)
-            sol[sc.name]["Thermal production (MW)"] = OrderedDict(
-                g.name => production(g, sc) for g in sc.thermal_units
-            )
-            sol[sc.name]["Thermal production cost (\$)"] = OrderedDict(
-                g.name => production_cost(g, sc) for g in sc.thermal_units
-            )
-            sol[sc.name]["Startup cost (\$)"] = OrderedDict(
-                g.name => startup_cost(g, sc) for g in sc.thermal_units
-            )
-            sol[sc.name]["Is on"] = timeseries(model[:is_on], sc.thermal_units)
-            sol[sc.name]["Switch on"] =
-                timeseries(model[:switch_on], sc.thermal_units)
-            sol[sc.name]["Switch off"] =
-                timeseries(model[:switch_off], sc.thermal_units)
-            sol[sc.name]["Thermal investment status"] = OrderedDict(
-                g.name =>
-                    [value(model[:invest_unit][g.name, t]) for t in 1:T] for
-                g in sc.thermal_units if g.invest[1] > 0.0
-            )
-        end
-        if !isempty(sc.lines)
-            sol[sc.name]["Line overflow (MW)"] =
-                timeseries(model[:overflow], sc.lines, sc = sc)
-            sol[sc.name]["Line investment status"] = OrderedDict(
-                lm.name =>
-                    [value(model[:invest_line][lm.name, t]) for t in 1:T]
-                for lm in sc.lines if lm.invest[1] > 0.0
-            )
-        end
-        if !isempty(sc.price_sensitive_loads)
-            sol[sc.name]["Price-sensitive loads (MW)"] =
-                timeseries(model[:loads], sc.price_sensitive_loads, sc = sc)
-        end
-        if !isempty(sc.profiled_units)
-            sol[sc.name]["Profiled production (MW)"] =
-                timeseries(model[:prod_profiled], sc.profiled_units, sc = sc)
-            sol[sc.name]["Profiled production cost (\$)"] = OrderedDict(
-                pu.name => [
-                    value(model[:prod_profiled][sc.name, pu.name, t]) *
-                    pu.cost[t] for t in 1:instance.time
-                ] for pu in sc.profiled_units
-            )
-            sol[sc.name]["Unit investment status"] = OrderedDict(
-                pu.name =>
-                    [value(model[:invest_unit][pu.name, t]) for t in 1:T]
-                for pu in sc.profiled_units if pu.invest[1] > 0.0
-            )
-        end
-        if !isempty(sc.storage_units)
-            sol[sc.name]["Storage level (MWh)"] =
-                timeseries(model[:storage_level], sc.storage_units, sc = sc)
-            sol[sc.name]["Is charging"] =
-                timeseries(model[:is_charging], sc.storage_units, sc = sc)
-            sol[sc.name]["Storage charging rates (MW)"] =
-                timeseries(model[:charge_rate], sc.storage_units, sc = sc)
-            sol[sc.name]["Storage charging cost (\$)"] = OrderedDict(
-                su.name => [
-                    value(model[:charge_rate][sc.name, su.name, t]) *
-                    su.charge_cost[t] for t in 1:instance.time
-                ] for su in sc.storage_units
-            )
-            sol[sc.name]["Is discharging"] =
-                timeseries(model[:is_discharging], sc.storage_units, sc = sc)
-            sol[sc.name]["Storage discharging rates (MW)"] =
-                timeseries(model[:discharge_rate], sc.storage_units, sc = sc)
-            sol[sc.name]["Storage discharging cost (\$)"] = OrderedDict(
-                su.name => [
-                    value(model[:discharge_rate][sc.name, su.name, t]) *
-                    su.discharge_cost[t] for t in 1:instance.time
-                ] for su in sc.storage_units
-            )
-            sol[sc.name]["Energy storage investment status"] = OrderedDict(
-                su.name => [
-                    value(model[:invest_storage][su.name, t]) for t in 1:T
-                ] for su in sc.storage_units if su.invest[1] > 0.0
-            )
-        end
-        sol[sc.name]["Spinning reserve (MW)"] = OrderedDict(
+        sol[sc.name]["Bus: Net injection (MW)"] =
+            timeseries(:net_injection, sc.buses, sc = sc)
+        sol[sc.name]["Bus: Load curtail (MW)"] =
+            timeseries(:curtail, sc.buses, sc = sc)
+        sol[sc.name]["Thermal: Production (MW)"] = OrderedDict(
+            g.name => production(g, sc) for g in sc.thermal_units
+        )
+        sol[sc.name]["Thermal: Production cost (\$)"] = OrderedDict(
+            g.name => production_cost(g, sc) for g in sc.thermal_units
+        )
+        sol[sc.name]["Thermal: Startup cost (\$)"] = OrderedDict(
+            g.name => startup_cost(g, sc) for g in sc.thermal_units
+        )
+        sol[sc.name]["Thermal: Is on"] = timeseries(:is_on, sc.thermal_units)
+        sol[sc.name]["Thermal: Switch on"] =
+            timeseries(:switch_on, sc.thermal_units)
+        sol[sc.name]["Thermal: Switch off"] =
+            timeseries(:switch_off, sc.thermal_units)
+        sol[sc.name]["Thermal: Investment status"] = OrderedDict(
+            g.name =>
+                [value(model[:invest_unit][g.name, t]) for t in 1:T] for
+            g in sc.thermal_units if g.invest[1] > 0.0
+        )
+        sol[sc.name]["Line: Overflow (MW)"] =
+            timeseries(:overflow, sc.lines, sc = sc)
+        sol[sc.name]["Line: Investment status"] = OrderedDict(
+            lm.name =>
+                [value(model[:invest_line][lm.name, t]) for t in 1:T]
+            for lm in sc.lines if lm.invest[1] > 0.0
+        )
+        sol[sc.name]["Price-sensitive load: Demand served (MW)"] =
+            timeseries(:loads, sc.price_sensitive_loads, sc = sc)
+        sol[sc.name]["Profiled: Production (MW)"] =
+            timeseries(:prod_profiled, sc.profiled_units, sc = sc)
+        sol[sc.name]["Profiled: Production cost (\$)"] = OrderedDict(
+            pu.name => [
+                value(model[:prod_profiled][sc.name, pu.name, t]) *
+                pu.cost[t] for t in 1:instance.time
+            ] for pu in sc.profiled_units
+        )
+        sol[sc.name]["Profiled: Investment status"] = OrderedDict(
+            pu.name =>
+                [value(model[:invest_unit][pu.name, t]) for t in 1:T]
+            for pu in sc.profiled_units if pu.invest[1] > 0.0
+        )
+        sol[sc.name]["Storage: Level (MWh)"] =
+            timeseries(:storage_level, sc.storage_units, sc = sc)
+        sol[sc.name]["Storage: Is charging"] =
+            timeseries(:is_charging, sc.storage_units, sc = sc)
+        sol[sc.name]["Storage: Charging rate (MW)"] =
+            timeseries(:charge_rate, sc.storage_units, sc = sc)
+        sol[sc.name]["Storage: Charging cost (\$)"] = OrderedDict(
+            su.name => [
+                value(model[:charge_rate][sc.name, su.name, t]) *
+                su.charge_cost[t] for t in 1:instance.time
+            ] for su in sc.storage_units
+        )
+        sol[sc.name]["Storage: Is discharging"] =
+            timeseries(:is_discharging, sc.storage_units, sc = sc)
+        sol[sc.name]["Storage: Discharging rate (MW)"] =
+            timeseries(:discharge_rate, sc.storage_units, sc = sc)
+        sol[sc.name]["Storage: Discharging cost (\$)"] = OrderedDict(
+            su.name => [
+                value(model[:discharge_rate][sc.name, su.name, t]) *
+                su.discharge_cost[t] for t in 1:instance.time
+            ] for su in sc.storage_units
+        )
+        sol[sc.name]["Storage: Investment status"] = OrderedDict(
+            su.name => [
+                value(model[:invest_storage][su.name, t]) for t in 1:T
+            ] for su in sc.storage_units if su.invest[1] > 0.0
+        )
+        sol[sc.name]["Reserve: Spinning (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
                     value(model[:reserve][sc.name, r.name, g.name, t]) for t in 1:instance.time
                 ] for g in r.thermal_units
             ) for r in sc.reserves if r.type == "spinning"
         )
-        sol[sc.name]["Spinning reserve shortfall (MW)"] = OrderedDict(
+        sol[sc.name]["Reserve: Spinning shortfall (MW)"] = OrderedDict(
             r.name => [
                 value(model[:reserve_shortfall][sc.name, r.name, t]) for
                 t in 1:instance.time
             ] for r in sc.reserves if r.type == "spinning"
         )
-        sol[sc.name]["Up-flexiramp (MW)"] = OrderedDict(
+        sol[sc.name]["Reserve: Up-flexiramp (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
                     value(model[:upflexiramp][sc.name, r.name, g.name, t]) for t in 1:instance.time
                 ] for g in r.thermal_units
             ) for r in sc.reserves if r.type == "flexiramp"
         )
-        sol[sc.name]["Up-flexiramp shortfall (MW)"] = OrderedDict(
+        sol[sc.name]["Reserve: Up-flexiramp shortfall (MW)"] = OrderedDict(
             r.name => [
                 value(model[:upflexiramp_shortfall][sc.name, r.name, t]) for t in 1:instance.time
             ] for r in sc.reserves if r.type == "flexiramp"
         )
-        sol[sc.name]["Down-flexiramp (MW)"] = OrderedDict(
+        sol[sc.name]["Reserve: Down-flexiramp (MW)"] = OrderedDict(
             r.name => OrderedDict(
                 g.name => [
                     value(model[:dwflexiramp][sc.name, r.name, g.name, t]) for t in 1:instance.time
                 ] for g in r.thermal_units
             ) for r in sc.reserves if r.type == "flexiramp"
         )
-        sol[sc.name]["Down-flexiramp shortfall (MW)"] = OrderedDict(
+        sol[sc.name]["Reserve: Down-flexiramp shortfall (MW)"] = OrderedDict(
             r.name => [
                 value(model[:dwflexiramp_shortfall][sc.name, r.name, t]) for t in 1:instance.time
             ] for r in sc.reserves if r.type == "flexiramp"

@@ -43,15 +43,7 @@ function _solution!(
     model::JuMP.Model,
     ::AELMP,
 )::Nothing
-    instance = model[:instance]
-    T = instance.time
-    for sc in instance.scenarios
-        lmp = sol[sc.name]["Locational marginal price (\$/MWh)"] = Dict()
-        for b in sc.buses, t in 1:T
-            lmp[b.name, t] = model.ext[:lmp_values][sc.name, b.name, t]
-        end
-    end
-    return
+    _solution!(sol, model, ConventionalLMP())
 end
 
 function _aelmp_check_parameters(

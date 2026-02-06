@@ -65,7 +65,7 @@ function solve_market(
     @info "Solving the day-ahead market with file $da_path..."
     instance_da = UnitCommitment.read(da_path, extensions = settings.extensions)
     # build and optimize the DA market
-    model_da, solution_da = _build_and_optimize(
+    _, solution_da = _build_and_optimize(
         instance_da,
         settings,
         optimizer = optimizer,
@@ -78,6 +78,13 @@ function solve_market(
     # count the time, sc.time = n-slots, sc.time_step = slot-interval
     # sufficient to look at only one scenario
     sc = instance_da.scenarios[1]
+
+    # extract the DA commitment status from solution
+    is_on_da = if length(instance_da.scenarios) == 1
+        solution_da["Thermal: Is on"]
+    else
+        first(values(solution_da))["Thermal: Is on"]
+    end
     # max time (min) of the DA market
     max_time = sc.time * sc.time_step
     # current time increments through the RT market list
@@ -107,7 +114,7 @@ function solve_market(
             # update thermal unit commitment status
             for g in sc.thermal_units
                 g.commitment_status[ts] =
-                    value(model_da[:is_on][g.name, da_time_slot]) ≈ 1.0
+                    is_on_da[g.name][da_time_slot] ≈ 1.0
             end
         end
         # update current time by ONE slot only
@@ -116,10 +123,10 @@ function solve_market(
         if !isempty(solution_rt) && !isempty(prev_initial_status)
             for g in sc.thermal_units
                 g.initial_power =
-                    solution_rt["Thermal production (MW)"][g.name][1]
+                    solution_rt["Thermal: Production (MW)"][g.name][1]
                 g.initial_status = UnitCommitment._determine_initial_status(
                     prev_initial_status[g.name],
-                    [solution_rt["Is on"][g.name][1]],
+                    [solution_rt["Thermal: Is on"][g.name][1]],
                 )
             end
         end

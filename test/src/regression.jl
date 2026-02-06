@@ -14,6 +14,6 @@ function regression_test()
         JuMP.set_silent(model)
         UnitCommitment.optimize!(model)
         solution = UnitCommitment.solution(model)
-        @test solution["Thermal production (MW)"]["gen_524d4c85"][1] == 90.0
+        @test solution["Thermal: Production (MW)"]["gen_524d4c85"][1] == 90.0
     end
 end

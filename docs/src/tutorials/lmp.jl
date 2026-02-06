@@ -24,7 +24,7 @@ UnitCommitment.optimize!(model)
 # After optimization, LMPs are included in the solution dictionary. We can access them as follows:
 
 solution = UnitCommitment.solution(model)
-lmp = solution["Locational marginal price (\$/MWh)"]
+lmp = solution["LMP: Total (\$/MWh)"]
 
 # For example, the following code queries the LMP of bus `b1` at time 1:
 
@@ -57,6 +57,6 @@ model =
 UnitCommitment.optimize!(model)
 
 solution = UnitCommitment.solution(model)
-lmp = solution["Locational marginal price (\$/MWh)"]
+lmp = solution["LMP: Total (\$/MWh)"]
 
 @show lmp["B1", 1]

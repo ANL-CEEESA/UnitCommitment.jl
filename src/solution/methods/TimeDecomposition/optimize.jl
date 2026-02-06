@@ -119,12 +119,12 @@ function _set_initial_status!(
     for sc in instance.scenarios
         for thermal_unit in sc.thermal_units
             if length(instance.scenarios) == 1
-                prod = solution["Thermal production (MW)"][thermal_unit.name]
-                is_on = solution["Is on"][thermal_unit.name]
+                prod = solution["Thermal: Production (MW)"][thermal_unit.name]
+                is_on = solution["Thermal: Is on"][thermal_unit.name]
             else
                 prod =
-                    solution[sc.name]["Thermal production (MW)"][thermal_unit.name]
-                is_on = solution[sc.name]["Is on"][thermal_unit.name]
+                    solution[sc.name]["Thermal: Production (MW)"][thermal_unit.name]
+                is_on = solution[sc.name]["Thermal: Is on"][thermal_unit.name]
             end
             thermal_unit.initial_power = prod[end]
             thermal_unit.initial_status = _determine_initial_status(

@@ -9,15 +9,15 @@ function import_egret_test()
         solution =
             UnitCommitment.read_egret_solution(fixture("egret_output.json.gz"))
         for attr in
-            ["Is on", "Thermal production (MW)", "Thermal production cost (\$)"]
+            ["Thermal: Is on", "Thermal: Production (MW)", "Thermal: Production cost (\$)"]
             @test attr in keys(solution)
             @test "115_STEAM_1" in keys(solution[attr])
             @test length(solution[attr]["115_STEAM_1"]) == 48
         end
-        @test solution["Thermal production cost (\$)"]["315_CT_6"][15:20] ==
+        @test solution["Thermal: Production cost (\$)"]["315_CT_6"][15:20] ==
               [0.0, 0.0, 884.44, 1470.71, 1470.71, 884.44]
-        @test solution["Startup cost (\$)"]["315_CT_6"][15:20] ==
+        @test solution["Thermal: Startup cost (\$)"]["315_CT_6"][15:20] ==
               [0.0, 0.0, 5665.23, 0.0, 0.0, 0.0]
-        @test length(keys(solution["Is on"])) == 154
+        @test length(keys(solution["Thermal: Is on"])) == 154
     end
 end

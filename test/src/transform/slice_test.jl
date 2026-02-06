@@ -95,7 +95,7 @@ function transform_slice_test()
         )
         UnitCommitment.optimize!(model)
         solution = UnitCommitment.solution(model)
-        @test haskey(solution, "Locational marginal price (\$/MWh)")
+        @test haskey(solution, "LMP: Total (\$/MWh)")
     end
 
     @testset "slice storage units" begin

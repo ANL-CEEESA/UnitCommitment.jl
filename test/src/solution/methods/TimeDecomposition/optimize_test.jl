@@ -17,9 +17,9 @@ function solution_methods_TimeDecomposition_optimize_test()
                 "log_to_console" => false,
             ),
         )
-        @test length(solution["Thermal production (MW)"]["g1"]) == 4
-        @test length(solution["Is on"]["g2"]) == 4
-        @test length(solution["Spinning reserve (MW)"]["r1"]["g2"]) == 4
+        @test length(solution["Thermal: Production (MW)"]["g1"]) == 4
+        @test length(solution["Thermal: Is on"]["g2"]) == 4
+        @test length(solution["Reserve: Spinning (MW)"]["r1"]["g2"]) == 4
 
         # read multiple scenarios
         instance = UnitCommitment.read([
@@ -34,17 +34,17 @@ function solution_methods_TimeDecomposition_optimize_test()
                 "log_to_console" => false,
             ),
         )
-        @test length(solution["case14"]["Thermal production (MW)"]["g3"]) == 4
-        @test length(solution["case14"]["Is on"]["g4"]) == 4
+        @test length(solution["case14"]["Thermal: Production (MW)"]["g3"]) == 4
+        @test length(solution["case14"]["Thermal: Is on"]["g4"]) == 4
         @test length(
-            solution["case14-profiled"]["Thermal production (MW)"]["g5"],
+            solution["case14-profiled"]["Thermal: Production (MW)"]["g5"],
         ) == 4
-        @test length(solution["case14-profiled"]["Is on"]["g6"]) == 4
+        @test length(solution["case14-profiled"]["Thermal: Is on"]["g6"]) == 4
         @test length(
-            solution["case14-profiled"]["Profiled production (MW)"]["g7"],
+            solution["case14-profiled"]["Profiled: Production (MW)"]["g7"],
         ) == 4
         @test length(
-            solution["case14-profiled"]["Spinning reserve (MW)"]["r1"]["g3"],
+            solution["case14-profiled"]["Reserve: Spinning (MW)"]["r1"]["g3"],
         ) == 4
     end
 end

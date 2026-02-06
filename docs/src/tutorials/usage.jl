@@ -36,7 +36,7 @@ solution = UnitCommitment.solution(model)
 
 # We can then explore the solution using Julia:
 
-@show solution["Thermal production (MW)"]["g1"]
+@show solution["Thermal: Production (MW)"]["g1"]
 
 # Or export the entire solution to a JSON file:
 
@@ -97,11 +97,11 @@ solution = UnitCommitment.solution(model)
 
 #
 
-@show solution["Thermal production (MW)"]["g1"]
+@show solution["Thermal: Production (MW)"]["g1"]
 
 #
 
-@show solution["Thermal production (MW)"]["g2"]
+@show solution["Thermal: Production (MW)"]["g2"]
 
 # ## Solving a custom stochastic instance
 
