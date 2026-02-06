@@ -131,7 +131,8 @@ function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     flows = sc.isf * net_injection_values
 
     sol["Line: Flow (MW)"] = OrderedDict(
-        line.name => [round(flows[line.offset, t], digits = 5) for t in 1:T] for
+        line.name =>
+            [round(flows[line.offset, t], digits = 5) for t in 1:T] for
         line in sc.lines
     )
     sol["Line: Overflow (MW)"] =
@@ -152,13 +153,15 @@ function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     )
     sol["Line: Investment cost (\$)"] = OrderedDict(
         line.name => [
-            (value(model[:invest_line][line.name, t]) -
-                value(model[:invest_line][line.name, t - 1])) * line.invest[t]
-            for t in 1:T
+            (
+                value(model[:invest_line][line.name, t]) -
+                value(model[:invest_line][line.name, t-1])
+            ) * line.invest[t] for t in 1:T
         ] for line in sc.lines if line.invest[1] > 0.0
     )
     sol["Line: Investment status"] = OrderedDict(
-        line.name => [value(model[:invest_line][line.name, t]) for t in 1:T] for
+        line.name =>
+            [value(model[:invest_line][line.name, t]) for t in 1:T] for
         line in sc.lines if line.invest[1] > 0.0
     )
     return
