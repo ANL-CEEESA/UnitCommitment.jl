@@ -5,10 +5,7 @@
 using JuMP
 using UnitCommitment
 
-function _after_optimize!(
-    model::JuMP.Model,
-    method::AELMP,
-)::Nothing
+function _after_optimize!(model::JuMP.Model, method::AELMP)::Nothing
     @info "Building the approximation model..."
     instance = deepcopy(model[:instance])
     _aelmp_check_parameters(instance, model, method)
@@ -38,12 +35,8 @@ function _after_optimize!(
     end
 end
 
-function _solution!(
-    sol::AbstractDict,
-    model::JuMP.Model,
-    ::AELMP,
-)::Nothing
-    _solution!(sol, model, ConventionalLMP())
+function _solution!(sol::AbstractDict, model::JuMP.Model, ::AELMP)::Nothing
+    return _solution!(sol, model, ConventionalLMP())
 end
 
 function _aelmp_check_parameters(

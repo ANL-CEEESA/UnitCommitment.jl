@@ -12,7 +12,8 @@ function solution_methods_TimeDecomposition_update_solution_test()
             "Thermal: Production (MW)" => OrderedDict(
                 "g1" => [100.0, 200.0, 300.0, 400.0, 500.0, 600.0],
             ),
-            "Thermal: Is on" => OrderedDict("g1" => [1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
+            "Thermal: Is on" =>
+                OrderedDict("g1" => [1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
             "Profiled: Production (MW)" => OrderedDict(
                 "g1" => [199.0, 299.0, 399.0, 499.0, 599.0, 699.0],
             ),

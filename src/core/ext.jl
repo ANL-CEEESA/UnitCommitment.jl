@@ -4,7 +4,11 @@
 
 using JuMP
 
-function _read!(json::AbstractDict, sc::UnitCommitmentScenario, ext::UnitCommitmentExtension)
+function _read!(
+    json::AbstractDict,
+    sc::UnitCommitmentScenario,
+    ext::UnitCommitmentExtension,
+)
     # nop
 end
 
@@ -25,8 +29,7 @@ end
 function _after_optimize!(
     model::JuMP.Model,
     ext::UnitCommitmentExtension,
-)::Nothing
-end
+)::Nothing end
 
 function _solution!(
     sol::AbstractDict,

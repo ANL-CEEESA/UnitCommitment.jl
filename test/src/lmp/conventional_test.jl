@@ -7,9 +7,7 @@ using UnitCommitment, HiGHS, JuMP
 function solve_conventional_testcase(path::String)
     instance = UnitCommitment.read(
         path,
-        extensions=[
-            UnitCommitment.ConventionalLMP(),
-        ]
+        extensions = [UnitCommitment.ConventionalLMP()],
     )
     model = UnitCommitment.build_model(
         instance = instance,

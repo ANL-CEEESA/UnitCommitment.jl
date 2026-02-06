@@ -13,9 +13,7 @@ using HiGHS
 
 instance = UnitCommitment.read_benchmark(
     "matpower/case14/2017-01-01",
-    extensions = [
-        UnitCommitment.ConventionalLMP(),
-    ],
+    extensions = [UnitCommitment.ConventionalLMP()],
 )
 model =
     UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer)

@@ -65,11 +65,8 @@ function solve_market(
     @info "Solving the day-ahead market with file $da_path..."
     instance_da = UnitCommitment.read(da_path, extensions = settings.extensions)
     # build and optimize the DA market
-    _, solution_da = _build_and_optimize(
-        instance_da,
-        settings,
-        optimizer = optimizer,
-    )
+    _, solution_da =
+        _build_and_optimize(instance_da, settings, optimizer = optimizer)
     # prepare the final solution
     solution = OrderedDict()
     solution["DA"] = solution_da
@@ -97,7 +94,8 @@ function solve_market(
     prev_initial_status = OrderedDict()
     for rt_path in rt_paths
         @info "Solving the real-time market with file $rt_path..."
-        instance_rt = UnitCommitment.read(rt_path, extensions = settings.extensions)
+        instance_rt =
+            UnitCommitment.read(rt_path, extensions = settings.extensions)
         # check instance time
         sc = instance_rt.scenarios[1]
         # check each time slot in the RT model
@@ -113,8 +111,7 @@ function solve_market(
             da_time_slot = findfirst(ti -> slot_t_start < ti, da_time_intervals)
             # update thermal unit commitment status
             for g in sc.thermal_units
-                g.commitment_status[ts] =
-                    is_on_da[g.name][da_time_slot] ≈ 1.0
+                g.commitment_status[ts] = is_on_da[g.name][da_time_slot] ≈ 1.0
             end
         end
         # update current time by ONE slot only
@@ -131,11 +128,8 @@ function solve_market(
             end
         end
         # build and optimize the RT market
-        _, solution_rt = _build_and_optimize(
-            instance_rt,
-            settings,
-            optimizer = optimizer,
-        )
+        _, solution_rt =
+            _build_and_optimize(instance_rt, settings, optimizer = optimizer)
         prev_initial_status =
             OrderedDict(g.name => g.initial_status for g in sc.thermal_units)
         push!(solution["RT"], solution_rt)

@@ -4,10 +4,7 @@
 
 using JuMP
 
-function _after_optimize!(
-    model::JuMP.Model,
-    ::ConventionalLMP,
-)::Nothing
+function _after_optimize!(model::JuMP.Model, ::ConventionalLMP)::Nothing
     # Record binary variables and their optimal values
     binary_vars = [(v, value(v)) for v in all_variables(model) if is_binary(v)]
 
@@ -48,8 +45,7 @@ function _solution!(
         lmp_energy = sol[sc.name]["LMP: Energy (\$/MWh)"] = Dict()
         lmp_congestion = sol[sc.name]["LMP: Congestion (\$/MWh)"] = Dict()
         for b in sc.buses, t in 1:T
-            lmp_total[b.name, t] =
-                model.ext[:lmp_values][sc.name, b.name, t]
+            lmp_total[b.name, t] = model.ext[:lmp_values][sc.name, b.name, t]
         end
         for t in 1:T
             energy = minimum(lmp_total[b.name, t] for b in sc.buses)
@@ -68,7 +64,8 @@ function _solution!(
             g.name => [
                 sol[sc.name]["Thermal: Gross revenue (\$)"][g.name][t] -
                 sol[sc.name]["Thermal: Production cost (\$)"][g.name][t] -
-                sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t] for t in 1:T
+                sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t]
+                for t in 1:T
             ] for g in sc.thermal_units
         )
         sol[sc.name]["Thermal: Uplift payment (\$)"] = OrderedDict(
@@ -97,9 +94,8 @@ function _solution!(
             ) for pu in sc.profiled_units
         )
         sol[sc.name]["Bus: Fixed load expense (\$)"] = OrderedDict(
-            b.name => [
-                b.load[t] * lmp_total[b.name, t] for t in 1:T
-            ] for b in sc.buses
+            b.name => [b.load[t] * lmp_total[b.name, t] for t in 1:T] for
+            b in sc.buses
         )
         sol[sc.name]["Price-sensitive load: Expense (\$)"] = OrderedDict(
             ps.name => [

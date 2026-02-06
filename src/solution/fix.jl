@@ -18,7 +18,8 @@ function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
     for sc in instance.scenarios
         for g in sc.thermal_units
             for t in 1:T
-                is_on_value = round(solution[sc.name]["Thermal: Is on"][g.name][t])
+                is_on_value =
+                    round(solution[sc.name]["Thermal: Is on"][g.name][t])
                 prod_value = round(
                     solution[sc.name]["Thermal: Production (MW)"][g.name][t],
                     digits = 5,

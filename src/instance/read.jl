@@ -99,7 +99,10 @@ describes a scenario. The files may be gzipped.
 instance = UnitCommitment.read(["s1.json.gz", "s2.json.gz"])
 ```
 """
-function read(paths::Vector{String}; extensions::Vector = [])::UnitCommitmentInstance
+function read(
+    paths::Vector{String};
+    extensions::Vector = [],
+)::UnitCommitmentInstance
     scenarios = UnitCommitmentScenario[]
     for p in paths
         push!(scenarios, _read_scenario(p, extensions))
@@ -118,7 +121,10 @@ function _open(f::Function, path::String)
     end
 end
 
-function _read_scenario(path::String, extensions::Vector = [])::UnitCommitmentScenario
+function _read_scenario(
+    path::String,
+    extensions::Vector = [],
+)::UnitCommitmentScenario
     _open(path) do file
         return _read(file, extensions)
     end
@@ -137,7 +143,11 @@ function _read_json(path::String)::OrderedDict
     end
 end
 
-function _from_json(json, extensions::Vector = []; repair = true)::UnitCommitmentScenario
+function _from_json(
+    json,
+    extensions::Vector = [];
+    repair = true,
+)::UnitCommitmentScenario
     _migrate(json)
     thermal_units = ThermalUnit[]
     buses = Bus[]

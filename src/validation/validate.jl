@@ -47,7 +47,8 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
         for unit in sc.thermal_units
-            production = solution[sc.name]["Thermal: Production (MW)"][unit.name]
+            production =
+                solution[sc.name]["Thermal: Production (MW)"][unit.name]
             reserve = [0.0 for _ in 1:instance.time]
             spinning_reserves =
                 [r for r in unit.reserves if r.type == "spinning"]
@@ -345,8 +346,10 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 solution[sc.name]["Storage: Charging cost (\$)"][su.name]
             actual_discharge_cost =
                 solution[sc.name]["Storage: Discharging cost (\$)"][su.name]
-            is_charging = bin(solution[sc.name]["Storage: Is charging"][su.name])
-            is_discharging = bin(solution[sc.name]["Storage: Is discharging"][su.name])
+            is_charging =
+                bin(solution[sc.name]["Storage: Is charging"][su.name])
+            is_discharging =
+                bin(solution[sc.name]["Storage: Is discharging"][su.name])
             # time in hours
             time_step = sc.time_step / 60
 
@@ -568,8 +571,8 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
             end
             if "Bus: Load curtail (MW)" in keys(solution[sc.name])
                 load_curtail = sum(
-                    solution[sc.name]["Bus: Load curtail (MW)"][b.name][t] for
-                    b in sc.buses
+                    solution[sc.name]["Bus: Load curtail (MW)"][b.name][t]
+                    for b in sc.buses
                 )
             end
             balance =

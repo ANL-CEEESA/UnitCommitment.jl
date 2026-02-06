@@ -1,5 +1,7 @@
 # JSON data format
 
+## Input Format
+
 An instance of the stochastic security-constrained unit commitment (SCUC)
 problem is composed multiple scenarios. Each scenario should be described in an
 individual JSON file containing the main section belows. For deterministic
@@ -429,7 +431,7 @@ table below illustrates.
 |        36        |       15        | 144 |
 |        36        |        5        | 432 |
 
-## Current limitations
+### Current limitations
 
 - Network topology must remain the same for all time periods.
 - Only N-1 transmission contingencies are supported. Generator contingencies are
@@ -439,3 +441,356 @@ table below illustrates.
 - Flexible ramping products can only be acquired under the `WanHob2016`
   formulation, which does not support spinning reserves.
 - The set of generators must be the same in all scenarios.
+
+## Output Format
+
+After solving a unit commitment problem, the solution is provided as a
+structured data format containing time series data for all decision variables
+and computed metrics, organized by component type.
+
+### Structure
+
+For stochastic instances with multiple scenarios, the solution is organized as a
+nested structure:
+
+```json
+{
+  "scenario1": {
+    "variable_name": {
+      "component_name": [value_t1, value_t2, ..., value_tT]
+    }
+  },
+  "scenario2": {
+    ...
+  }
+}
+```
+
+For deterministic instances (single scenario), the outer scenario layer is
+removed for convenience:
+
+```json
+{
+  "variable_name": {
+    "component_name": [value_t1, value_t2, ..., value_tT]
+  }
+}
+```
+
+### Buses
+
+| Key                             | Description                                                                                   | Unit |
+| :------------------------------ | :-------------------------------------------------------------------------------------------- | :--- |
+| `Bus: Net injection (MW)`       | Net power injection at each bus.                                                              | MW   |
+| `Bus: Load curtail (MW)`        | Amount of conventional load curtailed at each bus due to insufficient capacity or congestion. | MW   |
+| `Bus: Fixed load expense ($)`   | Expense for serving fixed load at each bus (load times LMP). Only available if LMPs are computed. | $    |
+
+#### Example
+
+```json
+{
+  "Bus: Net injection (MW)": {
+    "b1": [125.5, 130.2, 128.7, 135.0],
+    "b2": [-50.3, -48.9, -52.1, -49.5]
+  },
+  "Bus: Load curtail (MW)": {
+    "b1": [0.0, 0.0, 0.0, 0.0],
+    "b2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Bus: Fixed load expense ($)": {
+    "b1": [3138.75, 3255.0, 3217.5, 3375.0],
+    "b2": [1509.0, 1467.0, 1563.0, 1485.0]
+  }
+}
+```
+
+### Locational Marginal Prices
+
+| Key                         | Description                                                                                                                                                     | Unit    |
+| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `LMP: Total ($/MWh)`        | Total locational marginal price at each bus. Only available if LMPs are computed.                                                                               | $/MWh   |
+| `LMP: Energy ($/MWh)`       | Energy component of LMP at each bus (minimum LMP across all buses at each time period). Only available if LMPs are computed.                                    | $/MWh   |
+| `LMP: Congestion ($/MWh)`   | Congestion component of LMP at each bus (total LMP minus energy component). Only available if LMPs are computed.                                                | $/MWh   |
+
+#### Example
+
+```json
+{
+  "LMP: Total ($/MWh)": {
+    "b1": [25.0, 25.0, 25.0, 25.0],
+    "b2": [30.0, 30.0, 30.0, 30.0],
+    "b3": [25.0, 28.5, 26.2, 27.8]
+  },
+  "LMP: Energy ($/MWh)": {
+    "b1": [25.0, 25.0, 25.0, 25.0],
+    "b2": [25.0, 25.0, 25.0, 25.0],
+    "b3": [25.0, 25.0, 25.0, 25.0]
+  },
+  "LMP: Congestion ($/MWh)": {
+    "b1": [0.0, 0.0, 0.0, 0.0],
+    "b2": [5.0, 5.0, 5.0, 5.0],
+    "b3": [0.0, 3.5, 1.2, 2.8]
+  }
+}
+```
+
+### Thermal Generators
+
+| Key                            | Description                                                                                                                                          | Unit   |
+| :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `Thermal: Production (MW)`     | Total power output from each thermal generator (minimum power plus segment production).                                                              | MW     |
+| `Thermal: Production cost ($)` | Total production cost for each thermal generator (minimum power cost plus variable costs).                                                           | $      |
+| `Thermal: Startup cost ($)`    | Startup cost incurred by each thermal generator at each time period.                                                                                 | $      |
+| `Thermal: Is on`               | Commitment status (1 if generator is on, 0 if off).                                                                                                  | Binary |
+| `Thermal: Switch on`           | Switch-on indicator (1 if generator starts up at this time step, 0 otherwise).                                                                       | Binary |
+| `Thermal: Switch off`          | Switch-off indicator (1 if generator shuts down at this time step, 0 otherwise).                                                                     | Binary |
+| `Thermal: Gross revenue ($)`   | Revenue obtained from selling power at LMP (production times LMP). Only available if LMPs are computed.                                              | $      |
+| `Thermal: Net revenue ($)`     | Net revenue after subtracting production and startup costs from gross revenue. Only available if LMPs are computed.                                  | $      |
+| `Thermal: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                      | $      |
+| `Thermal: Investment status`   | Investment status for candidate thermal units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
+
+#### Example
+
+```json
+{
+  "Thermal: Production (MW)": {
+    "g1": [115.0, 120.5, 125.3, 118.7],
+    "g2": [0.0, 50.2, 55.8, 53.1]
+  },
+  "Thermal: Production cost ($)": {
+    "g1": [1450.0, 1520.3, 1580.7, 1490.2],
+    "g2": [0.0, 750.5, 835.2, 795.8]
+  },
+  "Thermal: Startup cost ($)": {
+    "g1": [0.0, 0.0, 0.0, 0.0],
+    "g2": [0.0, 300.0, 0.0, 0.0]
+  },
+  "Thermal: Is on": {
+    "g1": [1.0, 1.0, 1.0, 1.0],
+    "g2": [0.0, 1.0, 1.0, 1.0]
+  },
+  "Thermal: Switch on": {
+    "g1": [0.0, 0.0, 0.0, 0.0],
+    "g2": [0.0, 1.0, 0.0, 0.0]
+  },
+  "Thermal: Switch off": {
+    "g1": [0.0, 0.0, 0.0, 0.0],
+    "g2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Thermal: Gross revenue ($)": {
+    "g1": [2875.0, 3012.5, 3132.5, 2967.5],
+    "g2": [0.0, 1506.0, 1674.0, 1593.0]
+  },
+  "Thermal: Net revenue ($)": {
+    "g1": [1425.0, 1492.2, 1551.8, 1477.3],
+    "g2": [0.0, 455.5, 838.8, 797.2]
+  },
+  "Thermal: Uplift payment ($)": {
+    "g1": 0.0,
+    "g2": 0.0
+  }
+}
+```
+
+### Transmission Lines
+
+| Key                           | Description                                                                                                                                       | Unit    |
+| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
+| `Line: Flow (MW)`             | Pre-contingency power flow through each transmission line (calculated using injection shift factors).                                             | MW      |
+| `Line: Overflow (MW)`         | Amount of power flow exceeding the line's thermal limit.                                                                                          | MW      |
+| `Line: Overflow penalty ($)`  | Penalty cost incurred for overflow violations on each line (overflow amount times flow penalty cost).                                             | $       |
+| `Line: Utilization (%)`       | Percentage of line capacity being utilized (absolute flow divided by normal flow limit).                                                          | %       |
+| `Line: Investment cost ($)`   | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for lines with positive investment cost. | $       |
+| `Line: Investment status`     | Number of parallel circuits invested along each candidate line corridor by this time step. Only included for lines with positive investment cost. | Integer |
+
+#### Example
+
+```json
+{
+  "Line: Flow (MW)": {
+    "l1": [125.3, 130.8, 128.2, 135.5],
+    "l2": [-85.7, -92.5, -91.3, -87.3]
+  },
+  "Line: Overflow (MW)": {
+    "l1": [0.0, 0.0, 0.0, 0.0],
+    "l2": [0.0, 2.5, 1.3, 0.0]
+  },
+  "Line: Overflow penalty ($)": {
+    "l1": [0.0, 0.0, 0.0, 0.0],
+    "l2": [0.0, 12500.0, 6500.0, 0.0]
+  },
+  "Line: Utilization (%)": {
+    "l1": [83.53, 87.2, 85.47, 90.33],
+    "l2": [95.22, 102.78, 101.44, 97.0]
+  },
+  "Line: Investment cost ($)": {
+    "l3": [0.0, 3000000.0, 0.0, 3000000.0]
+  },
+  "Line: Investment status": {
+    "l3": [0.0, 1.0, 1.0, 2.0]
+  }
+}
+```
+
+### Price-Sensitive Loads
+
+| Key                                        | Description                                                                                          | Unit |
+| :----------------------------------------- | :--------------------------------------------------------------------------------------------------- | :--- |
+| `Price-sensitive load: Demand served (MW)` | Amount of price-sensitive load demand served at each bus.                                            | MW   |
+| `Price-sensitive load: Expense ($)`        | Expense incurred for serving price-sensitive load (demand served times LMP). Only available if LMPs are computed. | $    |
+
+#### Example
+
+```json
+{
+  "Price-sensitive load: Demand served (MW)": {
+    "p1": [45.5, 48.2, 50.0, 47.8],
+    "p2": [30.0, 30.0, 28.5, 30.0]
+  },
+  "Price-sensitive load: Expense ($)": {
+    "p1": [1137.5, 1205.0, 1250.0, 1195.0],
+    "p2": [900.0, 900.0, 855.0, 900.0]
+  }
+}
+```
+
+### Profiled Generators
+
+| Key                             | Description                                                                                                                                           | Unit   |
+| :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `Profiled: Production (MW)`     | Power output from each profiled generator (renewables, hydro, etc.).                                                                                  | MW     |
+| `Profiled: Production cost ($)` | Production cost for each profiled generator (output times cost).                                                                                      | $      |
+| `Profiled: Gross revenue ($)`   | Revenue obtained from selling power at LMP (production times LMP). Only available if LMPs are computed.                                               | $      |
+| `Profiled: Net revenue ($)`     | Net revenue after subtracting production costs from gross revenue. Only available if LMPs are computed.                                               | $      |
+| `Profiled: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                       | $      |
+| `Profiled: Investment status`   | Investment status for candidate profiled units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
+
+#### Example
+
+```json
+{
+  "Profiled: Production (MW)": {
+    "wind1": [85.3, 92.1, 88.7, 95.2],
+    "solar1": [0.0, 10.5, 45.8, 78.3]
+  },
+  "Profiled: Production cost ($)": {
+    "wind1": [85.3, 92.1, 88.7, 95.2],
+    "solar1": [0.0, 10.5, 45.8, 78.3]
+  },
+  "Profiled: Gross revenue ($)": {
+    "wind1": [2132.5, 2302.5, 2217.5, 2380.0],
+    "solar1": [0.0, 262.5, 1145.0, 1957.5]
+  },
+  "Profiled: Net revenue ($)": {
+    "wind1": [2047.2, 2210.4, 2128.8, 2284.8],
+    "solar1": [0.0, 252.0, 1099.2, 1879.2]
+  },
+  "Profiled: Uplift payment ($)": {
+    "wind1": 0.0,
+    "solar1": 0.0
+  }
+}
+```
+
+### Storage Units
+
+| Key                              | Description                                                                                                                                          | Unit   |
+| :------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
+| `Storage: Level (MWh)`           | Energy level stored in each storage unit.                                                                                                            | MWh    |
+| `Storage: Is charging`           | Charging indicator (1 if storage unit is charging, 0 otherwise).                                                                                     | Binary |
+| `Storage: Charging rate (MW)`    | Power rate at which each storage unit is charging.                                                                                                   | MW     |
+| `Storage: Charging cost ($)`     | Cost incurred for charging each storage unit (rate times cost).                                                                                      | $      |
+| `Storage: Is discharging`        | Discharging indicator (1 if storage unit is discharging, 0 otherwise).                                                                               | Binary |
+| `Storage: Discharging rate (MW)` | Power rate at which each storage unit is discharging.                                                                                                | MW     |
+| `Storage: Discharging cost ($)`  | Cost incurred for discharging each storage unit (rate times cost).                                                                                   | $      |
+| `Storage: Investment status`     | Investment status for candidate storage units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
+
+#### Example
+
+```json
+{
+  "Storage: Level (MWh)": {
+    "su1": [70.0, 65.5, 72.3, 68.9],
+    "su2": [50.0, 60.0, 55.0, 58.0]
+  },
+  "Storage: Is charging": {
+    "su1": [0.0, 0.0, 1.0, 0.0],
+    "su2": [1.0, 1.0, 0.0, 1.0]
+  },
+  "Storage: Charging rate (MW)": {
+    "su1": [0.0, 0.0, 8.5, 0.0],
+    "su2": [10.0, 10.0, 0.0, 5.0]
+  },
+  "Storage: Charging cost ($)": {
+    "su1": [0.0, 0.0, 17.0, 0.0],
+    "su2": [30.0, 30.0, 0.0, 15.0]
+  },
+  "Storage: Is discharging": {
+    "su1": [1.0, 1.0, 0.0, 1.0],
+    "su2": [0.0, 0.0, 1.0, 0.0]
+  },
+  "Storage: Discharging rate (MW)": {
+    "su1": [5.0, 4.5, 0.0, 3.4],
+    "su2": [0.0, 0.0, 5.0, 0.0]
+  },
+  "Storage: Discharging cost ($)": {
+    "su1": [12.5, 11.25, 0.0, 8.5],
+    "su2": [0.0, 0.0, 17.5, 0.0]
+  }
+}
+```
+
+### Reserves
+
+| Key                                      | Description                                                                                                                                                      | Unit |
+| :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Reserve: Spinning (MW)`                 | Amount of spinning reserve provided by each thermal generator for each spinning reserve product. Nested structure: `reserve_name -> generator_name -> [values]`. | MW   |
+| `Reserve: Spinning shortfall (MW)`       | Amount of spinning reserve requirement not met for each reserve product.                                                                                         | MW   |
+| `Reserve: Up-flexiramp (MW)`             | Amount of up-flexiramp reserve provided by each thermal generator for each flexiramp product. Nested structure: `reserve_name -> generator_name -> [values]`.    | MW   |
+| `Reserve: Up-flexiramp shortfall (MW)`   | Amount of up-flexiramp reserve requirement not met for each flexiramp product.                                                                                   | MW   |
+| `Reserve: Down-flexiramp (MW)`           | Amount of down-flexiramp reserve provided by each thermal generator for each flexiramp product. Nested structure: `reserve_name -> generator_name -> [values]`.  | MW   |
+| `Reserve: Down-flexiramp shortfall (MW)` | Amount of down-flexiramp reserve requirement not met for each flexiramp product.                                                                                 | MW   |
+
+#### Example
+
+```json
+{
+  "Reserve: Spinning (MW)": {
+    "r1": {
+      "g1": [15.0, 18.5, 16.2, 17.8],
+      "g2": [0.0, 5.5, 6.8, 7.2]
+    }
+  },
+  "Reserve: Spinning shortfall (MW)": {
+    "r1": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Reserve: Up-flexiramp (MW)": {
+    "r2": {
+      "g1": [8.0, 9.5, 8.5, 9.0],
+      "g2": [0.0, 3.5, 4.0, 3.8]
+    }
+  },
+  "Reserve: Up-flexiramp shortfall (MW)": {
+    "r2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Reserve: Down-flexiramp (MW)": {
+    "r2": {
+      "g1": [7.5, 8.0, 7.8, 8.2],
+      "g2": [0.0, 3.0, 3.5, 3.3]
+    }
+  },
+  "Reserve: Down-flexiramp shortfall (MW)": {
+    "r2": [0.0, 0.0, 0.0, 0.0]
+  }
+}
+```
+### Notes
+
+- Investment status variables show the cumulative investment decision (whether
+  the unit/line is built by time `t`), not the incremental decision at time `t`.
+- Reserve variables use a nested structure where the outer object is indexed by
+  reserve product name, and the inner object is indexed by generator name.
+- Components with zero investment cost do not appear in the investment status
+  fields.
+- Empty collections (e.g., no storage units in the instance) result in empty
+  objects for that component type.

@@ -8,8 +8,11 @@ function import_egret_test()
     @testset "read_egret_solution" begin
         solution =
             UnitCommitment.read_egret_solution(fixture("egret_output.json.gz"))
-        for attr in
-            ["Thermal: Is on", "Thermal: Production (MW)", "Thermal: Production cost (\$)"]
+        for attr in [
+            "Thermal: Is on",
+            "Thermal: Production (MW)",
+            "Thermal: Production cost (\$)",
+        ]
             @test attr in keys(solution)
             @test "115_STEAM_1" in keys(solution[attr])
             @test length(solution[attr]["115_STEAM_1"]) == 48
