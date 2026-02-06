@@ -539,6 +539,7 @@ removed for convenience:
 | Key                            | Description                                                                                                                                          | Unit   |
 | :----------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
 | `Thermal: Production (MW)`     | Total power output from each thermal generator (minimum power plus segment production).                                                              | MW     |
+| `Thermal: Utilization (%)`     | Percentage of maximum capacity being utilized (actual production divided by maximum power).                                                          | %      |
 | `Thermal: Production cost ($)` | Total production cost for each thermal generator (minimum power cost plus variable costs).                                                           | $      |
 | `Thermal: Startup cost ($)`    | Startup cost incurred by each thermal generator at each time period.                                                                                 | $      |
 | `Thermal: Is on`               | Commitment status (1 if generator is on, 0 if off).                                                                                                  | Binary |
@@ -556,6 +557,10 @@ removed for convenience:
   "Thermal: Production (MW)": {
     "g1": [115.0, 120.5, 125.3, 118.7],
     "g2": [0.0, 50.2, 55.8, 53.1]
+  },
+  "Thermal: Utilization (%)": {
+    "g1": [85.19, 89.26, 92.81, 87.93],
+    "g2": [0.0, 62.75, 69.75, 66.38]
   },
   "Thermal: Production cost ($)": {
     "g1": [1450.0, 1520.3, 1580.7, 1490.2],
@@ -659,6 +664,7 @@ removed for convenience:
 | Key                             | Description                                                                                                                                           | Unit   |
 | :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
 | `Profiled: Production (MW)`     | Power output from each profiled generator (renewables, hydro, etc.).                                                                                  | MW     |
+| `Profiled: Utilization (%)`     | Percentage of maximum capacity being utilized (actual production divided by maximum power).                                                           | %      |
 | `Profiled: Production cost ($)` | Production cost for each profiled generator (output times cost).                                                                                      | $      |
 | `Profiled: Gross revenue ($)`   | Revenue obtained from selling power at LMP (production times LMP). Only available if LMPs are computed.                                               | $      |
 | `Profiled: Net revenue ($)`     | Net revenue after subtracting production costs from gross revenue. Only available if LMPs are computed.                                               | $      |
@@ -670,6 +676,10 @@ removed for convenience:
 ```json
 {
   "Profiled: Production (MW)": {
+    "wind1": [85.3, 92.1, 88.7, 95.2],
+    "solar1": [0.0, 10.5, 45.8, 78.3]
+  },
+  "Profiled: Utilization (%)": {
     "wind1": [85.3, 92.1, 88.7, 95.2],
     "solar1": [0.0, 10.5, 45.8, 78.3]
   },

@@ -98,9 +98,18 @@ function _store_thermal_solution!(
     sc,
     T::Int,
 )
-    sol["Thermal: Production (MW)"] = OrderedDict(
+    thermal_production = OrderedDict(
         g.name => _thermal_production(model, g, sc, T) for
         g in sc.thermal_units
+    )
+    sol["Thermal: Production (MW)"] = thermal_production
+    sol["Thermal: Utilization (%)"] = OrderedDict(
+        g.name => [
+            round(
+                100.0 * thermal_production[g.name][t] / g.max_power[t],
+                digits = 2,
+            ) for t in 1:T
+        ] for g in sc.thermal_units
     )
     sol["Thermal: Production cost (\$)"] = OrderedDict(
         g.name => _thermal_production_cost(model, g, sc, T) for
@@ -186,6 +195,15 @@ function _store_profiled_solution!(
 )
     sol["Profiled: Production (MW)"] =
         _timeseries(model, :prod_profiled, sc.profiled_units, T, sc = sc)
+    sol["Profiled: Utilization (%)"] = OrderedDict(
+        pu.name => [
+            round(
+                100.0 * value(model[:prod_profiled][sc.name, pu.name, t]) /
+                pu.max_power[t],
+                digits = 2,
+            ) for t in 1:T
+        ] for pu in sc.profiled_units
+    )
     sol["Profiled: Production cost (\$)"] = OrderedDict(
         pu.name => [
             value(model[:prod_profiled][sc.name, pu.name, t]) * pu.cost[t] for t in 1:T
