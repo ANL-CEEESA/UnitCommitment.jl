@@ -41,14 +41,14 @@ function lmp_aelmp_test()
 
         # policy 1: allow offlines; consider startups
         sol_1 = solve_aelmp_testcase(path, true, true)
-        @test sol_1["LMP: Total (\$/MWh)"]["B1", 1] ≈ 231.7 atol = 0.1
-        @test sol_1["LMP: Energy (\$/MWh)"]["B1", 1] ≈ 231.7 atol = 0.1
-        @test sol_1["LMP: Congestion (\$/MWh)"]["B1", 1] ≈ 0.0 atol = 0.1
+        @test sol_1["LMP: Total (\$/MWh)"]["B1"][1] ≈ 231.7 atol = 0.1
+        @test sol_1["LMP: Energy (\$/MWh)"]["B1"][1] ≈ 231.7 atol = 0.1
+        @test sol_1["LMP: Congestion (\$/MWh)"]["B1"][1] ≈ 0.0 atol = 0.1
 
         # policy 2: do not allow offlines; but consider startups
         sol_2 = solve_aelmp_testcase(path, false, true)
-        @test sol_2["LMP: Total (\$/MWh)"]["B1", 1] ≈ 274.3 atol = 0.1
-        @test sol_2["LMP: Energy (\$/MWh)"]["B1", 1] ≈ 274.3 atol = 0.1
-        @test sol_2["LMP: Congestion (\$/MWh)"]["B1", 1] ≈ 0.0 atol = 0.1
+        @test sol_2["LMP: Total (\$/MWh)"]["B1"][1] ≈ 274.3 atol = 0.1
+        @test sol_2["LMP: Energy (\$/MWh)"]["B1"][1] ≈ 274.3 atol = 0.1
+        @test sol_2["LMP: Congestion (\$/MWh)"]["B1"][1] ≈ 0.0 atol = 0.1
     end
 end

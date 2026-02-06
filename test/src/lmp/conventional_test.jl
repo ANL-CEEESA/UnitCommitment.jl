@@ -32,12 +32,12 @@ function lmp_conventional_test()
         lmp = sol["LMP: Total (\$/MWh)"]
         energy = sol["LMP: Energy (\$/MWh)"]
         congestion = sol["LMP: Congestion (\$/MWh)"]
-        @test lmp["A", 1] == 60.0
-        @test lmp["B", 1] == 60.0
-        @test energy["A", 1] == 60.0
-        @test energy["B", 1] == 60.0
-        @test congestion["A", 1] == 0.0
-        @test congestion["B", 1] == 0.0
+        @test lmp["A"][1] == 60.0
+        @test lmp["B"][1] == 60.0
+        @test energy["A"][1] == 60.0
+        @test energy["B"][1] == 60.0
+        @test congestion["A"][1] == 0.0
+        @test congestion["B"][1] == 0.0
         @test sol["Thermal: Gross revenue (\$)"]["Ga"] == [3000.0]
         @test sol["Thermal: Gross revenue (\$)"]["Gb"] == [3000.0]
         @test sol["Thermal: Net revenue (\$)"]["Ga"] == [1500.0]
@@ -56,12 +56,12 @@ function lmp_conventional_test()
         lmp = sol["LMP: Total (\$/MWh)"]
         energy = sol["LMP: Energy (\$/MWh)"]
         congestion = sol["LMP: Congestion (\$/MWh)"]
-        @test lmp["A", 1] == 50.0
-        @test lmp["B", 1] == 60.0
-        @test energy["A", 1] == 50.0
-        @test energy["B", 1] == 50.0
-        @test congestion["A", 1] == 0.0
-        @test congestion["B", 1] == 10.0
+        @test lmp["A"][1] == 50.0
+        @test lmp["B"][1] == 60.0
+        @test energy["A"][1] == 50.0
+        @test energy["B"][1] == 50.0
+        @test congestion["A"][1] == 0.0
+        @test congestion["B"][1] == 10.0
         @test sol["Thermal: Gross revenue (\$)"]["Ga"] == [5000.0]
         @test sol["Thermal: Gross revenue (\$)"]["Gb"] == [600.0]
         @test sol["Thermal: Net revenue (\$)"]["Ga"] == [0.0]
@@ -79,15 +79,15 @@ function lmp_conventional_test()
         lmp = sol["LMP: Total (\$/MWh)"]
         energy = sol["LMP: Energy (\$/MWh)"]
         congestion = sol["LMP: Congestion (\$/MWh)"]
-        @test lmp["A", 1] == 50.0
-        @test lmp["B", 1] == 70.0
-        @test lmp["C", 1] == 100.0
-        @test energy["A", 1] == 50.0
-        @test energy["B", 1] == 50.0
-        @test energy["C", 1] == 50.0
-        @test congestion["A", 1] == 0.0
-        @test congestion["B", 1] == 20.0
-        @test congestion["C", 1] == 50.0
+        @test lmp["A"][1] == 50.0
+        @test lmp["B"][1] == 70.0
+        @test lmp["C"][1] == 100.0
+        @test energy["A"][1] == 50.0
+        @test energy["B"][1] == 50.0
+        @test energy["C"][1] == 50.0
+        @test congestion["A"][1] == 0.0
+        @test congestion["B"][1] == 20.0
+        @test congestion["C"][1] == 50.0
         @test sol["Profiled: Gross revenue (\$)"]["Gp"] == [1400.0]
         @test sol["Profiled: Net revenue (\$)"]["Gp"] == [600.0]
         @test sol["Profiled: Uplift payment (\$)"]["Gp"] == 0.0
@@ -103,15 +103,15 @@ function lmp_conventional_test()
         lmp = sol["LMP: Total (\$/MWh)"]
         energy = sol["LMP: Energy (\$/MWh)"]
         congestion = sol["LMP: Congestion (\$/MWh)"]
-        @test lmp["A", 1] == 50.0
-        @test lmp["B", 1] == 70.0
-        @test lmp["C", 1] == 60.0
-        @test energy["A", 1] == 50.0
-        @test energy["B", 1] == 50.0
-        @test energy["C", 1] == 50.0
-        @test congestion["A", 1] == 0.0
-        @test congestion["B", 1] == 20.0
-        @test congestion["C", 1] == 10.0
+        @test lmp["A"][1] == 50.0
+        @test lmp["B"][1] == 70.0
+        @test lmp["C"][1] == 60.0
+        @test energy["A"][1] == 50.0
+        @test energy["B"][1] == 50.0
+        @test energy["C"][1] == 50.0
+        @test congestion["A"][1] == 0.0
+        @test congestion["B"][1] == 20.0
+        @test congestion["C"][1] == 10.0
         @test sol["Profiled: Gross revenue (\$)"]["Gp"] == [1200.0]
         @test sol["Profiled: Net revenue (\$)"]["Gp"] == [-2800.0]
         @test sol["Profiled: Uplift payment (\$)"]["Gp"] == 2800.0

@@ -40,8 +40,8 @@ UnitCommitment.optimize!(model)
 
 # Access the LMPs from the solution
 solution = UnitCommitment.solution(model)
-lmp = solution["s1"]["Locational marginal price (\$/MWh)"]
-@show lmp["b1", 1]
+lmp = solution["s1"]["LMP: Total (\$/MWh)"]
+@show lmp["b1"][1]
 ```
 """
 struct ConventionalLMP <: UnitCommitmentExtension end
@@ -118,8 +118,8 @@ UnitCommitment.optimize!(model)
 
 # Access the AELMPs from the solution
 solution = UnitCommitment.solution(model)
-lmp = solution["Locational marginal price (\$/MWh)"]
-@show lmp["B1", 1]
+lmp = solution["LMP: Total (\$/MWh)"]
+@show lmp["B1"][1]
 ```
 """
 Base.@kwdef struct AELMP <: UnitCommitmentExtension
