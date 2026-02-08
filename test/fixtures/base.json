@@ -440,6 +440,11 @@
       "Type": "Spinning",
       "Amount (MW)": 100.0,
       "Shortfall penalty ($/MW)": -5
+    },
+    "r3": {
+      "Type": "Spinning",
+      "Amount (MW)": 50.0,
+      "Shortfall penalty ($/MW)": 500.0
     }
   }
 }

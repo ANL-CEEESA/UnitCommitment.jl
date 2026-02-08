@@ -124,6 +124,7 @@ and start-up and shutdown limits.
 | $M^{\text{pmin}}_{gt}$          | MW     | Minimum power output at time $t$.                                                          |
 | $M^{\text{ramp-down}}_{g}$      | MW     | Ramp down limit.                                                                           |
 | $M^{\text{ramp-up}}_{g}$        | MW     | Ramp up limit.                                                                             |
+| $M^{\text{reserve-amount}}_{rt}$ | MW     | Required amount of spinning reserve $r$ at time $t$.                                       |
 | $M^{\text{seg-pmax}}_{gtks}$    | MW     | Maximum power output for piecewise-linear segment $k$ at time $t$ and scenario $s$.        |
 | $M^{\text{shutdown-limit}}_{g}$ | MW     | Maximum power unit $g$ produces immediately before shutting down                           |
 | $M^{\text{startup-limit}}_{g}$  | MW     | Maximum power unit $g$ produces immediately after starting up                              |
@@ -356,6 +357,13 @@ x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
+```
+
+- The total spinning reserve provided by all thermal units must meet the minimum
+  requirement (`eq_min_spinning_reserve[s,r,t]`):
+
+```math
+\sum_{g \in G^\text{therm} : r \in R_g} y^{\text{res}}_{grts} + y^{\text{res-short}}_{srt} \geq M^{\text{reserve-amount}}_{rt}
 ```
 
 ## 3. Profiled generators

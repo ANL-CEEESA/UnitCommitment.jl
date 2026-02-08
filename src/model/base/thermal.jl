@@ -17,6 +17,7 @@ function _add_thermal_units!(
     _add_thermal_constr_ramping!(model, instance, formulation.ramping)
     _add_thermal_constr_slimits!(model, instance, formulation.slimits)
     _add_thermal_constr_invest!(model, instance)
+    _add_thermal_constr_reserves!(model, instance)
     return
 end
 
@@ -370,6 +371,36 @@ function _add_thermal_constr_invest!(model::JuMP.Model, instance::UnitCommitment
                 model,
                 invest[g.name, t-1] <= invest[g.name, t]
             )
+        end
+    end
+    return
+end
+
+
+function _add_thermal_constr_reserves!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+)::Nothing
+    T = instance.time
+    eq_min_spinning_reserve = _init(model, :eq_min_spinning_reserve)
+
+    for sc in instance.scenarios
+        for r in sc.reserves
+            r.type == "spinning" || continue
+            for t in 1:T
+                # Equation (68) in Kneuven et al. (2020)
+                # As in Morales-España et al. (2013a)
+                # Akin to the alternative formulation with max_power_avail
+                # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
+                eq_min_spinning_reserve[sc.name, r.name, t] = @constraint(
+                    model,
+                    sum(
+                        model[:reserve][sc.name, r.name, g.name, t] for
+                        g in r.thermal_units
+                    ) + model[:reserve_shortfall][sc.name, r.name, t] >=
+                    r.amount[t]
+                )
+            end
         end
     end
     return
