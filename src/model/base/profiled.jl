@@ -93,10 +93,8 @@ function _add_profiled_constr_invest!(
     for pu in instance.scenarios[1].profiled_units
         pu.invest[1] > 0.0 || continue
         for t in 2:T
-            eq_invest_nondec[pu.name, t] = @constraint(
-                model,
-                invest[pu.name, t-1] <= invest[pu.name, t],
-            )
+            eq_invest_nondec[pu.name, t] =
+                @constraint(model, invest[pu.name, t-1] <= invest[pu.name, t],)
         end
     end
 

@@ -78,9 +78,11 @@ using HiGHS, JuMP, UnitCommitment
     @test_aff_expr ni["s1", "b2", 4] model[:prod]["s1", "p2", 4] 1.0
 end
 
-_base_model() = UnitCommitment.build_model(
-    instance = UnitCommitment.read(fixture("base.json")),
-    formulation = UnitCommitment.BaseFormulation,
-    optimizer = HiGHS.Optimizer,
-    variable_names = true,
-)
+function _base_model()
+    return UnitCommitment.build_model(
+        instance = UnitCommitment.read(fixture("base.json")),
+        formulation = UnitCommitment.BaseFormulation,
+        optimizer = HiGHS.Optimizer,
+        variable_names = true,
+    )
+end

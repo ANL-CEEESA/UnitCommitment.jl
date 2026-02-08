@@ -15,12 +15,16 @@ using HiGHS, JuMP, UnitCommitment
     # Decision variables
     # -------------------------------------------------------------------------
     # su1: no investment, min_level=10, max_level=100
-    @test_continuous_var model[:storage_level]["s1", "su1", 1] lb = 10.0 ub = 100.0
-    @test_continuous_var model[:storage_level]["s1", "su1", 4] lb = 10.0 ub = 100.0
+    @test_continuous_var model[:storage_level]["s1", "su1", 1] lb = 10.0 ub =
+        100.0
+    @test_continuous_var model[:storage_level]["s1", "su1", 4] lb = 10.0 ub =
+        100.0
 
     # su2: with investment, lower bound overridden to 0
-    @test_continuous_var model[:storage_level]["s1", "su2", 1] lb = 0.0 ub = 200.0
-    @test_continuous_var model[:storage_level]["s1", "su2", 4] lb = 0.0 ub = 200.0
+    @test_continuous_var model[:storage_level]["s1", "su2", 1] lb = 0.0 ub =
+        200.0
+    @test_continuous_var model[:storage_level]["s1", "su2", 4] lb = 0.0 ub =
+        200.0
 
     @test_continuous_var model[:charge_rate]["s1", "su1", 1]
     @test_continuous_var model[:discharge_rate]["s1", "su1", 1]

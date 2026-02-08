@@ -80,16 +80,15 @@ function _add_bus_constrs!(
             for b in sc.buses
                 eq_net_injection[sc.name, b.name, t] = @constraint(
                     model,
-                    -ni[sc.name, b.name, t] + model[:net_injection][sc.name, b.name, t] == 0,
+                    -ni[sc.name, b.name, t] +
+                    model[:net_injection][sc.name, b.name, t] == 0,
                 )
             end
 
             # System-wide power balance
             eq_power_balance[sc.name, t] = @constraint(
                 model,
-                sum(
-                    ni[sc.name, b.name, t] for b in sc.buses
-                ) == 0,
+                sum(ni[sc.name, b.name, t] for b in sc.buses) == 0,
             )
         end
     end

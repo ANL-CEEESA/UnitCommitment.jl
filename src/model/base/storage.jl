@@ -160,8 +160,8 @@ function _add_storage_constrs!(
             )
 
             # Storage energy transition
-            prev_level = t == 1 ? su.initial_level :
-                storage_level[sc.name, su.name, t-1]
+            prev_level =
+                t == 1 ? su.initial_level : storage_level[sc.name, su.name, t-1]
             eq_storage_transition[sc.name, su.name, t] = @constraint(
                 model,
                 storage_level[sc.name, su.name, t] ==

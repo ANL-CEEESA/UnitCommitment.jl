@@ -22,7 +22,6 @@ function _add_system_wide_eqs!(
     return
 end
 
-
 function _add_nodal_balance!(
     model::JuMP.Model,
     sc::UnitCommitmentScenario,

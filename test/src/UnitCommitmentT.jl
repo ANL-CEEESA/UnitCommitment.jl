@@ -61,7 +61,8 @@ end
 
 macro test_aff_expr(expr, var, expected)
     return quote
-        @test JuMP.coefficient($(esc(expr)), $(esc(var))) ≈ $(esc(expected)) atol = 1e-6
+        @test JuMP.coefficient($(esc(expr)), $(esc(var))) ≈ $(esc(expected)) atol =
+            1e-6
     end
 end
 

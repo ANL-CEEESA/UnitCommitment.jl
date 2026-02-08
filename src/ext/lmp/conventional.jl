@@ -41,11 +41,12 @@ function _solution!(
     instance = model[:instance]
     T = instance.time
     for sc in instance.scenarios
-        lmp_total = sol[sc.name]["LMP: Total (\$/MWh)"] = OrderedDict(
-            b.name => [
-                model.ext[:lmp_values][sc.name, b.name, t] for t in 1:T
-            ] for b in sc.buses
-        )
+        lmp_total =
+            sol[sc.name]["LMP: Total (\$/MWh)"] = OrderedDict(
+                b.name => [
+                    model.ext[:lmp_values][sc.name, b.name, t] for t in 1:T
+                ] for b in sc.buses
+            )
         sol[sc.name]["LMP: Energy (\$/MWh)"] = OrderedDict(
             b.name => [
                 minimum(lmp_total[bb.name][t] for bb in sc.buses) for t in 1:T
@@ -54,7 +55,8 @@ function _solution!(
         sol[sc.name]["LMP: Congestion (\$/MWh)"] = OrderedDict(
             b.name => [
                 lmp_total[b.name][t] -
-                sol[sc.name]["LMP: Energy (\$/MWh)"][b.name][t] for t in 1:T
+                sol[sc.name]["LMP: Energy (\$/MWh)"][b.name][t] for
+                t in 1:T
             ] for b in sc.buses
         )
         sol[sc.name]["Thermal: Gross revenue (\$)"] = OrderedDict(

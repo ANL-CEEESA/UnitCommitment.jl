@@ -20,11 +20,8 @@ function _add_ps_load_vars!(
 
     for sc in instance.scenarios, ps in sc.price_sensitive_loads
         for t in 1:T
-            loads[sc.name, ps.name, t] = @variable(
-                model,
-                lower_bound = 0,
-                upper_bound = ps.demand[t],
-            )
+            loads[sc.name, ps.name, t] =
+                @variable(model, lower_bound = 0, upper_bound = ps.demand[t],)
             add_to_expression!(
                 model[:net_injection][sc.name, ps.bus.name, t],
                 loads[sc.name, ps.name, t],

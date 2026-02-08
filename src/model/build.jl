@@ -22,8 +22,8 @@ function build_model(;
 
     model[:obj] = AffExpr()
     model[:net_injection] = OrderedDict(
-        (sc.name, b.name, t) => AffExpr()
-        for sc in instance.scenarios for b in sc.buses for t in 1:instance.time
+        (sc.name, b.name, t) => AffExpr() for sc in instance.scenarios for
+        b in sc.buses for t in 1:instance.time
     )
 
     _add_thermal_units!(model, instance, formulation)
