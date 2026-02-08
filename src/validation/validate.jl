@@ -28,7 +28,7 @@ function validate(
     instance::UnitCommitmentInstance,
     solution::Union{Dict,OrderedDict},
 )::Bool
-    if "Spinning reserve (MW)" ∈ keys(solution)
+    if "Reserve: Spinning (MW)" ∈ keys(solution)
         solution = Dict("s1" => solution)
     end
     err_count = 0
@@ -47,21 +47,22 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
         for unit in sc.thermal_units
-            production = solution[sc.name]["Thermal production (MW)"][unit.name]
+            production =
+                solution[sc.name]["Thermal: Production (MW)"][unit.name]
             reserve = [0.0 for _ in 1:instance.time]
             spinning_reserves =
                 [r for r in unit.reserves if r.type == "spinning"]
             if !isempty(spinning_reserves)
                 reserve += sum(
-                    solution[sc.name]["Spinning reserve (MW)"][r.name][unit.name]
+                    solution[sc.name]["Reserve: Spinning (MW)"][r.name][unit.name]
                     for r in spinning_reserves
                 )
             end
             actual_production_cost =
-                solution[sc.name]["Thermal production cost (\$)"][unit.name]
+                solution[sc.name]["Thermal: Production cost (\$)"][unit.name]
             actual_startup_cost =
-                solution[sc.name]["Startup cost (\$)"][unit.name]
-            is_on = bin(solution[sc.name]["Is on"][unit.name])
+                solution[sc.name]["Thermal: Startup cost (\$)"][unit.name]
+            is_on = bin(solution[sc.name]["Thermal: Is on"][unit.name])
 
             for t in 1:instance.time
                 # Auxiliary variables
@@ -117,7 +118,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                     if r.type == "spinning"
                         if unit ∉ r.thermal_units && (
                             unit in keys(
-                                solution[sc.name]["Spinning reserve (MW)"][r.name],
+                                solution[sc.name]["Reserve: Spinning (MW)"][r.name],
                             )
                         )
                             @error @sprintf(
@@ -307,7 +308,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
             end
         end
         for pu in sc.profiled_units
-            production = solution[sc.name]["Profiled production (MW)"][pu.name]
+            production = solution[sc.name]["Profiled: Production (MW)"][pu.name]
 
             for t in 1:instance.time
                 # Unit must produce at least its minimum power
@@ -336,17 +337,19 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
             end
         end
         for su in sc.storage_units
-            storage_level = solution[sc.name]["Storage level (MWh)"][su.name]
+            storage_level = solution[sc.name]["Storage: Level (MWh)"][su.name]
             charge_rate =
-                solution[sc.name]["Storage charging rates (MW)"][su.name]
+                solution[sc.name]["Storage: Charging rate (MW)"][su.name]
             discharge_rate =
-                solution[sc.name]["Storage discharging rates (MW)"][su.name]
+                solution[sc.name]["Storage: Discharging rate (MW)"][su.name]
             actual_charge_cost =
-                solution[sc.name]["Storage charging cost (\$)"][su.name]
+                solution[sc.name]["Storage: Charging cost (\$)"][su.name]
             actual_discharge_cost =
-                solution[sc.name]["Storage discharging cost (\$)"][su.name]
-            is_charging = bin(solution[sc.name]["Is charging"][su.name])
-            is_discharging = bin(solution[sc.name]["Is discharging"][su.name])
+                solution[sc.name]["Storage: Discharging cost (\$)"][su.name]
+            is_charging =
+                bin(solution[sc.name]["Storage: Is charging"][su.name])
+            is_discharging =
+                bin(solution[sc.name]["Storage: Is discharging"][su.name])
             # time in hours
             time_step = sc.time_step / 60
 
@@ -540,36 +543,36 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
             storage_discharge = 0
             if length(sc.price_sensitive_loads) > 0
                 ps_load = sum(
-                    solution[sc.name]["Price-sensitive loads (MW)"][ps.name][t]
+                    solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
                     for ps in sc.price_sensitive_loads
                 )
             end
             if length(sc.thermal_units) > 0
                 production = sum(
-                    solution[sc.name]["Thermal production (MW)"][g.name][t]
+                    solution[sc.name]["Thermal: Production (MW)"][g.name][t]
                     for g in sc.thermal_units
                 )
             end
             if length(sc.profiled_units) > 0
                 production += sum(
-                    solution[sc.name]["Profiled production (MW)"][pu.name][t]
+                    solution[sc.name]["Profiled: Production (MW)"][pu.name][t]
                     for pu in sc.profiled_units
                 )
             end
             if length(sc.storage_units) > 0
                 storage_charge += sum(
-                    solution[sc.name]["Storage charging rates (MW)"][su.name][t]
+                    solution[sc.name]["Storage: Charging rate (MW)"][su.name][t]
                     for su in sc.storage_units
                 )
                 storage_discharge += sum(
-                    solution[sc.name]["Storage discharging rates (MW)"][su.name][t]
+                    solution[sc.name]["Storage: Discharging rate (MW)"][su.name][t]
                     for su in sc.storage_units
                 )
             end
-            if "Load curtail (MW)" in keys(solution[sc.name])
+            if "Bus: Load curtail (MW)" in keys(solution[sc.name])
                 load_curtail = sum(
-                    solution[sc.name]["Load curtail (MW)"][b.name][t] for
-                    b in sc.buses
+                    solution[sc.name]["Bus: Load curtail (MW)"][b.name][t]
+                    for b in sc.buses
                 )
             end
             balance =
@@ -596,11 +599,11 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
             for r in sc.reserves
                 if r.type == "spinning"
                     provided = sum(
-                        solution[sc.name]["Spinning reserve (MW)"][r.name][g.name][t]
+                        solution[sc.name]["Reserve: Spinning (MW)"][r.name][g.name][t]
                         for g in r.thermal_units
                     )
                     shortfall =
-                        solution[sc.name]["Spinning reserve shortfall (MW)"][r.name][t]
+                        solution[sc.name]["Reserve: Spinning shortfall (MW)"][r.name][t]
                     required = r.amount[t]
 
                     if provided + shortfall < required - tol
@@ -615,11 +618,11 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                     end
                 elseif r.type == "flexiramp"
                     upflexiramp = sum(
-                        solution[sc.name]["Up-flexiramp (MW)"][r.name][g.name][t]
+                        solution[sc.name]["Reserve: Up-flexiramp (MW)"][r.name][g.name][t]
                         for g in r.thermal_units
                     )
                     upflexiramp_shortfall =
-                        solution[sc.name]["Up-flexiramp shortfall (MW)"][r.name][t]
+                        solution[sc.name]["Reserve: Up-flexiramp shortfall (MW)"][r.name][t]
 
                     if upflexiramp + upflexiramp_shortfall < r.amount[t] - tol
                         @error @sprintf(
@@ -633,11 +636,11 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                     end
 
                     dwflexiramp = sum(
-                        solution[sc.name]["Down-flexiramp (MW)"][r.name][g.name][t]
+                        solution[sc.name]["Reserve: Down-flexiramp (MW)"][r.name][g.name][t]
                         for g in r.thermal_units
                     )
                     dwflexiramp_shortfall =
-                        solution[sc.name]["Down-flexiramp shortfall (MW)"][r.name][t]
+                        solution[sc.name]["Reserve: Down-flexiramp shortfall (MW)"][r.name][t]
 
                     if dwflexiramp + dwflexiramp_shortfall < r.amount[t] - tol
                         @error @sprintf(

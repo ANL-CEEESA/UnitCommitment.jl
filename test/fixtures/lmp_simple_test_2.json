@@ -1,0 +1,48 @@
+{
+  "Parameters": {
+    "Version": "0.3",
+    "Time horizon (h)": 1,
+    "Time step (min)": 60
+  },
+  "Buses": {
+    "A": {
+      "Load (MW)": 0
+    },
+    "B": {
+      "Load (MW)": 110
+    }
+  },
+  "Generators": {
+    "Ga": {
+      "Bus": "A",
+      "Production cost curve (MW)": [0, 1000],
+      "Production cost curve ($)": [0, 50000],
+      "Startup costs ($)": [0],
+      "Startup delays (h)": [0],
+      "Initial status (h)": -100,
+      "Initial power (MW)": 0,
+      "Minimum uptime (h)": 0,
+      "Minimum downtime (h)": 0
+    },
+    "Gb": {
+      "Bus": "B",
+      "Production cost curve (MW)": [0, 1000],
+      "Production cost curve ($)": [0, 60000],
+      "Startup costs ($)": [1000],
+      "Startup delays (h)": [0],
+      "Initial status (h)": -100,
+      "Initial power (MW)": 0,
+      "Minimum uptime (h)": 0,
+      "Minimum downtime (h)": 0
+    }
+  },
+  "Transmission lines": {
+    "l1": {
+      "Source bus": "A",
+      "Target bus": "B",
+      "Reactance (ohms)": 0.05917,
+      "Susceptance (S)": 29.49686,
+      "Normal flow limit (MW)": 100
+    }
+  }
+}

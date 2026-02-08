@@ -7,6 +7,10 @@ import JuMP
 const to = TimerOutput()
 
 function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
+    instance = model[:instance]
+    for ext in instance.extensions
+        _before_optimize!(model, ext)
+    end
     mpi = MpiInfo(MPI.COMM_WORLD)
     iterations = PHIterationInfo[]
     consensus_vars = [var for var in all_variables(model) if is_binary(var)]
@@ -56,6 +60,10 @@ function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
         if should_stop(mpi, iterations, method.termination)
             break
         end
+    end
+    _store_solution!(model)
+    for ext in instance.extensions
+        _after_optimize!(model, ext)
     end
     return
 end

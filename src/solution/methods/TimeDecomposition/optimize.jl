@@ -4,14 +4,12 @@
 
 """
     optimize!(
-        instance::UnitCommitmentInstance, 
+        instance::UnitCommitmentInstance,
         method::TimeDecomposition;
         optimizer,
-        after_build = nothing,
-        after_optimize = nothing,
     )::OrderedDict
 
-Solve the given unit commitment instance with time decomposition. 
+Solve the given unit commitment instance with time decomposition.
 The model solves each sub-problem of a given time length specified by method.time_window,
 and proceeds to the next sub-problem by incrementing the time length of `method.time_increment`.
 
@@ -27,14 +25,6 @@ Arguments
 - `optimizer`:
     the optimizer for solving the problem.
 
-- `after_build`:
-    a user-defined function that allows modifying the model after building,
-    must have 2 arguments `model` and `instance` in order.
-
-- `after_optimize`:
-    a user-defined function that allows handling additional steps after optimizing,
-    must have 3 arguments `solution`, `model` and `instance` in order.
-
 
 Examples
 --------
@@ -42,29 +32,10 @@ Examples
 ```julia
 using UnitCommitment, JuMP, HiGHS
 
-import UnitCommitment: 
+import UnitCommitment:
     TimeDecomposition,
-    ConventionalLMP,
     XavQiuWanThi2019,
     Formulation
-
-# specifying the after_build and after_optimize functions
-function after_build(model, instance)
-    @constraint(
-        model,
-        model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,
-    )
-end
-
-lmps = []
-function after_optimize(solution, model, instance)
-    lmp = UnitCommitment.compute_lmp(
-        model,
-        ConventionalLMP(),
-        optimizer = HiGHS.Optimizer,
-    )
-    return push!(lmps, lmp)
-end
 
 # assume the instance is given as a 120h problem
 instance = UnitCommitment.read("instance.json")
@@ -78,17 +49,14 @@ solution = UnitCommitment.optimize!(
         formulation = Formulation(),
     ),
     optimizer = HiGHS.Optimizer,
-    after_build = after_build,
-    after_optimize = after_optimize,
 )
+```
 """
 
 function optimize!(
     instance::UnitCommitmentInstance,
     method::TimeDecomposition;
     optimizer,
-    after_build = nothing,
-    after_optimize = nothing,
 )::OrderedDict
     # get instance total length
     T = instance.time
@@ -112,17 +80,9 @@ function optimize!(
             optimizer = optimizer,
             formulation = method.formulation,
         )
-        if after_build !== nothing
-            @info "Calling after build..."
-            after_build(sub_model, sub_instance)
-        end
         UnitCommitment.optimize!(sub_model, method.inner_method)
         # get the result of each time period
         sub_solution = UnitCommitment.solution(sub_model)
-        if after_optimize !== nothing
-            @info "Calling after optimize..."
-            after_optimize(sub_solution, sub_model, sub_instance)
-        end
         # merge solution 
         if length(instance.scenarios) == 1
             _update_solution!(solution, sub_solution, method.time_increment)
@@ -159,12 +119,12 @@ function _set_initial_status!(
     for sc in instance.scenarios
         for thermal_unit in sc.thermal_units
             if length(instance.scenarios) == 1
-                prod = solution["Thermal production (MW)"][thermal_unit.name]
-                is_on = solution["Is on"][thermal_unit.name]
+                prod = solution["Thermal: Production (MW)"][thermal_unit.name]
+                is_on = solution["Thermal: Is on"][thermal_unit.name]
             else
                 prod =
-                    solution[sc.name]["Thermal production (MW)"][thermal_unit.name]
-                is_on = solution[sc.name]["Is on"][thermal_unit.name]
+                    solution[sc.name]["Thermal: Production (MW)"][thermal_unit.name]
+                is_on = solution[sc.name]["Thermal: Is on"][thermal_unit.name]
             end
             thermal_unit.initial_power = prod[end]
             thermal_unit.initial_status = _determine_initial_status(

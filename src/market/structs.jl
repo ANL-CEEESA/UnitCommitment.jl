@@ -3,14 +3,13 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 import ..SolutionMethod
-import ..PricingMethod
 import ..Formulation
 
 """
     struct MarketSettings
         inner_method::SolutionMethod = XavQiuWanThi2019.Method()
-        lmp_method::Union{PricingMethod, Nothing} = ConventionalLMP()
         formulation::Formulation = Formulation()
+        extensions::Vector = []
     end
 
 Market setting struct, typically used to map a day-ahead market to real-time markets.
@@ -18,16 +17,17 @@ Market setting struct, typically used to map a day-ahead market to real-time mar
 Arguments
 ---------
 
-- `inner_method`: 
+- `inner_method`:
     method to solve each marketing problem.
-- `lmp_method`:
-    a PricingMethod method to calculate the locational marginal prices.
-    If it is set to `nothing`, the LMPs will not be calculated.
 - `formulation`:
     problem formulation.
+- `extensions`:
+    list of extensions to apply to each instance (e.g. `ConventionalLMP()`).
+    Extensions are passed to `UnitCommitment.read` and handle additional
+    computations such as LMP pricing automatically.
 """
 Base.@kwdef struct MarketSettings
     inner_method::SolutionMethod = XavQiuWanThi2019.Method()
-    lmp_method::Union{PricingMethod,Nothing} = ConventionalLMP()
     formulation::Formulation = Formulation()
+    extensions::Vector = []
 end

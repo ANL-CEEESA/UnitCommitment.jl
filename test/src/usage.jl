@@ -37,7 +37,7 @@ function usage_test()
             filename = tempname()
             UnitCommitment.write(filename, solution)
             loaded = JSON.parsefile(filename)
-            @test length(loaded["Is on"]) == 6
+            @test length(loaded["Thermal: Is on"]) == 6
 
             # Verify solution
             @test UnitCommitment.validate(instance, solution)

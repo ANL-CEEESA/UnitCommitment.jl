@@ -78,7 +78,7 @@ function solution_methods_TimeDecomposition_initial_status_test()
         # read one scenario
         instance = UnitCommitment.read(fixture("case14.json.gz"))
         psuedo_solution = OrderedDict(
-            "Thermal production (MW)" => OrderedDict(
+            "Thermal: Production (MW)" => OrderedDict(
                 "g1" => [0.0, 112.0, 114.0, 116.0],
                 "g2" => [0.0, 102.0, 0.0, 0.0],
                 "g3" => [0.0, 0.0, 0.0, 0.0],
@@ -86,7 +86,7 @@ function solution_methods_TimeDecomposition_initial_status_test()
                 "g5" => [0.0, 34.0, 66.0, 99.0],
                 "g6" => [0.0, 100.0, 100.0, 100.0],
             ),
-            "Is on" => OrderedDict(
+            "Thermal: Is on" => OrderedDict(
                 "g1" => [0.0, 1.0, 1.0, 1.0],
                 "g2" => [0.0, 1.0, 0.0, 0.0],
                 "g3" => [0.0, 0.0, 0.0, 0.0],
@@ -111,7 +111,7 @@ function solution_methods_TimeDecomposition_initial_status_test()
         ])
         psuedo_solution = OrderedDict(
             "case14" => OrderedDict(
-                "Thermal production (MW)" => OrderedDict(
+                "Thermal: Production (MW)" => OrderedDict(
                     "g1" => [0.0, 112.0, 114.0, 116.0],
                     "g2" => [0.0, 102.0, 0.0, 0.0],
                     "g3" => [0.0, 0.0, 0.0, 0.0],
@@ -119,7 +119,7 @@ function solution_methods_TimeDecomposition_initial_status_test()
                     "g5" => [0.0, 34.0, 66.0, 99.0],
                     "g6" => [0.0, 100.0, 100.0, 100.0],
                 ),
-                "Is on" => OrderedDict(
+                "Thermal: Is on" => OrderedDict(
                     "g1" => [0.0, 1.0, 1.0, 1.0],
                     "g2" => [0.0, 1.0, 0.0, 0.0],
                     "g3" => [0.0, 0.0, 0.0, 0.0],
@@ -129,7 +129,7 @@ function solution_methods_TimeDecomposition_initial_status_test()
                 ),
             ),
             "case14-profiled" => OrderedDict(
-                "Thermal production (MW)" => OrderedDict(
+                "Thermal: Production (MW)" => OrderedDict(
                     "g1" => [0.0, 113.0, 116.0, 115.0],
                     "g2" => [0.0, 0.0, 0.0, 0.0],
                     "g3" => [0.0, 0.0, 0.0, 20.0],
@@ -137,7 +137,7 @@ function solution_methods_TimeDecomposition_initial_status_test()
                     "g5" => [0.0, 34.0, 66.0, 97.0],
                     "g6" => [0.0, 100.0, 100.0, 100.0],
                 ),
-                "Is on" => OrderedDict(
+                "Thermal: Is on" => OrderedDict(
                     "g1" => [0.0, 1.0, 1.0, 1.0],
                     "g2" => [0.0, 0.0, 0.0, 0.0],
                     "g3" => [0.0, 0.0, 0.0, 1.0],

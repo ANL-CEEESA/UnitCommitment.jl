@@ -3,6 +3,10 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
+    instance = model[:instance]
+    for ext in instance.extensions
+        _before_optimize!(model, ext)
+    end
     if !occursin("Gurobi", JuMP.solver_name(model))
         method.two_phase_gap = false
     end
@@ -42,7 +46,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
         @info "Verifying transmission limits..."
         time_screening = @elapsed begin
             violations = []
-            for sc in model[:instance].scenarios
+            for sc in instance.scenarios
                 push!(
                     violations,
                     _find_violations(
@@ -68,7 +72,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
 
         if violations_found
             for (i, v) in enumerate(violations)
-                _enforce_transmission(model, v, model[:instance].scenarios[i])
+                _enforce_transmission(model, v, instance.scenarios[i])
             end
         else
             @info "No violations found"
@@ -79,6 +83,10 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
                 break
             end
         end
+    end
+    _store_solution!(model)
+    for ext in instance.extensions
+        _after_optimize!(model, ext)
     end
     return
 end

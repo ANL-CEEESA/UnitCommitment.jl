@@ -7,9 +7,14 @@ module UnitCommitment
 using Base: String
 
 include("instance/structs.jl")
-# include("solution/structs.jl")
-# include("lmp/structs.jl")
-# include("market/structs.jl")
+
+include("core/structs.jl")
+include("core/ext.jl")
+
+include("model/formulations/base/structs.jl")
+include("solution/structs.jl")
+include("market/structs.jl")
+include("ext/lmp/structs.jl")
 
 include("model/base/structs.jl")
 # include("model/ArrCon2000/structs.jl")
@@ -73,5 +78,8 @@ include("model/MorLatRam2013/ramp.jl")
 include("model/MorLatRam2013/slimits.jl")
 include("validation/repair.jl")
 include("validation/validate.jl")
+include("market/market.jl")
+include("ext/lmp/conventional.jl")
+include("ext/lmp/aelmp.jl")
 
 end

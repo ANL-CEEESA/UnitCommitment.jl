@@ -18,6 +18,7 @@ function build_model(;
     variable_names::Bool = false,
 )::JuMP.Model
     model = Model()
+    model.ext[:ucjl] = Dict()
     model[:obj] = AffExpr()
     model[:net_injection] = AffExpr()
 

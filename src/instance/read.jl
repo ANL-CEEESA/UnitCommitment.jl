@@ -25,6 +25,7 @@ instance = UnitCommitment.read_benchmark("matpower/case3375wp/2017-02-01")
 function read_benchmark(
     name::AbstractString;
     quiet::Bool = false,
+    extensions::Vector = [],
 )::UnitCommitmentInstance
     basedir = dirname(@__FILE__)
     filename = "$basedir/../../instances/$name.json.gz"
@@ -41,7 +42,7 @@ function read_benchmark(
             @info "If you use this instance in your research, please cite:\n\n$(json["SOURCE"])\n"
         end
     end
-    return UnitCommitment.read(filename)
+    return UnitCommitment.read(filename; extensions)
 end
 
 function _repair_scenario_names_and_probabilities!(
@@ -76,14 +77,14 @@ Read a deterministic test case from the given file. The file may be gzipped.
 instance = UnitCommitment.read("s1.json.gz")
 ```
 """
-function read(path::String)::UnitCommitmentInstance
+function read(path::String; extensions::Vector = [])::UnitCommitmentInstance
     scenarios = Vector{UnitCommitmentScenario}()
-    scenario = _read_scenario(path)
+    scenario = _read_scenario(path, extensions)
     scenario.name = "s1"
     scenario.probability = 1.0
     scenarios = [scenario]
     instance =
-        UnitCommitmentInstance(time = scenario.time, scenarios = scenarios)
+        UnitCommitmentInstance(time = scenario.time; scenarios, extensions)
     return instance
 end
 
@@ -99,14 +100,17 @@ describes a scenario. The files may be gzipped.
 instance = UnitCommitment.read(["s1.json.gz", "s2.json.gz"])
 ```
 """
-function read(paths::Vector{String})::UnitCommitmentInstance
+function read(
+    paths::Vector{String};
+    extensions::Vector = [],
+)::UnitCommitmentInstance
     scenarios = UnitCommitmentScenario[]
     for p in paths
-        push!(scenarios, _read_scenario(p))
+        push!(scenarios, _read_scenario(p, extensions))
     end
     _repair_scenario_names_and_probabilities!(scenarios, paths)
     instance =
-        UnitCommitmentInstance(time = scenarios[1].time, scenarios = scenarios)
+        UnitCommitmentInstance(time = scenarios[1].time; scenarios, extensions)
     return instance
 end
 
@@ -118,15 +122,19 @@ function _open(f::Function, path::String)
     end
 end
 
-function _read_scenario(path::String)::UnitCommitmentScenario
+function _read_scenario(
+    path::String,
+    extensions::Vector = [],
+)::UnitCommitmentScenario
     _open(path) do file
-        return _read(file)
+        return _read(file, extensions)
     end
 end
 
-function _read(file::IO)::UnitCommitmentScenario
+function _read(file::IO, extensions::Vector = [])::UnitCommitmentScenario
     return _from_json(
         JSON.parse(file, dicttype = () -> DefaultOrderedDict(nothing)),
+        extensions,
     )
 end
 
@@ -136,7 +144,11 @@ function _read_json(path::String)::OrderedDict
     end
 end
 
-function _from_json(json; repair = true)::UnitCommitmentScenario
+function _from_json(
+    json,
+    extensions::Vector = [];
+    repair = true,
+)::UnitCommitmentScenario
     _migrate(json)
     thermal_units = ThermalUnit[]
     buses = Bus[]
@@ -497,5 +509,10 @@ function _from_json(json; repair = true)::UnitCommitmentScenario
     if repair
         UnitCommitment.repair!(scenario)
     end
+
+    for ext in extensions
+        _read!(json, scenario, ext)
+    end
+
     return scenario
 end

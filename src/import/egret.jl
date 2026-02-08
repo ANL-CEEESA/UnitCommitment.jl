@@ -17,11 +17,11 @@ function read_egret_solution(path::String)::OrderedDict
     T = length(egret["system"]["time_keys"])
 
     solution = OrderedDict()
-    is_on = solution["Is on"] = OrderedDict()
-    production = solution["Thermal production (MW)"] = OrderedDict()
+    is_on = solution["Thermal: Is on"] = OrderedDict()
+    production = solution["Thermal: Production (MW)"] = OrderedDict()
     reserve = solution["Reserve (MW)"] = OrderedDict()
-    production_cost = solution["Thermal production cost (\$)"] = OrderedDict()
-    startup_cost = solution["Startup cost (\$)"] = OrderedDict()
+    production_cost = solution["Thermal: Production cost (\$)"] = OrderedDict()
+    startup_cost = solution["Thermal: Startup cost (\$)"] = OrderedDict()
 
     for (gen_name, gen_dict) in egret["elements"]["generator"]
         if endswith(gen_name, "_T") || endswith(gen_name, "_R")
