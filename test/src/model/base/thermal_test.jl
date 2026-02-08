@@ -230,4 +230,22 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_invest_nondec]["g2", 2] "invest[g2,1] - invest[g2,2] ≤ 0"
     @test_constr model[:eq_invest_nondec]["g2", 3] "invest[g2,2] - invest[g2,3] ≤ 0"
     @test_constr model[:eq_invest_nondec]["g2", 4] "invest[g2,3] - invest[g2,4] ≤ 0"
+
+    # net_injection
+    # -------------------------------------------------------------------------
+    ni = model[:net_injection]
+
+    # g1: bus=b1, min_power=100
+    @test_aff_expr ni["s1", "b1", 1] model[:prod_above]["s1", "g1", 1] 1.0
+    @test_aff_expr ni["s1", "b1", 1] model[:is_on]["g1", 1] 100.0
+    @test_aff_expr ni["s1", "b1", 4] model[:prod_above]["s1", "g1", 4] 1.0
+    @test_aff_expr ni["s1", "b1", 4] model[:is_on]["g1", 4] 100.0
+
+    # g2: bus=b2, min_power=0
+    @test_aff_expr ni["s1", "b2", 1] model[:prod_above]["s1", "g2", 1] 1.0
+    @test_aff_expr ni["s1", "b2", 1] model[:is_on]["g2", 1] 0.0
+
+    # g3: bus=b3, min_power=0
+    @test_aff_expr ni["s1", "b3", 1] model[:prod_above]["s1", "g3", 1] 1.0
+    @test_aff_expr ni["s1", "b3", 1] model[:is_on]["g3", 1] 0.0
 end

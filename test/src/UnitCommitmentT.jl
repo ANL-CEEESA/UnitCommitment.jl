@@ -59,6 +59,12 @@ macro test_obj_coef(var, expected)
     end
 end
 
+macro test_aff_expr(expr, var, expected)
+    return quote
+        @test JuMP.coefficient($(esc(expr)), $(esc(var))) ≈ $(esc(expected)) atol = 1e-6
+    end
+end
+
 macro test_constr(expr, rhs)
     # Extract constraint name from model[:constraint_name][indices...]
     model_ref = expr.args[1]
@@ -102,6 +108,7 @@ end
 # include("market/market_test.jl")
 # include("planning/planning_test.jl")
 # include("regression.jl")
+include("model/base/bus_test.jl")
 include("model/base/thermal_test.jl")
 include("model/base/profiled_test.jl")
 include("model/model_MorLatRam2013_test.jl")
@@ -118,6 +125,7 @@ function runtests()
     # UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
     @testset "UnitCommitment" begin
         @testset "model" begin
+            model_base_bus_test()
             model_base_thermal_test()
             model_base_profiled_test()
             model_MorLatRam2013_test()

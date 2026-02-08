@@ -64,6 +64,18 @@ using HiGHS, JuMP, UnitCommitment
     # p2: production lower bounded by minimum when invested
     @test_constr model[:eq_invest_prod_lb]["s1", "p2", 1] "prod[s1,p2,1] - 5 invest[p2,1] ≥ 0"
     @test_constr model[:eq_invest_prod_lb]["s1", "p2", 4] "prod[s1,p2,4] - 5 invest[p2,4] ≥ 0"
+
+    # net_injection
+    # -------------------------------------------------------------------------
+    ni = model[:net_injection]
+
+    # p1: bus=b1
+    @test_aff_expr ni["s1", "b1", 1] model[:prod]["s1", "p1", 1] 1.0
+    @test_aff_expr ni["s1", "b1", 4] model[:prod]["s1", "p1", 4] 1.0
+
+    # p2: bus=b2
+    @test_aff_expr ni["s1", "b2", 1] model[:prod]["s1", "p2", 1] 1.0
+    @test_aff_expr ni["s1", "b2", 4] model[:prod]["s1", "p2", 4] 1.0
 end
 
 _base_model() = UnitCommitment.build_model(

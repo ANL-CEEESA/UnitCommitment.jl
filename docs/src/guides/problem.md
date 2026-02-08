@@ -140,17 +140,17 @@ and start-up and shutdown limits.
 
 ### Decision variables
 
-| Symbol                        | JuMP name                  | Description                                                                                   | Unit   | Stage |
-| :---------------------------- | :------------------------- | :-------------------------------------------------------------------------------------------- | :----- | :---- |
-| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`               | One if generator $g$ is on at time $t$.                                                       | Binary | 1     |
-| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`           | One if generator $g$ switches on at time $t$.                                                 | Binary | 1     |
-| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`          | One if generator $g$ switches off at time $t$.                                                | Binary | 1     |
-| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`           | One if generator $g$ starts up at time $t$ under startup category $k$.                        | Binary | 1     |
-| $x^{\text{invest}}_{gt}$      | `invest[g,t]`              | One if generator $g$ is invested at or before $t$.                                            | Binary | 1     |
-| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.          | MW     | 2     |
-| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$. | MW     | 2     |
-| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                   | MW     | 2     |
-| $y^{\text{res-short}}_{srt}$  | `reserve_shortfall[s,r,t]` | Amount of spinning reserve shortfall for reserve $r$ at time $t$ in scenario $s$. Only defined for reserves that allow shortfall.             | MW     | 2     |
+| Symbol                        | JuMP name                  | Description                                                                                                                       | Unit   | Stage |
+| :---------------------------- | :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- | :----- | :---- |
+| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`               | One if generator $g$ is on at time $t$.                                                                                           | Binary | 1     |
+| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`           | One if generator $g$ switches on at time $t$.                                                                                     | Binary | 1     |
+| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`          | One if generator $g$ switches off at time $t$.                                                                                    | Binary | 1     |
+| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`           | One if generator $g$ starts up at time $t$ under startup category $k$.                                                            | Binary | 1     |
+| $x^{\text{invest}}_{gt}$      | `invest[g,t]`              | One if generator $g$ is invested at or before $t$.                                                                                | Binary | 1     |
+| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.                                              | MW     | 2     |
+| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$.                                     | MW     | 2     |
+| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                                                       | MW     | 2     |
+| $y^{\text{res-short}}_{srt}$  | `reserve_shortfall[s,r,t]` | Amount of spinning reserve shortfall for reserve $r$ at time $t$ in scenario $s$. Only defined for reserves that allow shortfall. | MW     | 2     |
 
 ### Objective function terms
 
@@ -186,7 +186,8 @@ W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{
 
 ### Constraints
 
-- Some units must remain on, even if it is not economical for them to do so (`eq_must_run[g,t]`):
+- Some units must remain on, even if it is not economical for them to do so
+  (`eq_must_run[g,t]`):
 
 ```math
 x^{\text{is-on}}_{gt} \geq 1 \quad \forall (g,t): M^{\text{must-run}}_{gt} = 1
@@ -263,7 +264,8 @@ y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 y^{\text{prod-above}}_{gts} = \sum_{k=1}^{K^{cost}_g} y^{\text{seg-prod}}_{gtks}
 ```
 
-- Impose upper limit on segment production variables (implemented as variable bound):
+- Impose upper limit on segment production variables (implemented as variable
+  bound):
 
 ```math
 0 \leq y^{\text{seg-prod}}_{gtks} \leq M^{\text{seg-pmax}}_{gtks}
@@ -276,7 +278,8 @@ y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 y^{\text{prod-above}}_{g,t-1,s} + M^{\text{ramp-up}}_{g}
 ```
 
-- Same as above, for initial time (`eq_ramp_up[s,g,1]`). Only enforced when $M^{\text{init-status}}_{g} > 0$ (unit was on at $t=0$):
+- Same as above, for initial time (`eq_ramp_up[s,g,1]`). Only enforced when
+  $M^{\text{init-status}}_{g} > 0$ (unit was on at $t=0$):
 
 ```math
 y^{\text{prod-above}}_{g,1,s} + \sum_{r \in R_g} y^{\text{res}}_{gr,1,s} \leq
@@ -290,16 +293,17 @@ y^{\text{prod-above}}_{gts} \geq
 y^{\text{prod-above}}_{g,t-1,s} - M^{\text{ramp-down}}_{g}
 ```
 
-- Same as above, for initial time (`eq_ramp_down[s,g,1]`). Only enforced when $M^{\text{init-status}}_{g} > 0$ (unit was on at $t=0$):
+- Same as above, for initial time (`eq_ramp_down[s,g,1]`). Only enforced when
+  $M^{\text{init-status}}_{g} > 0$ (unit was on at $t=0$):
 
 ```math
 y^{\text{prod-above}}_{g,1,s} \geq
 \left(M^{\text{init-power}}_{g} - M^{\text{pmin}}_{g,1}\right) - M^{\text{ramp-down}}_{g}
 ```
 
-- Combined startup and shutdown limit. When $M^{\text{min-up}}_g > 1$,
-  startup and shutdown cannot occur simultaneously, so both terms can be
-  combined into a single constraint (`eq_slimit_a[s,g,t]`):
+- Combined startup and shutdown limit. When $M^{\text{min-up}}_g > 1$, startup
+  and shutdown cannot occur simultaneously, so both terms can be combined into a
+  single constraint (`eq_slimit_a[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
@@ -310,9 +314,9 @@ x^{\text{switch-on}}_{gt} -
 x^{\text{switch-off}}_{g,t+1}
 ```
 
-- When $M^{\text{min-up}}_g \leq 1$, startup and shutdown may occur at the
-  same time step, so the limits must be imposed separately. Unit cannot
-  produce excessive amount of power immediately after starting up
+- When $M^{\text{min-up}}_g \leq 1$, startup and shutdown may occur at the same
+  time step, so the limits must be imposed separately. Unit cannot produce
+  excessive amount of power immediately after starting up
   (`eq_slimit_b[s,g,t]`):
 
 ```math
@@ -322,8 +326,7 @@ y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 x^{\text{switch-on}}_{gt}
 ```
 
-- Unit cannot shut off if it is producing too much power
-  (`eq_slimit_c[s,g,t]`):
+- Unit cannot shut off if it is producing too much power (`eq_slimit_c[s,g,t]`):
 
 ```math
 y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
@@ -332,8 +335,8 @@ y^{\text{prod-above}}_{gts} + \sum_{r \in R_g} y^{\text{res}}_{grts} \leq
 x^{\text{switch-off}}_{g,t+1}
 ```
 
-- If the unit's initial power output exceeds its shutdown limit, it cannot
-  shut down in the first time period (`eq_slimit_init[s,g]`):
+- If the unit's initial power output exceeds its shutdown limit, it cannot shut
+  down in the first time period (`eq_slimit_init[s,g]`):
 
 ```math
 x^{\text{switch-off}}_{g,1} \leq 0 \quad \text{if } M^{\text{init-power}}_g > M^{\text{shutdown-limit}}_g
@@ -384,10 +387,10 @@ incurred at the time of the investment and scaled by an investment cost weight.
 
 ### Decision variables
 
-| Symbol                   | JuMP name              | Unit   | Description                                                   | Stage |
-| :----------------------- | :--------------------- | :----- | :------------------------------------------------------------ | :---- |
-| $x^{\text{invest}}_{gt}$ | `invest[g,t]`          | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
-| $y^\text{prod}_{sgt}$    | `prod[s,g,t]`          | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
+| Symbol                   | JuMP name     | Unit   | Description                                                   | Stage |
+| :----------------------- | :------------ | :----- | :------------------------------------------------------------ | :---- |
+| $x^{\text{invest}}_{gt}$ | `invest[g,t]` | Binary | One if generator $g$ is invested at or before $t$.            | 1     |
+| $y^\text{prod}_{sgt}$    | `prod[s,g,t]` | MW     | Amount of power produced by $g$ in time $t$ and scenario $s$. | 2     |
 
 ### Objective function terms
 
@@ -413,63 +416,20 @@ W^{\text{invest}} \sum_{g \in G} \sum_{t \in T} Z^{\text{invest}}_{gt} \left(x^{
 M^{\text{pmin}}_{sgt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt}
 ```
 
-- Unit is permanently built once invested
-  (`eq_invest_nondec[g, t]`):
+- Unit is permanently built once invested (`eq_invest_nondec[g, t]`):
 
 ```math
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
 ```
 
-- Unit generation bounds are zero if not invested
-  (`eq_invest_prod_ub[s, g, t]` and
-  `eq_invest_prod_lb[s, g, t]`):
+- Unit generation bounds are zero if not invested (`eq_invest_prod_ub[s, g, t]`
+  and `eq_invest_prod_lb[s, g, t]`):
 
 ```math
 M^{\text{pmin}}_{sgt} x^{\text{invest}}_{gt} \leq y^\text{prod}_{sgt} \leq M^{\text{pmax}}_{sgt} x^{\text{invest}}_{gt}
 ```
 
-## 4. Conventional loads
-
-Loads represent the demand for electrical power by consumers and devices
-connected to the system. This section describes _conventional_ (or inelastic)
-loads, which are not sensitive to changes in electricity prices, and must always
-be served. Each bus in the transmission network has exactly one load; multiple
-loads in the same bus can be modelled by aggregating them. If there is not
-enough production or transmission capacity to serve all loads, some load can be
-curtailed, at a penalty.
-
-### Constants
-
-| Symbol                  | Unit  | Description                                                |
-| :---------------------- | :---- | :--------------------------------------------------------- |
-| $M^\text{load}_{sbt}$   | MW    | Conventional load on bus $b$ at time $s$ and scenario $s$. |
-| $Z^\text{curtail}_{st}$ | \$/MW | Load curtailment penalty at time $t$ in scenario $s$.      |
-
-### Decision variables
-
-| Symbol                   | JuMP name        | Unit | Description                                                      | Stage |
-| :----------------------- | :--------------- | :--- | :--------------------------------------------------------------- | :---- |
-| $y^\text{curtail}_{sbt}$ | `curtail[s,b,t]` | MW   | Amount of load curtailed at bus $b$ in time $t$ and scenario $s$ | 2     |
-
-### Objective function terms
-
-- Load curtailment penalty:
-
-```math
-\sum_{s \in S} p(s) \left[
-  \sum_{b \in B} \sum_{t \in T} y^\text{curtail}_{sbt} Z^\text{curtail}_{st}
-\right]
-```
-
-### Constraints
-
-- Variable bounds:
-
-```math
-0 \leq y^\text{curtail}_{sbt} \leq M^\text{load}_{sbt}
-```
-
-## 5. Price-sensitive loads
+## 4. Price-sensitive loads
 
 _Price-sensitive loads_ refer to components in the system which may increase or
 reduce their power consumption according to energy prices. Unlike conventional
@@ -515,7 +475,7 @@ loads per bus.
 0 \leq y^\text{psl}_{spt} \leq M^\text{psl-demand}_{spt}
 ```
 
-## 6. Energy storage
+## 5. Energy storage
 
 _Energy storage_ units are able to store energy during periods of low demand,
 then release energy back to the grid during periods of high demand. These
@@ -689,26 +649,95 @@ x^{\text{invest}}_{u,t-1} \leq x^{\text{invest}}_{ut}
 M^\text{min-level}_{sut} x^{\text{invest}}_{ut} \leq y^\text{level}_{sut} \leq M^\text{max-level}_{sut} x^{\text{invest}}_{ut}
 ```
 
-## 7. Buses and transmission lines
+## 6. Buses
 
-So far, we have described generators, which produce power, loads, which consume
-power, and storage units, which store energy for later use. Another important
-element is the transmission network, which delivers the power produced by the
-generators to the loads and storage units. Mathematically, the network is
-represented as a graph $(B,L)$ where $B$ is the set of **buses** and $L$ is the
-set of **transmission lines**. Each generator, load and storage unit is located
-at a bus. The **net injection** at the bus is the sum of all power injected
-minus withdrawn at the bus. To balance production and consumption, we must
-enforce that the sum of all net injections over the entire network equal to
-zero.
+Buses are connection points in the transmission network where generators, loads,
+and storage units are located. Each bus has an associated load profile
+representing the power demand at that location over time. The optimization model
+allows for load curtailment at each bus, which can be used to maintain
+feasibility when there is insufficient generation or transmission capacity.
 
-Besides the net balance equations, we must also enforce flow limits on the
-transmission lines. Unlike flows in other optimization problems, power flows are
-directly determined by voltage phase angles and transmission line parameters,
-and must follow physical laws. UC.jl uses the DC linearization of AC power flow
-equations. Under this linearization, the flow $f_l$ in transmission line $l$
-connecting buses $b$ (source) and $b'$ (target) is given by
-$B_l (\theta_b - \theta_{b'})$, where $B_l$ is the line susceptance (in
+### Important concepts
+
+- **Load profile:** Each bus has a time-varying load profile that represents the
+  fixed power demand (or supply) at that location. Positive loads represent
+  consumption, while negative loads can represent fixed generation or power
+  injection (e.g., from DERs or must-run units not explicitly modeled).
+
+- **Load curtailment:** When there is insufficient generation or transmission
+  capacity, some load can be curtailed (reduced or shed) at a penalty. For
+  positive loads (consumption), curtailment represents demand reduction. For
+  negative loads (fixed injection), curtailment represents reduction in the
+  fixed injection. Curtailment is penalized in the objective function to ensure
+  it only occurs when necessary.
+
+### Sets and constants
+
+| Symbol                  | Unit  | Description                                                                                                |
+| :---------------------- | :---- | :--------------------------------------------------------------------------------------------------------- |
+| $M^\text{load}_{sbt}$   | MW    | Fixed load at bus $b$ at time $t$ in scenario $s$. Positive for consumption; negative for fixed injection. |
+| $Z^\text{curtail}_{st}$ | \$/MW | Load curtailment penalty at time $t$ in scenario $s$.                                                      |
+
+### Decision variables
+
+| Symbol                   | JuMP name        | Unit | Description                                                                                                        | Stage |
+| :----------------------- | :--------------- | :--- | :----------------------------------------------------------------------------------------------------------------- | :---- |
+| $y^\text{curtail}_{sbt}$ | `curtail[s,b,t]` | MW   | Amount of load curtailed at bus $b$ at time $t$ in scenario $s$. Positive for consumption; negative for injection. | 2     |
+| $y^\text{inj}_{sbt}$     | `ni[s,b,t]`      | MW   | Total net injection at bus $b$ at time $t$ in scenario $s$.                                                        | 2     |
+
+### Objective function terms
+
+- Load curtailment penalty:
+
+```math
+\sum_{s \in S} p(s) \left[
+  \sum_{\substack{b \in B, t \in T \\ M^\text{load}_{sbt} \geq 0}} y^\text{curtail}_{sbt} Z^\text{curtail}_{st}
+  - \sum_{\substack{b \in B, t \in T \\ M^\text{load}_{sbt} < 0}} y^\text{curtail}_{sbt} Z^\text{curtail}_{st}
+\right]
+```
+
+### Constraints
+
+- Curtailment variable bounds. Curtailment is limited by the magnitude of the
+  load:
+
+```math
+\min(0, M^\text{load}_{sbt}) \leq y^\text{curtail}_{sbt} \leq \max(0, M^\text{load}_{sbt})
+```
+
+- Net injection definition (`eq_net_injection[s,b,t]`). The net injection
+  variable equals the sum of all component contributions to the bus:
+
+```math
+\begin{align*}
+y^\text{inj}_{sbt} =
+  & \sum_{g \in G^{\text{therm}}_b} \left( M^{\text{pmin}}_{gt} x^{\text{is-on}}_{gt} + y^{\text{prod-above}}_{gts} \right) \\
+  & + \sum_{g \in G^{\text{prof}}_b} y^\text{prod}_{sgt} \\
+  & + \sum_{u \in \text{SU}_b} \left( y^\text{discharge}_{sut} - y^\text{charge}_{sut} \right) \\
+  & - \sum_{p \in \text{PSL}_b} y^\text{psl}_{spt} \\
+  & - M^\text{load}_{sbt} + y^\text{curtail}_{sbt}
+\end{align*}
+```
+
+- System-wide power balance (`eq_power_balance[s,t]`). The sum of net injections
+  across all buses must equal zero:
+
+```math
+\sum_{b \in B} y^\text{inj}_{sbt} = 0
+```
+
+## 7. Transmission lines
+
+Transmission lines connect buses in the network and allow power to flow between
+them. The transmission network is represented as a graph $(B,L)$ where $B$ is
+the set of buses and $L$ is the set of transmission lines. Besides enforcing
+power balance at each bus (as described in Section 6), we must also enforce flow
+limits on the transmission lines. Unlike flows in other optimization problems,
+power flows are directly determined by voltage phase angles and transmission
+line parameters, and must follow physical laws. UC.jl uses the DC linearization
+of AC power flow equations. Under this linearization, the flow $f_l$ in
+transmission line $l$ connecting buses $b$ (source) and $b'$ (target) is given
+by $B_l (\theta_b - \theta_{b'})$, where $B_l$ is the line susceptance (in
 siemens), and $\theta_b$, $\theta_{b'}$ are the voltage phase angles (in
 radians) at the source and target buses, respectively. One bus in the system is
 designated as the reference bus, with its phase angle fixed to zero.
@@ -751,13 +780,12 @@ of circuits cannot decrease.
 
 ### Decision variables
 
-| Symbol                    | JuMP name              | Unit    | Description                                                           | Stage |
-| :------------------------ | :--------------------- | :------ | :-------------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]`     | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
-| $y^\text{flow}_{slt}$     | `flow[s,l,t]`          | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
-| $y^\text{inj}_{sbt}$      | `net_injection[s,b,t]` | MW      | Total net injection at bus $b$, time $t$ and scenario $s$.            | 2     |
-| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`      | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
-| $\theta_{sbt}$            | `theta[s,b,t]`         | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
+| Symbol                    | JuMP name          | Unit    | Description                                                           | Stage |
+| :------------------------ | :----------------- | :------ | :-------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]` | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
+| $y^\text{flow}_{slt}$     | `flow[s,l,t]`      | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
+| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`  | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
+| $\theta_{sbt}$            | `theta[s,b,t]`     | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
 
 ### Objective function terms
 
@@ -776,12 +804,6 @@ W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{
 ```
 
 ### Constraints
-
-- Power produced equals power consumed (`eq_power_balance[s,t]`):
-
-```math
-\sum_{b \in B} y^\text{inj}_{sbt} = 0
-```
 
 - Phase angle bounds. The first bus is the reference bus, with its phase angle
   fixed to zero:

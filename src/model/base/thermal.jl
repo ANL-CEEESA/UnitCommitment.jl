@@ -79,6 +79,18 @@ function _add_thermal_vars!(
                 prod_above[sc.name, g.name, t] =
                     @variable(model, lower_bound = 0)
 
+                # Net injection
+                add_to_expression!(
+                    model[:net_injection][sc.name, g.bus.name, t],
+                    prod_above[sc.name, g.name, t],
+                    1.0,
+                )
+                add_to_expression!(
+                    model[:net_injection][sc.name, g.bus.name, t],
+                    is_on[g.name, t],
+                    g.min_power[t],
+                )
+
                 # Spinning reserves
                 for r in g.reserves
                     r.type == "spinning" || continue

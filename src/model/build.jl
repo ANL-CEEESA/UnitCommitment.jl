@@ -19,11 +19,16 @@ function build_model(;
 )::JuMP.Model
     model = Model()
     model.ext[:ucjl] = Dict()
+
     model[:obj] = AffExpr()
-    model[:net_injection] = AffExpr()
+    model[:net_injection] = OrderedDict(
+        (sc.name, b.name, t) => AffExpr()
+        for sc in instance.scenarios for b in sc.buses for t in 1:instance.time
+    )
 
     _add_thermal_units!(model, instance, formulation)
     _add_profiled_units!(model, instance)
+    _add_buses!(model, instance)
 
     @objective(model, Min, model[:obj])
 

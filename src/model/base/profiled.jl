@@ -28,11 +28,11 @@ function _add_profiled_vars!(
                 lower_bound = pu.min_power[t],
                 upper_bound = pu.max_power[t],
             )
-            # add_to_expression!(
-            #     model[:net_injection][sc.name, pu.bus.name, t],
-            #     prod[sc.name, pu.name, t],
-            #     1.0,
-            # )
+            add_to_expression!(
+                model[:net_injection][sc.name, pu.bus.name, t],
+                prod[sc.name, pu.name, t],
+                1.0,
+            )
         end
     end
 
@@ -89,7 +89,7 @@ function _add_profiled_constr_invest!(
     eq_invest_prod_ub = _init(model, :eq_invest_prod_ub)
     eq_invest_prod_lb = _init(model, :eq_invest_prod_lb)
 
-    # Once invested, the investment is irreversible
+    # Unit is permanently built once invested
     for pu in instance.scenarios[1].profiled_units
         pu.invest[1] > 0.0 || continue
         for t in 2:T
@@ -100,7 +100,7 @@ function _add_profiled_constr_invest!(
         end
     end
 
-    # Production is bounded by capacity only if invested
+    # Unit generation bounds are zero if not invested
     for sc in instance.scenarios, pu in sc.profiled_units
         pu.invest[1] > 0.0 || continue
 
