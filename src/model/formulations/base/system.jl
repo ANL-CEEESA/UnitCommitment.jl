@@ -7,7 +7,6 @@ function _add_system_wide_eqs!(
     ::ShiftFactorsFormulation,
     sc::UnitCommitmentScenario,
 )::Nothing
-    _add_net_injection_eqs!(model, sc)
     _add_spinning_reserve_eqs!(model, sc)
     _add_flexiramp_reserve_eqs!(model, sc)
     return
@@ -18,36 +17,11 @@ function _add_system_wide_eqs!(
     ::PhaseAngleFormulation,
     sc::UnitCommitmentScenario,
 )::Nothing
-    _add_net_injection_eqs!(model, sc)
     _add_nodal_balance!(model, sc)
-    _add_spinning_reserve_eqs!(model, sc)
     _add_flexiramp_reserve_eqs!(model, sc)
     return
 end
 
-function _add_net_injection_eqs!(
-    model::JuMP.Model,
-    sc::UnitCommitmentScenario,
-)::Nothing
-    T = model[:instance].time
-    net_injection = _init(model, :net_injection)
-    eq_net_injection = _init(model, :eq_net_injection)
-    eq_power_balance = _init(model, :eq_power_balance)
-    for t in 1:T, b in sc.buses
-        n = net_injection[sc.name, b.name, t] = @variable(model)
-        eq_net_injection[sc.name, b.name, t] = @constraint(
-            model,
-            -n + model[:expr_net_injection][sc.name, b.name, t] == 0
-        )
-    end
-    for t in 1:T
-        eq_power_balance[sc.name, t] = @constraint(
-            model,
-            sum(net_injection[sc.name, b.name, t] for b in sc.buses) == 0
-        )
-    end
-    return
-end
 
 function _add_nodal_balance!(
     model::JuMP.Model,
@@ -67,41 +41,6 @@ function _add_nodal_balance!(
                     lm in sc.lines if lm.target == b
                 ) + model[:net_injection][sc.name, b.name, t] == 0
             )
-        end
-    end
-    return
-end
-
-function _add_spinning_reserve_eqs!(
-    model::JuMP.Model,
-    sc::UnitCommitmentScenario,
-)::Nothing
-    T = model[:instance].time
-    eq_min_spinning_reserve = _init(model, :eq_min_spinning_reserve)
-    for r in sc.reserves
-        r.type == "spinning" || continue
-        for t in 1:T
-            # Equation (68) in Kneuven et al. (2020)
-            # As in Morales-España et al. (2013a)
-            # Akin to the alternative formulation with max_power_avail
-            # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
-            eq_min_spinning_reserve[sc.name, r.name, t] = @constraint(
-                model,
-                sum(
-                    model[:reserve][sc.name, r.name, g.name, t] for
-                    g in r.thermal_units
-                ) + model[:reserve_shortfall][sc.name, r.name, t] >=
-                r.amount[t]
-            )
-
-            # Account for shortfall contribution to objective
-            if r.shortfall_penalty >= 0
-                add_to_expression!(
-                    model[:obj],
-                    r.shortfall_penalty * sc.probability,
-                    model[:reserve_shortfall][sc.name, r.name, t],
-                )
-            end
         end
     end
     return
