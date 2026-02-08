@@ -111,6 +111,7 @@ end
 include("model/base/bus_test.jl")
 include("model/base/thermal_test.jl")
 include("model/base/profiled_test.jl")
+include("model/base/psload_test.jl")
 include("model/model_MorLatRam2013_test.jl")
 include("model/model_KnuOstWat2018_test.jl")
 
@@ -128,6 +129,7 @@ function runtests()
             model_base_bus_test()
             model_base_thermal_test()
             model_base_profiled_test()
+            model_base_psload_test()
             model_MorLatRam2013_test()
             model_KnuOstWat2018_test()
         end

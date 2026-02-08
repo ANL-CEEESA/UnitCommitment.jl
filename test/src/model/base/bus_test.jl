@@ -44,11 +44,8 @@ using HiGHS, JuMP, UnitCommitment
 
     # eq_net_injection
     # -------------------------------------------------------------------------
-    # b7: no generators, zero load
-    @test_constr model[:eq_net_injection]["s1", "b7", 1] "curtail[s1,b7,1] - ni[s1,b7,1] = 0"
-    @test_constr model[:eq_net_injection]["s1", "b7", 2] "curtail[s1,b7,2] - ni[s1,b7,2] = 0"
-
-    # b15: no generators, mixed load
+    @test_constr model[:eq_net_injection]["s1", "b7", 1] "-loads[s1,ps3,1] + curtail[s1,b7,1] - ni[s1,b7,1] = 0"
+    @test_constr model[:eq_net_injection]["s1", "b7", 2] "-loads[s1,ps3,2] + curtail[s1,b7,2] - ni[s1,b7,2] = 0"
     @test_constr model[:eq_net_injection]["s1", "b15", 1] "curtail[s1,b15,1] - ni[s1,b15,1] = -5"
     @test_constr model[:eq_net_injection]["s1", "b15", 2] "curtail[s1,b15,2] - ni[s1,b15,2] = 10"
 

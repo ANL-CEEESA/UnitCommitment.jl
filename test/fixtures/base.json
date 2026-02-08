@@ -386,6 +386,16 @@
       "Bus": "b3",
       "Revenue ($/MW)": 100.0,
       "Demand (MW)": 50.0
+    },
+    "ps2": {
+      "Bus": "b3",
+      "Revenue ($/MW)": [80.0, 90.0, 70.0, 85.0],
+      "Demand (MW)": [30.0, 40.0, 20.0, 35.0]
+    },
+    "ps3": {
+      "Bus": "b7",
+      "Revenue ($/MW)": 0.0,
+      "Demand (MW)": 0.0
     }
   },
   "Reserves": {
