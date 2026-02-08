@@ -28,6 +28,7 @@ function build_model(;
 
     _add_thermal_units!(model, instance, formulation)
     _add_profiled_units!(model, instance)
+    _add_storage_units!(model, instance)
     _add_ps_loads!(model, instance)
     _add_buses!(model, instance)
 

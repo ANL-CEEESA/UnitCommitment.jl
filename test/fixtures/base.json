@@ -398,6 +398,38 @@
       "Demand (MW)": 0.0
     }
   },
+  "Storage units": {
+    "su1": {
+      "Bus": "b4",
+      "Maximum level (MWh)": 100.0,
+      "Minimum level (MWh)": 10.0,
+      "Maximum charge rate (MW)": 50.0,
+      "Minimum charge rate (MW)": 5.0,
+      "Maximum discharge rate (MW)": 40.0,
+      "Minimum discharge rate (MW)": 3.0,
+      "Charge cost ($/MW)": 2.0,
+      "Discharge cost ($/MW)": 1.5,
+      "Charge efficiency": 0.9,
+      "Discharge efficiency": 0.95,
+      "Loss factor": 0.01,
+      "Initial level (MWh)": 50.0,
+      "Last period minimum level (MWh)": 20.0,
+      "Last period maximum level (MWh)": 80.0,
+      "Allow simultaneous charging and discharging": false
+    },
+    "su2": {
+      "Bus": "b5",
+      "Maximum level (MWh)": [200.0, 200.0, 200.0, 200.0],
+      "Minimum level (MWh)": [20.0, 20.0, 20.0, 20.0],
+      "Maximum charge rate (MW)": 80.0,
+      "Maximum discharge rate (MW)": 60.0,
+      "Charge cost ($/MW)": 3.0,
+      "Discharge cost ($/MW)": 2.0,
+      "Initial level (MWh)": 100.0,
+      "Investment cost ($)": [5000, 6000, 7000, 8000],
+      "Allow simultaneous charging and discharging": true
+    }
+  },
   "Reserves": {
     "r1": {
       "Type": "Spinning",

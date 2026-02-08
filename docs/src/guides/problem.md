@@ -634,15 +634,15 @@ M^\text{min-end-level}_{su} \leq y^\text{level}_{su,|T|} \leq M^\text{max-end-le
 ```
 
 - Storage is permanently built once invested
-  (`eq_invest_storage_nondecreasing[u,t]`):
+  (`eq_invest_storage_nondec[u,t]`):
 
 ```math
 x^{\text{invest}}_{u,t-1} \leq x^{\text{invest}}_{ut}
 ```
 
 - Storage level bounds depend on investment status
-  (`eq_invest_storage_level_upper[s,u,t]` and
-  `eq_invest_storage_level_lower[s,u,t]`). These constraints replace the
+  (`eq_invest_storage_level_ub[s,u,t]` and
+  `eq_invest_storage_level_lb[s,u,t]`). These constraints replace the
   variable bounds above for units with investment decisions:
 
 ```math
