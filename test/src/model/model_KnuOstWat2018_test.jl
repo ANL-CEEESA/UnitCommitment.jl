@@ -6,9 +6,13 @@ using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_KnuOstWat2018_test begin
     model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
-        formulation = UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
+        instance = UnitCommitment.read(
+            fixture("base.json"),
+            extensions = [
+                UnitCommitment.ThermalExt(
+                    pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
+                ),
+            ],
         ),
         optimizer = HiGHS.Optimizer,
         variable_names = true,

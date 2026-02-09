@@ -8,9 +8,13 @@ using HiGHS, JuMP, UnitCommitment
     model = UnitCommitment.build_model(
         instance = UnitCommitment.read(
             fixture("base.json"),
-            extensions = [UnitCommitment.PriceSensitiveLoadsExt()],
+            extensions = [
+                UnitCommitment.ThermalExt(
+                    pwl_costs = UnitCommitment.BasePwlCosts(),
+                ),
+                UnitCommitment.PriceSensitiveLoadsExt(),
+            ],
         ),
-        formulation = UnitCommitment.BaseFormulation,
         optimizer = HiGHS.Optimizer,
         variable_names = true,
     )

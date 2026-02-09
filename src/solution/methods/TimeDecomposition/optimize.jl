@@ -34,8 +34,7 @@ using UnitCommitment, JuMP, HiGHS
 
 import UnitCommitment:
     TimeDecomposition,
-    XavQiuWanThi2019,
-    Formulation
+    XavQiuWanThi2019
 
 # assume the instance is given as a 120h problem
 instance = UnitCommitment.read("instance.json")
@@ -46,7 +45,6 @@ solution = UnitCommitment.optimize!(
         time_window = 36,  # solve 36h problems
         time_increment = 24,  # advance by 24h each time
         inner_method = XavQiuWanThi2019.Method(),
-        formulation = Formulation(),
     ),
     optimizer = HiGHS.Optimizer,
 )
@@ -78,7 +76,6 @@ function optimize!(
         sub_model = UnitCommitment.build_model(
             instance = sub_instance,
             optimizer = optimizer,
-            formulation = method.formulation,
         )
         UnitCommitment.optimize!(sub_model, method.inner_method)
         # get the result of each time period

@@ -3,12 +3,10 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 import ..SolutionMethod
-import ..Formulation
 
 """
     struct MarketSettings
         inner_method::SolutionMethod = XavQiuWanThi2019.Method()
-        formulation::Formulation = Formulation()
         extensions::Vector = []
     end
 
@@ -19,8 +17,6 @@ Arguments
 
 - `inner_method`:
     method to solve each marketing problem.
-- `formulation`:
-    problem formulation.
 - `extensions`:
     list of extensions to apply to each instance (e.g. `ConventionalLMP()`).
     Extensions are passed to `UnitCommitment.read` and handle additional
@@ -28,6 +24,5 @@ Arguments
 """
 Base.@kwdef struct MarketSettings
     inner_method::SolutionMethod = XavQiuWanThi2019.Method()
-    formulation::Formulation = Formulation()
     extensions::Vector = []
 end

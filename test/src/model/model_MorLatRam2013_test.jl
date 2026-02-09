@@ -6,10 +6,14 @@ using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_MorLatRam2013_test begin
     model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
-        formulation = UnitCommitment.Formulation(
-            ramping = UnitCommitment.MorLatRam2013.Ramping(),
-            slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
+        instance = UnitCommitment.read(
+            fixture("base.json"),
+            extensions = [
+                UnitCommitment.ThermalExt(
+                    ramping = UnitCommitment.MorLatRam2013.Ramping(),
+                    slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
+                ),
+            ],
         ),
         optimizer = HiGHS.Optimizer,
         variable_names = true,

@@ -3,6 +3,19 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 """
+    to_scalar(x; default=nothing)
+
+Convert a value `x` into a scalar, with a fallback default.
+
+- If `x` is `nothing`, return `default`.
+- Otherwise, return `x` as-is.
+"""
+function to_scalar(x; default = nothing)
+    x !== nothing || return default
+    return x
+end
+
+"""
     to_timeseries(x, T::Int; default=nothing)
 
 Convert a value `x` into a time series vector of length `T`.

@@ -4,18 +4,18 @@
 
 using JuMP
 
-function _add_thermal_units!(
+function build_model(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
-    formulation::Formulation,
+    ext::ThermalExt,
 )::Nothing
     _add_thermal_vars!(model, instance)
     _add_thermal_obj!(model, instance)
     _add_thermal_constr_status!(model, instance)
     _add_thermal_constr_startup!(model, instance)
-    _add_thermal_constr_pwl_costs!(model, instance, formulation.pwl_costs)
-    _add_thermal_constr_ramping!(model, instance, formulation.ramping)
-    _add_thermal_constr_slimits!(model, instance, formulation.slimits)
+    _add_thermal_constr_pwl_costs!(model, instance, ext.pwl_costs)
+    _add_thermal_constr_ramping!(model, instance, ext.ramping)
+    _add_thermal_constr_slimits!(model, instance, ext.slimits)
     _add_thermal_constr_invest!(model, instance)
     _add_thermal_constr_reserves!(model, instance)
     return
@@ -38,7 +38,7 @@ function _add_thermal_vars!(
 
     for t in 1:T
         # First stage
-        for g in instance.scenarios[1].thermal_units
+        for g in instance.scenarios[1].data[:thermal]
             # Status variables
             is_on[g.name, t] = @variable(model, binary = true)
             switch_on[g.name, t] = @variable(model, binary = true)
@@ -60,7 +60,7 @@ function _add_thermal_vars!(
         # Second stage
         for sc in instance.scenarios
             # Spinning reserve shortfall
-            for r in sc.reserves
+            for r in sc.data[:reserves]
                 reserve_shortfall[sc.name, r.name, t] =
                     @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
@@ -68,7 +68,7 @@ function _add_thermal_vars!(
                 end
             end
 
-            for g in sc.thermal_units
+            for g in sc.data[:thermal]
                 # Production
                 for k in 1:length(g.cost_segments)
                     segprod[sc.name, g.name, t, k] = @variable(
@@ -94,7 +94,6 @@ function _add_thermal_vars!(
 
                 # Spinning reserves
                 for r in g.reserves
-                    r.type == "spinning" || continue
                     reserve[sc.name, r.name, g.name, t] =
                         @variable(model, lower_bound = 0)
                 end
@@ -116,7 +115,7 @@ function _add_thermal_obj!(
 
     # Production costs
     for t in 1:instance.time
-        for g in instance.scenarios[1].thermal_units
+        for g in instance.scenarios[1].data[:thermal]
             add_to_expression!(
                 model[:obj],
                 is_on[g.name, t],
@@ -124,7 +123,7 @@ function _add_thermal_obj!(
             )
         end
         for sc in instance.scenarios
-            for g in sc.thermal_units
+            for g in sc.data[:thermal]
                 for k in 1:length(g.cost_segments)
                     add_to_expression!(
                         model[:obj],
@@ -138,7 +137,7 @@ function _add_thermal_obj!(
 
     # Startup costs
     for t in 1:instance.time
-        for g in instance.scenarios[1].thermal_units
+        for g in instance.scenarios[1].data[:thermal]
             for s in 1:length(g.startup_categories)
                 add_to_expression!(
                     model[:obj],
@@ -150,7 +149,7 @@ function _add_thermal_obj!(
     end
 
     # Investment costs
-    for g in instance.scenarios[1].thermal_units
+    for g in instance.scenarios[1].data[:thermal]
         g.invest[1] > 0 || continue
         for t in 1:instance.time
             add_to_expression!(
@@ -164,8 +163,7 @@ function _add_thermal_obj!(
     # Spinning reserve shortfall
     for t in 1:instance.time
         for sc in instance.scenarios
-            for r in sc.reserves
-                r.type == "spinning" || continue
+            for r in sc.data[:reserves]
                 if r.shortfall_penalty >= 0
                     add_to_expression!(
                         model[:obj],
@@ -195,7 +193,7 @@ function _add_thermal_constr_status!(
     eq_must_run = _init(model, :eq_must_run)
     eq_switch_on_off = _init(model, :eq_switch_on_off)
 
-    for t in 1:T, g in instance.scenarios[1].thermal_units
+    for t in 1:T, g in instance.scenarios[1].data[:thermal]
         # Must-run
         if g.must_run[t]
             eq_must_run[g.name, t] = @constraint(model, is_on[g.name, t] >= 1)
@@ -281,7 +279,7 @@ function _add_thermal_constr_startup!(
     eq_startup_restrict = _init(model, :eq_startup_restrict)
 
     for t in 1:T
-        for g in instance.scenarios[1].thermal_units
+        for g in instance.scenarios[1].data[:thermal]
             # If unit is switching on, we must choose a startup category
             S = length(g.startup_categories)
             eq_startup_choose[g.name, t] = @constraint(
@@ -327,7 +325,7 @@ function _add_thermal_constr_pwl_costs!(
     eq_prod_limit = _init(model, :eq_prod_limit)
 
     for sc in instance.scenarios
-        for g in sc.thermal_units
+        for g in sc.data[:thermal]
             K = length(g.cost_segments)
             reserve = _total_reserves(model, instance, g, sc)
             for t in 1:T
@@ -360,7 +358,7 @@ function _add_thermal_constr_invest!(
     eq_invest_link = _init(model, :eq_invest_link)
     eq_invest_nondec = _init(model, :eq_invest_nondec)
 
-    for g in instance.scenarios[1].thermal_units
+    for g in instance.scenarios[1].data[:thermal]
         g.invest[1] > 0 || continue
 
         # A generator can only be committed if the investment has been made
@@ -386,8 +384,7 @@ function _add_thermal_constr_reserves!(
     eq_min_spinning_reserve = _init(model, :eq_min_spinning_reserve)
 
     for sc in instance.scenarios
-        for r in sc.reserves
-            r.type == "spinning" || continue
+        for r in sc.data[:reserves]
             for t in 1:T
                 # Equation (68) in Kneuven et al. (2020)
                 # As in Morales-España et al. (2013a)
@@ -410,12 +407,11 @@ end
 function _total_reserves(model, instance, g, sc)::Vector
     T = instance.time
     reserve = [0.0 for _ in 1:T]
-    spinning_reserves = [r for r in g.reserves if r.type == "spinning"]
-    if !isempty(spinning_reserves)
+    if !isempty(g.reserves)
         reserve += [
             sum(
                 model[:reserve][sc.name, r.name, g.name, t] for
-                r in spinning_reserves
+                r in g.reserves
             ) for t in 1:T
         ]
     end

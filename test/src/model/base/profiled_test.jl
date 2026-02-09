@@ -8,9 +8,13 @@ using HiGHS, JuMP, UnitCommitment
     model = UnitCommitment.build_model(
         instance = UnitCommitment.read(
             fixture("base.json"),
-            extensions = [UnitCommitment.ProfiledUnitsExt()],
+            extensions = [
+                UnitCommitment.ThermalExt(
+                    pwl_costs = UnitCommitment.BasePwlCosts(),
+                ),
+                UnitCommitment.ProfiledUnitsExt(),
+            ],
         ),
-        formulation = UnitCommitment.BaseFormulation,
         optimizer = HiGHS.Optimizer,
         variable_names = true,
     )
@@ -83,8 +87,14 @@ end
 
 function _base_model()
     return UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
-        formulation = UnitCommitment.BaseFormulation,
+        instance = UnitCommitment.read(
+            fixture("base.json"),
+            extensions = [
+                UnitCommitment.ThermalExt(
+                    pwl_costs = UnitCommitment.BasePwlCosts(),
+                ),
+            ],
+        ),
         optimizer = HiGHS.Optimizer,
         variable_names = true,
     )

@@ -8,7 +8,6 @@ function _add_system_wide_eqs!(
     sc::UnitCommitmentScenario,
 )::Nothing
     _add_spinning_reserve_eqs!(model, sc)
-    _add_flexiramp_reserve_eqs!(model, sc)
     return
 end
 
@@ -18,7 +17,6 @@ function _add_system_wide_eqs!(
     sc::UnitCommitmentScenario,
 )::Nothing
     _add_nodal_balance!(model, sc)
-    _add_flexiramp_reserve_eqs!(model, sc)
     return
 end
 
@@ -45,52 +43,3 @@ function _add_nodal_balance!(
     return
 end
 
-function _add_flexiramp_reserve_eqs!(
-    model::JuMP.Model,
-    sc::UnitCommitmentScenario,
-)::Nothing
-    # Note: The flexpramp requirements in Wang & Hobbs (2016) are imposed as hard constraints 
-    #       through Eq. (17) and Eq. (18). The constraints eq_min_upflexiramp and eq_min_dwflexiramp 
-    #       provided below are modified versions of Eq. (17) and Eq. (18), respectively, in that   
-    #       they include slack variables for flexiramp shortfall, which are penalized in the
-    #       objective function.
-    eq_min_upflexiramp = _init(model, :eq_min_upflexiramp)
-    eq_min_dwflexiramp = _init(model, :eq_min_dwflexiramp)
-    T = model[:instance].time
-    for r in sc.reserves
-        r.type == "flexiramp" || continue
-        for t in 1:T
-            # Eq. (17) in Wang & Hobbs (2016)
-            eq_min_upflexiramp[sc.name, r.name, t] = @constraint(
-                model,
-                sum(
-                    model[:upflexiramp][sc.name, r.name, g.name, t] for
-                    g in r.thermal_units
-                ) + model[:upflexiramp_shortfall][sc.name, r.name, t] >=
-                r.amount[t]
-            )
-            # Eq. (18) in Wang & Hobbs (2016)
-            eq_min_dwflexiramp[sc.name, r.name, t] = @constraint(
-                model,
-                sum(
-                    model[:dwflexiramp][sc.name, r.name, g.name, t] for
-                    g in r.thermal_units
-                ) + model[:dwflexiramp_shortfall][sc.name, r.name, t] >=
-                r.amount[t]
-            )
-
-            # Account for flexiramp shortfall contribution to objective
-            if r.shortfall_penalty >= 0
-                add_to_expression!(
-                    model[:obj],
-                    r.shortfall_penalty * sc.probability,
-                    (
-                        model[:upflexiramp_shortfall][sc.name, r.name, t] +
-                        model[:dwflexiramp_shortfall][sc.name, r.name, t]
-                    ),
-                )
-            end
-        end
-    end
-    return
-end

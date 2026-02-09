@@ -59,26 +59,29 @@ function store_solution(
                 t in 1:T
             ] for b in sc.buses
         )
-        sol[sc.name]["Thermal: Gross revenue (\$)"] = OrderedDict(
-            g.name => [
-                sol[sc.name]["Thermal: Production (MW)"][g.name][t] *
-                lmp_total[g.bus.name][t] for t in 1:T
-            ] for g in sc.thermal_units
-        )
-        sol[sc.name]["Thermal: Net revenue (\$)"] = OrderedDict(
-            g.name => [
-                sol[sc.name]["Thermal: Gross revenue (\$)"][g.name][t] -
-                sol[sc.name]["Thermal: Production cost (\$)"][g.name][t] -
-                sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t]
-                for t in 1:T
-            ] for g in sc.thermal_units
-        )
-        sol[sc.name]["Thermal: Uplift payment (\$)"] = OrderedDict(
-            g.name => max(
-                0.0,
-                -sum(sol[sc.name]["Thermal: Net revenue (\$)"][g.name]),
-            ) for g in sc.thermal_units
-        )
+        if haskey(sc.data, :thermal)
+            thermal_units = sc.data[:thermal]
+            sol[sc.name]["Thermal: Gross revenue (\$)"] = OrderedDict(
+                g.name => [
+                    sol[sc.name]["Thermal: Production (MW)"][g.name][t] *
+                    lmp_total[g.bus.name][t] for t in 1:T
+                ] for g in thermal_units
+            )
+            sol[sc.name]["Thermal: Net revenue (\$)"] = OrderedDict(
+                g.name => [
+                    sol[sc.name]["Thermal: Gross revenue (\$)"][g.name][t] -
+                    sol[sc.name]["Thermal: Production cost (\$)"][g.name][t] -
+                    sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t]
+                    for t in 1:T
+                ] for g in thermal_units
+            )
+            sol[sc.name]["Thermal: Uplift payment (\$)"] = OrderedDict(
+                g.name => max(
+                    0.0,
+                    -sum(sol[sc.name]["Thermal: Net revenue (\$)"][g.name]),
+                ) for g in thermal_units
+            )
+        end
 
         if "Profiled: Production (MW)" in keys(sol[sc.name])
             profiled_units = sc.data[:profiled]

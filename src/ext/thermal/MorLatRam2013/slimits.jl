@@ -18,7 +18,7 @@ function _add_thermal_constr_slimits!(
     switch_on = model[:switch_on]
     T = instance.time
 
-    for sc in instance.scenarios, g in sc.thermal_units
+    for sc in instance.scenarios, g in sc.data[:thermal]
         reserve = _total_reserves(model, instance, g, sc)
         if g.min_uptime > 1
             # Equation (20) in Kneuven et al. (2020)

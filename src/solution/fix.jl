@@ -16,7 +16,7 @@ function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
     prod_above = model[:prod_above]
     reserve = model[:reserve]
     for sc in instance.scenarios
-        for g in sc.thermal_units
+        for g in sc.data[:thermal]
             for t in 1:T
                 is_on_value =
                     round(solution[sc.name]["Thermal: Is on"][g.name][t])
@@ -32,8 +32,7 @@ function fix!(model::JuMP.Model, solution::AbstractDict)::Nothing
                 )
             end
         end
-        for r in sc.reserves
-            r.type == "spinning" || continue
+        for r in sc.data[:reserves]
             for g in r.thermal_units
                 for t in 1:T
                     reserve_value = round(

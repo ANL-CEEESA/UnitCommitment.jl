@@ -57,7 +57,7 @@ function _aelmp_check_parameters(
             )
         end
     end
-    all_units = sc.thermal_units
+    all_units = sc.data[:thermal]
     # CHECK: model cannot handle non-fast-starts (MISO Phase I: can ONLY solve fast-starts)
     if any(u -> u.min_uptime > 1 || u.min_downtime > 1, all_units)
         error(
@@ -85,12 +85,10 @@ function _modify_scenario!(
     if !method.allow_offline_participation
         # 1. remove (if NOT allowing) the offline generators
         units_to_remove = []
-        for unit in sc.thermal_units
+        for unit in sc.data[:thermal]
             # remove based on the solved UC model result
             # remove the unit if it is never on
             if all(t -> value(model[:is_on][unit.name, t]) == 0, sc.time)
-                # unregister from the bus
-                filter!(x -> x.name != unit.name, unit.bus.thermal_units)
                 # unregister from the reserve
                 for r in unit.reserves
                     filter!(x -> x.name != unit.name, r.thermal_units)
@@ -100,10 +98,10 @@ function _modify_scenario!(
             end
         end
         # unregister the units from the remove list
-        filter!(x -> !(x.name in units_to_remove), sc.thermal_units)
+        filter!(x -> !(x.name in units_to_remove), sc.data[:thermal])
     end
 
-    for unit in sc.thermal_units
+    for unit in sc.data[:thermal]
         # 2. set min generation requirement to 0 by adding 0 to production curve and cost
         # min_power & min_costs are vectors with dimension T
         if unit.min_power[1] != 0
@@ -111,9 +109,9 @@ function _modify_scenario!(
             pushfirst!(
                 unit.cost_segments,
                 CostSegment(
-                    ones(size(first_cost_segment.mw)) * unit.min_power[1],
-                    ones(size(first_cost_segment.cost)) *
-                    unit.min_power_cost[1] / unit.min_power[1],
+                    mw = ones(size(first_cost_segment.mw)) * unit.min_power[1],
+                    cost = ones(size(first_cost_segment.cost)) *
+                           unit.min_power_cost[1] / unit.min_power[1],
                 ),
             )
             unit.min_power = zeros(size(first_cost_segment.mw))
@@ -130,9 +128,11 @@ function _modify_scenario!(
             end
             first_startup_cost = 0.0 # zero out the start up cost
         end
-        unit.startup_categories =
-            StartupCategory[StartupCategory(0, first_startup_cost)]
+        unit.startup_categories = StartupCategory[StartupCategory(
+            delay = 0,
+            cost = first_startup_cost,
+        )]
     end
-    return sc.thermal_units_by_name =
-        Dict(g.name => g for g in sc.thermal_units)
+    return sc.data[:thermal_by_name] =
+        Dict(g.name => g for g in sc.data[:thermal])
 end

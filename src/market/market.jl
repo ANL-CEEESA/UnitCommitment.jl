@@ -39,8 +39,7 @@ using UnitCommitment, HiGHS
 import UnitCommitment:
     MarketSettings,
     XavQiuWanThi2019,
-    ConventionalLMP,
-    Formulation
+    ConventionalLMP
 
 solution = UnitCommitment.solve_market(
     "da_instance.json",
@@ -48,7 +47,6 @@ solution = UnitCommitment.solve_market(
     MarketSettings(
         inner_method = XavQiuWanThi2019.Method(),
         extensions = [ConventionalLMP()],  # optional
-        formulation = Formulation(),
     ),
     optimizer = HiGHS.Optimizer,
 )
@@ -110,7 +108,7 @@ function solve_market(
             # find the index of the first DA time slot that covers slot_t_start
             da_time_slot = findfirst(ti -> slot_t_start < ti, da_time_intervals)
             # update thermal unit commitment status
-            for g in sc.thermal_units
+            for g in sc.data[:thermal]
                 g.commitment_status[ts] = is_on_da[g.name][da_time_slot] ≈ 1.0
             end
         end
@@ -118,7 +116,7 @@ function solve_market(
         current_time += sc.time_step
         # set initial status for all generators in all scenarios
         if !isempty(solution_rt) && !isempty(prev_initial_status)
-            for g in sc.thermal_units
+            for g in sc.data[:thermal]
                 g.initial_power =
                     solution_rt["Thermal: Production (MW)"][g.name][1]
                 g.initial_status = UnitCommitment._determine_initial_status(
@@ -131,7 +129,7 @@ function solve_market(
         _, solution_rt =
             _build_and_optimize(instance_rt, settings, optimizer = optimizer)
         prev_initial_status =
-            OrderedDict(g.name => g.initial_status for g in sc.thermal_units)
+            OrderedDict(g.name => g.initial_status for g in sc.data[:thermal])
         push!(solution["RT"], solution_rt)
     end # end of for-loop that checks each RT market
     return solution
@@ -143,11 +141,8 @@ function _build_and_optimize(
     optimizer,
 )::Tuple{JuMP.Model,OrderedDict}
     # build model
-    model = UnitCommitment.build_model(
-        instance = instance,
-        optimizer = optimizer,
-        formulation = settings.formulation,
-    )
+    model =
+        UnitCommitment.build_model(instance = instance, optimizer = optimizer)
     # optimize model
     UnitCommitment.optimize!(model, settings.inner_method)
     solution = UnitCommitment.solution(model)

@@ -6,16 +6,11 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
     T = sc.time
     storage_units = StorageUnit[]
 
-    function scalar(x; default = nothing)
-        x !== nothing || return default
-        return x
-    end
-
     if "Storage units" in keys(json)
         for (storage_name, dict) in json["Storage units"]
             bus = sc.buses_by_name[dict["Bus"]]
             min_level = to_timeseries(
-                scalar(dict["Minimum level (MWh)"], default = 0.0),
+                to_scalar(dict["Minimum level (MWh)"], default = 0.0),
                 T,
             )
             max_level = to_timeseries(dict["Maximum level (MWh)"], T)
@@ -25,7 +20,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
                 min_level = min_level,
                 max_level = max_level,
                 simultaneous_charge_and_discharge = to_timeseries(
-                    scalar(
+                    to_scalar(
                         dict["Allow simultaneous charging and discharging"],
                         default = true,
                     ),
@@ -37,19 +32,19 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
                     T,
                 ),
                 charge_efficiency = to_timeseries(
-                    scalar(dict["Charge efficiency"], default = 1.0),
+                    to_scalar(dict["Charge efficiency"], default = 1.0),
                     T,
                 ),
                 discharge_efficiency = to_timeseries(
-                    scalar(dict["Discharge efficiency"], default = 1.0),
+                    to_scalar(dict["Discharge efficiency"], default = 1.0),
                     T,
                 ),
                 loss_factor = to_timeseries(
-                    scalar(dict["Loss factor"], default = 0.0),
+                    to_scalar(dict["Loss factor"], default = 0.0),
                     T,
                 ),
                 min_charge_rate = to_timeseries(
-                    scalar(dict["Minimum charge rate (MW)"], default = 0.0),
+                    to_scalar(dict["Minimum charge rate (MW)"], default = 0.0),
                     T,
                 ),
                 max_charge_rate = to_timeseries(
@@ -57,31 +52,33 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
                     T,
                 ),
                 min_discharge_rate = to_timeseries(
-                    scalar(dict["Minimum discharge rate (MW)"], default = 0.0),
+                    to_scalar(
+                        dict["Minimum discharge rate (MW)"],
+                        default = 0.0,
+                    ),
                     T,
                 ),
                 max_discharge_rate = to_timeseries(
                     dict["Maximum discharge rate (MW)"],
                     T,
                 ),
-                initial_level = scalar(
+                initial_level = to_scalar(
                     dict["Initial level (MWh)"],
                     default = 0.0,
                 ),
-                min_ending_level = scalar(
+                min_ending_level = to_scalar(
                     dict["Last period minimum level (MWh)"],
                     default = min_level[T],
                 ),
-                max_ending_level = scalar(
+                max_ending_level = to_scalar(
                     dict["Last period maximum level (MWh)"],
                     default = max_level[T],
                 ),
                 invest = to_timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
+                    to_scalar(dict["Investment cost (\$)"], default = 0.0),
                     T,
                 ),
             )
-            push!(bus.storage_units, storage)
             push!(storage_units, storage)
         end
     end

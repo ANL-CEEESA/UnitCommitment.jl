@@ -4,7 +4,7 @@
 
 using Printf
 
-function validate!(
+function validate(
     instance::UnitCommitmentInstance,
     solution::AbstractDict,
     ::StorageExt;

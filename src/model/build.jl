@@ -5,16 +5,9 @@
 using JuMP, MathOptInterface, DataStructures
 import JuMP: value, fix, set_name
 
-const BaseFormulation = Formulation(
-    pwl_costs = BasePwlCosts(),
-    ramping = MorLatRam2013.Ramping(),
-    slimits = MorLatRam2013.StartupShutdownLimits(),
-)
-
 function build_model(;
     instance::UnitCommitmentInstance,
     optimizer = nothing,
-    formulation = Formulation(),
     variable_names::Bool = false,
 )::JuMP.Model
     model = Model()
@@ -27,8 +20,6 @@ function build_model(;
     )
 
     model[:instance] = instance
-
-    _add_thermal_units!(model, instance, formulation)
 
     for ext in instance.extensions
         build_model(model, instance, ext)

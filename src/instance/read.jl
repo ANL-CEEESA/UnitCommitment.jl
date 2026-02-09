@@ -77,7 +77,11 @@ Read a deterministic test case from the given file. The file may be gzipped.
 instance = UnitCommitment.read("s1.json.gz")
 ```
 """
-function read(path::String; extensions::Vector = [])::UnitCommitmentInstance
+function read(
+    path::String;
+    extensions::Vector = [],
+    repair::Bool = true,
+)::UnitCommitmentInstance
     scenarios = Vector{UnitCommitmentScenario}()
     scenario = _read_scenario(path, extensions)
     scenario.name = "s1"
@@ -85,6 +89,9 @@ function read(path::String; extensions::Vector = [])::UnitCommitmentInstance
     scenarios = [scenario]
     instance =
         UnitCommitmentInstance(time = scenario.time; scenarios, extensions)
+    if repair
+        repair!(instance)
+    end
     return instance
 end
 
@@ -103,6 +110,7 @@ instance = UnitCommitment.read(["s1.json.gz", "s2.json.gz"])
 function read(
     paths::Vector{String};
     extensions::Vector = [],
+    repair::Bool = true,
 )::UnitCommitmentInstance
     scenarios = UnitCommitmentScenario[]
     for p in paths
@@ -111,6 +119,9 @@ function read(
     _repair_scenario_names_and_probabilities!(scenarios, paths)
     instance =
         UnitCommitmentInstance(time = scenarios[1].time; scenarios, extensions)
+    if repair
+        repair!(instance)
+    end
     return instance
 end
 
@@ -144,22 +155,11 @@ function _read_json(path::String)::OrderedDict
     end
 end
 
-function _from_json(
-    json,
-    extensions::Vector = [];
-    repair = true,
-)::UnitCommitmentScenario
+function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     _migrate(json)
-    thermal_units = ThermalUnit[]
     buses = Bus[]
     contingencies = Contingency[]
     lines = TransmissionLine[]
-    reserves = Reserve[]
-
-    function scalar(x; default = nothing)
-        x !== nothing || return default
-        return x
-    end
 
     time_horizon = json["Parameters"]["Time horizon (min)"]
     if time_horizon === nothing
@@ -175,13 +175,12 @@ function _from_json(
     isinteger(time_horizon) ||
         error("Time horizon must be an integer in minutes")
     time_horizon = Int(time_horizon)
-    time_step = scalar(json["Parameters"]["Time step (min)"], default = 60)
+    time_step = to_scalar(json["Parameters"]["Time step (min)"], default = 60)
     (60 % time_step == 0) ||
         error("Time step $time_step is not a divisor of 60")
     (time_horizon % time_step == 0) || error(
         "Time step $time_step is not a divisor of time horizon $time_horizon",
     )
-    time_multiplier = 60 ÷ time_step
     T = time_horizon ÷ time_step
 
     probability = json["Parameters"]["Scenario weight"]
@@ -193,8 +192,6 @@ function _from_json(
 
     name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
-    name_to_unit = Dict{String,ThermalUnit}()
-    name_to_reserve = Dict{String,Reserve}()
 
     # Read parameters
     power_balance_penalty = to_timeseries(
@@ -205,153 +202,9 @@ function _from_json(
 
     # Read buses
     for (bus_name, dict) in json["Buses"]
-        bus = Bus(
-            bus_name,
-            length(buses),
-            to_timeseries(dict["Load (MW)"], T),
-            ThermalUnit[],
-            StorageUnit[],
-        )
+        bus = Bus(bus_name, length(buses), to_timeseries(dict["Load (MW)"], T))
         name_to_bus[bus_name] = bus
         push!(buses, bus)
-    end
-
-    # Read reserves
-    if "Reserves" in keys(json)
-        for (reserve_name, dict) in json["Reserves"]
-            r = Reserve(
-                name = reserve_name,
-                type = lowercase(dict["Type"]),
-                amount = to_timeseries(dict["Amount (MW)"], T),
-                thermal_units = [],
-                shortfall_penalty = scalar(
-                    dict["Shortfall penalty (\$/MW)"],
-                    default = -1,
-                ),
-            )
-            name_to_reserve[reserve_name] = r
-            push!(reserves, r)
-        end
-    end
-
-    # Read units
-    for (unit_name, dict) in json["Generators"]
-        # Read and validate unit type
-        unit_type = scalar(dict["Type"], default = nothing)
-        unit_type !== nothing || error("unit $unit_name has no type specified")
-        bus = name_to_bus[dict["Bus"]]
-
-        if lowercase(unit_type) === "thermal"
-            # Read production cost curve
-            K = length(dict["Production cost curve (MW)"])
-            curve_mw = hcat(
-                [
-                    to_timeseries(dict["Production cost curve (MW)"][k], T)
-                    for k in 1:K
-                ]...,
-            )
-            curve_cost = hcat(
-                [
-                    to_timeseries(dict["Production cost curve (\$)"][k], T)
-                    for k in 1:K
-                ]...,
-            )
-            min_power = curve_mw[:, 1]
-            max_power = curve_mw[:, K]
-            min_power_cost = curve_cost[:, 1]
-            segments = CostSegment[]
-            for k in 2:K
-                amount = curve_mw[:, k] - curve_mw[:, k-1]
-                cost = (curve_cost[:, k] - curve_cost[:, k-1]) ./ amount
-                replace!(cost, NaN => 0.0)
-                push!(segments, CostSegment(amount, cost))
-            end
-
-            # Read startup costs
-            startup_delays = scalar(dict["Startup delays (h)"], default = [1])
-            startup_costs = scalar(dict["Startup costs (\$)"], default = [0.0])
-            startup_categories = StartupCategory[]
-            for k in 1:length(startup_delays)
-                push!(
-                    startup_categories,
-                    StartupCategory(
-                        startup_delays[k] .* time_multiplier,
-                        startup_costs[k],
-                    ),
-                )
-            end
-
-            # Read reserve eligibility
-            unit_reserves = Reserve[]
-            if "Reserve eligibility" in keys(dict)
-                unit_reserves =
-                    [name_to_reserve[n] for n in dict["Reserve eligibility"]]
-            end
-
-            # Read and validate initial conditions
-            initial_power =
-                scalar(dict["Initial power (MW)"], default = nothing)
-            initial_status =
-                scalar(dict["Initial status (h)"], default = nothing)
-            if initial_power === nothing
-                initial_status === nothing || error(
-                    "unit $unit_name has initial status but no initial power",
-                )
-            else
-                initial_status !== nothing || error(
-                    "unit $unit_name has initial power but no initial status",
-                )
-                initial_status != 0 ||
-                    error("unit $unit_name has invalid initial status")
-                if initial_status < 0 && initial_power > 1e-3
-                    error("unit $unit_name has invalid initial power")
-                end
-                initial_status *= time_multiplier
-            end
-
-            # Read commitment status 
-            commitment_status = scalar(
-                dict["Commitment status"],
-                default = Vector{Union{Bool,Nothing}}(nothing, T),
-            )
-
-            unit = ThermalUnit(
-                unit_name,
-                bus,
-                max_power,
-                min_power,
-                to_timeseries(
-                    dict["Must run?"],
-                    T,
-                    default = [false for t in 1:T],
-                ),
-                min_power_cost,
-                segments,
-                scalar(dict["Minimum uptime (h)"], default = 1) *
-                time_multiplier,
-                scalar(dict["Minimum downtime (h)"], default = 1) *
-                time_multiplier,
-                scalar(dict["Ramp up limit (MW)"], default = 1e6),
-                scalar(dict["Ramp down limit (MW)"], default = 1e6),
-                scalar(dict["Startup limit (MW)"], default = 1e6),
-                scalar(dict["Shutdown limit (MW)"], default = 1e6),
-                initial_status,
-                initial_power,
-                startup_categories,
-                unit_reserves,
-                commitment_status,
-                to_timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                    T,
-                ),
-            )
-            push!(bus.thermal_units, unit)
-            for r in unit_reserves
-                push!(r.thermal_units, unit)
-            end
-            name_to_unit[unit_name] = unit
-            push!(thermal_units, unit)
-        end
     end
 
     # Read transmission lines
@@ -362,7 +215,7 @@ function _from_json(
                 length(lines) + 1,
                 name_to_bus[dict["Source bus"]],
                 name_to_bus[dict["Target bus"]],
-                scalar(dict["Susceptance (S)"]),
+                to_scalar(dict["Susceptance (S)"]),
                 to_timeseries(
                     dict["Normal flow limit (MW)"],
                     T,
@@ -379,10 +232,10 @@ function _from_json(
                     default = [5000.0 for t in 1:T],
                 ),
                 to_timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
+                    to_scalar(dict["Investment cost (\$)"], default = 0.0),
                     T,
                 ),
-                scalar(dict["Max number of parallel circuits"], default = 1),
+                to_scalar(dict["Max number of parallel circuits"], default = 1),
             )
             name_to_line[line_name] = line
             push!(lines, line)
@@ -392,17 +245,15 @@ function _from_json(
     # Read contingencies
     if "Contingencies" in keys(json)
         for (cont_name, dict) in json["Contingencies"]
-            affected_units = ThermalUnit[]
             affected_lines = TransmissionLine[]
             if "Affected lines" in keys(dict)
                 affected_lines =
                     [name_to_line[l] for l in dict["Affected lines"]]
             end
             if "Affected units" in keys(dict)
-                affected_units =
-                    [name_to_unit[u] for u in dict["Affected units"]]
+                error("Unit contingencies are not currently supported")
             end
-            cont = Contingency(cont_name, affected_lines, affected_units)
+            cont = Contingency(cont_name, affected_lines)
             push!(contingencies, cont)
         end
     end
@@ -418,18 +269,11 @@ function _from_json(
         lines = lines,
         investment_cost_weight = investment_cost_weight,
         power_balance_penalty = power_balance_penalty,
-        reserves = reserves,
-        reserves_by_name = name_to_reserve,
         time = T,
         time_step = time_step,
-        thermal_units_by_name = Dict(g.name => g for g in thermal_units),
-        thermal_units = thermal_units,
         isf = spzeros(Float64, length(lines), length(buses) - 1),
         lodf = spzeros(Float64, length(lines), length(lines)),
     )
-    if repair
-        UnitCommitment.repair!(scenario)
-    end
 
     for ext in extensions
         read_json(json, scenario, ext)

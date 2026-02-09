@@ -115,6 +115,19 @@ function slice!(
 end
 
 """
+    repair!(sc, ext) -> Int
+
+Fix extension-specific validation errors in the scenario, issuing a warning
+for each error found. Returns the number of errors fixed.
+
+- `sc::UnitCommitmentScenario` — scenario being repaired.
+- `ext::UnitCommitmentExtension` — extension instance.
+"""
+function repair!(sc::UnitCommitmentScenario, ext::UnitCommitmentExtension)::Int
+    return 0
+end
+
+"""
     summarize(instance, ext, io)
 
 Print a short summary fragment for this extension to `io`. Used by
