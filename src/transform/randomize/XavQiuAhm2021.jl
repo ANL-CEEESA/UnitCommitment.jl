@@ -133,7 +133,7 @@ function _randomize_costs(
             s.cost *= α
         end
     end
-    for pu in sc.profiled_units
+    for pu in sc.data[:profiled]
         α = rand(rng, distribution)
         pu.cost *= α
     end

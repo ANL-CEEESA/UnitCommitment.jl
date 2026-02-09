@@ -311,35 +311,6 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 end
             end
         end
-        for pu in sc.profiled_units
-            production = solution[sc.name]["Profiled: Production (MW)"][pu.name]
-
-            for t in 1:instance.time
-                # Unit must produce at least its minimum power
-                if production[t] < pu.min_power[t] - tol
-                    @error @sprintf(
-                        "Profiled unit %s produces below its minimum limit at time %d (%.2f < %.2f)",
-                        pu.name,
-                        t,
-                        production[t],
-                        pu.min_power[t]
-                    )
-                    err_count += 1
-                end
-
-                # Unit must produce at most its maximum power
-                if production[t] > pu.max_power[t] + tol
-                    @error @sprintf(
-                        "Profiled unit %s produces above its maximum limit at time %d (%.2f > %.2f)",
-                        pu.name,
-                        t,
-                        production[t],
-                        pu.max_power[t]
-                    )
-                    err_count += 1
-                end
-            end
-        end
         for su in sc.storage_units
             storage_level = solution[sc.name]["Storage: Level (MWh)"][su.name]
             charge_rate =

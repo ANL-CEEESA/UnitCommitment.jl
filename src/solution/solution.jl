@@ -172,35 +172,6 @@ function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     return
 end
 
-function _store_profiled_solution!(
-    sol::OrderedDict,
-    model::JuMP.Model,
-    sc,
-    T::Int,
-)
-    sol["Profiled: Production (MW)"] =
-        _timeseries(model, :prod_profiled, sc.profiled_units, T, sc = sc)
-    sol["Profiled: Utilization (%)"] = OrderedDict(
-        pu.name => [
-            round(
-                100.0 * value(model[:prod_profiled][sc.name, pu.name, t]) /
-                pu.max_power[t],
-                digits = 2,
-            ) for t in 1:T
-        ] for pu in sc.profiled_units
-    )
-    sol["Profiled: Production cost (\$)"] = OrderedDict(
-        pu.name => [
-            value(model[:prod_profiled][sc.name, pu.name, t]) * pu.cost[t] for t in 1:T
-        ] for pu in sc.profiled_units
-    )
-    sol["Profiled: Investment status"] = OrderedDict(
-        pu.name => [value(model[:invest_unit][pu.name, t]) for t in 1:T] for
-        pu in sc.profiled_units if pu.invest[1] > 0.0
-    )
-    return
-end
-
 function _store_storage_solution!(
     sol::OrderedDict,
     model::JuMP.Model,
@@ -291,7 +262,6 @@ function _store_solution!(model::JuMP.Model)::Nothing
         _store_bus_solution!(sol[sc.name], model, sc, T)
         _store_thermal_solution!(sol[sc.name], model, sc, T)
         _store_line_solution!(sol[sc.name], model, sc, T)
-        _store_profiled_solution!(sol[sc.name], model, sc, T)
         _store_storage_solution!(sol[sc.name], model, sc, T)
         _store_reserve_solution!(sol[sc.name], model, sc, T)
     end

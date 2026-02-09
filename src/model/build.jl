@@ -29,7 +29,6 @@ function build_model(;
     model[:instance] = instance
 
     _add_thermal_units!(model, instance, formulation)
-    _add_profiled_units!(model, instance)
     _add_storage_units!(model, instance)
 
     for ext in instance.extensions

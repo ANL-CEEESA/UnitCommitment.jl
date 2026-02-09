@@ -79,35 +79,43 @@ function store_solution(
                 -sum(sol[sc.name]["Thermal: Net revenue (\$)"][g.name]),
             ) for g in sc.thermal_units
         )
-        sol[sc.name]["Profiled: Gross revenue (\$)"] = OrderedDict(
-            pu.name => [
-                sol[sc.name]["Profiled: Production (MW)"][pu.name][t] *
-                lmp_total[pu.bus.name][t] for t in 1:T
-            ] for pu in sc.profiled_units
-        )
-        sol[sc.name]["Profiled: Net revenue (\$)"] = OrderedDict(
-            pu.name => [
-                sol[sc.name]["Profiled: Gross revenue (\$)"][pu.name][t] -
-                sol[sc.name]["Profiled: Production cost (\$)"][pu.name][t]
-                for t in 1:T
-            ] for pu in sc.profiled_units
-        )
-        sol[sc.name]["Profiled: Uplift payment (\$)"] = OrderedDict(
-            pu.name => max(
-                0.0,
-                -sum(sol[sc.name]["Profiled: Net revenue (\$)"][pu.name]),
-            ) for pu in sc.profiled_units
-        )
+
+        if "Profiled: Production (MW)" in keys(sol[sc.name])
+            profiled_units = sc.data[:profiled]
+            sol[sc.name]["Profiled: Gross revenue (\$)"] = OrderedDict(
+                pu.name => [
+                    sol[sc.name]["Profiled: Production (MW)"][pu.name][t] *
+                    lmp_total[pu.bus.name][t] for t in 1:T
+                ] for pu in profiled_units
+            )
+            sol[sc.name]["Profiled: Net revenue (\$)"] = OrderedDict(
+                pu.name => [
+                    sol[sc.name]["Profiled: Gross revenue (\$)"][pu.name][t] -
+                    sol[sc.name]["Profiled: Production cost (\$)"][pu.name][t]
+                    for t in 1:T
+                ] for pu in profiled_units
+            )
+            sol[sc.name]["Profiled: Uplift payment (\$)"] = OrderedDict(
+                pu.name => max(
+                    0.0,
+                    -sum(sol[sc.name]["Profiled: Net revenue (\$)"][pu.name]),
+                ) for pu in profiled_units
+            )
+        end
         sol[sc.name]["Bus: Fixed load expense (\$)"] = OrderedDict(
             b.name => [b.load[t] * lmp_total[b.name][t] for t in 1:T] for
             b in sc.buses
         )
-        sol[sc.name]["Price-sensitive load: Expense (\$)"] = OrderedDict(
-            ps.name => [
-                sol[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t] *
-                lmp_total[ps.bus.name][t] for t in 1:T
-            ] for ps in sc.price_sensitive_loads
-        )
+
+        if "Price-sensitive load: Demand served (MW)" in keys(sol[sc.name])
+            ps_loads = sc.data[:psload]
+            sol[sc.name]["Price-sensitive load: Expense (\$)"] = OrderedDict(
+                ps.name => [
+                    sol[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t] *
+                    lmp_total[ps.bus.name][t] for t in 1:T
+                ] for ps in ps_loads
+            )
+        end
     end
     return
 end

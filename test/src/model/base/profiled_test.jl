@@ -6,7 +6,10 @@ using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_base_profiled_test begin
     model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
+        instance = UnitCommitment.read(
+            fixture("base.json"),
+            extensions = [UnitCommitment.ProfiledUnitsExt()],
+        ),
         formulation = UnitCommitment.BaseFormulation,
         optimizer = HiGHS.Optimizer,
         variable_names = true,

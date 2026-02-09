@@ -7,7 +7,6 @@ mutable struct Bus
     offset::Int
     load::Vector{Float64}
     thermal_units::Vector
-    profiled_units::Vector
     storage_units::Vector
 end
 
@@ -113,8 +112,6 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     investment_cost_weight::Float64
     power_balance_penalty::Vector{Float64}
     probability::Float64
-    profiled_units_by_name::Dict{AbstractString,ProfiledUnit}
-    profiled_units::Vector{ProfiledUnit}
     reserves_by_name::Dict{AbstractString,Reserve}
     reserves::Vector{Reserve}
     thermal_units_by_name::Dict{AbstractString,ThermalUnit}
@@ -137,7 +134,6 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.scenarios)) scenarios, ")
     print(io, "$(length(sc.thermal_units)) thermal units, ")
-    print(io, "$(length(sc.profiled_units)) profiled units, ")
     print(io, "$(length(sc.buses)) buses, ")
     print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")

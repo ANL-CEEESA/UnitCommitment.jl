@@ -155,7 +155,6 @@ function _from_json(
     contingencies = Contingency[]
     lines = TransmissionLine[]
     reserves = Reserve[]
-    profiled_units = ProfiledUnit[]
     storage_units = StorageUnit[]
 
     function scalar(x; default = nothing)
@@ -212,7 +211,6 @@ function _from_json(
             length(buses),
             to_timeseries(dict["Load (MW)"], T),
             ThermalUnit[],
-            ProfiledUnit[],
             StorageUnit[],
         )
         name_to_bus[bus_name] = bus
@@ -354,26 +352,6 @@ function _from_json(
             end
             name_to_unit[unit_name] = unit
             push!(thermal_units, unit)
-        elseif lowercase(unit_type) === "profiled"
-            bus = name_to_bus[dict["Bus"]]
-            pu = ProfiledUnit(
-                unit_name,
-                bus,
-                to_timeseries(
-                    scalar(dict["Minimum power (MW)"], default = 0.0),
-                    T,
-                ),
-                to_timeseries(dict["Maximum power (MW)"], T),
-                to_timeseries(dict["Cost (\$/MW)"], T),
-                to_timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                    T,
-                ),
-            )
-            push!(bus.profiled_units, pu)
-            push!(profiled_units, pu)
-        else
-            error("unit $unit_name has an invalid type")
         end
     end
 
@@ -508,8 +486,6 @@ function _from_json(
         time_step = time_step,
         thermal_units_by_name = Dict(g.name => g for g in thermal_units),
         thermal_units = thermal_units,
-        profiled_units_by_name = Dict(pu.name => pu for pu in profiled_units),
-        profiled_units = profiled_units,
         storage_units_by_name = Dict(su.name => su for su in storage_units),
         storage_units = storage_units,
         isf = spzeros(Float64, length(lines), length(buses) - 1),
