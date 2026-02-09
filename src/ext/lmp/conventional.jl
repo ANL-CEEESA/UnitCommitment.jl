@@ -33,7 +33,7 @@ function _after_optimize!(model::JuMP.Model, ::ConventionalLMP)::Nothing
     end
 end
 
-function _solution!(
+function store_solution(
     sol::AbstractDict,
     model::JuMP.Model,
     ::ConventionalLMP,

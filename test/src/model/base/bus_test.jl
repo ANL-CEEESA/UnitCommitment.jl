@@ -8,7 +8,7 @@ using HiGHS, JuMP, UnitCommitment
     model = UnitCommitment.build_model(
         instance = UnitCommitment.read(
             fixture("base.json"),
-            extensions = [UnitCommitment.PriceSensitiveLoads()],
+            extensions = [UnitCommitment.PriceSensitiveLoadsExt()],
         ),
         formulation = UnitCommitment.BaseFormulation,
         optimizer = HiGHS.Optimizer,

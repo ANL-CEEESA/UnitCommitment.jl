@@ -295,9 +295,9 @@ function _store_solution!(model::JuMP.Model)::Nothing
         _store_storage_solution!(sol[sc.name], model, sc, T)
         _store_reserve_solution!(sol[sc.name], model, sc, T)
     end
-    
+
     for ext in instance.extensions
-        _solution!(sol, model, ext)
+        store_solution(sol, model, ext)
     end
 
     model.ext[:ucjl][:solution] = sol

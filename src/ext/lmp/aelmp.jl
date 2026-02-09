@@ -35,8 +35,8 @@ function _after_optimize!(model::JuMP.Model, method::AELMP)::Nothing
     end
 end
 
-function _solution!(sol::AbstractDict, model::JuMP.Model, ::AELMP)::Nothing
-    return _solution!(sol, model, ConventionalLMP())
+function store_solution(sol::AbstractDict, model::JuMP.Model, ::AELMP)::Nothing
+    return store_solution(sol, model, ConventionalLMP())
 end
 
 function _aelmp_check_parameters(

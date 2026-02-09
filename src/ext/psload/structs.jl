@@ -9,4 +9,4 @@ mutable struct PriceSensitiveLoad
     revenue::Vector{Float64}
 end
 
-struct PriceSensitiveLoads <: UnitCommitmentExtension end
+struct PriceSensitiveLoadsExt <: UnitCommitmentExtension end

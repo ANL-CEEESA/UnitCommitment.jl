@@ -53,7 +53,7 @@ function slice(
             l.flow_limit_penalty = l.flow_limit_penalty[range]
         end
         for ext in modified.extensions
-            _slice!(sc, range, ext)
+            slice!(sc, range, ext)
         end
         for su in sc.storage_units
             su.min_level = su.min_level[range]

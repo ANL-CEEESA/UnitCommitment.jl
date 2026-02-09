@@ -5,10 +5,10 @@
 using JuMP
 using Printf
 
-function _read!(
+function read_json(
     json::AbstractDict,
     sc::UnitCommitmentScenario,
-    ::PriceSensitiveLoads,
+    ::PriceSensitiveLoadsExt,
 )
     T = sc.time
     loads = PriceSensitiveLoad[]
@@ -31,10 +31,10 @@ function _read!(
     return
 end
 
-function _build!(
+function build_model(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
-    ::PriceSensitiveLoads,
+    ::PriceSensitiveLoadsExt,
 )::Nothing
     T = instance.time
     loads = _init(model, :loads)
@@ -66,10 +66,10 @@ function _build!(
     return
 end
 
-function _solution!(
+function store_solution(
     sol::AbstractDict,
     model::JuMP.Model,
-    ::PriceSensitiveLoads,
+    ::PriceSensitiveLoadsExt,
 )::Nothing
     instance = model[:instance]
     T = instance.time
@@ -81,16 +81,17 @@ function _solution!(
     return
 end
 
-function _validate!(
+function validate!(
     instance::UnitCommitmentInstance,
     solution::AbstractDict,
-    ::PriceSensitiveLoads;
+    ::PriceSensitiveLoadsExt;
     tol = 0.01,
 )::Int
     err_count = 0
     for t in 1:instance.time, sc in instance.scenarios
         for ps in sc.data[:psload]
-            demand_served = solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
+            demand_served =
+                solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
 
             # Demand served must be non-negative
             if demand_served < -tol
@@ -120,24 +121,22 @@ function _validate!(
     return err_count
 end
 
-function _summarize(
+function summarize(
     instance::UnitCommitmentInstance,
-    ::PriceSensitiveLoads,
+    ::PriceSensitiveLoadsExt,
     io::IO,
 )::Nothing
-    sc = instance.scenarios[1]
-    count = length(sc.data[:psload])
+    count = length(instance.scenarios[1].data[:psload])
     print(io, "$count price sensitive loads, ")
     return
 end
 
-function _slice!(
+function slice!(
     sc::UnitCommitmentScenario,
     range::UnitRange{Int},
-    ::PriceSensitiveLoads,
+    ::PriceSensitiveLoadsExt,
 )::Nothing
-    ps_loads = sc.data[:psload]
-    for ps in ps_loads
+    for ps in sc.data[:psload]
         ps.demand = ps.demand[range]
         ps.revenue = ps.revenue[range]
     end

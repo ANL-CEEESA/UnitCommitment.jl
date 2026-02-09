@@ -33,7 +33,7 @@ function build_model(;
     _add_storage_units!(model, instance)
 
     for ext in instance.extensions
-        _build!(model, instance, ext)
+        build_model(model, instance, ext)
     end
 
     _add_buses!(model, instance)

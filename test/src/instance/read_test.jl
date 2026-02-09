@@ -8,7 +8,7 @@ function instance_read_test()
     @testset "read_benchmark" begin
         instance = UnitCommitment.read(
             fixture("case14.json.gz"),
-            extensions = [UnitCommitment.PriceSensitiveLoads()],
+            extensions = [UnitCommitment.PriceSensitiveLoadsExt()],
         )
 
         @test repr(instance) == (

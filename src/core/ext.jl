@@ -9,7 +9,7 @@ using JuMP
 # concrete `UnitCommitmentExtension` subtype.
 
 """
-    _read!(json, sc, ext)
+    read_json(json, sc, ext)
 
 Parse extension-specific data from the JSON dictionary and store it in the
 scenario (`sc.data`). Called once per scenario during instance reading.
@@ -18,7 +18,7 @@ scenario (`sc.data`). Called once per scenario during instance reading.
 - `sc::UnitCommitmentScenario` — scenario being populated.
 - `ext::UnitCommitmentExtension` — extension instance.
 """
-function _read!(
+function read_json(
     json::AbstractDict,
     sc::UnitCommitmentScenario,
     ext::UnitCommitmentExtension,
@@ -27,7 +27,7 @@ function _read!(
 end
 
 """
-    _build!(model, instance, ext)
+    build_model(model, instance, ext)
 
 Add extension-specific variables, constraints, and objective terms to the
 optimization model. Extensions that contribute to bus net injection should
@@ -37,24 +37,9 @@ add their terms to `model[:net_injection]` here.
 - `instance::UnitCommitmentInstance` — problem instance.
 - `ext::UnitCommitmentExtension` — extension instance.
 """
-function _build!(
+function build_model(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
-    ext::UnitCommitmentExtension,
-)::Nothing
-    # nop
-end
-
-"""
-    _before_optimize!(model, ext)
-
-Perform any last-minute model modifications right before the solver is invoked.
-
-- `model::JuMP.Model` — optimization model about to be solved.
-- `ext::UnitCommitmentExtension` — extension instance.
-"""
-function _before_optimize!(
-    model::JuMP.Model,
     ext::UnitCommitmentExtension,
 )::Nothing
     # nop
@@ -75,7 +60,7 @@ function _after_optimize!(
 )::Nothing end
 
 """
-    _solution!(sol, model, ext)
+    store_solution(sol, model, ext)
 
 Extract extension-specific results from the solved model and write them into
 the solution dictionary.
@@ -84,7 +69,7 @@ the solution dictionary.
 - `model::JuMP.Model` — solved optimization model.
 - `ext::UnitCommitmentExtension` — extension instance.
 """
-function _solution!(
+function store_solution(
     sol::AbstractDict,
     model::JuMP.Model,
     ext::UnitCommitmentExtension,
@@ -93,7 +78,7 @@ function _solution!(
 end
 
 """
-    _validate!(instance, solution, ext; tol=0.01) -> Int
+    validate(instance, solution, ext; tol=0.01) -> Int
 
 Check that the solution satisfies extension-specific feasibility requirements.
 Returns the number of validation errors found.
@@ -103,17 +88,16 @@ Returns the number of validation errors found.
 - `ext::UnitCommitmentExtension` — extension instance.
 - `tol` — numerical tolerance for feasibility checks (default `0.01`).
 """
-function _validate!(
+function validate(
     instance::UnitCommitmentInstance,
     solution::AbstractDict,
-    ext::UnitCommitmentExtension;
-    tol = 0.01,
+    ext::UnitCommitmentExtension,
 )::Int
     return 0
 end
 
 """
-    _slice!(sc, range, ext)
+    slice!(sc, range, ext)
 
 Truncate extension-specific time-series data in the scenario to the given
 time range. Called when creating a sub-horizon instance.
@@ -122,7 +106,7 @@ time range. Called when creating a sub-horizon instance.
 - `range::UnitRange{Int}` — time-step range to keep.
 - `ext::UnitCommitmentExtension` — extension instance.
 """
-function _slice!(
+function slice!(
     sc::UnitCommitmentScenario,
     range::UnitRange{Int},
     ext::UnitCommitmentExtension,
@@ -131,7 +115,7 @@ function _slice!(
 end
 
 """
-    _summarize(instance, ext, io)
+    summarize(instance, ext, io)
 
 Print a short summary fragment for this extension to `io`. Used by
 `Base.show` for `UnitCommitmentInstance` to include extension-specific
@@ -141,7 +125,7 @@ information in the instance summary.
 - `ext::UnitCommitmentExtension` — extension instance.
 - `io::IO` — output stream.
 """
-function _summarize(
+function summarize(
     instance::UnitCommitmentInstance,
     ext::UnitCommitmentExtension,
     io::IO,

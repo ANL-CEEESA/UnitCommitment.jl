@@ -8,7 +8,7 @@ function solve_conventional_testcase(path::String)
     instance = UnitCommitment.read(
         path,
         extensions = [
-            UnitCommitment.PriceSensitiveLoads(),
+            UnitCommitment.PriceSensitiveLoadsExt(),
             UnitCommitment.ConventionalLMP(),
         ],
     )

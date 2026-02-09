@@ -142,7 +142,7 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")
     for ext in instance.extensions
-        _summarize(instance, ext, io)
+        summarize(instance, ext, io)
     end
     print(io, "$(instance.time) time steps")
     print(io, ")")

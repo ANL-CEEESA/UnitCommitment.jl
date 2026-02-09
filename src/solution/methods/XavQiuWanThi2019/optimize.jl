@@ -4,9 +4,6 @@
 
 function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
     instance = model[:instance]
-    for ext in instance.extensions
-        _before_optimize!(model, ext)
-    end
     if !occursin("Gurobi", JuMP.solver_name(model))
         method.two_phase_gap = false
     end

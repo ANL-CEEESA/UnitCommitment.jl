@@ -36,7 +36,7 @@ function validate(
     err_count += _validate_reserves(instance, solution)
 
     for ext in instance.extensions
-        err_count += _validate!(instance, solution, ext)
+        err_count += validate!(instance, solution, ext)
     end
 
     if err_count > 0
