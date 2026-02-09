@@ -26,7 +26,7 @@ function _setup_transmission(
     sc::UnitCommitmentScenario,
 )::Nothing
     # if any lines have positive "investment_cost", then this is a planning model
-    if any(l -> any(x -> x > 0, l.invest), sc.lines)
+    if any(l -> any(x -> x > 0, l.invest), sc.data[:lines])
         error(
             "ShiftFactorsFormulation does not support positive investment costs. Use PhaseAngleFormulation instead.",
         )
@@ -41,7 +41,7 @@ function _setup_transmission(
         time_isf = @elapsed begin
             isf = UnitCommitment._injection_shift_factors(
                 buses = sc.data[:bus],
-                lines = sc.lines,
+                lines = sc.data[:lines],
             )
         end
         @info @sprintf("Computed ISF in %.2f seconds", time_isf)
@@ -49,7 +49,7 @@ function _setup_transmission(
         time_lodf = @elapsed begin
             lodf = UnitCommitment._line_outage_factors(
                 buses = sc.data[:bus],
-                lines = sc.lines,
+                lines = sc.data[:lines],
                 isf = isf,
             )
         end

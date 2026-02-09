@@ -201,8 +201,8 @@
     "l1": {
       "Source bus": "b1",
       "Target bus": "b2",
-      "Reactance (ohms)": 0.05917000000000001,
-      "Susceptance (S)": 29.496860773945063,
+      "Reactance (ohms)": 0.059,
+      "Susceptance (S)": 29.497,
       "Normal flow limit (MW)": 300.0,
       "Emergency flow limit (MW)": 400.0,
       "Flow limit penalty ($/MW)": 1000.0
@@ -210,116 +210,134 @@
     "l2": {
       "Source bus": "b1",
       "Target bus": "b5",
-      "Reactance (ohms)": 0.22304000000000002,
-      "Susceptance (S)": 7.825184953346168
+      "Reactance (ohms)": 0.223,
+      "Susceptance (S)": 7.825
     },
     "l3": {
       "Source bus": "b2",
       "Target bus": "b3",
-      "Reactance (ohms)": 0.19797,
-      "Susceptance (S)": 8.816129979261149
+      "Reactance (ohms)": 0.198,
+      "Susceptance (S)": 8.816
     },
     "l4": {
       "Source bus": "b2",
       "Target bus": "b4",
-      "Reactance (ohms)": 0.17632,
-      "Susceptance (S)": 9.898645939169292
+      "Reactance (ohms)": 0.176,
+      "Susceptance (S)": 9.899
     },
     "l5": {
       "Source bus": "b2",
       "Target bus": "b5",
-      "Reactance (ohms)": 0.17388,
-      "Susceptance (S)": 10.037550333530765
+      "Reactance (ohms)": 0.174,
+      "Susceptance (S)": 10.038
     },
     "l6": {
       "Source bus": "b3",
       "Target bus": "b4",
-      "Reactance (ohms)": 0.17103,
-      "Susceptance (S)": 10.204813494675376
+      "Reactance (ohms)": 0.171,
+      "Susceptance (S)": 10.205
     },
     "l7": {
       "Source bus": "b4",
       "Target bus": "b5",
-      "Reactance (ohms)": 0.04211,
-      "Susceptance (S)": 41.44690695783257
+      "Reactance (ohms)": 0.042,
+      "Susceptance (S)": 41.447
     },
     "l8": {
       "Source bus": "b4",
       "Target bus": "b7",
-      "Reactance (ohms)": 0.20911999999999997,
-      "Susceptance (S)": 8.346065665619404
+      "Reactance (ohms)": 0.209,
+      "Susceptance (S)": 8.346
     },
     "l9": {
       "Source bus": "b4",
       "Target bus": "b9",
-      "Reactance (ohms)": 0.55618,
-      "Susceptance (S)": 3.1380654680037567
+      "Reactance (ohms)": 0.556,
+      "Susceptance (S)": 3.138
     },
     "l10": {
       "Source bus": "b5",
       "Target bus": "b6",
-      "Reactance (ohms)": 0.25201999999999997,
-      "Susceptance (S)": 6.92536009838239
+      "Reactance (ohms)": 0.252,
+      "Susceptance (S)": 6.925
     },
     "l11": {
       "Source bus": "b6",
       "Target bus": "b11",
-      "Reactance (ohms)": 0.1989,
-      "Susceptance (S)": 8.774908255376218
+      "Reactance (ohms)": 0.199,
+      "Susceptance (S)": 8.775
     },
     "l12": {
       "Source bus": "b6",
       "Target bus": "b12",
-      "Reactance (ohms)": 0.25581,
-      "Susceptance (S)": 6.8227561549365925
+      "Reactance (ohms)": 0.256,
+      "Susceptance (S)": 6.823
     },
     "l13": {
       "Source bus": "b6",
       "Target bus": "b13",
-      "Reactance (ohms)": 0.13027,
-      "Susceptance (S)": 13.397783465067395
+      "Reactance (ohms)": 0.130,
+      "Susceptance (S)": 13.398
     },
     "l14": {
       "Source bus": "b7",
       "Target bus": "b8",
-      "Reactance (ohms)": 0.17615,
-      "Susceptance (S)": 9.908198989465395
+      "Reactance (ohms)": 0.176,
+      "Susceptance (S)": 9.908
     },
     "l15": {
       "Source bus": "b7",
       "Target bus": "b9",
-      "Reactance (ohms)": 0.11001,
-      "Susceptance (S)": 15.865187273832648
+      "Reactance (ohms)": 0.110,
+      "Susceptance (S)": 15.865
     },
     "l16": {
       "Source bus": "b9",
       "Target bus": "b10",
-      "Reactance (ohms)": 0.0845,
-      "Susceptance (S)": 20.65478404727017
+      "Reactance (ohms)": 0.085,
+      "Susceptance (S)": 20.655
     },
     "l17": {
       "Source bus": "b9",
       "Target bus": "b14",
-      "Reactance (ohms)": 0.27038,
-      "Susceptance (S)": 6.4550974628091184
+      "Reactance (ohms)": 0.270,
+      "Susceptance (S)": 6.455
     },
     "l18": {
       "Source bus": "b10",
       "Target bus": "b11",
-      "Reactance (ohms)": 0.19207,
-      "Susceptance (S)": 9.08694357262628
+      "Reactance (ohms)": 0.192,
+      "Susceptance (S)": 9.087
     },
     "l19": {
       "Source bus": "b12",
       "Target bus": "b13",
-      "Reactance (ohms)": 0.19988,
-      "Susceptance (S)": 8.73188539120637
+      "Reactance (ohms)": 0.200,
+      "Susceptance (S)": 8.732
     },
     "l20": {
       "Source bus": "b13",
       "Target bus": "b14",
-      "Reactance (ohms)": 0.34802,
-      "Susceptance (S)": 5.0150257226433235
+      "Reactance (ohms)": 0.348,
+      "Susceptance (S)": 5.015
+    },
+    "l21": {
+      "Source bus": "b1",
+      "Target bus": "b3",
+      "Susceptance (S)": 10.0,
+      "Normal flow limit (MW)": 100.0,
+      "Flow limit penalty ($/MW)": 5000.0,
+      "Investment cost ($)": [1000, 2000, 3000, 4000],
+      "Max number of parallel circuits": 3
+    },
+    "l22": {
+      "Source bus": "b2",
+      "Target bus": "b6",
+      "Susceptance (S)": 15.0,
+      "Normal flow limit (MW)": 150.0,
+      "Flow limit penalty ($/MW)": 6000.0,
+      "Investment cost ($)": 5000,
+      "Max number of parallel circuits": 1
     }
   },
   "Contingencies": {

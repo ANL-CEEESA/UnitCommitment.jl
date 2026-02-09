@@ -410,8 +410,7 @@ function _total_reserves(model, instance, g, sc)::Vector
     if !isempty(g.reserves)
         reserve += [
             sum(
-                model[:reserve][sc.name, r.name, g.name, t] for
-                r in g.reserves
+                model[:reserve][sc.name, r.name, g.name, t] for r in g.reserves
             ) for t in 1:T
         ]
     end

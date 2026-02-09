@@ -5,30 +5,15 @@
 abstract type UnitCommitmentExtension end
 abstract type SolutionMethod end
 
-mutable struct TransmissionLine
+Base.@kwdef mutable struct Contingency
     name::String
-    offset::Int
-    source::Bus
-    target::Bus
-    susceptance::Float64
-    normal_flow_limit::Vector{Float64}
-    emergency_flow_limit::Vector{Float64}
-    flow_limit_penalty::Vector{Float64}
-    invest::Vector{Float64}
-    max_copy::Int
-end
-
-mutable struct Contingency
-    name::String
-    lines::Vector{TransmissionLine}
+    lines::Vector
 end
 
 Base.@kwdef mutable struct UnitCommitmentScenario
     contingencies_by_name::Dict{AbstractString,Contingency}
     contingencies::Vector{Contingency}
     isf::Array{Float64,2}
-    lines_by_name::Dict{AbstractString,TransmissionLine}
-    lines::Vector{TransmissionLine}
     lodf::Array{Float64,2}
     name::String
     investment_cost_weight::Float64
@@ -50,7 +35,6 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.scenarios)) scenarios, ")
     summarize_buses(instance, io)
-    print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")
     for ext in instance.extensions
         summarize(instance, ext, io)

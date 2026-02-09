@@ -15,8 +15,9 @@ function build_model(;
 
     model[:obj] = AffExpr()
     model[:net_injection] = OrderedDict(
-        (sc.name, b.name, t) => AffExpr() for sc in instance.scenarios for
-        b in sc.data[:bus] for t in 1:instance.time
+        (sc.name, b.name, t) => AffExpr(-b.load[t]) for
+        sc in instance.scenarios for b in sc.data[:bus] for
+        t in 1:instance.time
     )
 
     model[:instance] = instance

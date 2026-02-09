@@ -27,6 +27,27 @@ macro test_binary_var(x)
     end
 end
 
+macro test_integer_var(x, lb = nothing, ub = nothing)
+    return quote
+        let var = $(esc(x)), lb = $(esc(lb)), ub = $(esc(ub))
+            @test var isa VariableRef
+            @test is_integer(var)
+            if lb === nothing
+                @test !has_lower_bound(var)
+            else
+                @test has_lower_bound(var)
+                @test JuMP.lower_bound(var) ≈ lb
+            end
+            if ub === nothing
+                @test !has_upper_bound(var)
+            else
+                @test has_upper_bound(var)
+                @test JuMP.upper_bound(var) ≈ ub
+            end
+        end
+    end
+end
+
 macro test_continuous_var(x, lb = nothing, ub = nothing)
     return quote
         let var = $(esc(x)), lb = $(esc(lb)), ub = $(esc(ub))
@@ -112,6 +133,7 @@ include("model/base/thermal_test.jl")
 include("model/base/profiled_test.jl")
 include("model/base/psload_test.jl")
 include("model/base/storage_test.jl")
+include("model/transmission/phaseangle_test.jl")
 include("model/model_MorLatRam2013_test.jl")
 include("model/model_KnuOstWat2018_test.jl")
 

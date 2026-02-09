@@ -158,7 +158,6 @@ end
 function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     _migrate(json)
     contingencies = Contingency[]
-    lines = TransmissionLine[]
 
     time_horizon = json["Parameters"]["Time horizon (min)"]
     if time_horizon === nothing
@@ -189,8 +188,6 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     investment_cost_weight = json["Parameters"]["Investment cost weight"]
     investment_cost_weight !== nothing || (investment_cost_weight = 1.0)
 
-    name_to_line = Dict{String,TransmissionLine}()
-
     # Read parameters
     power_balance_penalty = to_timeseries(
         json["Parameters"]["Power balance penalty (\$/MW)"],
@@ -204,8 +201,6 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
         probability = probability,
         contingencies_by_name = Dict{AbstractString,Contingency}(),
         contingencies = Contingency[],
-        lines_by_name = Dict{AbstractString,TransmissionLine}(),
-        lines = TransmissionLine[],
         investment_cost_weight = investment_cost_weight,
         power_balance_penalty = power_balance_penalty,
         time = T,
@@ -217,68 +212,40 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     # Read buses
     _read_buses!(json, scenario)
 
-    # Read transmission lines
-    if "Transmission lines" in keys(json)
-        for (line_name, dict) in json["Transmission lines"]
-            line = TransmissionLine(
-                line_name,
-                length(lines) + 1,
-                scenario.data[:bus_by_name][dict["Source bus"]],
-                scenario.data[:bus_by_name][dict["Target bus"]],
-                to_scalar(dict["Susceptance (S)"]),
-                to_timeseries(
-                    dict["Normal flow limit (MW)"],
-                    T,
-                    default = [1e8 for t in 1:T],
-                ),
-                to_timeseries(
-                    dict["Emergency flow limit (MW)"],
-                    T,
-                    default = [1e8 for t in 1:T],
-                ),
-                to_timeseries(
-                    dict["Flow limit penalty (\$/MW)"],
-                    T,
-                    default = [5000.0 for t in 1:T],
-                ),
-                to_timeseries(
-                    to_scalar(dict["Investment cost (\$)"], default = 0.0),
-                    T,
-                ),
-                to_scalar(dict["Max number of parallel circuits"], default = 1),
-            )
-            name_to_line[line_name] = line
-            push!(lines, line)
-        end
-    end
-
-    # Read contingencies
-    if "Contingencies" in keys(json)
-        for (cont_name, dict) in json["Contingencies"]
-            affected_lines = TransmissionLine[]
-            if "Affected lines" in keys(dict)
-                affected_lines =
-                    [name_to_line[l] for l in dict["Affected lines"]]
-            end
-            if "Affected units" in keys(dict)
-                error("Unit contingencies are not currently supported")
-            end
-            cont = Contingency(cont_name, affected_lines)
-            push!(contingencies, cont)
-        end
-    end
-
-    # Update scenario with contingencies and lines
-    scenario.contingencies_by_name = Dict(c.name => c for c in contingencies)
-    scenario.contingencies = contingencies
-    scenario.lines_by_name = Dict(l.name => l for l in lines)
-    scenario.lines = lines
-    scenario.isf = spzeros(Float64, length(lines), length(scenario.data[:bus]) - 1)
-    scenario.lodf = spzeros(Float64, length(lines), length(lines))
-
+    # Read extension data
     for ext in extensions
         read_json(json, scenario, ext)
     end
+
+    # Read contingencies
+    if haskey(scenario.data, :lines)
+        if "Contingencies" in keys(json)
+            for (cont_name, dict) in json["Contingencies"]
+                affected_lines = TransmissionLine[]
+                if "Affected lines" in keys(dict)
+                    affected_lines = [
+                        scenario.data[:line_by_name][l] for
+                        l in dict["Affected lines"]
+                    ]
+                end
+                if "Affected units" in keys(dict)
+                    error("Unit contingencies are not currently supported")
+                end
+                cont = Contingency(cont_name, affected_lines)
+                push!(contingencies, cont)
+            end
+        end
+    end
+
+    # Update scenario with contingencies
+    scenario.contingencies_by_name = Dict(c.name => c for c in contingencies)
+    scenario.contingencies = contingencies
+
+    # Initialize ISF and LODF matrices
+    lines = get(scenario.data, :lines, TransmissionLine[])
+    scenario.isf =
+        spzeros(Float64, length(lines), length(scenario.data[:bus]) - 1)
+    scenario.lodf = spzeros(Float64, length(lines), length(lines))
 
     return scenario
 end

@@ -83,7 +83,8 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
             if "Reserve eligibility" in keys(dict)
                 unit_reserves = [
                     name_to_reserve[n] for
-                    n in dict["Reserve eligibility"] if haskey(name_to_reserve, n)
+                    n in dict["Reserve eligibility"] if
+                    haskey(name_to_reserve, n)
                 ]
             end
 

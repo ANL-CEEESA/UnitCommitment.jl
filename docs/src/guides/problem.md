@@ -788,12 +788,12 @@ of circuits cannot decrease.
 
 ### Decision variables
 
-| Symbol                    | JuMP name          | Unit    | Description                                                           | Stage |
-| :------------------------ | :----------------- | :------ | :-------------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{lt}$  | `invest_line[l,t]` | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
-| $y^\text{flow}_{slt}$     | `flow[s,l,t]`      | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
-| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]`  | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
-| $\theta_{sbt}$            | `theta[s,b,t]`     | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
+| Symbol                    | JuMP name        | Unit    | Description                                                           | Stage |
+| :------------------------ | :--------------- | :------ | :-------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$  | `invest[l,t]`    | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
+| $y^\text{flow}_{slt}$     | `flow[s,l,t]`    | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
+| $y^\text{overflow}_{slt}$ | `overflow[s,l,t]` | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
+| $\theta_{sbt}$            | `theta[s,b,t]`   | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
 
 ### Objective function terms
 
@@ -823,31 +823,31 @@ W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{
 \end{align*}
 ```
 
-- Circuits are permanently built once invested
-  (`eq_invest_line_nondecreasing[l,t]`). Only applies to candidate lines.
+- Circuits are permanently built once invested (`eq_invest_nondec[l,t]`). Only
+  applies to candidate lines.
 
 ```math
 x^{\text{invest}}_{l,t-1} \leq x^{\text{invest}}_{lt}
 ```
 
-- Definition of flow by phase angle. Here $b$ and $b'$ are the source and target
-  buses of line $l$, respectively. For existing lines, the flow is directly
-  determined by the phase angle difference (`eq_invest_line_flow[s,l,t]`):
+- DC power flow equation. Here $b$ and $b'$ are the source and target buses of
+  line $l$, respectively. For existing lines, the flow is directly determined by
+  the phase angle difference (`eq_dc_flow[s,l,t]`):
 
 ```math
 y^\text{flow}_{slt} = B_{l} (\theta_{sbt} - \theta_{sb't})
 ```
 
 - For candidate lines with $M^\text{max-circuits}_l > 1$, the flow is scaled by
-  the number of invested circuits (`eq_invest_line_flow[s,l,t]`):
+  the number of invested circuits (`eq_dc_flow[s,l,t]`):
 
 ```math
 y^\text{flow}_{slt} = x^{\text{invest}}_{lt} B_{l} (\theta_{sbt} - \theta_{sb't})
 ```
 
-- For candidate lines with $M^\text{max-circuits}_l = 1$, the constraint is
-  linearized using a big-M formulation (`eq_invest_line_flow_upper[s,l,t]` and
-  `eq_invest_line_flow_lower[s,l,t]`):
+- For candidate lines with $M^\text{max-circuits}_l = 1$, the DC power flow
+  constraint is linearized using a big-M formulation (`eq_dc_flow_bigm_ub[s,l,t]`
+  and `eq_dc_flow_bigm_lb[s,l,t]`):
 
 ```math
 \begin{align*}
@@ -856,17 +856,17 @@ y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\tex
 \end{align*}
 ```
 
-- Flow limits for existing lines (`eq_invest_line_flow_limit_upper[s,l,t]` and
-  `eq_invest_line_flow_limit_lower[s,l,t]`). These are soft constraints that
-  allow overflow at a penalty:
+- Flow capacity limits for existing lines (`eq_flow_limit_ub[s,l,t]` and
+  `eq_flow_limit_lb[s,l,t]`). These are soft constraints that allow overflow at
+  a penalty:
 
 ```math
 -M^\text{limit}_{slt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} + y^\text{overflow}_{slt}
 ```
 
-- Flow limits for candidate lines, scaled by the number of invested circuits
-  (`eq_invest_line_flow_limit_upper[s,l,t]` and
-  `eq_invest_line_flow_limit_lower[s,l,t]`). These are also soft constraints:
+- Flow capacity limits for candidate lines, scaled by the number of invested
+  circuits (`eq_flow_limit_ub[s,l,t]` and `eq_flow_limit_lb[s,l,t]`). These are
+  also soft constraints:
 
 ```math
 -M^\text{limit}_{slt} x^{\text{invest}}_{lt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt} + y^\text{overflow}_{slt}

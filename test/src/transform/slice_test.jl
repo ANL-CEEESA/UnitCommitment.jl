@@ -27,7 +27,7 @@ function transform_slice_test()
         for b in sc.buses
             @test length(b.load) == 2
         end
-        for l in sc.lines
+        for l in sc.data[:lines]
             @test length(l.normal_flow_limit) == 2
             @test length(l.emergency_flow_limit) == 2
             @test length(l.flow_limit_penalty) == 2

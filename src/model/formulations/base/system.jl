@@ -32,14 +32,13 @@ function _add_nodal_balance!(
                 model,
                 sum(
                     model[:flow][sc.name, lm.name, t] for
-                    lm in sc.lines if lm.source == b
+                    lm in sc.data[:lines] if lm.source == b
                 ) - sum(
                     model[:flow][sc.name, lm.name, t] for
-                    lm in sc.lines if lm.target == b
+                    lm in sc.data[:lines] if lm.target == b
                 ) + model[:net_injection][sc.name, b.name, t] == 0
             )
         end
     end
     return
 end
-

@@ -15,7 +15,7 @@ function solution_methods_XavQiuWanThi19_filter_test()
             filter,
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[1],
+                monitored_line = sc.data[:lines][1],
                 outage_line = nothing,
                 amount = 100.0,
             ),
@@ -24,8 +24,8 @@ function solution_methods_XavQiuWanThi19_filter_test()
             filter,
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[1],
-                outage_line = sc.lines[1],
+                monitored_line = sc.data[:lines][1],
+                outage_line = sc.data[:lines][1],
                 amount = 300.0,
             ),
         )
@@ -33,8 +33,8 @@ function solution_methods_XavQiuWanThi19_filter_test()
             filter,
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[1],
-                outage_line = sc.lines[5],
+                monitored_line = sc.data[:lines][1],
+                outage_line = sc.data[:lines][5],
                 amount = 500.0,
             ),
         )
@@ -42,8 +42,8 @@ function solution_methods_XavQiuWanThi19_filter_test()
             filter,
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[1],
-                outage_line = sc.lines[4],
+                monitored_line = sc.data[:lines][1],
+                outage_line = sc.data[:lines][4],
                 amount = 400.0,
             ),
         )
@@ -51,8 +51,8 @@ function solution_methods_XavQiuWanThi19_filter_test()
             filter,
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[2],
-                outage_line = sc.lines[1],
+                monitored_line = sc.data[:lines][2],
+                outage_line = sc.data[:lines][1],
                 amount = 200.0,
             ),
         )
@@ -60,8 +60,8 @@ function solution_methods_XavQiuWanThi19_filter_test()
             filter,
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[2],
-                outage_line = sc.lines[8],
+                monitored_line = sc.data[:lines][2],
+                outage_line = sc.data[:lines][8],
                 amount = 100.0,
             ),
         )
@@ -70,14 +70,14 @@ function solution_methods_XavQiuWanThi19_filter_test()
         expected = [
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[2],
-                outage_line = sc.lines[1],
+                monitored_line = sc.data[:lines][2],
+                outage_line = sc.data[:lines][1],
                 amount = 200.0,
             ),
             _Violation(
                 time = 1,
-                monitored_line = sc.lines[1],
-                outage_line = sc.lines[5],
+                monitored_line = sc.data[:lines][1],
+                outage_line = sc.data[:lines][5],
                 amount = 500.0,
             ),
         ]

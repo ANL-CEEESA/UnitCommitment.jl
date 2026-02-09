@@ -2,10 +2,7 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _read_buses!(
-    json::AbstractDict,
-    sc::UnitCommitmentScenario,
-)::Nothing
+function _read_buses!(json::AbstractDict, sc::UnitCommitmentScenario)::Nothing
     T = sc.time
     buses = Bus[]
     name_to_bus = Dict{String,Bus}()

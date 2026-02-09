@@ -29,11 +29,6 @@ function slice(
         for b in sc.buses
             b.load = b.load[range]
         end
-        for l in sc.lines
-            l.normal_flow_limit = l.normal_flow_limit[range]
-            l.emergency_flow_limit = l.emergency_flow_limit[range]
-            l.flow_limit_penalty = l.flow_limit_penalty[range]
-        end
         for ext in modified.extensions
             slice!(sc, range, ext)
         end

@@ -22,12 +22,6 @@ function _add_bus_vars!(
 
     for sc in instance.scenarios, b in sc.data[:bus]
         for t in 1:T
-            # Fixed load
-            add_to_expression!(
-                model[:net_injection][sc.name, b.name, t],
-                -b.load[t],
-            )
-
             # Load curtailment
             curtail[sc.name, b.name, t] = @variable(
                 model,
