@@ -1,12 +1,9 @@
 # UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
-# Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
+# Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-mutable struct Bus
-    name::String
-    offset::Int
-    load::Vector{Float64}
-end
+abstract type UnitCommitmentExtension end
+abstract type SolutionMethod end
 
 mutable struct TransmissionLine
     name::String

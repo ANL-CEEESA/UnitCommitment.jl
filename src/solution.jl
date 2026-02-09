@@ -25,37 +25,6 @@ function solution(model::JuMP.Model)::OrderedDict
     return sol
 end
 
-function _timeseries(
-    model::JuMP.Model,
-    sym::Symbol,
-    collection,
-    T::Int;
-    sc = nothing,
-)
-    isempty(collection) && return OrderedDict{String,Vector{Float64}}()
-    vars = model[sym]
-    if sc === nothing
-        return OrderedDict(
-            b.name => [round(value(vars[b.name, t]), digits = 5) for t in 1:T]
-            for b in collection
-        )
-    else
-        return OrderedDict(
-            b.name => [
-                round(value(vars[sc.name, b.name, t]), digits = 5) for t in 1:T
-            ] for b in collection
-        )
-    end
-end
-
-function _store_bus_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
-    sol["Bus: Net injection (MW)"] =
-        _timeseries(model, :net_injection, sc.buses, T, sc = sc)
-    sol["Bus: Load curtail (MW)"] =
-        _timeseries(model, :curtail, sc.buses, T, sc = sc)
-    return
-end
-
 function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     non_slack_buses = [b for b in sc.buses if b.offset > 0]
     net_injection = model[:net_injection]
