@@ -69,27 +69,6 @@ mutable struct Contingency
     thermal_units::Vector{ThermalUnit}
 end
 
-mutable struct StorageUnit
-    name::String
-    bus::Bus
-    min_level::Vector{Float64}
-    max_level::Vector{Float64}
-    simultaneous_charge_and_discharge::Vector{Bool}
-    charge_cost::Vector{Float64}
-    discharge_cost::Vector{Float64}
-    charge_efficiency::Vector{Float64}
-    discharge_efficiency::Vector{Float64}
-    loss_factor::Vector{Float64}
-    min_charge_rate::Vector{Float64}
-    max_charge_rate::Vector{Float64}
-    min_discharge_rate::Vector{Float64}
-    max_discharge_rate::Vector{Float64}
-    initial_level::Float64
-    min_ending_level::Float64
-    max_ending_level::Float64
-    invest::Vector{Float64}
-end
-
 Base.@kwdef mutable struct UnitCommitmentScenario
     buses_by_name::Dict{AbstractString,Bus}
     buses::Vector{Bus}
@@ -107,8 +86,6 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     reserves::Vector{Reserve}
     thermal_units_by_name::Dict{AbstractString,ThermalUnit}
     thermal_units::Vector{ThermalUnit}
-    storage_units_by_name::Dict{AbstractString,StorageUnit}
-    storage_units::Vector{StorageUnit}
     time::Int
     time_step::Int
     data::Dict = Dict()

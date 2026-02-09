@@ -155,7 +155,6 @@ function _from_json(
     contingencies = Contingency[]
     lines = TransmissionLine[]
     reserves = Reserve[]
-    storage_units = StorageUnit[]
 
     function scalar(x; default = nothing)
         x !== nothing || return default
@@ -408,67 +407,6 @@ function _from_json(
         end
     end
 
-    # Read storage units
-    if "Storage units" in keys(json)
-        for (storage_name, dict) in json["Storage units"]
-            bus = name_to_bus[dict["Bus"]]
-            min_level = to_timeseries(
-                scalar(dict["Minimum level (MWh)"], default = 0.0),
-                T,
-            )
-            max_level = to_timeseries(dict["Maximum level (MWh)"], T)
-            storage = StorageUnit(
-                storage_name,
-                bus,
-                min_level,
-                max_level,
-                to_timeseries(
-                    scalar(
-                        dict["Allow simultaneous charging and discharging"],
-                        default = true,
-                    ),
-                    T,
-                ),
-                to_timeseries(dict["Charge cost (\$/MW)"], T),
-                to_timeseries(dict["Discharge cost (\$/MW)"], T),
-                to_timeseries(
-                    scalar(dict["Charge efficiency"], default = 1.0),
-                    T,
-                ),
-                to_timeseries(
-                    scalar(dict["Discharge efficiency"], default = 1.0),
-                    T,
-                ),
-                to_timeseries(scalar(dict["Loss factor"], default = 0.0), T),
-                to_timeseries(
-                    scalar(dict["Minimum charge rate (MW)"], default = 0.0),
-                    T,
-                ),
-                to_timeseries(dict["Maximum charge rate (MW)"], T),
-                to_timeseries(
-                    scalar(dict["Minimum discharge rate (MW)"], default = 0.0),
-                    T,
-                ),
-                to_timeseries(dict["Maximum discharge rate (MW)"], T),
-                scalar(dict["Initial level (MWh)"], default = 0.0),
-                scalar(
-                    dict["Last period minimum level (MWh)"],
-                    default = min_level[T],
-                ),
-                scalar(
-                    dict["Last period maximum level (MWh)"],
-                    default = max_level[T],
-                ),
-                to_timeseries(
-                    scalar(dict["Investment cost (\$)"], default = 0.0),
-                    T,
-                ),
-            )
-            push!(bus.storage_units, storage)
-            push!(storage_units, storage)
-        end
-    end
-
     scenario = UnitCommitmentScenario(
         name = scenario_name,
         probability = probability,
@@ -486,8 +424,6 @@ function _from_json(
         time_step = time_step,
         thermal_units_by_name = Dict(g.name => g for g in thermal_units),
         thermal_units = thermal_units,
-        storage_units_by_name = Dict(su.name => su for su in storage_units),
-        storage_units = storage_units,
         isf = spzeros(Float64, length(lines), length(buses) - 1),
         lodf = spzeros(Float64, length(lines), length(lines)),
     )

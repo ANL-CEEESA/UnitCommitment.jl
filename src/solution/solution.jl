@@ -172,40 +172,6 @@ function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     return
 end
 
-function _store_storage_solution!(
-    sol::OrderedDict,
-    model::JuMP.Model,
-    sc,
-    T::Int,
-)
-    sol["Storage: Level (MWh)"] =
-        _timeseries(model, :storage_level, sc.storage_units, T, sc = sc)
-    sol["Storage: Is charging"] =
-        _timeseries(model, :is_charging, sc.storage_units, T, sc = sc)
-    sol["Storage: Charging rate (MW)"] =
-        _timeseries(model, :charge_rate, sc.storage_units, T, sc = sc)
-    sol["Storage: Charging cost (\$)"] = OrderedDict(
-        su.name => [
-            value(model[:charge_rate][sc.name, su.name, t]) * su.charge_cost[t] for t in 1:T
-        ] for su in sc.storage_units
-    )
-    sol["Storage: Is discharging"] =
-        _timeseries(model, :is_discharging, sc.storage_units, T, sc = sc)
-    sol["Storage: Discharging rate (MW)"] =
-        _timeseries(model, :discharge_rate, sc.storage_units, T, sc = sc)
-    sol["Storage: Discharging cost (\$)"] = OrderedDict(
-        su.name => [
-            value(model[:discharge_rate][sc.name, su.name, t]) *
-            su.discharge_cost[t] for t in 1:T
-        ] for su in sc.storage_units
-    )
-    sol["Storage: Investment status"] = OrderedDict(
-        su.name => [value(model[:invest_storage][su.name, t]) for t in 1:T]
-        for su in sc.storage_units if su.invest[1] > 0.0
-    )
-    return
-end
-
 function _store_reserve_solution!(
     sol::OrderedDict,
     model::JuMP.Model,
@@ -262,7 +228,6 @@ function _store_solution!(model::JuMP.Model)::Nothing
         _store_bus_solution!(sol[sc.name], model, sc, T)
         _store_thermal_solution!(sol[sc.name], model, sc, T)
         _store_line_solution!(sol[sc.name], model, sc, T)
-        _store_storage_solution!(sol[sc.name], model, sc, T)
         _store_reserve_solution!(sol[sc.name], model, sc, T)
     end
 

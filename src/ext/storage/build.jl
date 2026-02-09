@@ -2,9 +2,12 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _add_storage_units!(
+using JuMP
+
+function build_model(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
+    ::StorageExt,
 )::Nothing
     _add_storage_vars!(model, instance)
     _add_storage_obj!(model, instance)
@@ -25,7 +28,7 @@ function _add_storage_vars!(
     is_discharging = _init(model, :is_discharging)
     invest_storage = _init(model, :invest_storage)
 
-    for sc in instance.scenarios, su in sc.storage_units
+    for sc in instance.scenarios, su in sc.data[:storage]
         for t in 1:T
             storage_level[sc.name, su.name, t] = @variable(
                 model,
@@ -53,7 +56,7 @@ function _add_storage_vars!(
     end
 
     # Investment
-    for su in instance.scenarios[1].storage_units
+    for su in instance.scenarios[1].data[:storage]
         su.invest[1] > 0.0 || continue
         invest_storage[su.name, 0] = 0.0
         for t in 1:T
@@ -73,7 +76,7 @@ function _add_storage_obj!(
     invest_storage = model[:invest_storage]
 
     # Charge and discharge costs
-    for t in 1:T, sc in instance.scenarios, su in sc.storage_units
+    for t in 1:T, sc in instance.scenarios, su in sc.data[:storage]
         add_to_expression!(
             model[:obj],
             charge_rate[sc.name, su.name, t],
@@ -87,7 +90,7 @@ function _add_storage_obj!(
     end
 
     # Investment costs
-    for su in instance.scenarios[1].storage_units
+    for su in instance.scenarios[1].data[:storage]
         su.invest[1] > 0.0 || continue
         for t in 1:T
             add_to_expression!(
@@ -123,7 +126,7 @@ function _add_storage_constrs!(
     eq_storage_transition = _init(model, :eq_storage_transition)
     eq_ending_level = _init(model, :eq_ending_level)
 
-    for sc in instance.scenarios, su in sc.storage_units
+    for sc in instance.scenarios, su in sc.data[:storage]
         for t in 1:T
             # Simultaneous charging and discharging
             if !su.simultaneous_charge_and_discharge[t]
@@ -200,7 +203,7 @@ function _add_storage_constr_invest!(
     eq_invest_storage_level_lb = _init(model, :eq_invest_storage_level_lb)
 
     # Investment is irreversible
-    for su in instance.scenarios[1].storage_units
+    for su in instance.scenarios[1].data[:storage]
         su.invest[1] > 0.0 || continue
         for t in 2:T
             eq_invest_storage_nondec[su.name, t] = @constraint(
@@ -211,7 +214,7 @@ function _add_storage_constr_invest!(
     end
 
     # Storage level bounds depend on investment status
-    for sc in instance.scenarios, su in sc.storage_units
+    for sc in instance.scenarios, su in sc.data[:storage]
         su.invest[1] > 0.0 || continue
         for t in 1:T
             eq_invest_storage_level_ub[sc.name, su.name, t] = @constraint(
