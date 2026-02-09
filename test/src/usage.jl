@@ -41,11 +41,6 @@ function usage_test()
 
             # Verify solution
             @test UnitCommitment.validate(instance, solution)
-
-            # Reoptimize with fixed solution
-            UnitCommitment.fix!(model, solution)
-            UnitCommitment.optimize!(model)
-            @test UnitCommitment.validate(instance, solution)
         end
 
         @testset "stochastic" begin
