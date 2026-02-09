@@ -2,7 +2,7 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-mutable struct PriceSensitiveLoad
+Base.@kwdef mutable struct PriceSensitiveLoad
     name::String
     bus::Bus
     demand::Vector{Float64}

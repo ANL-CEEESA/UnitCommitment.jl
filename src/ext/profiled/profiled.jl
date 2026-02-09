@@ -17,27 +17,26 @@ function read_json(
         for (unit_name, dict) in json["Generators"]
             unit_type = dict["Type"]
             unit_type !== nothing || continue
+            lowercase(unit_type) === "profiled" || continue
 
-            if lowercase(unit_type) === "profiled"
-                bus = sc.buses_by_name[dict["Bus"]]
-                pu = ProfiledUnit(
-                    unit_name,
-                    bus,
-                    to_timeseries(
-                        dict["Minimum power (MW)"] !== nothing ?
-                        dict["Minimum power (MW)"] : 0.0,
-                        T,
-                    ),
-                    to_timeseries(dict["Maximum power (MW)"], T),
-                    to_timeseries(dict["Cost (\$/MW)"], T),
-                    to_timeseries(
-                        dict["Investment cost (\$)"] !== nothing ?
-                        dict["Investment cost (\$)"] : 0.0,
-                        T,
-                    ),
-                )
-                push!(profiled_units, pu)
-            end
+            bus = sc.buses_by_name[dict["Bus"]]
+            pu = ProfiledUnit(
+                name = unit_name,
+                bus = bus,
+                min_power = to_timeseries(
+                    dict["Minimum power (MW)"] !== nothing ?
+                    dict["Minimum power (MW)"] : 0.0,
+                    T,
+                ),
+                max_power = to_timeseries(dict["Maximum power (MW)"], T),
+                cost = to_timeseries(dict["Cost (\$/MW)"], T),
+                invest = to_timeseries(
+                    dict["Investment cost (\$)"] !== nothing ?
+                    dict["Investment cost (\$)"] : 0.0,
+                    T,
+                ),
+            )
+            push!(profiled_units, pu)
         end
     end
 
@@ -57,8 +56,7 @@ function build_model(
 
     # Production variables
     for sc in instance.scenarios
-        profiled_units = sc.data[:profiled]
-        for pu in profiled_units, t in 1:T
+        for pu in sc.data[:profiled], t in 1:T
             prod[sc.name, pu.name, t] = @variable(
                 model,
                 lower_bound = pu.min_power[t],
@@ -73,8 +71,7 @@ function build_model(
     end
 
     # Investment variables
-    profiled_units = instance.scenarios[1].data[:profiled]
-    for pu in profiled_units
+    for pu in instance.scenarios[1].data[:profiled]
         pu.invest[1] > 0.0 || continue
         invest[pu.name, 0] = 0.0
         for t in 1:T
@@ -84,8 +81,7 @@ function build_model(
 
     # Production costs
     for t in 1:T, sc in instance.scenarios
-        profiled_units = sc.data[:profiled]
-        for pu in profiled_units
+        for pu in sc.data[:profiled]
             add_to_expression!(
                 model[:obj],
                 prod[sc.name, pu.name, t],
@@ -95,8 +91,7 @@ function build_model(
     end
 
     # Investment costs
-    profiled_units = instance.scenarios[1].data[:profiled]
-    for pu in profiled_units
+    for pu in instance.scenarios[1].data[:profiled]
         pu.invest[1] > 0.0 || continue
         for t in 1:T
             add_to_expression!(
@@ -107,14 +102,9 @@ function build_model(
         end
     end
 
-    # Investment constraints
-    eq_invest_nondec = _init(model, :eq_invest_nondec)
-    eq_invest_prod_ub = _init(model, :eq_invest_prod_ub)
-    eq_invest_prod_lb = _init(model, :eq_invest_prod_lb)
-
     # Unit is permanently built once invested
-    profiled_units = instance.scenarios[1].data[:profiled]
-    for pu in profiled_units
+    eq_invest_nondec = _init(model, :eq_invest_nondec)
+    for pu in instance.scenarios[1].data[:profiled]
         pu.invest[1] > 0.0 || continue
         for t in 2:T
             eq_invest_nondec[pu.name, t] =
@@ -123,11 +113,11 @@ function build_model(
     end
 
     # Unit generation bounds are zero if not invested
+    eq_invest_prod_ub = _init(model, :eq_invest_prod_ub)
+    eq_invest_prod_lb = _init(model, :eq_invest_prod_lb)
     for sc in instance.scenarios
-        profiled_units = sc.data[:profiled]
-        for pu in profiled_units
+        for pu in sc.data[:profiled]
             pu.invest[1] > 0.0 || continue
-
             for t in 1:T
                 eq_invest_prod_ub[sc.name, pu.name, t] = @constraint(
                     model,
@@ -153,7 +143,6 @@ function store_solution(
 )::Nothing
     instance = model[:instance]
     T = instance.time
-
     for sc in instance.scenarios
         profiled_units = sc.data[:profiled]
 
@@ -194,35 +183,31 @@ function validate!(
 )::Int
     err_count = 0
 
-    for sc in instance.scenarios
-        profiled_units = sc.data[:profiled]
-        for pu in profiled_units
-            production = solution[sc.name]["Profiled: Production (MW)"][pu.name]
+    for sc in instance.scenarios, pu in sc.data[:profiled]
+        production = solution[sc.name]["Profiled: Production (MW)"][pu.name]
+        for t in 1:instance.time
+            # Unit must produce at least its minimum power
+            if production[t] < pu.min_power[t] - tol
+                @error @sprintf(
+                    "Profiled unit %s produces below its minimum limit at time %d (%.2f < %.2f)",
+                    pu.name,
+                    t,
+                    production[t],
+                    pu.min_power[t]
+                )
+                err_count += 1
+            end
 
-            for t in 1:instance.time
-                # Unit must produce at least its minimum power
-                if production[t] < pu.min_power[t] - tol
-                    @error @sprintf(
-                        "Profiled unit %s produces below its minimum limit at time %d (%.2f < %.2f)",
-                        pu.name,
-                        t,
-                        production[t],
-                        pu.min_power[t]
-                    )
-                    err_count += 1
-                end
-
-                # Unit must produce at most its maximum power
-                if production[t] > pu.max_power[t] + tol
-                    @error @sprintf(
-                        "Profiled unit %s produces above its maximum limit at time %d (%.2f > %.2f)",
-                        pu.name,
-                        t,
-                        production[t],
-                        pu.max_power[t]
-                    )
-                    err_count += 1
-                end
+            # Unit must produce at most its maximum power
+            if production[t] > pu.max_power[t] + tol
+                @error @sprintf(
+                    "Profiled unit %s produces above its maximum limit at time %d (%.2f > %.2f)",
+                    pu.name,
+                    t,
+                    production[t],
+                    pu.max_power[t]
+                )
+                err_count += 1
             end
         end
     end

@@ -17,10 +17,10 @@ function read_json(
         for (load_name, dict) in json["Price-sensitive loads"]
             bus = sc.buses_by_name[dict["Bus"]]
             load = PriceSensitiveLoad(
-                load_name,
-                bus,
-                to_timeseries(dict["Demand (MW)"], T),
-                to_timeseries(dict["Revenue (\$/MW)"], T),
+                name = load_name,
+                bus = bus,
+                demand = to_timeseries(dict["Demand (MW)"], T),
+                revenue = to_timeseries(dict["Revenue (\$/MW)"], T),
             )
             push!(loads, load)
         end
@@ -38,31 +38,20 @@ function build_model(
 )::Nothing
     T = instance.time
     loads = _init(model, :loads)
-
-    for sc in instance.scenarios
-        ps_loads = sc.data[:psload]
-        for ps in ps_loads, t in 1:T
-            loads[sc.name, ps.name, t] =
-                @variable(model, lower_bound = 0, upper_bound = ps.demand[t])
-            add_to_expression!(
-                model[:net_injection][sc.name, ps.bus.name, t],
-                loads[sc.name, ps.name, t],
-                -1.0,
-            )
-        end
+    for sc in instance.scenarios, ps in sc.data[:psload], t in 1:T
+        loads[sc.name, ps.name, t] =
+            @variable(model, lower_bound = 0, upper_bound = ps.demand[t])
+        add_to_expression!(
+            model[:net_injection][sc.name, ps.bus.name, t],
+            loads[sc.name, ps.name, t],
+            -1.0,
+        )
+        add_to_expression!(
+            model[:obj],
+            loads[sc.name, ps.name, t],
+            -ps.revenue[t] * sc.probability,
+        )
     end
-
-    for t in 1:T, sc in instance.scenarios
-        ps_loads = sc.data[:psload]
-        for ps in ps_loads
-            add_to_expression!(
-                model[:obj],
-                loads[sc.name, ps.name, t],
-                -ps.revenue[t] * sc.probability,
-            )
-        end
-    end
-
     return
 end
 
@@ -74,9 +63,8 @@ function store_solution(
     instance = model[:instance]
     T = instance.time
     for sc in instance.scenarios
-        ps_loads = sc.data[:psload]
         sol[sc.name]["Price-sensitive load: Demand served (MW)"] =
-            _timeseries(model, :loads, ps_loads, T, sc = sc)
+            _timeseries(model, :loads, sc.data[:psload], T, sc = sc)
     end
     return
 end
@@ -88,33 +76,31 @@ function validate!(
     tol = 0.01,
 )::Int
     err_count = 0
-    for t in 1:instance.time, sc in instance.scenarios
-        for ps in sc.data[:psload]
-            demand_served =
-                solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
+    for sc in instance.scenarios, ps in sc.data[:psload], t in 1:instance.time
+        demand_served =
+            solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
 
-            # Demand served must be non-negative
-            if demand_served < -tol
-                @error @sprintf(
-                    "Price-sensitive load %s has negative demand served at time %d (%.2f < 0)",
-                    ps.name,
-                    t,
-                    demand_served
-                )
-                err_count += 1
-            end
+        # Demand served must be non-negative
+        if demand_served < -tol
+            @error @sprintf(
+                "Price-sensitive load %s has negative demand served at time %d (%.2f < 0)",
+                ps.name,
+                t,
+                demand_served
+            )
+            err_count += 1
+        end
 
-            # Demand served must not exceed maximum demand
-            if demand_served > ps.demand[t] + tol
-                @error @sprintf(
-                    "Price-sensitive load %s exceeds maximum demand at time %d (%.2f > %.2f)",
-                    ps.name,
-                    t,
-                    demand_served,
-                    ps.demand[t]
-                )
-                err_count += 1
-            end
+        # Demand served must not exceed maximum demand
+        if demand_served > ps.demand[t] + tol
+            @error @sprintf(
+                "Price-sensitive load %s exceeds maximum demand at time %d (%.2f > %.2f)",
+                ps.name,
+                t,
+                demand_served,
+                ps.demand[t]
+            )
+            err_count += 1
         end
     end
 

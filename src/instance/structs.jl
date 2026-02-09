@@ -69,15 +69,6 @@ mutable struct Contingency
     thermal_units::Vector{ThermalUnit}
 end
 
-mutable struct ProfiledUnit
-    name::String
-    bus::Bus
-    min_power::Vector{Float64}
-    max_power::Vector{Float64}
-    cost::Vector{Float64}
-    invest::Vector{Float64}
-end
-
 mutable struct StorageUnit
     name::String
     bus::Bus
