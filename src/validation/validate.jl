@@ -33,7 +33,11 @@ function validate(
     end
     err_count = 0
     err_count += _validate_units(instance, solution)
-    err_count += _validate_reserve_and_demand(instance, solution)
+    err_count += _validate_reserves(instance, solution)
+
+    for ext in instance.extensions
+        err_count += _validate!(instance, solution, ext)
+    end
 
     if err_count > 0
         @error "Found $err_count validation errors"
@@ -531,71 +535,10 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     return err_count
 end
 
-function _validate_reserve_and_demand(instance, solution, tol = 0.01)
+function _validate_reserves(instance, solution, tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
         for t in 1:instance.time
-            load_curtail = 0
-            fixed_load = sum(b.load[t] for b in sc.buses)
-            ps_load = 0
-            production = 0
-            storage_charge = 0
-            storage_discharge = 0
-            if length(sc.price_sensitive_loads) > 0
-                ps_load = sum(
-                    solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
-                    for ps in sc.price_sensitive_loads
-                )
-            end
-            if length(sc.thermal_units) > 0
-                production = sum(
-                    solution[sc.name]["Thermal: Production (MW)"][g.name][t]
-                    for g in sc.thermal_units
-                )
-            end
-            if length(sc.profiled_units) > 0
-                production += sum(
-                    solution[sc.name]["Profiled: Production (MW)"][pu.name][t]
-                    for pu in sc.profiled_units
-                )
-            end
-            if length(sc.storage_units) > 0
-                storage_charge += sum(
-                    solution[sc.name]["Storage: Charging rate (MW)"][su.name][t]
-                    for su in sc.storage_units
-                )
-                storage_discharge += sum(
-                    solution[sc.name]["Storage: Discharging rate (MW)"][su.name][t]
-                    for su in sc.storage_units
-                )
-            end
-            if "Bus: Load curtail (MW)" in keys(solution[sc.name])
-                load_curtail = sum(
-                    solution[sc.name]["Bus: Load curtail (MW)"][b.name][t]
-                    for b in sc.buses
-                )
-            end
-            balance =
-                fixed_load - load_curtail - production +
-                ps_load +
-                storage_charge - storage_discharge
-
-            # Verify that production equals demand
-            if abs(balance) > tol
-                @error @sprintf(
-                    "Non-zero power balance at time %d (%.2f + %.2f - %.2f - %.2f + %.2f - %.2f != 0)",
-                    t,
-                    fixed_load,
-                    ps_load,
-                    load_curtail,
-                    production,
-                    storage_charge,
-                    storage_discharge,
-                )
-                err_count += 1
-            end
-
-            # Verify reserves
             for r in sc.reserves
                 if r.type == "spinning"
                     provided = sum(
@@ -615,6 +558,7 @@ function _validate_reserve_and_demand(instance, solution, tol = 0.01)
                             shortfall,
                             required,
                         )
+                        err_count += 1
                     end
                 elseif r.type == "flexiramp"
                     upflexiramp = sum(

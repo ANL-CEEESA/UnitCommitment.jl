@@ -26,10 +26,16 @@ function build_model(;
         b in sc.buses for t in 1:instance.time
     )
 
+    model[:instance] = instance
+
     _add_thermal_units!(model, instance, formulation)
     _add_profiled_units!(model, instance)
     _add_storage_units!(model, instance)
-    _add_ps_loads!(model, instance)
+
+    for ext in instance.extensions
+        _build!(model, instance, ext)
+    end
+
     _add_buses!(model, instance)
 
     @objective(model, Min, model[:obj])

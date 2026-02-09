@@ -18,10 +18,6 @@ function solution(model::JuMP.Model)::OrderedDict
     instance = model[:instance]
     sol = model.ext[:ucjl][:solution]
 
-    for ext in instance.extensions
-        _solution!(sol, model, ext)
-    end
-
     if length(instance.scenarios) == 1
         sol = first(values(sol))
     end
@@ -176,17 +172,6 @@ function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     return
 end
 
-function _store_price_sensitive_load_solution!(
-    sol::OrderedDict,
-    model::JuMP.Model,
-    sc,
-    T::Int,
-)
-    sol["Price-sensitive load: Demand served (MW)"] =
-        _timeseries(model, :loads, sc.price_sensitive_loads, T, sc = sc)
-    return
-end
-
 function _store_profiled_solution!(
     sol::OrderedDict,
     model::JuMP.Model,
@@ -306,10 +291,13 @@ function _store_solution!(model::JuMP.Model)::Nothing
         _store_bus_solution!(sol[sc.name], model, sc, T)
         _store_thermal_solution!(sol[sc.name], model, sc, T)
         _store_line_solution!(sol[sc.name], model, sc, T)
-        _store_price_sensitive_load_solution!(sol[sc.name], model, sc, T)
         _store_profiled_solution!(sol[sc.name], model, sc, T)
         _store_storage_solution!(sol[sc.name], model, sc, T)
         _store_reserve_solution!(sol[sc.name], model, sc, T)
+    end
+    
+    for ext in instance.extensions
+        _solution!(sol, model, ext)
     end
 
     model.ext[:ucjl][:solution] = sol

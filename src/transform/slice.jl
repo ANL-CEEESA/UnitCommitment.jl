@@ -52,9 +52,8 @@ function slice(
             l.emergency_flow_limit = l.emergency_flow_limit[range]
             l.flow_limit_penalty = l.flow_limit_penalty[range]
         end
-        for ps in sc.price_sensitive_loads
-            ps.demand = ps.demand[range]
-            ps.revenue = ps.revenue[range]
+        for ext in modified.extensions
+            _slice!(sc, range, ext)
         end
         for su in sc.storage_units
             su.min_level = su.min_level[range]

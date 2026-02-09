@@ -7,7 +7,6 @@ mutable struct Bus
     offset::Int
     load::Vector{Float64}
     thermal_units::Vector
-    price_sensitive_loads::Vector
     profiled_units::Vector
     storage_units::Vector
 end
@@ -71,13 +70,6 @@ mutable struct Contingency
     thermal_units::Vector{ThermalUnit}
 end
 
-mutable struct PriceSensitiveLoad
-    name::String
-    bus::Bus
-    demand::Vector{Float64}
-    revenue::Vector{Float64}
-end
-
 mutable struct ProfiledUnit
     name::String
     bus::Bus
@@ -120,8 +112,6 @@ Base.@kwdef mutable struct UnitCommitmentScenario
     name::String
     investment_cost_weight::Float64
     power_balance_penalty::Vector{Float64}
-    price_sensitive_loads_by_name::Dict{AbstractString,PriceSensitiveLoad}
-    price_sensitive_loads::Vector{PriceSensitiveLoad}
     probability::Float64
     profiled_units_by_name::Dict{AbstractString,ProfiledUnit}
     profiled_units::Vector{ProfiledUnit}
@@ -151,7 +141,9 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "$(length(sc.buses)) buses, ")
     print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")
-    print(io, "$(length(sc.price_sensitive_loads)) price sensitive loads, ")
+    for ext in instance.extensions
+        _summarize(instance, ext, io)
+    end
     print(io, "$(instance.time) time steps")
     print(io, ")")
     return

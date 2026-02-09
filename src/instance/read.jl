@@ -154,7 +154,6 @@ function _from_json(
     buses = Bus[]
     contingencies = Contingency[]
     lines = TransmissionLine[]
-    loads = PriceSensitiveLoad[]
     reserves = Reserve[]
     profiled_units = ProfiledUnit[]
     storage_units = StorageUnit[]
@@ -199,15 +198,9 @@ function _from_json(
     name_to_unit = Dict{String,ThermalUnit}()
     name_to_reserve = Dict{String,Reserve}()
 
-    function timeseries(x; default = nothing)
-        x !== nothing || return default
-        x isa Array || return [x for t in 1:T]
-        return x
-    end
-
     # Read parameters
-    power_balance_penalty = timeseries(
-        json["Parameters"]["Power balance penalty (\$/MW)"],
+    power_balance_penalty = to_timeseries(
+        json["Parameters"]["Power balance penalty (\$/MW)"], T,
         default = [1000.0 for t in 1:T],
     )
 
@@ -216,9 +209,8 @@ function _from_json(
         bus = Bus(
             bus_name,
             length(buses),
-            timeseries(dict["Load (MW)"]),
+            to_timeseries(dict["Load (MW)"], T),
             ThermalUnit[],
-            PriceSensitiveLoad[],
             ProfiledUnit[],
             StorageUnit[],
         )
@@ -232,7 +224,7 @@ function _from_json(
             r = Reserve(
                 name = reserve_name,
                 type = lowercase(dict["Type"]),
-                amount = timeseries(dict["Amount (MW)"]),
+                amount = to_timeseries(dict["Amount (MW)"], T),
                 thermal_units = [],
                 shortfall_penalty = scalar(
                     dict["Shortfall penalty (\$/MW)"],
@@ -256,13 +248,13 @@ function _from_json(
             K = length(dict["Production cost curve (MW)"])
             curve_mw = hcat(
                 [
-                    timeseries(dict["Production cost curve (MW)"][k]) for
+                    to_timeseries(dict["Production cost curve (MW)"][k], T) for
                     k in 1:K
                 ]...,
             )
             curve_cost = hcat(
                 [
-                    timeseries(dict["Production cost curve (\$)"][k]) for
+                    to_timeseries(dict["Production cost curve (\$)"][k], T) for
                     k in 1:K
                 ]...,
             )
@@ -330,7 +322,7 @@ function _from_json(
                 bus,
                 max_power,
                 min_power,
-                timeseries(dict["Must run?"], default = [false for t in 1:T]),
+                to_timeseries(dict["Must run?"], T, default = [false for t in 1:T]),
                 min_power_cost,
                 segments,
                 scalar(dict["Minimum uptime (h)"], default = 1) *
@@ -346,7 +338,7 @@ function _from_json(
                 startup_categories,
                 unit_reserves,
                 commitment_status,
-                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
+                to_timeseries(scalar(dict["Investment cost (\$)"], default = 0.0), T),
             )
             push!(bus.thermal_units, unit)
             for r in unit_reserves
@@ -359,10 +351,10 @@ function _from_json(
             pu = ProfiledUnit(
                 unit_name,
                 bus,
-                timeseries(scalar(dict["Minimum power (MW)"], default = 0.0)),
-                timeseries(dict["Maximum power (MW)"]),
-                timeseries(dict["Cost (\$/MW)"]),
-                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
+                to_timeseries(scalar(dict["Minimum power (MW)"], default = 0.0), T),
+                to_timeseries(dict["Maximum power (MW)"], T),
+                to_timeseries(dict["Cost (\$/MW)"], T),
+                to_timeseries(scalar(dict["Investment cost (\$)"], default = 0.0), T),
             )
             push!(bus.profiled_units, pu)
             push!(profiled_units, pu)
@@ -380,19 +372,19 @@ function _from_json(
                 name_to_bus[dict["Source bus"]],
                 name_to_bus[dict["Target bus"]],
                 scalar(dict["Susceptance (S)"]),
-                timeseries(
-                    dict["Normal flow limit (MW)"],
+                to_timeseries(
+                    dict["Normal flow limit (MW)"], T,
                     default = [1e8 for t in 1:T],
                 ),
-                timeseries(
-                    dict["Emergency flow limit (MW)"],
+                to_timeseries(
+                    dict["Emergency flow limit (MW)"], T,
                     default = [1e8 for t in 1:T],
                 ),
-                timeseries(
-                    dict["Flow limit penalty (\$/MW)"],
+                to_timeseries(
+                    dict["Flow limit penalty (\$/MW)"], T,
                     default = [5000.0 for t in 1:T],
                 ),
-                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
+                to_timeseries(scalar(dict["Investment cost (\$)"], default = 0.0), T),
                 scalar(dict["Max number of parallel circuits"], default = 1),
             )
             name_to_line[line_name] = line
@@ -418,52 +410,37 @@ function _from_json(
         end
     end
 
-    # Read price-sensitive loads
-    if "Price-sensitive loads" in keys(json)
-        for (load_name, dict) in json["Price-sensitive loads"]
-            bus = name_to_bus[dict["Bus"]]
-            load = PriceSensitiveLoad(
-                load_name,
-                bus,
-                timeseries(dict["Demand (MW)"]),
-                timeseries(dict["Revenue (\$/MW)"]),
-            )
-            push!(bus.price_sensitive_loads, load)
-            push!(loads, load)
-        end
-    end
-
-    # Read storage units 
+    # Read storage units
     if "Storage units" in keys(json)
         for (storage_name, dict) in json["Storage units"]
             bus = name_to_bus[dict["Bus"]]
             min_level =
-                timeseries(scalar(dict["Minimum level (MWh)"], default = 0.0))
-            max_level = timeseries(dict["Maximum level (MWh)"])
+                to_timeseries(scalar(dict["Minimum level (MWh)"], default = 0.0), T)
+            max_level = to_timeseries(dict["Maximum level (MWh)"], T)
             storage = StorageUnit(
                 storage_name,
                 bus,
                 min_level,
                 max_level,
-                timeseries(
+                to_timeseries(
                     scalar(
                         dict["Allow simultaneous charging and discharging"],
                         default = true,
-                    ),
+                    ), T,
                 ),
-                timeseries(dict["Charge cost (\$/MW)"]),
-                timeseries(dict["Discharge cost (\$/MW)"]),
-                timeseries(scalar(dict["Charge efficiency"], default = 1.0)),
-                timeseries(scalar(dict["Discharge efficiency"], default = 1.0)),
-                timeseries(scalar(dict["Loss factor"], default = 0.0)),
-                timeseries(
-                    scalar(dict["Minimum charge rate (MW)"], default = 0.0),
+                to_timeseries(dict["Charge cost (\$/MW)"], T),
+                to_timeseries(dict["Discharge cost (\$/MW)"], T),
+                to_timeseries(scalar(dict["Charge efficiency"], default = 1.0), T),
+                to_timeseries(scalar(dict["Discharge efficiency"], default = 1.0), T),
+                to_timeseries(scalar(dict["Loss factor"], default = 0.0), T),
+                to_timeseries(
+                    scalar(dict["Minimum charge rate (MW)"], default = 0.0), T,
                 ),
-                timeseries(dict["Maximum charge rate (MW)"]),
-                timeseries(
-                    scalar(dict["Minimum discharge rate (MW)"], default = 0.0),
+                to_timeseries(dict["Maximum charge rate (MW)"], T),
+                to_timeseries(
+                    scalar(dict["Minimum discharge rate (MW)"], default = 0.0), T,
                 ),
-                timeseries(dict["Maximum discharge rate (MW)"]),
+                to_timeseries(dict["Maximum discharge rate (MW)"], T),
                 scalar(dict["Initial level (MWh)"], default = 0.0),
                 scalar(
                     dict["Last period minimum level (MWh)"],
@@ -473,7 +450,7 @@ function _from_json(
                     dict["Last period maximum level (MWh)"],
                     default = max_level[T],
                 ),
-                timeseries(scalar(dict["Investment cost (\$)"], default = 0.0)),
+                to_timeseries(scalar(dict["Investment cost (\$)"], default = 0.0), T),
             )
             push!(bus.storage_units, storage)
             push!(storage_units, storage)
@@ -491,8 +468,6 @@ function _from_json(
         lines = lines,
         investment_cost_weight = investment_cost_weight,
         power_balance_penalty = power_balance_penalty,
-        price_sensitive_loads_by_name = Dict(ps.name => ps for ps in loads),
-        price_sensitive_loads = loads,
         reserves = reserves,
         reserves_by_name = name_to_reserve,
         time = T,

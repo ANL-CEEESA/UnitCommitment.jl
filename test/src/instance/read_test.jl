@@ -6,7 +6,10 @@ using UnitCommitment, LinearAlgebra, JuMP, JSON
 
 function instance_read_test()
     @testset "read_benchmark" begin
-        instance = UnitCommitment.read(fixture("case14.json.gz"))
+        instance = UnitCommitment.read(
+            fixture("case14.json.gz"),
+            extensions = [UnitCommitment.PriceSensitiveLoads()],
+        )
 
         @test repr(instance) == (
             "UnitCommitmentInstance(1 scenarios, 6 thermal units, 0 profiled units, 14 buses, " *
@@ -19,7 +22,7 @@ function instance_read_test()
         @test length(sc.buses) == 14
         @test length(sc.thermal_units) == 6
         @test length(sc.contingencies) == 19
-        @test length(sc.price_sensitive_loads) == 1
+        @test length(sc.data[:psload]) == 1
         @test instance.time == 4
         @test sc.time_step == 60
 
@@ -110,12 +113,12 @@ function instance_read_test()
         @test sc.contingencies[1].name == "c1"
         @test sc.contingencies_by_name["c1"].name == "c1"
 
-        load = sc.price_sensitive_loads[1]
+        load = sc.data[:psload][1]
         @test load.name == "ps1"
         @test load.bus.name == "b3"
         @test load.revenue == [100.0 for t in 1:4]
         @test load.demand == [50.0 for t in 1:4]
-        @test sc.price_sensitive_loads_by_name["ps1"].name == "ps1"
+        @test sc.data[:psload_by_name]["ps1"].name == "ps1"
     end
 
     @testset "read_benchmark sub-hourly" begin
