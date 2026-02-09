@@ -40,7 +40,7 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
         sc = instance.scenarios[1]
         actual = UnitCommitment._reduced_incidence_matrix(
             lines = sc.lines,
-            buses = sc.buses,
+            buses = sc.data[:bus],
         )
         @test size(actual) == (20, 13)
         @test actual[1, 1] == -1.0
@@ -88,7 +88,7 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
         sc = instance.scenarios[1]
         actual = UnitCommitment._injection_shift_factors(
             lines = sc.lines,
-            buses = sc.buses,
+            buses = sc.data[:bus],
         )
         @test size(actual) == (20, 13)
         @test round.(actual, digits = 2) == [
@@ -120,11 +120,11 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
         sc = instance.scenarios[1]
         isf_before = UnitCommitment._injection_shift_factors(
             lines = sc.lines,
-            buses = sc.buses,
+            buses = sc.data[:bus],
         )
         lodf = UnitCommitment._line_outage_factors(
             lines = sc.lines,
-            buses = sc.buses,
+            buses = sc.data[:bus],
             isf = isf_before,
         )
         for contingency in sc.contingencies
@@ -133,7 +133,7 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
                 lc.susceptance = 0.0
                 isf_after = UnitCommitment._injection_shift_factors(
                     lines = sc.lines,
-                    buses = sc.buses,
+                    buses = sc.data[:bus],
                 )
                 lc.susceptance = prev_susceptance
                 for lm in sc.lines

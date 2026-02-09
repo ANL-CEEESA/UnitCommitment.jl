@@ -15,7 +15,7 @@ function read_json(
 
     if "Price-sensitive loads" in keys(json)
         for (load_name, dict) in json["Price-sensitive loads"]
-            bus = sc.buses_by_name[dict["Bus"]]
+            bus = sc.data[:bus_by_name][dict["Bus"]]
             load = PriceSensitiveLoad(
                 name = load_name,
                 bus = bus,

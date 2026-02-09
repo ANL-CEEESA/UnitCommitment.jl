@@ -66,7 +66,7 @@ function _enforce_transmission(;
             flow == sum(
                 net_injection[sc.name, b.name, violation.time] *
                 isf[violation.monitored_line.offset, b.offset] for
-                b in sc.buses if b.offset > 0
+                b in sc.data[:bus] if b.offset > 0
             )
         )
     else

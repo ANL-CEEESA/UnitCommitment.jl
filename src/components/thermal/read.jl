@@ -34,7 +34,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
         # Read and validate unit type
         unit_type = to_scalar(dict["Type"], default = nothing)
         unit_type !== nothing || error("unit $unit_name has no type specified")
-        bus = sc.buses_by_name[dict["Bus"]]
+        bus = sc.data[:bus_by_name][dict["Bus"]]
 
         if lowercase(unit_type) === "thermal"
             # Read production cost curve

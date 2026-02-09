@@ -33,14 +33,14 @@ function _setup_transmission(
     end
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf
-    if length(sc.buses) == 1
+    if length(sc.data[:bus]) == 1
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
     elseif isf === nothing
         @info "Computing injection shift factors..."
         time_isf = @elapsed begin
             isf = UnitCommitment._injection_shift_factors(
-                buses = sc.buses,
+                buses = sc.data[:bus],
                 lines = sc.lines,
             )
         end
@@ -48,7 +48,7 @@ function _setup_transmission(
         @info "Computing line outage factors..."
         time_lodf = @elapsed begin
             lodf = UnitCommitment._line_outage_factors(
-                buses = sc.buses,
+                buses = sc.data[:bus],
                 lines = sc.lines,
                 isf = isf,
             )

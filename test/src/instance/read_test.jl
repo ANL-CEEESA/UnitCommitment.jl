@@ -19,7 +19,7 @@ function instance_read_test()
         @test length(instance.scenarios) == 1
         sc = instance.scenarios[1]
         @test length(sc.lines) == 20
-        @test length(sc.buses) == 14
+        @test length(sc.data[:bus]) == 14
         @test length(sc.thermal_units) == 6
         @test length(sc.contingencies) == 19
         @test length(sc.data[:psload]) == 1
@@ -43,9 +43,9 @@ function instance_read_test()
         @test sc.lines[1].emergency_flow_limit == [400.0 for t in 1:4]
         @test sc.lines[1].flow_limit_penalty == [1e3 for t in 1:4]
 
-        @test sc.buses[9].name == "b9"
-        @test sc.buses[9].load == [35.36638, 33.25495, 31.67138, 31.14353]
-        @test sc.buses_by_name["b9"].name == "b9"
+        @test sc.data[:bus][9].name == "b9"
+        @test sc.data[:bus][9].load == [35.36638, 33.25495, 31.67138, 31.14353]
+        @test sc.data[:bus_by_name]["b9"].name == "b9"
 
         @test sc.reserves[1].name == "r1"
         @test sc.reserves[1].type == "spinning"
@@ -239,7 +239,7 @@ function instance_read_test()
         @test length(instance.scenarios) == 1
         sc = instance.scenarios[1]
         @test length(sc.lines) == 77
-        @test length(sc.buses) == 24
+        @test length(sc.data[:bus]) == 24
         @test length(sc.profiled_units) == 32
         @test instance.time == 1
         @test sc.time_step == 60
@@ -251,9 +251,9 @@ function instance_read_test()
         @test sc.lines[1].susceptance ≈ 71.94244604316548
         @test sc.lines[1].normal_flow_limit == [175.0]
 
-        @test sc.buses[3].name == "b3"
-        @test sc.buses[3].load == [540.0]
-        @test sc.buses_by_name["b3"].name == "b3"
+        @test sc.data[:bus][3].name == "b3"
+        @test sc.data[:bus][3].load == [540.0]
+        @test sc.data[:bus_by_name]["b3"].name == "b3"
 
         unit = sc.profiled_units[1]
         @test unit.name == "gen1"

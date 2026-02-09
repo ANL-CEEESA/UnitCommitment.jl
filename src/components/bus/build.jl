@@ -20,7 +20,7 @@ function _add_bus_vars!(
     curtail = _init(model, :curtail)
     ni = _init(model, :ni)
 
-    for sc in instance.scenarios, b in sc.buses
+    for sc in instance.scenarios, b in sc.data[:bus]
         for t in 1:T
             # Fixed load
             add_to_expression!(
@@ -54,7 +54,7 @@ function _add_bus_obj!(
     T = instance.time
     curtail = model[:curtail]
 
-    for t in 1:T, sc in instance.scenarios, b in sc.buses
+    for t in 1:T, sc in instance.scenarios, b in sc.data[:bus]
         sign_adjustment = b.load[t] < 0 ? -1 : 1
         add_to_expression!(
             model[:obj],
@@ -77,7 +77,7 @@ function _add_bus_constrs!(
     for sc in instance.scenarios
         for t in 1:T
             # Net injection definition. Necessary for LMP calculation and model customization.
-            for b in sc.buses
+            for b in sc.data[:bus]
                 eq_net_injection[sc.name, b.name, t] = @constraint(
                     model,
                     -ni[sc.name, b.name, t] +
@@ -88,7 +88,7 @@ function _add_bus_constrs!(
             # System-wide power balance
             eq_power_balance[sc.name, t] = @constraint(
                 model,
-                sum(ni[sc.name, b.name, t] for b in sc.buses) == 0,
+                sum(ni[sc.name, b.name, t] for b in sc.data[:bus]) == 0,
             )
         end
     end

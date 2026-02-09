@@ -157,7 +157,6 @@ end
 
 function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     _migrate(json)
-    buses = Bus[]
     contingencies = Contingency[]
     lines = TransmissionLine[]
 
@@ -190,7 +189,6 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     investment_cost_weight = json["Parameters"]["Investment cost weight"]
     investment_cost_weight !== nothing || (investment_cost_weight = 1.0)
 
-    name_to_bus = Dict{String,Bus}()
     name_to_line = Dict{String,TransmissionLine}()
 
     # Read parameters
@@ -200,12 +198,24 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
         default = [1000.0 for t in 1:T],
     )
 
+    # Create minimal scenario to store buses
+    scenario = UnitCommitmentScenario(
+        name = scenario_name,
+        probability = probability,
+        contingencies_by_name = Dict{AbstractString,Contingency}(),
+        contingencies = Contingency[],
+        lines_by_name = Dict{AbstractString,TransmissionLine}(),
+        lines = TransmissionLine[],
+        investment_cost_weight = investment_cost_weight,
+        power_balance_penalty = power_balance_penalty,
+        time = T,
+        time_step = time_step,
+        isf = spzeros(Float64, 0, 0),
+        lodf = spzeros(Float64, 0, 0),
+    )
+
     # Read buses
-    for (bus_name, dict) in json["Buses"]
-        bus = Bus(bus_name, length(buses), to_timeseries(dict["Load (MW)"], T))
-        name_to_bus[bus_name] = bus
-        push!(buses, bus)
-    end
+    _read_buses!(json, scenario)
 
     # Read transmission lines
     if "Transmission lines" in keys(json)
@@ -213,8 +223,8 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
             line = TransmissionLine(
                 line_name,
                 length(lines) + 1,
-                name_to_bus[dict["Source bus"]],
-                name_to_bus[dict["Target bus"]],
+                scenario.data[:bus_by_name][dict["Source bus"]],
+                scenario.data[:bus_by_name][dict["Target bus"]],
                 to_scalar(dict["Susceptance (S)"]),
                 to_timeseries(
                     dict["Normal flow limit (MW)"],
@@ -258,22 +268,13 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
         end
     end
 
-    scenario = UnitCommitmentScenario(
-        name = scenario_name,
-        probability = probability,
-        buses_by_name = Dict(b.name => b for b in buses),
-        buses = buses,
-        contingencies_by_name = Dict(c.name => c for c in contingencies),
-        contingencies = contingencies,
-        lines_by_name = Dict(l.name => l for l in lines),
-        lines = lines,
-        investment_cost_weight = investment_cost_weight,
-        power_balance_penalty = power_balance_penalty,
-        time = T,
-        time_step = time_step,
-        isf = spzeros(Float64, length(lines), length(buses) - 1),
-        lodf = spzeros(Float64, length(lines), length(lines)),
-    )
+    # Update scenario with contingencies and lines
+    scenario.contingencies_by_name = Dict(c.name => c for c in contingencies)
+    scenario.contingencies = contingencies
+    scenario.lines_by_name = Dict(l.name => l for l in lines)
+    scenario.lines = lines
+    scenario.isf = spzeros(Float64, length(lines), length(scenario.data[:bus]) - 1)
+    scenario.lodf = spzeros(Float64, length(lines), length(lines))
 
     for ext in extensions
         read_json(json, scenario, ext)

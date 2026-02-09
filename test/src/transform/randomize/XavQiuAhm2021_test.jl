@@ -14,7 +14,7 @@ function get_scenario()
         "matpower/case118/2017-02-01",
     ).scenarios[1]
 end
-system_load(sc) = sum(b.load for b in sc.buses)
+system_load(sc) = sum(b.load for b in sc.data[:bus])
 test_approx(x, y) = @test isapprox(x, y, atol = 1e-3)
 
 function transform_randomize_XavQiuAhm2021_test()
@@ -28,7 +28,7 @@ function transform_randomize_XavQiuAhm2021_test()
             test_approx(unit.startup_categories[1].cost[1], 7570.42)
 
             # Check original load share
-            bus = sc.buses[1]
+            bus = sc.data[:bus][1]
             prev_system_load = system_load(sc)
             test_approx(bus.load[1] / prev_system_load[1], 0.012)
 

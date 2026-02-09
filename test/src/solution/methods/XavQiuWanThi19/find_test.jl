@@ -15,11 +15,11 @@ function solution_methods_XavQiuWanThi19_find_test()
         end
         isf = UnitCommitment._injection_shift_factors(
             lines = sc.lines,
-            buses = sc.buses,
+            buses = sc.data[:bus],
         )
         lodf = UnitCommitment._line_outage_factors(
             lines = sc.lines,
-            buses = sc.buses,
+            buses = sc.data[:bus],
             isf = isf,
         )
         inj = [1000.0 for b in 1:13, t in 1:instance.time]

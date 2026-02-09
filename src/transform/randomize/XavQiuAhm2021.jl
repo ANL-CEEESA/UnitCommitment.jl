@@ -150,12 +150,12 @@ function _randomize_load_share(
     sc::UnitCommitmentScenario,
     distribution,
 )::Nothing
-    α = rand(rng, distribution, length(sc.buses))
+    α = rand(rng, distribution, length(sc.data[:bus]))
     for t in 1:sc.time
-        total = sum(bus.load[t] for bus in sc.buses)
+        total = sum(bus.load[t] for bus in sc.data[:bus])
         den =
-            sum(bus.load[t] / total * α[i] for (i, bus) in enumerate(sc.buses))
-        for (i, bus) in enumerate(sc.buses)
+            sum(bus.load[t] / total * α[i] for (i, bus) in enumerate(sc.data[:bus]))
+        for (i, bus) in enumerate(sc.data[:bus])
             bus.load[t] *= α[i] / den
         end
     end
@@ -182,8 +182,8 @@ function _randomize_load_profile(
     system_load = system_load ./ maximum(system_load) .* peak_load
 
     # Scale bus loads to match the new system load
-    prev_system_load = sum(b.load for b in sc.buses)
-    for b in sc.buses
+    prev_system_load = sum(b.load for b in sc.data[:bus])
+    for b in sc.data[:bus]
         for t in 1:sc.time
             b.load[t] *= system_load[t] / prev_system_load[t]
         end

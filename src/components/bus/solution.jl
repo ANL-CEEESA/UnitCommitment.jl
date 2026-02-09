@@ -4,8 +4,8 @@
 
 function _store_bus_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
     sol["Bus: Net injection (MW)"] =
-        _timeseries(model, :net_injection, sc.buses, T, sc = sc)
+        _timeseries(model, :net_injection, sc.data[:bus], T, sc = sc)
     sol["Bus: Load curtail (MW)"] =
-        _timeseries(model, :curtail, sc.buses, T, sc = sc)
+        _timeseries(model, :curtail, sc.data[:bus], T, sc = sc)
     return
 end

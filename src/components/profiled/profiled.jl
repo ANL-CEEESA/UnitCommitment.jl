@@ -19,7 +19,7 @@ function read_json(
             unit_type !== nothing || continue
             lowercase(unit_type) === "profiled" || continue
 
-            bus = sc.buses_by_name[dict["Bus"]]
+            bus = sc.data[:bus_by_name][dict["Bus"]]
             pu = ProfiledUnit(
                 name = unit_name,
                 bus = bus,

@@ -26,7 +26,7 @@ function solution(model::JuMP.Model)::OrderedDict
 end
 
 function _store_line_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
-    non_slack_buses = [b for b in sc.buses if b.offset > 0]
+    non_slack_buses = [b for b in sc.data[:bus] if b.offset > 0]
     net_injection = model[:net_injection]
     net_injection_values = [
         value(net_injection[sc.name, b.name, t]) for b in non_slack_buses,

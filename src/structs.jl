@@ -24,8 +24,6 @@ mutable struct Contingency
 end
 
 Base.@kwdef mutable struct UnitCommitmentScenario
-    buses_by_name::Dict{AbstractString,Bus}
-    buses::Vector{Bus}
     contingencies_by_name::Dict{AbstractString,Contingency}
     contingencies::Vector{Contingency}
     isf::Array{Float64,2}
@@ -51,7 +49,7 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     sc = instance.scenarios[1]
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.scenarios)) scenarios, ")
-    print(io, "$(length(sc.buses)) buses, ")
+    summarize_buses(instance, io)
     print(io, "$(length(sc.lines)) lines, ")
     print(io, "$(length(sc.contingencies)) contingencies, ")
     for ext in instance.extensions

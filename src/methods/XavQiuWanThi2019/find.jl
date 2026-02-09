@@ -13,10 +13,10 @@ function _find_violations(
     instance = model[:instance]
     net_injection = model[:net_injection]
     overflow = model[:overflow]
-    length(sc.buses) > 1 || return []
+    length(sc.data[:bus]) > 1 || return []
     violations = []
 
-    non_slack_buses = [b for b in sc.buses if b.offset > 0]
+    non_slack_buses = [b for b in sc.data[:bus] if b.offset > 0]
     net_injection_values = [
         value(net_injection[sc.name, b.name, t]) for b in non_slack_buses,
         t in 1:instance.time
@@ -68,7 +68,7 @@ function _find_violations(;
     max_per_line::Int,
     max_per_period::Int,
 )::Array{_Violation,1}
-    B = length(sc.buses) - 1
+    B = length(sc.data[:bus]) - 1
     L = length(sc.lines)
     T = instance.time
     K = maxthreadid()

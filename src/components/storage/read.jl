@@ -8,7 +8,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
 
     if "Storage units" in keys(json)
         for (storage_name, dict) in json["Storage units"]
-            bus = sc.buses_by_name[dict["Bus"]]
+            bus = sc.data[:bus_by_name][dict["Bus"]]
             min_level = to_timeseries(
                 to_scalar(dict["Minimum level (MWh)"], default = 0.0),
                 T,

@@ -151,14 +151,14 @@ function _setup_transmission(
 )::Nothing
     θ = _init(model, :theta)
     for t in 1:model[:instance].time
-        for b in sc.buses
+        for b in sc.data[:bus]
             θ[sc.name, b.name, t] = @variable(
                 model,
                 lower_bound = -formulation.phase_angle_limit,
                 upper_bound = formulation.phase_angle_limit
             )
         end
-        fix(θ[sc.name, sc.buses[1].name, t], 0.0; force = true) # reference bus
+        fix(θ[sc.name, sc.data[:bus][1].name, t], 0.0; force = true) # reference bus
     end
     return
 end
