@@ -17,7 +17,7 @@ end
 function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
-        for unit in sc.data[:thermal]
+        for unit in sc[:thermal]
             production =
                 solution[sc.name]["Thermal: Production (MW)"][unit.name]
             reserve = [0.0 for _ in 1:instance.time]
@@ -83,7 +83,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 end
 
                 # Verify reserve eligibility
-                for r in sc.data[:reserves]
+                for r in sc[:reserves]
                     if unit ∉ r.thermal_units && (
                         unit in keys(
                             solution[sc.name]["Reserve: Spinning (MW)"][r.name],
@@ -282,7 +282,7 @@ function _validate_reserves(instance, solution, tol = 0.01)
     err_count = 0
     for sc in instance.scenarios
         for t in 1:instance.time
-            for r in sc.data[:reserves]
+            for r in sc[:reserves]
                 provided = sum(
                     solution[sc.name]["Reserve: Spinning (MW)"][r.name][g.name][t]
                     for g in r.thermal_units

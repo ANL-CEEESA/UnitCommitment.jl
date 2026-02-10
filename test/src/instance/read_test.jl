@@ -18,34 +18,34 @@ function instance_read_test()
 
         @test length(instance.scenarios) == 1
         sc = instance.scenarios[1]
-        @test length(sc.data[:lines]) == 20
-        @test length(sc.data[:bus]) == 14
+        @test length(sc[:lines]) == 20
+        @test length(sc[:bus]) == 14
         @test length(sc.thermal_units) == 6
-        @test length(sc.data[:contingencies]) == 19
-        @test length(sc.data[:psload]) == 1
+        @test length(sc[:contingencies]) == 19
+        @test length(sc[:psload]) == 1
         @test instance.time == 4
-        @test sc.time_step == 60
+        @test sc[:time_step] == 60
 
-        @test sc.data[:lines][5].name == "l5"
-        @test sc.data[:lines][5].source.name == "b2"
-        @test sc.data[:lines][5].target.name == "b5"
-        @test sc.data[:lines][5].susceptance ≈ 10.037550333
-        @test sc.data[:lines][5].normal_flow_limit == [1e8 for t in 1:4]
-        @test sc.data[:lines][5].emergency_flow_limit == [1e8 for t in 1:4]
-        @test sc.data[:lines][5].flow_limit_penalty == [5e3 for t in 1:4]
-        @test sc.data[:line_by_name]["l5"].name == "l5"
+        @test sc[:lines][5].name == "l5"
+        @test sc[:lines][5].source.name == "b2"
+        @test sc[:lines][5].target.name == "b5"
+        @test sc[:lines][5].susceptance ≈ 10.037550333
+        @test sc[:lines][5].normal_flow_limit == [1e8 for t in 1:4]
+        @test sc[:lines][5].emergency_flow_limit == [1e8 for t in 1:4]
+        @test sc[:lines][5].flow_limit_penalty == [5e3 for t in 1:4]
+        @test sc[:line_by_name]["l5"].name == "l5"
 
-        @test sc.data[:lines][1].name == "l1"
-        @test sc.data[:lines][1].source.name == "b1"
-        @test sc.data[:lines][1].target.name == "b2"
-        @test sc.data[:lines][1].susceptance ≈ 29.496860773945
-        @test sc.data[:lines][1].normal_flow_limit == [300.0 for t in 1:4]
-        @test sc.data[:lines][1].emergency_flow_limit == [400.0 for t in 1:4]
-        @test sc.data[:lines][1].flow_limit_penalty == [1e3 for t in 1:4]
+        @test sc[:lines][1].name == "l1"
+        @test sc[:lines][1].source.name == "b1"
+        @test sc[:lines][1].target.name == "b2"
+        @test sc[:lines][1].susceptance ≈ 29.496860773945
+        @test sc[:lines][1].normal_flow_limit == [300.0 for t in 1:4]
+        @test sc[:lines][1].emergency_flow_limit == [400.0 for t in 1:4]
+        @test sc[:lines][1].flow_limit_penalty == [1e3 for t in 1:4]
 
-        @test sc.data[:bus][9].name == "b9"
-        @test sc.data[:bus][9].load == [35.36638, 33.25495, 31.67138, 31.14353]
-        @test sc.data[:bus_by_name]["b9"].name == "b9"
+        @test sc[:bus][9].name == "b9"
+        @test sc[:bus][9].load == [35.36638, 33.25495, 31.67138, 31.14353]
+        @test sc[:bus_by_name]["b9"].name == "b9"
 
         @test sc.reserves[1].name == "r1"
         @test sc.reserves[1].type == "spinning"
@@ -108,17 +108,17 @@ function instance_read_test()
         @test length(unit.reserves) == 1
         @test unit.reserves[1].name == "r1"
 
-        @test sc.data[:contingencies][1].lines == [sc.data[:lines][1]]
-        @test sc.data[:contingencies][1].thermal_units == []
-        @test sc.data[:contingencies][1].name == "c1"
-        @test sc.data[:contingencies_by_name]["c1"].name == "c1"
+        @test sc[:contingencies][1].lines == [sc[:lines][1]]
+        @test sc[:contingencies][1].thermal_units == []
+        @test sc[:contingencies][1].name == "c1"
+        @test sc[:contingencies_by_name]["c1"].name == "c1"
 
-        load = sc.data[:psload][1]
+        load = sc[:psload][1]
         @test load.name == "ps1"
         @test load.bus.name == "b3"
         @test load.revenue == [100.0 for t in 1:4]
         @test load.demand == [50.0 for t in 1:4]
-        @test sc.data[:psload_by_name]["ps1"].name == "ps1"
+        @test sc[:psload_by_name]["ps1"].name == "ps1"
     end
 
     @testset "read_benchmark sub-hourly" begin
@@ -238,22 +238,22 @@ function instance_read_test()
 
         @test length(instance.scenarios) == 1
         sc = instance.scenarios[1]
-        @test length(sc.data[:lines]) == 77
-        @test length(sc.data[:bus]) == 24
+        @test length(sc[:lines]) == 77
+        @test length(sc[:bus]) == 24
         @test length(sc.profiled_units) == 32
         @test instance.time == 1
-        @test sc.time_step == 60
-        @test sc.investment_cost_weight == 1.0
+        @test sc[:time_step] == 60
+        @test sc[:investment_cost_weight] == 1.0
 
-        @test sc.data[:lines][1].name == "l1"
-        @test sc.data[:lines][1].source.name == "b1"
-        @test sc.data[:lines][1].target.name == "b2"
-        @test sc.data[:lines][1].susceptance ≈ 71.94244604316548
-        @test sc.data[:lines][1].normal_flow_limit == [175.0]
+        @test sc[:lines][1].name == "l1"
+        @test sc[:lines][1].source.name == "b1"
+        @test sc[:lines][1].target.name == "b2"
+        @test sc[:lines][1].susceptance ≈ 71.94244604316548
+        @test sc[:lines][1].normal_flow_limit == [175.0]
 
-        @test sc.data[:bus][3].name == "b3"
-        @test sc.data[:bus][3].load == [540.0]
-        @test sc.data[:bus_by_name]["b3"].name == "b3"
+        @test sc[:bus][3].name == "b3"
+        @test sc[:bus][3].load == [540.0]
+        @test sc[:bus_by_name]["b3"].name == "b3"
 
         unit = sc.profiled_units[1]
         @test unit.name == "gen1"

@@ -8,7 +8,7 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
     @testset "_susceptance_matrix" begin
         instance = UnitCommitment.read(fixture("/case14.json.gz"))
         sc = instance.scenarios[1]
-        actual = UnitCommitment._susceptance_matrix(sc.data[:lines])
+        actual = UnitCommitment._susceptance_matrix(sc[:lines])
         @test size(actual) == (20, 20)
         expected = Diagonal([
             29.5,
@@ -39,8 +39,8 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
         instance = UnitCommitment.read(fixture("/case14.json.gz"))
         sc = instance.scenarios[1]
         actual = UnitCommitment._reduced_incidence_matrix(
-            lines = sc.data[:lines],
-            buses = sc.data[:bus],
+            lines = sc[:lines],
+            buses = sc[:bus],
         )
         @test size(actual) == (20, 13)
         @test actual[1, 1] == -1.0
@@ -87,8 +87,8 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
         instance = UnitCommitment.read(fixture("/case14.json.gz"))
         sc = instance.scenarios[1]
         actual = UnitCommitment._injection_shift_factors(
-            lines = sc.data[:lines],
-            buses = sc.data[:bus],
+            lines = sc[:lines],
+            buses = sc[:bus],
         )
         @test size(actual) == (20, 13)
         @test round.(actual, digits = 2) == [
@@ -119,24 +119,24 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
         instance = UnitCommitment.read(fixture("/case14.json.gz"))
         sc = instance.scenarios[1]
         isf_before = UnitCommitment._injection_shift_factors(
-            lines = sc.data[:lines],
-            buses = sc.data[:bus],
+            lines = sc[:lines],
+            buses = sc[:bus],
         )
         lodf = UnitCommitment._line_outage_factors(
-            lines = sc.data[:lines],
-            buses = sc.data[:bus],
+            lines = sc[:lines],
+            buses = sc[:bus],
             isf = isf_before,
         )
-        for contingency in sc.data[:contingencies]
+        for contingency in sc[:contingencies]
             for lc in contingency.lines
                 prev_susceptance = lc.susceptance
                 lc.susceptance = 0.0
                 isf_after = UnitCommitment._injection_shift_factors(
-                    lines = sc.data[:lines],
-                    buses = sc.data[:bus],
+                    lines = sc[:lines],
+                    buses = sc[:bus],
                 )
                 lc.susceptance = prev_susceptance
-                for lm in sc.data[:lines]
+                for lm in sc[:lines]
                     expected = isf_after[lm.offset, :]
                     actual =
                         isf_before[lm.offset, :] +

@@ -9,21 +9,21 @@ function solution_methods_XavQiuWanThi19_find_test()
     @testset "find_violations" begin
         instance = UnitCommitment.read(fixture("case14.json.gz"))
         sc = instance.scenarios[1]
-        for line in sc.data[:lines], t in 1:instance.time
+        for line in sc[:lines], t in 1:instance.time
             line.normal_flow_limit[t] = 1.0
             line.emergency_flow_limit[t] = 1.0
         end
         isf = UnitCommitment._injection_shift_factors(
-            lines = sc.data[:lines],
-            buses = sc.data[:bus],
+            lines = sc[:lines],
+            buses = sc[:bus],
         )
         lodf = UnitCommitment._line_outage_factors(
-            lines = sc.data[:lines],
-            buses = sc.data[:bus],
+            lines = sc[:lines],
+            buses = sc[:bus],
             isf = isf,
         )
         inj = [1000.0 for b in 1:13, t in 1:instance.time]
-        overflow = [0.0 for l in sc.data[:lines], t in 1:instance.time]
+        overflow = [0.0 for l in sc[:lines], t in 1:instance.time]
         violations = UnitCommitment._find_violations(
             instance = instance,
             sc = sc,

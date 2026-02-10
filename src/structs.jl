@@ -7,13 +7,13 @@ abstract type SolutionMethod end
 
 Base.@kwdef mutable struct UnitCommitmentScenario
     name::String
-    investment_cost_weight::Float64
-    power_balance_penalty::Vector{Float64}
-    probability::Float64
-    time::Int
-    time_step::Int
     data::Dict = Dict()
 end
+
+Base.getindex(sc::UnitCommitmentScenario, key) = sc.data[key]
+Base.setindex!(sc::UnitCommitmentScenario, value, key) = sc.data[key] = value
+Base.haskey(sc::UnitCommitmentScenario, key) = haskey(sc.data, key)
+Base.get(sc::UnitCommitmentScenario, key, default) = get(sc.data, key, default)
 
 Base.@kwdef mutable struct UnitCommitmentInstance
     time::Int

@@ -45,11 +45,11 @@ function store_solution(
             sol[sc.name]["LMP: Total (\$/MWh)"] = OrderedDict(
                 b.name => [
                     model.ext[:lmp_values][sc.name, b.name, t] for t in 1:T
-                ] for b in sc.data[:bus]
+                ] for b in sc[:bus]
             )
         sol[sc.name]["LMP: Energy (\$/MWh)"] = OrderedDict(
             b.name => [
-                minimum(lmp_total[bb.name][t] for bb in sc.data[:bus])
+                minimum(lmp_total[bb.name][t] for bb in sc[:bus])
                 for t in 1:T
             ] for b in sc.buses
         )
@@ -60,8 +60,8 @@ function store_solution(
                 t in 1:T
             ] for b in sc.buses
         )
-        if haskey(sc.data, :thermal)
-            thermal_units = sc.data[:thermal]
+        if haskey(sc, :thermal)
+            thermal_units = sc[:thermal]
             sol[sc.name]["Thermal: Gross revenue (\$)"] = OrderedDict(
                 g.name => [
                     sol[sc.name]["Thermal: Production (MW)"][g.name][t] *
@@ -85,7 +85,7 @@ function store_solution(
         end
 
         if "Profiled: Production (MW)" in keys(sol[sc.name])
-            profiled_units = sc.data[:profiled]
+            profiled_units = sc[:profiled]
             sol[sc.name]["Profiled: Gross revenue (\$)"] = OrderedDict(
                 pu.name => [
                     sol[sc.name]["Profiled: Production (MW)"][pu.name][t] *
@@ -112,7 +112,7 @@ function store_solution(
         )
 
         if "Price-sensitive load: Demand served (MW)" in keys(sol[sc.name])
-            ps_loads = sc.data[:psload]
+            ps_loads = sc[:psload]
             sol[sc.name]["Price-sensitive load: Expense (\$)"] = OrderedDict(
                 ps.name => [
                     sol[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t] *

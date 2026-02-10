@@ -25,7 +25,7 @@ function slice(
     modified = deepcopy(instance)
     modified.time = length(range)
     for sc in modified.scenarios
-        sc.power_balance_penalty = sc.power_balance_penalty[range]
+        sc[:power_balance_penalty] = sc[:power_balance_penalty][range]
         for b in sc.buses
             b.load = b.load[range]
         end

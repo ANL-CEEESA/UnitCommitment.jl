@@ -10,7 +10,7 @@ function read_json(
     sc::UnitCommitmentScenario,
     ::ProfiledUnitsExt,
 )
-    T = sc.time
+    T = sc[:time]
     profiled_units = ProfiledUnit[]
 
     if "Generators" in keys(json)
@@ -19,7 +19,7 @@ function read_json(
             unit_type !== nothing || continue
             lowercase(unit_type) === "profiled" || continue
 
-            bus = sc.data[:bus_by_name][dict["Bus"]]
+            bus = sc[:bus_by_name][dict["Bus"]]
             pu = ProfiledUnit(
                 name = unit_name,
                 bus = bus,
@@ -40,8 +40,8 @@ function read_json(
         end
     end
 
-    sc.data[:profiled] = profiled_units
-    sc.data[:profiled_by_name] = Dict(pu.name => pu for pu in profiled_units)
+    sc[:profiled] = profiled_units
+    sc[:profiled_by_name] = Dict(pu.name => pu for pu in profiled_units)
     return
 end
 
@@ -56,7 +56,7 @@ function build_model(
 
     # Production variables
     for sc in instance.scenarios
-        for pu in sc.data[:profiled], t in 1:T
+        for pu in sc[:profiled], t in 1:T
             prod[sc.name, pu.name, t] = @variable(
                 model,
                 lower_bound = pu.min_power[t],
@@ -71,7 +71,7 @@ function build_model(
     end
 
     # Investment variables
-    for pu in instance.scenarios[1].data[:profiled]
+    for pu in instance.scenarios[1][:profiled]
         pu.invest[1] > 0.0 || continue
         invest[pu.name, 0] = 0.0
         for t in 1:T
@@ -81,30 +81,30 @@ function build_model(
 
     # Production costs
     for t in 1:T, sc in instance.scenarios
-        for pu in sc.data[:profiled]
+        for pu in sc[:profiled]
             add_to_expression!(
                 model[:obj],
                 prod[sc.name, pu.name, t],
-                pu.cost[t] * sc.probability,
+                pu.cost[t] * sc[:probability],
             )
         end
     end
 
     # Investment costs
-    for pu in instance.scenarios[1].data[:profiled]
+    for pu in instance.scenarios[1][:profiled]
         pu.invest[1] > 0.0 || continue
         for t in 1:T
             add_to_expression!(
                 model[:obj],
                 invest[pu.name, t] - invest[pu.name, t-1],
-                pu.invest[t] * instance.scenarios[1].investment_cost_weight,
+                pu.invest[t] * instance.scenarios[1][:investment_cost_weight],
             )
         end
     end
 
     # Unit is permanently built once invested
     eq_invest_nondec = _init(model, :eq_invest_nondec)
-    for pu in instance.scenarios[1].data[:profiled]
+    for pu in instance.scenarios[1][:profiled]
         pu.invest[1] > 0.0 || continue
         for t in 2:T
             eq_invest_nondec[pu.name, t] =
@@ -116,7 +116,7 @@ function build_model(
     eq_invest_prod_ub = _init(model, :eq_invest_prod_ub)
     eq_invest_prod_lb = _init(model, :eq_invest_prod_lb)
     for sc in instance.scenarios
-        for pu in sc.data[:profiled]
+        for pu in sc[:profiled]
             pu.invest[1] > 0.0 || continue
             for t in 1:T
                 eq_invest_prod_ub[sc.name, pu.name, t] = @constraint(
@@ -144,7 +144,7 @@ function store_solution(
     instance = model[:instance]
     T = instance.time
     for sc in instance.scenarios
-        profiled_units = sc.data[:profiled]
+        profiled_units = sc[:profiled]
 
         sol[sc.name]["Profiled: Production (MW)"] =
             _timeseries(model, :prod, profiled_units, T, sc = sc)
@@ -183,7 +183,7 @@ function validate!(
 )::Int
     err_count = 0
 
-    for sc in instance.scenarios, pu in sc.data[:profiled]
+    for sc in instance.scenarios, pu in sc[:profiled]
         production = solution[sc.name]["Profiled: Production (MW)"][pu.name]
         for t in 1:instance.time
             # Unit must produce at least its minimum power
@@ -220,7 +220,7 @@ function summarize(
     ::ProfiledUnitsExt,
     io::IO,
 )::Nothing
-    count = length(instance.scenarios[1].data[:profiled])
+    count = length(instance.scenarios[1][:profiled])
     print(io, "$count profiled units, ")
     return
 end
@@ -230,7 +230,7 @@ function slice!(
     range::UnitRange{Int},
     ::ProfiledUnitsExt,
 )::Nothing
-    for pu in sc.data[:profiled]
+    for pu in sc[:profiled]
         pu.max_power = pu.max_power[range]
         pu.min_power = pu.min_power[range]
         pu.cost = pu.cost[range]

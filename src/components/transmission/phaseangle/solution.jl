@@ -11,14 +11,14 @@ function store_solution(
     T = instance.time
 
     for sc in instance.scenarios
-        lines = sc.data[:lines]
-        non_slack_buses = [b for b in sc.data[:bus] if b.offset > 0]
+        lines = sc[:lines]
+        non_slack_buses = [b for b in sc[:bus] if b.offset > 0]
         net_injection = model[:net_injection]
         net_injection_values = [
             value(net_injection[sc.name, b.name, t]) for
             b in non_slack_buses, t in 1:T
         ]
-        flows = sc.data[:isf] * net_injection_values
+        flows = sc[:isf] * net_injection_values
 
         sol[sc.name]["Line: Flow (MW)"] = OrderedDict(
             line.name =>

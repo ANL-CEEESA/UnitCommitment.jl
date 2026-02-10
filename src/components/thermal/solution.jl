@@ -24,7 +24,7 @@ function _store_thermal_solution!(
 )
     thermal_production = OrderedDict(
         g.name => _thermal_production(model, g, sc, T) for
-        g in sc.data[:thermal]
+        g in sc[:thermal]
     )
     sol["Thermal: Production (MW)"] = thermal_production
     sol["Thermal: Utilization (%)"] = OrderedDict(
@@ -33,23 +33,23 @@ function _store_thermal_solution!(
                 100.0 * thermal_production[g.name][t] / g.max_power[t],
                 digits = 2,
             ) for t in 1:T
-        ] for g in sc.data[:thermal]
+        ] for g in sc[:thermal]
     )
     sol["Thermal: Production cost (\$)"] = OrderedDict(
         g.name => _thermal_production_cost(model, g, sc, T) for
-        g in sc.data[:thermal]
+        g in sc[:thermal]
     )
     sol["Thermal: Startup cost (\$)"] = OrderedDict(
-        g.name => _thermal_startup_cost(model, g, T) for g in sc.data[:thermal]
+        g.name => _thermal_startup_cost(model, g, T) for g in sc[:thermal]
     )
-    sol["Thermal: Is on"] = _timeseries(model, :is_on, sc.data[:thermal], T)
+    sol["Thermal: Is on"] = _timeseries(model, :is_on, sc[:thermal], T)
     sol["Thermal: Switch on"] =
-        _timeseries(model, :switch_on, sc.data[:thermal], T)
+        _timeseries(model, :switch_on, sc[:thermal], T)
     sol["Thermal: Switch off"] =
-        _timeseries(model, :switch_off, sc.data[:thermal], T)
+        _timeseries(model, :switch_off, sc[:thermal], T)
     sol["Thermal: Investment status"] = OrderedDict(
         g.name => [value(model[:invest][g.name, t]) for t in 1:T] for
-        g in sc.data[:thermal] if g.invest[1] > 0.0
+        g in sc[:thermal] if g.invest[1] > 0.0
     )
     return
 end
@@ -97,12 +97,12 @@ function _store_reserve_solution!(
             g.name => [
                 value(model[:reserve][sc.name, r.name, g.name, t]) for t in 1:T
             ] for g in r.thermal_units
-        ) for r in sc.data[:reserves]
+        ) for r in sc[:reserves]
     )
     sol["Reserve: Spinning shortfall (MW)"] = OrderedDict(
         r.name => [
             value(model[:reserve_shortfall][sc.name, r.name, t]) for t in 1:T
-        ] for r in sc.data[:reserves]
+        ] for r in sc[:reserves]
     )
     return
 end

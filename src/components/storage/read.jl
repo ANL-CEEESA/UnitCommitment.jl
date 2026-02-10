@@ -3,12 +3,12 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
-    T = sc.time
+    T = sc[:time]
     storage_units = StorageUnit[]
 
     if "Storage units" in keys(json)
         for (storage_name, dict) in json["Storage units"]
-            bus = sc.data[:bus_by_name][dict["Bus"]]
+            bus = sc[:bus_by_name][dict["Bus"]]
             min_level = to_timeseries(
                 to_scalar(dict["Minimum level (MWh)"], default = 0.0),
                 T,
@@ -83,7 +83,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
         end
     end
 
-    sc.data[:storage] = storage_units
-    sc.data[:storage_by_name] = Dict(su.name => su for su in storage_units)
+    sc[:storage] = storage_units
+    sc[:storage_by_name] = Dict(su.name => su for su in storage_units)
     return
 end

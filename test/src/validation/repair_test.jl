@@ -15,7 +15,7 @@ function validation_repair_test()
             extensions = [UnitCommitment.ThermalExt()]
             sc = UnitCommitment._from_json(json, extensions)
             instance = UnitCommitment.UnitCommitmentInstance(
-                time = sc.time,
+                time = sc[:time],
                 scenarios = [sc],
                 extensions = extensions,
             )
@@ -30,7 +30,7 @@ function validation_repair_test()
             extensions = [UnitCommitment.ThermalExt()]
             sc = UnitCommitment._from_json(json, extensions)
             instance = UnitCommitment.UnitCommitmentInstance(
-                time = sc.time,
+                time = sc[:time],
                 scenarios = [sc],
                 extensions = extensions,
             )
@@ -44,7 +44,7 @@ function validation_repair_test()
             extensions = [UnitCommitment.ThermalExt()]
             sc = UnitCommitment._from_json(json, extensions)
             instance = UnitCommitment.UnitCommitmentInstance(
-                time = sc.time,
+                time = sc[:time],
                 scenarios = [sc],
                 extensions = extensions,
             )

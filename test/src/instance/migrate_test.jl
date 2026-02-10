@@ -18,7 +18,7 @@ function instance_migrate_test()
         @test length(instance.scenarios) == 1
         sc = instance.scenarios[1]
         @test length(sc.thermal_units) == 6
-        @test length(sc.data[:bus]) == 14
-        @test length(sc.data[:lines]) == 20
+        @test length(sc[:bus]) == 14
+        @test length(sc[:lines]) == 20
     end
 end

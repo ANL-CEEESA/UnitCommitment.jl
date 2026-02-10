@@ -7,7 +7,7 @@ function summarize(
     ::ThermalExt,
     io::IO,
 )::Nothing
-    count = length(instance.scenarios[1].data[:thermal])
+    count = length(instance.scenarios[1][:thermal])
     print(io, "$count thermal units, ")
     return
 end

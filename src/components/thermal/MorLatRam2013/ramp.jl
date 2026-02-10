@@ -7,7 +7,7 @@ function _add_thermal_constr_ramping!(
     instance::UnitCommitmentInstance,
     ::MorLatRam2013.Ramping,
 )
-    for sc in instance.scenarios, g in sc.data[:thermal]
+    for sc in instance.scenarios, g in sc[:thermal]
         gn = g.name
         prod_above = model[:prod_above]
         reserve = _total_reserves(model, instance, g, sc)

@@ -7,10 +7,10 @@ function slice!(
     range::UnitRange{Int},
     ::ThermalExt,
 )::Nothing
-    for r in sc.data[:reserves]
+    for r in sc[:reserves]
         r.amount = r.amount[range]
     end
-    for u in sc.data[:thermal]
+    for u in sc[:thermal]
         u.max_power = u.max_power[range]
         u.min_power = u.min_power[range]
         u.must_run = u.must_run[range]

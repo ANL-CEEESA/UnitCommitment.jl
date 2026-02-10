@@ -70,7 +70,7 @@ function solve_market(
     solution["DA"] = solution_da
     solution["RT"] = []
 
-    # count the time, sc.time = n-slots, sc.time_step = slot-interval
+    # count the time, sc[:time] = n-slots, sc[:time_step] = slot-interval
     # sufficient to look at only one scenario
     sc = instance_da.scenarios[1]
 
@@ -81,11 +81,11 @@ function solve_market(
         first(values(solution_da))["Thermal: Is on"]
     end
     # max time (min) of the DA market
-    max_time = sc.time * sc.time_step
+    max_time = sc[:time] * sc[:time_step]
     # current time increments through the RT market list
     current_time = 0
     # DA market time slots in (min)
-    da_time_intervals = [sc.time_step * ts for ts in 1:sc.time]
+    da_time_intervals = [sc[:time_step] * ts for ts in 1:sc[:time]]
 
     # get the uc status and set each uc fixed
     solution_rt = OrderedDict()
@@ -97,26 +97,26 @@ function solve_market(
         # check instance time
         sc = instance_rt.scenarios[1]
         # check each time slot in the RT model
-        for ts in 1:sc.time
-            slot_t_end = current_time + ts * sc.time_step
+        for ts in 1:sc[:time]
+            slot_t_end = current_time + ts * sc[:time_step]
             # ensure this RT's slot time ub never exceeds max time of DA
             slot_t_end <= max_time || error(
                 "The time of the real-time market cannot exceed the time of the day-ahead market.",
             )
             # get the slot start time to determine commitment status
-            slot_t_start = slot_t_end - sc.time_step
+            slot_t_start = slot_t_end - sc[:time_step]
             # find the index of the first DA time slot that covers slot_t_start
             da_time_slot = findfirst(ti -> slot_t_start < ti, da_time_intervals)
             # update thermal unit commitment status
-            for g in sc.data[:thermal]
+            for g in sc[:thermal]
                 g.commitment_status[ts] = is_on_da[g.name][da_time_slot] ≈ 1.0
             end
         end
         # update current time by ONE slot only
-        current_time += sc.time_step
+        current_time += sc[:time_step]
         # set initial status for all generators in all scenarios
         if !isempty(solution_rt) && !isempty(prev_initial_status)
-            for g in sc.data[:thermal]
+            for g in sc[:thermal]
                 g.initial_power =
                     solution_rt["Thermal: Production (MW)"][g.name][1]
                 g.initial_status = UnitCommitment._determine_initial_status(
@@ -129,7 +129,7 @@ function solve_market(
         _, solution_rt =
             _build_and_optimize(instance_rt, settings, optimizer = optimizer)
         prev_initial_status =
-            OrderedDict(g.name => g.initial_status for g in sc.data[:thermal])
+            OrderedDict(g.name => g.initial_status for g in sc[:thermal])
         push!(solution["RT"], solution_rt)
     end # end of for-loop that checks each RT market
     return solution

@@ -5,7 +5,7 @@
 function repair!(sc::UnitCommitmentScenario, ::ThermalExt)::Int
     n_errors = 0
 
-    for g in sc.data[:thermal]
+    for g in sc[:thermal]
 
         # Startup costs and delays must be increasing
         for s in 2:length(g.startup_categories)
@@ -28,7 +28,7 @@ function repair!(sc::UnitCommitmentScenario, ::ThermalExt)::Int
             end
         end
 
-        for t in 1:sc.time
+        for t in 1:sc[:time]
             # Production cost curve should be convex
             for k in 2:length(g.cost_segments)
                 cost = g.cost_segments[k].cost[t]

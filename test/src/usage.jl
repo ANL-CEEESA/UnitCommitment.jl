@@ -6,8 +6,8 @@ using UnitCommitment, LinearAlgebra, HiGHS, JuMP, JSON
 
 function _set_flow_limits!(instance)
     for sc in instance.scenarios
-        sc.power_balance_penalty = [100_000 for _ in 1:instance.time]
-        for line in sc.data[:lines], t in 1:4
+        sc[:power_balance_penalty] = [100_000 for _ in 1:instance.time]
+        for line in sc[:lines], t in 1:4
             line.normal_flow_limit[t] = 10.0
         end
     end

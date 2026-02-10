@@ -7,7 +7,7 @@ function slice!(
     range::UnitRange{Int},
     ::PhaseAngleTransmissionExt,
 )::Nothing
-    for l in sc.data[:lines]
+    for l in sc[:lines]
         l.normal_flow_limit = l.normal_flow_limit[range]
         l.emergency_flow_limit = l.emergency_flow_limit[range]
         l.flow_limit_penalty = l.flow_limit_penalty[range]

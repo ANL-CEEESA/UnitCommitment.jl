@@ -3,7 +3,7 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function _read_buses!(json::AbstractDict, sc::UnitCommitmentScenario)::Nothing
-    T = sc.time
+    T = sc[:time]
     buses = Bus[]
     name_to_bus = Dict{String,Bus}()
 
@@ -14,7 +14,7 @@ function _read_buses!(json::AbstractDict, sc::UnitCommitmentScenario)::Nothing
         push!(buses, bus)
     end
 
-    sc.data[:bus] = buses
-    sc.data[:bus_by_name] = name_to_bus
+    sc[:bus] = buses
+    sc[:bus_by_name] = name_to_bus
     return
 end

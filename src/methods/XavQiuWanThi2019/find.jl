@@ -13,16 +13,16 @@ function _find_violations(
     instance = model[:instance]
     net_injection = model[:net_injection]
     overflow = model[:overflow]
-    length(sc.data[:bus]) > 1 || return []
+    length(sc[:bus]) > 1 || return []
     violations = []
 
-    non_slack_buses = [b for b in sc.data[:bus] if b.offset > 0]
+    non_slack_buses = [b for b in sc[:bus] if b.offset > 0]
     net_injection_values = [
         value(net_injection[sc.name, b.name, t]) for b in non_slack_buses,
         t in 1:instance.time
     ]
     overflow_values = [
-        value(overflow[sc.name, lm.name, t]) for lm in sc.data[:lines],
+        value(overflow[sc.name, lm.name, t]) for lm in sc[:lines],
         t in 1:instance.time
     ]
     violations = UnitCommitment._find_violations(
@@ -30,8 +30,8 @@ function _find_violations(
         sc = sc,
         net_injections = net_injection_values,
         overflow = overflow_values,
-        isf = sc.data[:isf],
-        lodf = sc.data[:lodf],
+        isf = sc[:isf],
+        lodf = sc[:lodf],
         max_per_line = max_per_line,
         max_per_period = max_per_period,
     )
@@ -68,8 +68,8 @@ function _find_violations(;
     max_per_line::Int,
     max_per_period::Int,
 )::Array{_Violation,1}
-    B = length(sc.data[:bus]) - 1
-    L = length(sc.data[:lines])
+    B = length(sc[:bus]) - 1
+    L = length(sc[:lines])
     T = instance.time
     K = maxthreadid()
 
@@ -91,16 +91,16 @@ function _find_violations(;
 
     normal_limits::Array{Float64,2} = [
         l.normal_flow_limit[t] + overflow[l.offset, t] for
-        l in sc.data[:lines], t in 1:T
+        l in sc[:lines], t in 1:T
     ]
 
     emergency_limits::Array{Float64,2} = [
         l.emergency_flow_limit[t] + overflow[l.offset, t] for
-        l in sc.data[:lines], t in 1:T
+        l in sc[:lines], t in 1:T
     ]
 
     is_vulnerable::Array{Bool} = zeros(Bool, L)
-    for c in sc.data[:contingencies]
+    for c in sc[:contingencies]
         is_vulnerable[c.lines[1].offset] = true
     end
 
@@ -141,7 +141,7 @@ function _find_violations(;
                     filters[t],
                     _Violation(
                         time = t,
-                        monitored_line = sc.data[:lines][lm],
+                        monitored_line = sc[:lines][lm],
                         outage_line = nothing,
                         amount = pre_v[lm, k],
                     ),
@@ -156,8 +156,8 @@ function _find_violations(;
                     filters[t],
                     _Violation(
                         time = t,
-                        monitored_line = sc.data[:lines][lm],
-                        outage_line = sc.data[:lines][lc],
+                        monitored_line = sc[:lines][lm],
+                        outage_line = sc[:lines][lc],
                         amount = post_v[lm, lc, k],
                     ),
                 )

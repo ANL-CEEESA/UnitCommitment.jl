@@ -133,7 +133,7 @@ function _randomize_costs(
             s.cost *= α
         end
     end
-    for pu in sc.data[:profiled]
+    for pu in sc[:profiled]
         α = rand(rng, distribution)
         pu.cost *= α
     end
@@ -150,13 +150,13 @@ function _randomize_load_share(
     sc::UnitCommitmentScenario,
     distribution,
 )::Nothing
-    α = rand(rng, distribution, length(sc.data[:bus]))
-    for t in 1:sc.time
-        total = sum(bus.load[t] for bus in sc.data[:bus])
+    α = rand(rng, distribution, length(sc[:bus]))
+    for t in 1:sc[:time]
+        total = sum(bus.load[t] for bus in sc[:bus])
         den = sum(
-            bus.load[t] / total * α[i] for (i, bus) in enumerate(sc.data[:bus])
+            bus.load[t] / total * α[i] for (i, bus) in enumerate(sc[:bus])
         )
-        for (i, bus) in enumerate(sc.data[:bus])
+        for (i, bus) in enumerate(sc[:bus])
             bus.load[t] *= α[i] / den
         end
     end
@@ -170,7 +170,7 @@ function _randomize_load_profile(
 )::Nothing
     # Generate new system load
     system_load = [1.0]
-    for t in 2:sc.time
+    for t in 2:sc[:time]
         idx = (t - 1) % length(params.load_profile_mu) + 1
         gamma = rand(
             rng,
@@ -183,9 +183,9 @@ function _randomize_load_profile(
     system_load = system_load ./ maximum(system_load) .* peak_load
 
     # Scale bus loads to match the new system load
-    prev_system_load = sum(b.load for b in sc.data[:bus])
-    for b in sc.data[:bus]
-        for t in 1:sc.time
+    prev_system_load = sum(b.load for b in sc[:bus])
+    for b in sc[:bus]
+        for t in 1:sc[:time]
             b.load[t] *= system_load[t] / prev_system_load[t]
         end
     end

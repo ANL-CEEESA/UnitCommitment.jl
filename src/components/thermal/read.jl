@@ -3,8 +3,8 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
-    T = sc.time
-    time_multiplier = 60 ÷ sc.time_step
+    T = sc[:time]
+    time_multiplier = 60 ÷ sc[:time_step]
     thermal_units = ThermalUnit[]
     reserves = SpinningReserve[]
 
@@ -34,7 +34,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
         # Read and validate unit type
         unit_type = to_scalar(dict["Type"], default = nothing)
         unit_type !== nothing || error("unit $unit_name has no type specified")
-        bus = sc.data[:bus_by_name][dict["Bus"]]
+        bus = sc[:bus_by_name][dict["Bus"]]
 
         if lowercase(unit_type) === "thermal"
             # Read production cost curve
@@ -169,9 +169,9 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
         end
     end
 
-    sc.data[:thermal] = thermal_units
-    sc.data[:thermal_by_name] = Dict(g.name => g for g in thermal_units)
-    sc.data[:reserves] = reserves
-    sc.data[:reserves_by_name] = name_to_reserve
+    sc[:thermal] = thermal_units
+    sc[:thermal_by_name] = Dict(g.name => g for g in thermal_units)
+    sc[:reserves] = reserves
+    sc[:reserves_by_name] = name_to_reserve
     return nothing
 end

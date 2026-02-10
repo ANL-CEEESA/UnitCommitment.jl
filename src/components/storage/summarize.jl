@@ -7,7 +7,7 @@ function summarize(
     ::StorageExt,
     io::IO,
 )::Nothing
-    count = length(instance.scenarios[1].data[:storage])
+    count = length(instance.scenarios[1][:storage])
     print(io, "$count storage units, ")
     return
 end

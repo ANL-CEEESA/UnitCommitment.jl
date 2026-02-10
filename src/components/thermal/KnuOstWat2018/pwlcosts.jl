@@ -21,7 +21,7 @@ function _add_thermal_constr_pwl_costs!(
     _add_thermal_constr_pwl_costs!(model, instance, BasePwlCosts())
 
     # Tighten bounds on segprod based on startup/shutdown limits
-    for sc in instance.scenarios, g in sc.data[:thermal]
+    for sc in instance.scenarios, g in sc[:thermal]
         gn = g.name
         K = length(g.cost_segments)
         for t in 1:T, k in 1:K

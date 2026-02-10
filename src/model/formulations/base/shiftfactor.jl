@@ -14,7 +14,7 @@ function _add_transmission_line!(
         add_to_expression!(
             model[:obj],
             overflow[sc.name, lm.name, t],
-            lm.flow_limit_penalty[t] * sc.probability,
+            lm.flow_limit_penalty[t] * sc[:probability],
         )
     end
     return
@@ -26,30 +26,30 @@ function _setup_transmission(
     sc::UnitCommitmentScenario,
 )::Nothing
     # if any lines have positive "investment_cost", then this is a planning model
-    if any(l -> any(x -> x > 0, l.invest), sc.data[:lines])
+    if any(l -> any(x -> x > 0, l.invest), sc[:lines])
         error(
             "ShiftFactorsFormulation does not support positive investment costs. Use PhaseAngleFormulation instead.",
         )
     end
     isf = formulation.precomputed_isf
     lodf = formulation.precomputed_lodf
-    if length(sc.data[:bus]) == 1
+    if length(sc[:bus]) == 1
         isf = zeros(0, 0)
         lodf = zeros(0, 0)
     elseif isf === nothing
         @info "Computing injection shift factors..."
         time_isf = @elapsed begin
             isf = UnitCommitment._injection_shift_factors(
-                buses = sc.data[:bus],
-                lines = sc.data[:lines],
+                buses = sc[:bus],
+                lines = sc[:lines],
             )
         end
         @info @sprintf("Computed ISF in %.2f seconds", time_isf)
         @info "Computing line outage factors..."
         time_lodf = @elapsed begin
             lodf = UnitCommitment._line_outage_factors(
-                buses = sc.data[:bus],
-                lines = sc.data[:lines],
+                buses = sc[:bus],
+                lines = sc[:lines],
                 isf = isf,
             )
         end
@@ -62,7 +62,7 @@ function _setup_transmission(
         isf[abs.(isf).<formulation.isf_cutoff] .= 0
         lodf[abs.(lodf).<formulation.lodf_cutoff] .= 0
     end
-    sc.data[:isf] = isf
-    sc.data[:lodf] = lodf
+    sc[:isf] = isf
+    sc[:lodf] = lodf
     return
 end

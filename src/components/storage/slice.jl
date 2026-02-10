@@ -7,7 +7,7 @@ function slice!(
     range::UnitRange{Int},
     ::StorageExt,
 )::Nothing
-    for su in sc.data[:storage]
+    for su in sc[:storage]
         su.min_level = su.min_level[range]
         su.max_level = su.max_level[range]
         su.simultaneous_charge_and_discharge =

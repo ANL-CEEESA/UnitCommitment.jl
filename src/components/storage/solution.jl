@@ -10,7 +10,7 @@ function store_solution(
     instance = model[:instance]
     T = instance.time
     for sc in instance.scenarios
-        storage_units = sc.data[:storage]
+        storage_units = sc[:storage]
 
         sol[sc.name]["Storage: Level (MWh)"] =
             _timeseries(model, :storage_level, storage_units, T, sc = sc)

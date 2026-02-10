@@ -9,7 +9,7 @@ function read_json(
     sc::UnitCommitmentScenario,
     ::PhaseAngleTransmissionExt,
 )
-    T = sc.time
+    T = sc[:time]
     lines = TransmissionLine[]
 
     # Read transmission lines
@@ -18,8 +18,8 @@ function read_json(
             line = TransmissionLine(
                 name = line_name,
                 offset = length(lines) + 1,
-                source = sc.data[:bus_by_name][dict["Source bus"]],
-                target = sc.data[:bus_by_name][dict["Target bus"]],
+                source = sc[:bus_by_name][dict["Source bus"]],
+                target = sc[:bus_by_name][dict["Target bus"]],
                 susceptance = to_scalar(dict["Susceptance (S)"]),
                 normal_flow_limit = to_timeseries(
                     dict["Normal flow limit (MW)"],
@@ -49,8 +49,8 @@ function read_json(
         end
     end
 
-    sc.data[:lines] = lines
-    sc.data[:line_by_name] = Dict(l.name => l for l in lines)
+    sc[:lines] = lines
+    sc[:line_by_name] = Dict(l.name => l for l in lines)
 
     # Read contingencies
     contingencies = Contingency[]
@@ -59,7 +59,7 @@ function read_json(
             affected_lines = TransmissionLine[]
             if "Affected lines" in keys(dict)
                 affected_lines = [
-                    sc.data[:line_by_name][l] for
+                    sc[:line_by_name][l] for
                     l in dict["Affected lines"]
                 ]
             end
@@ -70,12 +70,12 @@ function read_json(
             push!(contingencies, cont)
         end
     end
-    sc.data[:contingencies_by_name] = Dict(c.name => c for c in contingencies)
-    sc.data[:contingencies] = contingencies
+    sc[:contingencies_by_name] = Dict(c.name => c for c in contingencies)
+    sc[:contingencies] = contingencies
 
     # Initialize ISF and LODF matrices
-    sc.data[:isf] = spzeros(Float64, length(lines), length(sc.data[:bus]) - 1)
-    sc.data[:lodf] = spzeros(Float64, length(lines), length(lines))
+    sc[:isf] = spzeros(Float64, length(lines), length(sc[:bus]) - 1)
+    sc[:lodf] = spzeros(Float64, length(lines), length(lines))
 
     return
 end

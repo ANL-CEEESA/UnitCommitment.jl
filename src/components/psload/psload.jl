@@ -10,12 +10,12 @@ function read_json(
     sc::UnitCommitmentScenario,
     ::PriceSensitiveLoadsExt,
 )
-    T = sc.time
+    T = sc[:time]
     loads = PriceSensitiveLoad[]
 
     if "Price-sensitive loads" in keys(json)
         for (load_name, dict) in json["Price-sensitive loads"]
-            bus = sc.data[:bus_by_name][dict["Bus"]]
+            bus = sc[:bus_by_name][dict["Bus"]]
             load = PriceSensitiveLoad(
                 name = load_name,
                 bus = bus,
@@ -26,8 +26,8 @@ function read_json(
         end
     end
 
-    sc.data[:psload] = loads
-    sc.data[:psload_by_name] = Dict(ps.name => ps for ps in loads)
+    sc[:psload] = loads
+    sc[:psload_by_name] = Dict(ps.name => ps for ps in loads)
     return
 end
 
@@ -38,7 +38,7 @@ function build_model(
 )::Nothing
     T = instance.time
     loads = _init(model, :loads)
-    for sc in instance.scenarios, ps in sc.data[:psload], t in 1:T
+    for sc in instance.scenarios, ps in sc[:psload], t in 1:T
         loads[sc.name, ps.name, t] =
             @variable(model, lower_bound = 0, upper_bound = ps.demand[t])
         add_to_expression!(
@@ -49,7 +49,7 @@ function build_model(
         add_to_expression!(
             model[:obj],
             loads[sc.name, ps.name, t],
-            -ps.revenue[t] * sc.probability,
+            -ps.revenue[t] * sc[:probability],
         )
     end
     return
@@ -64,7 +64,7 @@ function store_solution(
     T = instance.time
     for sc in instance.scenarios
         sol[sc.name]["Price-sensitive load: Demand served (MW)"] =
-            _timeseries(model, :loads, sc.data[:psload], T, sc = sc)
+            _timeseries(model, :loads, sc[:psload], T, sc = sc)
     end
     return
 end
@@ -76,7 +76,7 @@ function validate!(
     tol = 0.01,
 )::Int
     err_count = 0
-    for sc in instance.scenarios, ps in sc.data[:psload], t in 1:instance.time
+    for sc in instance.scenarios, ps in sc[:psload], t in 1:instance.time
         demand_served =
             solution[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t]
 
@@ -112,7 +112,7 @@ function summarize(
     ::PriceSensitiveLoadsExt,
     io::IO,
 )::Nothing
-    count = length(instance.scenarios[1].data[:psload])
+    count = length(instance.scenarios[1][:psload])
     print(io, "$count price sensitive loads, ")
     return
 end
@@ -122,7 +122,7 @@ function slice!(
     range::UnitRange{Int},
     ::PriceSensitiveLoadsExt,
 )::Nothing
-    for ps in sc.data[:psload]
+    for ps in sc[:psload]
         ps.demand = ps.demand[range]
         ps.revenue = ps.revenue[range]
     end

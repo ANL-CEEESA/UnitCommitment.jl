@@ -48,7 +48,7 @@ function _repair_scenario_names_and_probabilities!(
     scenarios::Vector{UnitCommitmentScenario},
     path::Vector{String},
 )::Nothing
-    total_weight = sum([sc.probability for sc in scenarios])
+    total_weight = sum([sc[:probability] for sc in scenarios])
     name_counts = Dict{String,Int}()
 
     for (sc_path, sc) in zip(path, scenarios)
@@ -60,7 +60,7 @@ function _repair_scenario_names_and_probabilities!(
         name_counts[base] = k + 1
         sc.name = k == 0 ? base : "$(base)_$k"
 
-        sc.probability = (sc.probability / total_weight)
+        sc[:probability] = (sc[:probability] / total_weight)
     end
     return
 end
@@ -84,10 +84,10 @@ function read(
     scenarios = Vector{UnitCommitmentScenario}()
     scenario = _read_scenario(path, extensions)
     scenario.name = "s1"
-    scenario.probability = 1.0
+    scenario[:probability] = 1.0
     scenarios = [scenario]
     instance =
-        UnitCommitmentInstance(time = scenario.time; scenarios, extensions)
+        UnitCommitmentInstance(time = scenario[:time]; scenarios, extensions)
     if repair
         repair!(instance)
     end
@@ -117,7 +117,7 @@ function read(
     end
     _repair_scenario_names_and_probabilities!(scenarios, paths)
     instance =
-        UnitCommitmentInstance(time = scenarios[1].time; scenarios, extensions)
+        UnitCommitmentInstance(time = scenarios[1][:time]; scenarios, extensions)
     if repair
         repair!(instance)
     end
@@ -193,20 +193,13 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
         default = [1000.0 for t in 1:T],
     )
 
-    # Create minimal scenario to store buses
-    scenario = UnitCommitmentScenario(
-        name = scenario_name,
-        probability = probability,
-        investment_cost_weight = investment_cost_weight,
-        power_balance_penalty = power_balance_penalty,
-        time = T,
-        time_step = time_step,
-    )
-
-    # Read buses
+    scenario = UnitCommitmentScenario(name = scenario_name)
+    scenario[:time] = T
+    scenario[:time_step] = time_step
+    scenario[:probability] = probability
+    scenario[:investment_cost_weight] = investment_cost_weight
+    scenario[:power_balance_penalty] = power_balance_penalty
     _read_buses!(json, scenario)
-
-    # Read extension data
     for ext in extensions
         read_json(json, scenario, ext)
     end

@@ -35,7 +35,7 @@ function _generate_initial_conditions!(
 )::Nothing
     G = sc.thermal_units
     B = sc.buses
-    PU = sc.data[:profiled]
+    PU = sc[:profiled]
     t = 1
     mip = JuMP.Model(optimizer)
 

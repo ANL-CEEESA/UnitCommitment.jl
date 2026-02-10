@@ -28,7 +28,7 @@ function _add_storage_vars!(
     is_discharging = _init(model, :is_discharging)
     invest_storage = _init(model, :invest_storage)
 
-    for sc in instance.scenarios, su in sc.data[:storage]
+    for sc in instance.scenarios, su in sc[:storage]
         for t in 1:T
             storage_level[sc.name, su.name, t] = @variable(
                 model,
@@ -56,7 +56,7 @@ function _add_storage_vars!(
     end
 
     # Investment
-    for su in instance.scenarios[1].data[:storage]
+    for su in instance.scenarios[1][:storage]
         su.invest[1] > 0.0 || continue
         invest_storage[su.name, 0] = 0.0
         for t in 1:T
@@ -76,27 +76,27 @@ function _add_storage_obj!(
     invest_storage = model[:invest_storage]
 
     # Charge and discharge costs
-    for t in 1:T, sc in instance.scenarios, su in sc.data[:storage]
+    for t in 1:T, sc in instance.scenarios, su in sc[:storage]
         add_to_expression!(
             model[:obj],
             charge_rate[sc.name, su.name, t],
-            su.charge_cost[t] * sc.probability,
+            su.charge_cost[t] * sc[:probability],
         )
         add_to_expression!(
             model[:obj],
             discharge_rate[sc.name, su.name, t],
-            su.discharge_cost[t] * sc.probability,
+            su.discharge_cost[t] * sc[:probability],
         )
     end
 
     # Investment costs
-    for su in instance.scenarios[1].data[:storage]
+    for su in instance.scenarios[1][:storage]
         su.invest[1] > 0.0 || continue
         for t in 1:T
             add_to_expression!(
                 model[:obj],
                 invest_storage[su.name, t] - invest_storage[su.name, t-1],
-                su.invest[t] * instance.scenarios[1].investment_cost_weight,
+                su.invest[t] * instance.scenarios[1][:investment_cost_weight],
             )
         end
     end
@@ -109,7 +109,7 @@ function _add_storage_constrs!(
     instance::UnitCommitmentInstance,
 )::Nothing
     T = instance.time
-    time_step = instance.scenarios[1].time_step / 60
+    time_step = instance.scenarios[1][:time_step] / 60
 
     storage_level = model[:storage_level]
     charge_rate = model[:charge_rate]
@@ -126,7 +126,7 @@ function _add_storage_constrs!(
     eq_storage_transition = _init(model, :eq_storage_transition)
     eq_ending_level = _init(model, :eq_ending_level)
 
-    for sc in instance.scenarios, su in sc.data[:storage]
+    for sc in instance.scenarios, su in sc[:storage]
         for t in 1:T
             # Simultaneous charging and discharging
             if !su.simultaneous_charge_and_discharge[t]
@@ -203,7 +203,7 @@ function _add_storage_constr_invest!(
     eq_invest_storage_level_lb = _init(model, :eq_invest_storage_level_lb)
 
     # Investment is irreversible
-    for su in instance.scenarios[1].data[:storage]
+    for su in instance.scenarios[1][:storage]
         su.invest[1] > 0.0 || continue
         for t in 2:T
             eq_invest_storage_nondec[su.name, t] = @constraint(
@@ -214,7 +214,7 @@ function _add_storage_constr_invest!(
     end
 
     # Storage level bounds depend on investment status
-    for sc in instance.scenarios, su in sc.data[:storage]
+    for sc in instance.scenarios, su in sc[:storage]
         su.invest[1] > 0.0 || continue
         for t in 1:T
             eq_invest_storage_level_ub[sc.name, su.name, t] = @constraint(

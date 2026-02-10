@@ -29,7 +29,7 @@ function _add_transmission_vars!(
     flow = _init(model, :flow)
     invest = _init(model, :invest)
 
-    for line in instance.scenarios[1].data[:lines]
+    for line in instance.scenarios[1][:lines]
         line.invest[1] > 0.0 || continue
         invest[line.name, 0] = 0.0
         for t in 1:T
@@ -44,17 +44,17 @@ function _add_transmission_vars!(
 
     # Phase angle variables
     for sc in instance.scenarios, t in 1:T
-        for b in sc.data[:bus]
+        for b in sc[:bus]
             theta[sc.name, b.name, t] = @variable(
                 model,
                 lower_bound = -ext.phase_angle_limit,
                 upper_bound = ext.phase_angle_limit
             )
         end
-        fix(theta[sc.name, sc.data[:bus][1].name, t], 0.0; force = true)
+        fix(theta[sc.name, sc[:bus][1].name, t], 0.0; force = true)
     end
 
-    for sc in instance.scenarios, line in sc.data[:lines], t in 1:T
+    for sc in instance.scenarios, line in sc[:lines], t in 1:T
         # Overflow variable for soft flow limit constraints
         overflow[sc.name, line.name, t] = @variable(model, lower_bound = 0)
 
@@ -73,22 +73,22 @@ function _add_transmission_obj!(
     invest = model[:invest]
 
     # Overflow penalty
-    for sc in instance.scenarios, line in sc.data[:lines], t in 1:T
+    for sc in instance.scenarios, line in sc[:lines], t in 1:T
         add_to_expression!(
             model[:obj],
             overflow[sc.name, line.name, t],
-            line.flow_limit_penalty[t] * sc.probability,
+            line.flow_limit_penalty[t] * sc[:probability],
         )
     end
 
     # Investment cost
-    for line in instance.scenarios[1].data[:lines]
+    for line in instance.scenarios[1][:lines]
         line.invest[1] > 0.0 || continue
         for t in 1:T
             add_to_expression!(
                 model[:obj],
                 invest[line.name, t] - invest[line.name, t-1],
-                line.invest[t] * instance.scenarios[1].investment_cost_weight,
+                line.invest[t] * instance.scenarios[1][:investment_cost_weight],
             )
         end
     end
@@ -119,7 +119,7 @@ function _add_transmission_constr_flow!(
     eq_flow_limit_lb = _init(model, :eq_flow_limit_lb)
 
     for sc in instance.scenarios
-        lines = sc.data[:lines]
+        lines = sc[:lines]
 
         for line in lines, t in 1:T
             # Compute angle difference
@@ -202,9 +202,9 @@ function _add_transmission_constr_nodal_balance!(
     eq_nodal_balance = _init(model, :eq_nodal_balance)
 
     for sc in instance.scenarios
-        lines = sc.data[:lines]
+        lines = sc[:lines]
         for t in 1:T
-            for b in sc.data[:bus]
+            for b in sc[:bus]
                 eq_nodal_balance[sc.name, b.name, t] = @constraint(
                     model,
                     sum(
@@ -230,7 +230,7 @@ function _add_transmission_constr_invest!(
     eq_invest_nondec = _init(model, :eq_invest_nondec)
 
     # Investment is irreversible
-    for line in instance.scenarios[1].data[:lines]
+    for line in instance.scenarios[1][:lines]
         if line.invest[1] > 0.0
             for t in 2:T
                 eq_invest_nondec[line.name, t] = @constraint(

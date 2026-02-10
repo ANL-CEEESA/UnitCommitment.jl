@@ -13,7 +13,7 @@ function validate(
     err_count = 0
 
     for sc in instance.scenarios
-        for su in sc.data[:storage]
+        for su in sc[:storage]
             storage_level = solution[sc.name]["Storage: Level (MWh)"][su.name]
             charge_rate =
                 solution[sc.name]["Storage: Charging rate (MW)"][su.name]
@@ -33,7 +33,7 @@ function validate(
                 bin(solution[sc.name]["Storage: Investment status"][su.name]) :
                 nothing
             # time in hours
-            time_step = sc.time_step / 60
+            time_step = sc[:time_step] / 60
 
             for t in 1:instance.time
                 # Unit must store at least its minimum level
