@@ -22,20 +22,11 @@ function _add_bus_vars!(
 
     for sc in instance.scenarios, b in sc[:bus]
         for t in 1:T
-            # Load curtailment
             curtail[sc.name, b.name, t] = @variable(
                 model,
                 lower_bound = min(0, b.load[t]),
                 upper_bound = max(0, b.load[t]),
             )
-            add_to_expression!(
-                model[:net_injection][sc.name, b.name, t],
-                curtail[sc.name, b.name, t],
-                1.0,
-            )
-
-            # Net injection variable
-            ni[sc.name, b.name, t] = @variable(model)
         end
     end
     return
@@ -67,6 +58,7 @@ function _add_bus_constrs!(
     eq_net_injection = _init(model, :eq_net_injection)
     eq_power_balance = _init(model, :eq_power_balance)
     ni = model[:ni]
+    curtail = model[:curtail]
 
     for sc in instance.scenarios
         for t in 1:T
@@ -75,6 +67,7 @@ function _add_bus_constrs!(
                 eq_net_injection[sc.name, b.name, t] = @constraint(
                     model,
                     -ni[sc.name, b.name, t] +
+                    curtail[sc.name, b.name, t] +
                     model[:net_injection][sc.name, b.name, t] == 0,
                 )
             end

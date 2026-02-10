@@ -5,11 +5,12 @@
 using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_base_bus_test begin
-    model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
-        optimizer = HiGHS.Optimizer,
-        variable_names = true,
-    ).inner
+    model =
+        build_model(
+            UnitCommitment.read(fixture("base.json")),
+            optimizer = HiGHS.Optimizer,
+            variable_names = true,
+        ).inner
 
     # Decision variables
     # -------------------------------------------------------------------------
@@ -43,10 +44,10 @@ using HiGHS, JuMP, UnitCommitment
 
     # eq_net_injection
     # -------------------------------------------------------------------------
-    @test_constr model[:eq_net_injection]["s1", "b7", 1] "-loads[s1,ps3,1] + curtail[s1,b7,1] - ni[s1,b7,1] = 0"
-    @test_constr model[:eq_net_injection]["s1", "b7", 2] "-loads[s1,ps3,2] + curtail[s1,b7,2] - ni[s1,b7,2] = 0"
-    @test_constr model[:eq_net_injection]["s1", "b15", 1] "curtail[s1,b15,1] - ni[s1,b15,1] = -5"
-    @test_constr model[:eq_net_injection]["s1", "b15", 2] "curtail[s1,b15,2] - ni[s1,b15,2] = 10"
+    @test_constr model[:eq_net_injection]["s1", "b7", 1] "-ni[s1,b7,1] - loads[s1,ps3,1] + curtail[s1,b7,1] = 0"
+    @test_constr model[:eq_net_injection]["s1", "b7", 2] "-ni[s1,b7,2] - loads[s1,ps3,2] + curtail[s1,b7,2] = 0"
+    @test_constr model[:eq_net_injection]["s1", "b15", 1] "-ni[s1,b15,1] + curtail[s1,b15,1] = -5"
+    @test_constr model[:eq_net_injection]["s1", "b15", 2] "-ni[s1,b15,2] + curtail[s1,b15,2] = 10"
 
     # eq_power_balance
     # -------------------------------------------------------------------------

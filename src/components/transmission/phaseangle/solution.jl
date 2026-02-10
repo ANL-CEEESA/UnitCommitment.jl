@@ -12,17 +12,10 @@ function store_solution(
 
     for sc in instance.scenarios
         lines = sc[:lines]
-        non_slack_buses = [b for b in sc[:bus] if b.offset > 0]
-        net_injection = model[:net_injection]
-        net_injection_values = [
-            value(net_injection[sc.name, b.name, t]) for
-            b in non_slack_buses, t in 1:T
-        ]
-        flows = sc[:isf] * net_injection_values
-
+        flows = _timeseries(model, :flow, lines, T, sc = sc)
         sol[sc.name]["Line: Flow (MW)"] = OrderedDict(
             line.name =>
-                [round(flows[line.offset, t], digits = 5) for t in 1:T] for
+                [round(flows[line.name][t], digits = 5) for t in 1:T] for
             line in lines
         )
         sol[sc.name]["Line: Overflow (MW)"] =
@@ -36,7 +29,7 @@ function store_solution(
         sol[sc.name]["Line: Utilization (%)"] = OrderedDict(
             line.name => [
                 round(
-                    100.0 * abs(flows[line.offset, t]) /
+                    100.0 * abs(flows[line.name][t]) /
                     line.normal_flow_limit[t],
                     digits = 2,
                 ) for t in 1:T

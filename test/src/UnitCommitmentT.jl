@@ -3,6 +3,7 @@ module UnitCommitmentT
 using JuliaFormatter
 using UnitCommitment
 using Test
+using HiGHS
 
 """
 Define a test function with an embedded `@testset` of the same name.
@@ -109,7 +110,6 @@ macro test_constr(expr, rhs)
     end
 end
 
-# include("usage.jl")
 # include("instance/read_test.jl")
 # include("instance/migrate_test.jl")
 # include("solution/methods/XavQiuWanThi19/filter_test.jl")
@@ -128,6 +128,7 @@ end
 # include("market/market_test.jl")
 # include("planning/planning_test.jl")
 # include("regression.jl")
+include("usage_test.jl")
 include("model/base/bus_test.jl")
 include("model/base/thermal_test.jl")
 include("model/base/profiled_test.jl")
@@ -147,17 +148,17 @@ function runtests()
     # println("Running tests...")
     # UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
     @testset "UnitCommitment" begin
-        @testset "model" begin
-            model_base_bus_test()
-            model_base_thermal_test()
-            model_base_profiled_test()
-            model_base_psload_test()
-            model_base_storage_test()
-            model_MorLatRam2013_test()
-            model_KnuOstWat2018_test()
-        end
+        usage_deterministic_test()
+        usage_stochastic_test()
+        usage_deprecated_api_test()
+        model_base_bus_test()
+        model_base_thermal_test()
+        model_base_profiled_test()
+        model_base_psload_test()
+        model_base_storage_test()
+        model_MorLatRam2013_test()
+        model_KnuOstWat2018_test()
         # model_planning_test()
-        # usage_test()
         # instance_read_test()
         # instance_migrate_test()
         # solution_methods_XavQiuWanThi19_filter_test()

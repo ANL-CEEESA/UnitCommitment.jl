@@ -213,7 +213,7 @@ function _add_transmission_constr_nodal_balance!(
                     ) - sum(
                         flow[sc.name, lm.name, t] for
                         lm in lines if lm.target == b
-                    ) + model[:net_injection][sc.name, b.name, t] == 0
+                    ) + model[:ni][sc.name, b.name, t] == 0
                 )
             end
         end

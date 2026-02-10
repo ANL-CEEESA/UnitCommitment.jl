@@ -5,19 +5,20 @@
 using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_transmission_phaseangle_test begin
-    model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(
-            fixture("base.json"),
-            extensions = [
-                UnitCommitment.PhaseAngleTransmissionExt(
-                    phase_angle_limit = pi,
-                    bigM = 1e6,
-                ),
-            ],
-        ),
-        optimizer = HiGHS.Optimizer,
-        variable_names = true,
-    ).inner
+    model =
+        build_model(
+            UnitCommitment.read(
+                fixture("base.json"),
+                extensions = [
+                    UnitCommitment.PhaseAngleTransmissionExt(
+                        phase_angle_limit = pi,
+                        bigM = 1e6,
+                    ),
+                ],
+            ),
+            optimizer = HiGHS.Optimizer,
+            variable_names = true,
+        ).inner
 
     # Decision variables
     # -------------------------------------------------------------------------

@@ -10,21 +10,21 @@ Extracts the optimal solution from the UC.jl model. The model must be solved bef
 # Example
 
 ```julia
-UnitCommitment.optimize!(model)
-solution = UnitCommitment.solution(model)
+model = build_model(instance)
+optimize!(model)
+solution = solution(model)
 ```
 """
 function solution(model::UnitCommitmentModel)::OrderedDict
-    haskey(model.data, :solution) || error("No solution available. Call optimize!(model) first.")
+    haskey(model.data, :solution) ||
+        error("No solution available. Call optimize!(model) first.")
     sol = model.data[:solution]
-    length(sol) == 1 ? first(values(sol)) : sol
+    return length(sol) == 1 ? first(values(sol)) : sol
 end
 
 function _store_solution!(model::UnitCommitmentModel)::Nothing
     instance = model.inner[:instance]
-    sol = OrderedDict(
-        sc.name => OrderedDict() for sc in instance.scenarios
-    )
+    sol = OrderedDict(sc.name => OrderedDict() for sc in instance.scenarios)
     for sc in instance.scenarios
         _store_bus_solution!(sol[sc.name], model.inner, sc, instance.time)
     end
@@ -34,3 +34,5 @@ function _store_solution!(model::UnitCommitmentModel)::Nothing
     model.data[:solution] = sol
     return
 end
+
+export solution

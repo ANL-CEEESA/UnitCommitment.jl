@@ -5,11 +5,12 @@
 using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_base_storage_test begin
-    model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
-        optimizer = HiGHS.Optimizer,
-        variable_names = true,
-    ).inner
+    model =
+        build_model(
+            UnitCommitment.read(fixture("base.json")),
+            optimizer = HiGHS.Optimizer,
+            variable_names = true,
+        ).inner
 
     # Decision variables
     # -------------------------------------------------------------------------

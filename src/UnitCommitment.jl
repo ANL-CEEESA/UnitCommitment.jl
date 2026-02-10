@@ -4,10 +4,12 @@
 
 module UnitCommitment
 
-using Base: String
 using DataStructures
 using JuMP
+import JuMP: optimize!
 using Printf
+
+using Base: String
 
 include("components/bus/structs.jl")
 
@@ -44,12 +46,8 @@ include("components/thermal/MorLatRam2013/structs.jl")
 # include("model/formulations/MorLatRam2013/scosts.jl")
 # include("model/formulations/PanGua2016/ramp.jl")
 # include("model/formulations/WanHob2016/ramp.jl")
-# include("optimize.jl")
-# include("solution.jl")
 # include("transform/initcond.jl")
 # include("transform/randomize/XavQiuAhm2021.jl")
-# include("transform/slice.jl")
-# include("write.jl")
 
 include("build.jl")
 include("components/bus/build.jl")
@@ -65,11 +63,6 @@ include("components/storage/solution.jl")
 include("components/storage/summarize.jl")
 include("components/storage/validate.jl")
 include("components/thermal/build.jl")
-include("components/transmission/phaseangle/build.jl")
-include("components/transmission/phaseangle/read.jl")
-include("components/transmission/phaseangle/slice.jl")
-include("components/transmission/phaseangle/solution.jl")
-include("components/transmission/phaseangle/summarize.jl")
 include("components/thermal/KnuOstWat2018/pwlcosts.jl")
 include("components/thermal/MorLatRam2013/ramp.jl")
 include("components/thermal/MorLatRam2013/slimits.jl")
@@ -79,14 +72,23 @@ include("components/thermal/slice.jl")
 include("components/thermal/solution.jl")
 include("components/thermal/summarize.jl")
 include("components/thermal/validate.jl")
+include("components/transmission/phaseangle/build.jl")
+include("components/transmission/phaseangle/read.jl")
+include("components/transmission/phaseangle/slice.jl")
+include("components/transmission/phaseangle/solution.jl")
+include("components/transmission/phaseangle/summarize.jl")
 include("ext.jl")
 include("lmp/aelmp.jl")
 include("lmp/conventional.jl")
 include("market/market.jl")
 include("migrate.jl")
+include("optimize.jl")
 include("read.jl")
 include("repair.jl")
+include("solution.jl")
+include("transform/slice.jl")
 include("util.jl")
 include("validate.jl")
+include("write.jl")
 
 end

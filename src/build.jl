@@ -8,7 +8,7 @@ using DataStructures
 import JuMP: value, fix, set_name
 
 """
-    build_model(; instance, optimizer=nothing, variable_names=false)::UnitCommitmentModel
+    build_model(instance; optimizer=nothing, variable_names=false)::UnitCommitmentModel
 
 Build an optimization model for the given unit commitment instance. Each
 registered extension contributes variables, constraints, and objective terms
@@ -28,8 +28,8 @@ instance = UnitCommitment.read("case118.json.gz")
 model = UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer)
 ```
 """
-function build_model(;
-    instance::UnitCommitmentInstance,
+function build_model(
+    instance::UnitCommitmentInstance;
     optimizer = nothing,
     variable_names::Bool = false,
 )::UnitCommitmentModel
@@ -37,6 +37,10 @@ function build_model(;
     model[:obj] = AffExpr()
     model[:net_injection] = OrderedDict(
         (sc.name, b.name, t) => AffExpr(-b.load[t]) for
+        sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
+    )
+    model[:ni] = Dict(
+        (sc.name, b.name, t) => @variable(model) for
         sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
     )
     model[:instance] = instance
@@ -53,3 +57,27 @@ function build_model(;
     end
     return UnitCommitmentModel(model, Dict())
 end
+
+"""
+    build_model(; instance, optimizer=nothing, variable_names=false)::UnitCommitmentModel
+
+Deprecated: Use `build_model(instance; optimizer=optimizer, variable_names=variable_names)` instead.
+This kwargs-only version is maintained for backwards compatibility.
+"""
+function build_model(;
+    instance::UnitCommitmentInstance,
+    optimizer = nothing,
+    variable_names::Bool = false,
+)::UnitCommitmentModel
+    Base.depwarn(
+        "build_model(; instance=...) is deprecated. Use build_model(instance; ...) instead.",
+        :build_model,
+    )
+    return build_model(
+        instance;
+        optimizer = optimizer,
+        variable_names = variable_names,
+    )
+end
+
+export build_model

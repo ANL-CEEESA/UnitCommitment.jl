@@ -2,7 +2,10 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function optimize!(model::UnitCommitmentModel, method::XavQiuWanThi2019.Method)::Nothing
+function optimize!(
+    model::UnitCommitmentModel,
+    method::XavQiuWanThi2019.Method,
+)::Nothing
     instance = model.inner[:instance]
     if !occursin("Gurobi", JuMP.solver_name(model.inner))
         method.two_phase_gap = false

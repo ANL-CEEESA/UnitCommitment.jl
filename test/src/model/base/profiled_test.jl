@@ -5,11 +5,12 @@
 using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_base_profiled_test begin
-    model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(fixture("base.json")),
-        optimizer = HiGHS.Optimizer,
-        variable_names = true,
-    ).inner
+    model =
+        build_model(
+            UnitCommitment.read(fixture("base.json")),
+            optimizer = HiGHS.Optimizer,
+            variable_names = true,
+        ).inner
 
     # Decision variables
     # -------------------------------------------------------------------------
@@ -78,8 +79,8 @@ using HiGHS, JuMP, UnitCommitment
 end
 
 function _base_model()
-    return UnitCommitment.build_model(
-        instance = UnitCommitment.read(
+    return build_model(
+        UnitCommitment.read(
             fixture("base.json"),
             extensions = [
                 UnitCommitment.ThermalExt(

@@ -5,19 +5,20 @@
 using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_MorLatRam2013_test begin
-    model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(
-            fixture("base.json"),
-            extensions = [
-                UnitCommitment.ThermalExt(
-                    ramping = UnitCommitment.MorLatRam2013.Ramping(),
-                    slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
-                ),
-            ],
-        ),
-        optimizer = HiGHS.Optimizer,
-        variable_names = true,
-    ).inner
+    model =
+        build_model(
+            UnitCommitment.read(
+                fixture("base.json"),
+                extensions = [
+                    UnitCommitment.ThermalExt(
+                        ramping = UnitCommitment.MorLatRam2013.Ramping(),
+                        slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
+                    ),
+                ],
+            ),
+            optimizer = HiGHS.Optimizer,
+            variable_names = true,
+        ).inner
 
     # eq_ramp_up
     # -------------------------------------------------------------------------

@@ -10,5 +10,12 @@ advanced methods to accelerate the solution process and to enforce transmission
 and N-1 security constraints.
 """
 function optimize!(model::UnitCommitmentModel)::Nothing
-    return UnitCommitment.optimize!(model, XavQiuWanThi2019.Method())
+    optimize!(model.inner)
+    _store_solution!(model)
+    for ext in model.inner[:instance].extensions
+        _after_optimize!(model.inner, ext)
+    end
+    validate(model.inner[:instance], model.data[:solution]) ||
+        error("Invalid solution found.")
+    return
 end

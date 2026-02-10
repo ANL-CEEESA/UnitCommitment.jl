@@ -6,11 +6,15 @@ using TimerOutputs
 import JuMP
 const to = TimerOutput()
 
-function optimize!(model::UnitCommitmentModel, method::ProgressiveHedging)::Nothing
+function optimize!(
+    model::UnitCommitmentModel,
+    method::ProgressiveHedging,
+)::Nothing
     instance = model.inner[:instance]
     mpi = MpiInfo(MPI.COMM_WORLD)
     iterations = PHIterationInfo[]
-    consensus_vars = [var for var in all_variables(model.inner) if is_binary(var)]
+    consensus_vars =
+        [var for var in all_variables(model.inner) if is_binary(var)]
     nvars = length(consensus_vars)
     weights = ones(nvars)
     if method.initial_weights !== nothing
