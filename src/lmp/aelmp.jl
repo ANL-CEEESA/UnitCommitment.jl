@@ -133,6 +133,5 @@ function _modify_scenario!(
             cost = first_startup_cost,
         )]
     end
-    return sc[:thermal_by_name] =
-        Dict(g.name => g for g in sc[:thermal])
+    return sc[:thermal_by_name] = Dict(g.name => g for g in sc[:thermal])
 end

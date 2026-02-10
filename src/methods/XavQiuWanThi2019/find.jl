@@ -90,8 +90,8 @@ function _find_violations(;
     post_v::Array{Float64} = zeros(L, L, K)          # post_v[lm, lc, thread]
 
     normal_limits::Array{Float64,2} = [
-        l.normal_flow_limit[t] + overflow[l.offset, t] for
-        l in sc[:lines], t in 1:T
+        l.normal_flow_limit[t] + overflow[l.offset, t] for l in sc[:lines],
+        t in 1:T
     ]
 
     emergency_limits::Array{Float64,2} = [

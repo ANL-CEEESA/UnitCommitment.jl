@@ -23,8 +23,7 @@ function _store_thermal_solution!(
     T::Int,
 )
     thermal_production = OrderedDict(
-        g.name => _thermal_production(model, g, sc, T) for
-        g in sc[:thermal]
+        g.name => _thermal_production(model, g, sc, T) for g in sc[:thermal]
     )
     sol["Thermal: Production (MW)"] = thermal_production
     sol["Thermal: Utilization (%)"] = OrderedDict(
@@ -43,8 +42,7 @@ function _store_thermal_solution!(
         g.name => _thermal_startup_cost(model, g, T) for g in sc[:thermal]
     )
     sol["Thermal: Is on"] = _timeseries(model, :is_on, sc[:thermal], T)
-    sol["Thermal: Switch on"] =
-        _timeseries(model, :switch_on, sc[:thermal], T)
+    sol["Thermal: Switch on"] = _timeseries(model, :switch_on, sc[:thermal], T)
     sol["Thermal: Switch off"] =
         _timeseries(model, :switch_off, sc[:thermal], T)
     sol["Thermal: Investment status"] = OrderedDict(

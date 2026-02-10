@@ -58,10 +58,8 @@ function read_json(
         for (cont_name, dict) in json["Contingencies"]
             affected_lines = TransmissionLine[]
             if "Affected lines" in keys(dict)
-                affected_lines = [
-                    sc[:line_by_name][l] for
-                    l in dict["Affected lines"]
-                ]
+                affected_lines =
+                    [sc[:line_by_name][l] for l in dict["Affected lines"]]
             end
             if "Affected units" in keys(dict)
                 error("Unit contingencies are not currently supported")

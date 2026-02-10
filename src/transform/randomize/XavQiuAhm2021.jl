@@ -153,9 +153,8 @@ function _randomize_load_share(
     α = rand(rng, distribution, length(sc[:bus]))
     for t in 1:sc[:time]
         total = sum(bus.load[t] for bus in sc[:bus])
-        den = sum(
-            bus.load[t] / total * α[i] for (i, bus) in enumerate(sc[:bus])
-        )
+        den =
+            sum(bus.load[t] / total * α[i] for (i, bus) in enumerate(sc[:bus]))
         for (i, bus) in enumerate(sc[:bus])
             bus.load[t] *= α[i] / den
         end

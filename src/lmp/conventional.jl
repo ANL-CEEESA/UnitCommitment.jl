@@ -49,8 +49,7 @@ function store_solution(
             )
         sol[sc.name]["LMP: Energy (\$/MWh)"] = OrderedDict(
             b.name => [
-                minimum(lmp_total[bb.name][t] for bb in sc[:bus])
-                for t in 1:T
+                minimum(lmp_total[bb.name][t] for bb in sc[:bus]) for t in 1:T
             ] for b in sc.buses
         )
         sol[sc.name]["LMP: Congestion (\$/MWh)"] = OrderedDict(

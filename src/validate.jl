@@ -6,12 +6,6 @@ using Printf
 
 bin(x) = [xi > 0.5 for xi in x]
 
-function validate(instance_filename::String, solution_filename::String)
-    instance = UnitCommitment.read(instance_filename)
-    solution = JSON.parse(open(solution_filename))
-    return validate(instance, solution)
-end
-
 """
     validate(instance, solution)::Bool
 
@@ -19,10 +13,9 @@ Verifies that the given solution is feasible for the problem. If feasible,
 silently returns true. In infeasible, returns false and prints the validation
 errors to the screen.
 
-This function is implemented independently from the optimization model in
-`model.jl`, and therefore can be used to verify that the model is indeed
-producing valid solutions. It can also be used to verify the solutions produced
-by other optimization packages.
+This function is implemented independently from the optimization models and
+therefore can be used to verify that the model is indeed producing valid solutions.
+It can also be used to verify the solutions produced by other optimization packages.
 """
 function validate(
     instance::UnitCommitmentInstance,
@@ -32,15 +25,12 @@ function validate(
         solution = Dict("s1" => solution)
     end
     err_count = 0
-
     for ext in instance.extensions
         err_count += validate(instance, solution, ext)
     end
-
     if err_count > 0
         @error "Found $err_count validation errors"
         return false
     end
-
     return true
 end
