@@ -77,3 +77,19 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
 end
 
 export UnitCommitmentInstance
+
+"""
+    UnitCommitmentModel
+
+Wrapper around a `JuMP.Model` returned by [`build_model`](@ref). Use
+`model.inner` to access the underlying JuMP model directly when needed
+(e.g. for setting solver attributes or inspecting variables).
+
+# Fields
+- `inner::JuMP.Model`: the underlying JuMP optimization model.
+"""
+struct UnitCommitmentModel
+    inner::JuMP.Model
+end
+
+export UnitCommitmentModel

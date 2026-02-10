@@ -16,7 +16,7 @@ using HiGHS, JuMP, UnitCommitment
         ),
         optimizer = HiGHS.Optimizer,
         variable_names = true,
-    )
+    ).inner
 
     # eq_segprod_limit_a
     # -------------------------------------------------------------------------

@@ -17,7 +17,7 @@ using HiGHS, JuMP, UnitCommitment
         ),
         optimizer = HiGHS.Optimizer,
         variable_names = true,
-    )
+    ).inner
 
     # Decision variables
     # -------------------------------------------------------------------------

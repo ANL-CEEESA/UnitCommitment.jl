@@ -8,9 +8,9 @@ using DataStructures
 import JuMP: value, fix, set_name
 
 """
-    build_model(; instance, optimizer=nothing, variable_names=false)::JuMP.Model
+    build_model(; instance, optimizer=nothing, variable_names=false)::UnitCommitmentModel
 
-Build a JuMP optimization model for the given unit commitment instance. Each
+Build an optimization model for the given unit commitment instance. Each
 registered extension contributes variables, constraints, and objective terms
 via its `build_model` method. After all extensions have been processed, bus-related
 constraints are added and the objective is finalized.
@@ -32,7 +32,7 @@ function build_model(;
     instance::UnitCommitmentInstance,
     optimizer = nothing,
     variable_names::Bool = false,
-)::JuMP.Model
+)::UnitCommitmentModel
     model = Model()
     model.ext[:ucjl] = Dict()
     model[:obj] = AffExpr()
@@ -52,5 +52,5 @@ function build_model(;
     if optimizer !== nothing
         set_optimizer(model, optimizer)
     end
-    return model
+    return UnitCommitmentModel(model)
 end

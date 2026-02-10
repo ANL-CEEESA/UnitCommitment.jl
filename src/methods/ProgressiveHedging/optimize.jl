@@ -6,11 +6,11 @@ using TimerOutputs
 import JuMP
 const to = TimerOutput()
 
-function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
-    instance = model[:instance]
+function optimize!(model::UnitCommitmentModel, method::ProgressiveHedging)::Nothing
+    instance = model.inner[:instance]
     mpi = MpiInfo(MPI.COMM_WORLD)
     iterations = PHIterationInfo[]
-    consensus_vars = [var for var in all_variables(model) if is_binary(var)]
+    consensus_vars = [var for var in all_variables(model.inner) if is_binary(var)]
     nvars = length(consensus_vars)
     weights = ones(nvars)
     if method.initial_weights !== nothing
@@ -25,7 +25,7 @@ function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
         λ = [method.λ for _ in 1:nvars],
         target = target,
     )
-    sp = PHSubProblem(model, model[:obj], consensus_vars, weights)
+    sp = PHSubProblem(model.inner, model.inner[:obj], consensus_vars, weights)
     while true
         iteration_time = @elapsed begin
             solution = solve_subproblem(sp, params, method.inner_method)
@@ -60,7 +60,7 @@ function optimize!(model::JuMP.Model, method::ProgressiveHedging)::Nothing
     end
     _store_solution!(model)
     for ext in instance.extensions
-        _after_optimize!(model, ext)
+        _after_optimize!(model.inner, ext)
     end
     return
 end

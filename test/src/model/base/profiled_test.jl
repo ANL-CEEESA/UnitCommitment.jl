@@ -9,7 +9,7 @@ using HiGHS, JuMP, UnitCommitment
         instance = UnitCommitment.read(fixture("base.json")),
         optimizer = HiGHS.Optimizer,
         variable_names = true,
-    )
+    ).inner
 
     # Decision variables
     # -------------------------------------------------------------------------
@@ -89,5 +89,5 @@ function _base_model()
         ),
         optimizer = HiGHS.Optimizer,
         variable_names = true,
-    )
+    ).inner
 end

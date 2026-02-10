@@ -139,7 +139,7 @@ function _build_and_optimize(
     instance::UnitCommitmentInstance,
     settings::MarketSettings;
     optimizer,
-)::Tuple{JuMP.Model,OrderedDict}
+)::Tuple{UnitCommitmentModel,OrderedDict}
     # build model
     model =
         UnitCommitment.build_model(instance = instance, optimizer = optimizer)

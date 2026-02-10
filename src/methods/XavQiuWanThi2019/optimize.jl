@@ -2,19 +2,19 @@
 # Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
-    instance = model[:instance]
-    if !occursin("Gurobi", JuMP.solver_name(model))
+function optimize!(model::UnitCommitmentModel, method::XavQiuWanThi2019.Method)::Nothing
+    instance = model.inner[:instance]
+    if !occursin("Gurobi", JuMP.solver_name(model.inner))
         method.two_phase_gap = false
     end
     function set_gap(gap)
-        JuMP.set_optimizer_attribute(model, "MIPGap", gap)
+        JuMP.set_optimizer_attribute(model.inner, "MIPGap", gap)
         @info @sprintf("MIP gap tolerance set to %f", gap)
     end
     initial_time = time()
     large_gap = false
     has_transmission = false
-    for sc in model[:instance].scenarios
+    for sc in instance.scenarios
         if length(sc[:isf]) > 0
             has_transmission = true
         end
@@ -34,9 +34,9 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
             "Setting MILP time limit to %.2f seconds",
             time_remaining
         )
-        JuMP.set_time_limit_sec(model, time_remaining)
+        JuMP.set_time_limit_sec(model.inner, time_remaining)
         @info "Solving MILP..."
-        JuMP.optimize!(model)
+        JuMP.optimize!(model.inner)
 
         has_transmission || break
 
@@ -47,7 +47,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
                 push!(
                     violations,
                     _find_violations(
-                        model,
+                        model.inner,
                         sc,
                         max_per_line = method.max_violations_per_line,
                         max_per_period = method.max_violations_per_period,
@@ -69,7 +69,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
 
         if violations_found
             for (i, v) in enumerate(violations)
-                _enforce_transmission(model, v, instance.scenarios[i])
+                _enforce_transmission(model.inner, v, instance.scenarios[i])
             end
         else
             @info "No violations found"
@@ -83,7 +83,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
     end
     _store_solution!(model)
     for ext in instance.extensions
-        _after_optimize!(model, ext)
+        _after_optimize!(model.inner, ext)
     end
     return
 end

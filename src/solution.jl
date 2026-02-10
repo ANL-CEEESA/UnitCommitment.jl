@@ -3,7 +3,7 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 """
-	solution(model::JuMP.Model)::OrderedDict
+	solution(model::UnitCommitmentModel)::OrderedDict
 
 Extracts the optimal solution from the UC.jl model. The model must be solved beforehand.
 
@@ -14,9 +14,9 @@ UnitCommitment.optimize!(model)
 solution = UnitCommitment.solution(model)
 ```
 """
-function solution(model::JuMP.Model)::OrderedDict
-    instance = model[:instance]
-    sol = model.ext[:ucjl][:solution]
+function solution(model::UnitCommitmentModel)::OrderedDict
+    instance = model.inner[:instance]
+    sol = model.inner.ext[:ucjl][:solution]
 
     if length(instance.scenarios) == 1
         sol = first(values(sol))
@@ -25,19 +25,19 @@ function solution(model::JuMP.Model)::OrderedDict
     return sol
 end
 
-function _store_solution!(model::JuMP.Model)::Nothing
-    instance, T = model[:instance], model[:instance].time
+function _store_solution!(model::UnitCommitmentModel)::Nothing
+    instance, T = model.inner[:instance], model.inner[:instance].time
     sol = OrderedDict()
 
     for sc in instance.scenarios
         sol[sc.name] = OrderedDict()
-        _store_bus_solution!(sol[sc.name], model, sc, T)
+        _store_bus_solution!(sol[sc.name], model.inner, sc, T)
     end
 
     for ext in instance.extensions
-        store_solution(sol, model, ext)
+        store_solution(sol, model.inner, ext)
     end
 
-    model.ext[:ucjl][:solution] = sol
+    model.inner.ext[:ucjl][:solution] = sol
     return
 end

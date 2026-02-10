@@ -15,22 +15,22 @@ function _after_optimize!(model::JuMP.Model, method::AELMP)::Nothing
     approx_model = build_model(instance = instance, variable_names = true)
 
     # Relax the binary constraint, and relax integrality
-    for v in all_variables(approx_model)
+    for v in all_variables(approx_model.inner)
         if is_binary(v)
             unset_binary(v)
         end
     end
-    relax_integrality(approx_model)
-    set_optimizer(approx_model, method.optimizer)
+    relax_integrality(approx_model.inner)
+    set_optimizer(approx_model.inner, method.optimizer)
 
     # Solve the model
-    set_silent(approx_model)
-    JuMP.optimize!(approx_model)
+    set_silent(approx_model.inner)
+    JuMP.optimize!(approx_model.inner)
 
     # Store dual values as LMPs
     @info "Getting dual values (AELMPs)."
     model.ext[:lmp_values] = OrderedDict()
-    for (key, val) in approx_model[:eq_net_injection]
+    for (key, val) in approx_model.inner[:eq_net_injection]
         model.ext[:lmp_values][key] = dual(val)
     end
 end

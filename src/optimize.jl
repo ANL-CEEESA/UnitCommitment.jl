@@ -3,12 +3,12 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 """
-    optimize!(model::JuMP.Model)::Nothing
+    optimize!(model::UnitCommitmentModel)::Nothing
 
 Solve the given unit commitment model. Unlike `JuMP.optimize!`, this uses more
 advanced methods to accelerate the solution process and to enforce transmission
 and N-1 security constraints.
 """
-function optimize!(model::JuMP.Model)::Nothing
+function optimize!(model::UnitCommitmentModel)::Nothing
     return UnitCommitment.optimize!(model, XavQiuWanThi2019.Method())
 end

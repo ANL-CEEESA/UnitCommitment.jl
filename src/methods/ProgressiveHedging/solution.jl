@@ -6,7 +6,7 @@ using MPI, DataStructures
 const FIRST_STAGE_VARS =
     ["Thermal: Is on", "Thermal: Switch on", "Thermal: Switch off"]
 
-function solution(model::JuMP.Model, method::ProgressiveHedging)::OrderedDict
+function solution(model::UnitCommitmentModel, method::ProgressiveHedging)::OrderedDict
     comm = MPI.COMM_WORLD
     mpi = MpiInfo(comm)
     sp_solution = UnitCommitment.solution(model)

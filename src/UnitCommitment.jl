@@ -6,6 +6,7 @@ module UnitCommitment
 
 using Base: String
 using DataStructures
+using JuMP
 using Printf
 
 include("components/bus/structs.jl")
