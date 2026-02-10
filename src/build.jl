@@ -34,7 +34,6 @@ function build_model(;
     variable_names::Bool = false,
 )::UnitCommitmentModel
     model = Model()
-    model.ext[:ucjl] = Dict()
     model[:obj] = AffExpr()
     model[:net_injection] = OrderedDict(
         (sc.name, b.name, t) => AffExpr(-b.load[t]) for
@@ -52,5 +51,5 @@ function build_model(;
     if optimizer !== nothing
         set_optimizer(model, optimizer)
     end
-    return UnitCommitmentModel(model)
+    return UnitCommitmentModel(model, Dict())
 end

@@ -15,29 +15,22 @@ solution = UnitCommitment.solution(model)
 ```
 """
 function solution(model::UnitCommitmentModel)::OrderedDict
-    instance = model.inner[:instance]
-    sol = model.inner.ext[:ucjl][:solution]
-
-    if length(instance.scenarios) == 1
-        sol = first(values(sol))
-    end
-
-    return sol
+    haskey(model.data, :solution) || error("No solution available. Call optimize!(model) first.")
+    sol = model.data[:solution]
+    length(sol) == 1 ? first(values(sol)) : sol
 end
 
 function _store_solution!(model::UnitCommitmentModel)::Nothing
-    instance, T = model.inner[:instance], model.inner[:instance].time
-    sol = OrderedDict()
-
+    instance = model.inner[:instance]
+    sol = OrderedDict(
+        sc.name => OrderedDict() for sc in instance.scenarios
+    )
     for sc in instance.scenarios
-        sol[sc.name] = OrderedDict()
-        _store_bus_solution!(sol[sc.name], model.inner, sc, T)
+        _store_bus_solution!(sol[sc.name], model.inner, sc, instance.time)
     end
-
     for ext in instance.extensions
         store_solution(sol, model.inner, ext)
     end
-
-    model.inner.ext[:ucjl][:solution] = sol
+    model.data[:solution] = sol
     return
 end

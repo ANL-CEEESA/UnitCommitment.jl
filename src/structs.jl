@@ -87,9 +87,11 @@ Wrapper around a `JuMP.Model` returned by [`build_model`](@ref). Use
 
 # Fields
 - `inner::JuMP.Model`: the underlying JuMP optimization model.
+- `data::Dict`: storage for UC.jl-specific data (e.g. extracted solution).
 """
 struct UnitCommitmentModel
     inner::JuMP.Model
+    data::Dict
 end
 
 export UnitCommitmentModel
