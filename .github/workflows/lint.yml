@@ -18,7 +18,6 @@ jobs:
           using JuliaFormatter
           format("src", verbose=true)
           format("test", verbose=true)
-          format("benchmark", verbose=true)
           out = String(read(Cmd(`git diff`)))
           if isempty(out)
               exit(0)

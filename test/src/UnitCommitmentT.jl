@@ -145,8 +145,6 @@ function fixture(path::String)::String
 end
 
 function runtests()
-    # println("Running tests...")
-    # UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
     @testset "UnitCommitment" begin
         usage_deterministic_test()
         usage_stochastic_test()
