@@ -7,7 +7,6 @@ using JSON
 using DataStructures
 using CodecZlib
 import Base: getindex, time
-using SparseArrays
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
 
@@ -157,7 +156,6 @@ end
 
 function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     _migrate(json)
-    contingencies = Contingency[]
 
     time_horizon = json["Parameters"]["Time horizon (min)"]
     if time_horizon === nothing
@@ -199,14 +197,10 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     scenario = UnitCommitmentScenario(
         name = scenario_name,
         probability = probability,
-        contingencies_by_name = Dict{AbstractString,Contingency}(),
-        contingencies = Contingency[],
         investment_cost_weight = investment_cost_weight,
         power_balance_penalty = power_balance_penalty,
         time = T,
         time_step = time_step,
-        isf = spzeros(Float64, 0, 0),
-        lodf = spzeros(Float64, 0, 0),
     )
 
     # Read buses
@@ -216,36 +210,6 @@ function _from_json(json, extensions::Vector = [])::UnitCommitmentScenario
     for ext in extensions
         read_json(json, scenario, ext)
     end
-
-    # Read contingencies
-    if haskey(scenario.data, :lines)
-        if "Contingencies" in keys(json)
-            for (cont_name, dict) in json["Contingencies"]
-                affected_lines = TransmissionLine[]
-                if "Affected lines" in keys(dict)
-                    affected_lines = [
-                        scenario.data[:line_by_name][l] for
-                        l in dict["Affected lines"]
-                    ]
-                end
-                if "Affected units" in keys(dict)
-                    error("Unit contingencies are not currently supported")
-                end
-                cont = Contingency(cont_name, affected_lines)
-                push!(contingencies, cont)
-            end
-        end
-    end
-
-    # Update scenario with contingencies
-    scenario.contingencies_by_name = Dict(c.name => c for c in contingencies)
-    scenario.contingencies = contingencies
-
-    # Initialize ISF and LODF matrices
-    lines = get(scenario.data, :lines, TransmissionLine[])
-    scenario.isf =
-        spzeros(Float64, length(lines), length(scenario.data[:bus]) - 1)
-    scenario.lodf = spzeros(Float64, length(lines), length(lines))
 
     return scenario
 end

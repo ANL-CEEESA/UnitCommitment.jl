@@ -62,7 +62,7 @@ function _setup_transmission(
         isf[abs.(isf).<formulation.isf_cutoff] .= 0
         lodf[abs.(lodf).<formulation.lodf_cutoff] .= 0
     end
-    sc.isf = isf
-    sc.lodf = lodf
+    sc.data[:isf] = isf
+    sc.data[:lodf] = lodf
     return
 end

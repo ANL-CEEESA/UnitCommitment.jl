@@ -15,6 +15,11 @@ Base.@kwdef mutable struct TransmissionLine
     max_copy::Int
 end
 
+Base.@kwdef mutable struct Contingency
+    name::String
+    lines::Vector{TransmissionLine}
+end
+
 Base.@kwdef struct PhaseAngleTransmissionExt <: UnitCommitmentExtension
     phase_angle_limit::Float64 = pi
     bigM::Float64 = 1e6

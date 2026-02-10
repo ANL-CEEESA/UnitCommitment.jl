@@ -45,14 +45,3 @@ struct ShiftFactorsFormulation <: TransmissionFormulation
         return new(isf_cutoff, lodf_cutoff, precomputed_isf, precomputed_lodf)
     end
 end
-
-"""
-	struct PhaseAngleFormulation <: TransmissionFormulation
-        phase_angle_limit::Float64 = pi
-        bigM::Float64 = 1e6
-	end
-"""
-Base.@kwdef struct PhaseAngleFormulation <: TransmissionFormulation
-    phase_angle_limit::Float64 = pi
-    bigM::Float64 = 1e6
-end

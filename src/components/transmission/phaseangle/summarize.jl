@@ -7,7 +7,8 @@ function summarize(
     ::PhaseAngleTransmissionExt,
     io::IO,
 )::Nothing
-    count = length(instance.scenarios[1].data[:lines])
-    print(io, "$count lines, ")
+    sc = instance.scenarios[1]
+    print(io, "$(length(sc.data[:lines])) lines, ")
+    print(io, "$(length(sc.data[:contingencies])) contingencies, ")
     return
 end

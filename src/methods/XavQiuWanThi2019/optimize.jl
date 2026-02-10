@@ -15,7 +15,7 @@ function optimize!(model::JuMP.Model, method::XavQiuWanThi2019.Method)::Nothing
     large_gap = false
     has_transmission = false
     for sc in model[:instance].scenarios
-        if length(sc.isf) > 0
+        if length(sc.data[:isf]) > 0
             has_transmission = true
         end
         if has_transmission && method.two_phase_gap

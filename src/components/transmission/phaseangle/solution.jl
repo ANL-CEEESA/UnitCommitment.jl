@@ -18,7 +18,7 @@ function store_solution(
             value(net_injection[sc.name, b.name, t]) for
             b in non_slack_buses, t in 1:T
         ]
-        flows = sc.isf * net_injection_values
+        flows = sc.data[:isf] * net_injection_values
 
         sol[sc.name]["Line: Flow (MW)"] = OrderedDict(
             line.name =>

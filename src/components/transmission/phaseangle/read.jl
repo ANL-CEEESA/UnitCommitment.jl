@@ -2,6 +2,8 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
+using SparseArrays
+
 function read_json(
     json::AbstractDict,
     sc::UnitCommitmentScenario,
@@ -49,5 +51,31 @@ function read_json(
 
     sc.data[:lines] = lines
     sc.data[:line_by_name] = Dict(l.name => l for l in lines)
+
+    # Read contingencies
+    contingencies = Contingency[]
+    if "Contingencies" in keys(json)
+        for (cont_name, dict) in json["Contingencies"]
+            affected_lines = TransmissionLine[]
+            if "Affected lines" in keys(dict)
+                affected_lines = [
+                    sc.data[:line_by_name][l] for
+                    l in dict["Affected lines"]
+                ]
+            end
+            if "Affected units" in keys(dict)
+                error("Unit contingencies are not currently supported")
+            end
+            cont = Contingency(cont_name, affected_lines)
+            push!(contingencies, cont)
+        end
+    end
+    sc.data[:contingencies_by_name] = Dict(c.name => c for c in contingencies)
+    sc.data[:contingencies] = contingencies
+
+    # Initialize ISF and LODF matrices
+    sc.data[:isf] = spzeros(Float64, length(lines), length(sc.data[:bus]) - 1)
+    sc.data[:lodf] = spzeros(Float64, length(lines), length(lines))
+
     return
 end

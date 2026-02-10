@@ -21,7 +21,7 @@ function instance_read_test()
         @test length(sc.data[:lines]) == 20
         @test length(sc.data[:bus]) == 14
         @test length(sc.thermal_units) == 6
-        @test length(sc.contingencies) == 19
+        @test length(sc.data[:contingencies]) == 19
         @test length(sc.data[:psload]) == 1
         @test instance.time == 4
         @test sc.time_step == 60
@@ -108,10 +108,10 @@ function instance_read_test()
         @test length(unit.reserves) == 1
         @test unit.reserves[1].name == "r1"
 
-        @test sc.contingencies[1].lines == [sc.data[:lines][1]]
-        @test sc.contingencies[1].thermal_units == []
-        @test sc.contingencies[1].name == "c1"
-        @test sc.contingencies_by_name["c1"].name == "c1"
+        @test sc.data[:contingencies][1].lines == [sc.data[:lines][1]]
+        @test sc.data[:contingencies][1].thermal_units == []
+        @test sc.data[:contingencies][1].name == "c1"
+        @test sc.data[:contingencies_by_name]["c1"].name == "c1"
 
         load = sc.data[:psload][1]
         @test load.name == "ps1"

@@ -30,8 +30,8 @@ function _find_violations(
         sc = sc,
         net_injections = net_injection_values,
         overflow = overflow_values,
-        isf = sc.isf,
-        lodf = sc.lodf,
+        isf = sc.data[:isf],
+        lodf = sc.data[:lodf],
         max_per_line = max_per_line,
         max_per_period = max_per_period,
     )
@@ -100,7 +100,7 @@ function _find_violations(;
     ]
 
     is_vulnerable::Array{Bool} = zeros(Bool, L)
-    for c in sc.contingencies
+    for c in sc.data[:contingencies]
         is_vulnerable[c.lines[1].offset] = true
     end
 

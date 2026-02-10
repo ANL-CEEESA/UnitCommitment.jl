@@ -127,7 +127,7 @@ function solution_methods_XavQiuWanThi19_sensitivity_test()
             buses = sc.data[:bus],
             isf = isf_before,
         )
-        for contingency in sc.contingencies
+        for contingency in sc.data[:contingencies]
             for lc in contingency.lines
                 prev_susceptance = lc.susceptance
                 lc.susceptance = 0.0

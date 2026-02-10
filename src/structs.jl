@@ -5,16 +5,7 @@
 abstract type UnitCommitmentExtension end
 abstract type SolutionMethod end
 
-Base.@kwdef mutable struct Contingency
-    name::String
-    lines::Vector
-end
-
 Base.@kwdef mutable struct UnitCommitmentScenario
-    contingencies_by_name::Dict{AbstractString,Contingency}
-    contingencies::Vector{Contingency}
-    isf::Array{Float64,2}
-    lodf::Array{Float64,2}
     name::String
     investment_cost_weight::Float64
     power_balance_penalty::Vector{Float64}
@@ -35,7 +26,6 @@ function Base.show(io::IO, instance::UnitCommitmentInstance)
     print(io, "UnitCommitmentInstance(")
     print(io, "$(length(instance.scenarios)) scenarios, ")
     summarize_buses(instance, io)
-    print(io, "$(length(sc.contingencies)) contingencies, ")
     for ext in instance.extensions
         summarize(instance, ext, io)
     end

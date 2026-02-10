@@ -12,8 +12,8 @@ function _enforce_transmission(
             model = model,
             sc = sc,
             violation = v,
-            isf = sc.isf,
-            lodf = sc.lodf,
+            isf = sc.data[:isf],
+            lodf = sc.data[:lodf],
         )
     end
     return
