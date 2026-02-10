@@ -6,10 +6,7 @@ using UnitCommitment, LinearAlgebra, JuMP, JSON
 
 function instance_read_test()
     @testset "read_benchmark" begin
-        instance = UnitCommitment.read(
-            fixture("case14.json.gz"),
-            extensions = [UnitCommitment.PriceSensitiveLoadsExt()],
-        )
+        instance = UnitCommitment.read(fixture("case14.json.gz"))
 
         @test repr(instance) == (
             "UnitCommitmentInstance(1 scenarios, 6 thermal units, 0 profiled units, 14 buses, " *

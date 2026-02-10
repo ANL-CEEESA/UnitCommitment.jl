@@ -6,15 +6,7 @@ using HiGHS, JuMP, UnitCommitment
 
 @testfunction model_base_storage_test begin
     model = UnitCommitment.build_model(
-        instance = UnitCommitment.read(
-            fixture("base.json"),
-            extensions = [
-                UnitCommitment.ThermalExt(
-                    pwl_costs = UnitCommitment.BasePwlCosts(),
-                ),
-                UnitCommitment.StorageExt(),
-            ],
-        ),
+        instance = UnitCommitment.read(fixture("base.json")),
         optimizer = HiGHS.Optimizer,
         variable_names = true,
     )

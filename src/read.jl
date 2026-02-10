@@ -10,6 +10,14 @@ import Base: getindex, time
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
 
+const DEFAULT_EXTENSIONS = [
+    ThermalExt(),
+    ProfiledUnitsExt(),
+    PriceSensitiveLoadsExt(),
+    StorageExt(),
+    PhaseAngleTransmissionExt(),
+]
+
 """
     read_benchmark(name; quiet=false, extensions=[])::UnitCommitmentInstance
 
@@ -70,6 +78,7 @@ function read(
     extensions::Vector = [],
     repair::Bool = true,
 )::UnitCommitmentInstance
+    extensions = _merge_extensions(extensions)
     scenario = _read_scenario(path, extensions)
     scenario.name = "s1"
     scenario[:probability] = 1.0
@@ -105,6 +114,7 @@ function read(
     extensions::Vector = [],
     repair::Bool = true,
 )::UnitCommitmentInstance
+    extensions = _merge_extensions(extensions)
     scenarios = [_read_scenario(p, extensions) for p in paths]
     _assign_scenario_names!(scenarios, paths)
     _normalize_probabilities!(scenarios)
@@ -118,6 +128,19 @@ function read(
 end
 
 # --- Internal helpers --------------------------------------------------------
+
+function _merge_extensions(user_extensions)
+    merged = deepcopy(DEFAULT_EXTENSIONS)
+    for ext in user_extensions
+        idx = findfirst(d -> typeof(d) == typeof(ext), merged)
+        if idx !== nothing
+            merged[idx] = ext   # override default config
+        else
+            push!(merged, ext)  # add new extension
+        end
+    end
+    return merged
+end
 
 function _parse_json_file(path::String)
     opener = endswith(path, ".gz") ? CodecZlib.GzipDecompressorStream : identity

@@ -9,9 +9,6 @@ using HiGHS, JuMP, UnitCommitment
         instance = UnitCommitment.read(
             fixture("base.json"),
             extensions = [
-                UnitCommitment.ThermalExt(
-                    pwl_costs = UnitCommitment.BasePwlCosts(),
-                ),
                 UnitCommitment.PhaseAngleTransmissionExt(
                     phase_angle_limit = pi,
                     bigM = 1e6,
