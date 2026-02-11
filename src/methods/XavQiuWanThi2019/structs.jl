@@ -27,7 +27,7 @@ Fields
     the time limit over the entire optimization procedure.
 - `gap_limit`: 
     the desired relative optimality gap. Only used when `two_phase_gap=true`.
-- `two_phase_gap`: 
+- `two_phase_gap`:
     if true, solve the problem with large gap tolerance first, then reduce
     the gap tolerance when no further violated constraints are found.
 - `max_violations_per_line`:
@@ -36,6 +36,8 @@ Fields
 - `max_violations_per_period`:
     maximum number of violated transmission constraints to add to the
     formulation per time period.
+- `verbose`:
+    if true, print detailed progress information during optimization.
 
 """
 mutable struct Method <: SolutionMethod
@@ -44,6 +46,7 @@ mutable struct Method <: SolutionMethod
     two_phase_gap::Bool
     max_violations_per_line::Int
     max_violations_per_period::Int
+    verbose::Bool
 
     function Method(;
         time_limit::Float64 = 86400.0,
@@ -51,6 +54,7 @@ mutable struct Method <: SolutionMethod
         two_phase_gap::Bool = true,
         max_violations_per_line::Int = 1,
         max_violations_per_period::Int = 5,
+        verbose::Bool = false,
     )
         return new(
             time_limit,
@@ -58,6 +62,7 @@ mutable struct Method <: SolutionMethod
             two_phase_gap,
             max_violations_per_line,
             max_violations_per_period,
+            verbose,
         )
     end
 end

@@ -18,7 +18,9 @@ function optimize!(
     end
     function set_gap(gap)
         JuMP.set_optimizer_attribute(model.inner, "MIPGap", gap)
-        @info @sprintf("MIP gap tolerance set to %f", gap)
+        if method.verbose
+            @info @sprintf("MIP gap tolerance set to %f", gap)
+        end
     end
     initial_time = time()
     large_gap = false
@@ -36,20 +38,28 @@ function optimize!(
         time_elapsed = time() - initial_time
         time_remaining = method.time_limit - time_elapsed
         if time_remaining < 0
-            @info "Time limit exceeded"
+            if method.verbose
+                @info "Time limit exceeded"
+            end
             break
         end
-        @info @sprintf(
-            "Setting MILP time limit to %.2f seconds",
-            time_remaining
-        )
+        if method.verbose
+            @info @sprintf(
+                "Setting MILP time limit to %.2f seconds",
+                time_remaining
+            )
+        end
         JuMP.set_time_limit_sec(model.inner, time_remaining)
-        @info "Solving MILP..."
+        if method.verbose
+            @info "Solving MILP..."
+        end
         JuMP.optimize!(model.inner)
 
         has_transmission || break
 
-        @info "Verifying transmission limits..."
+        if method.verbose
+            @info "Verifying transmission limits..."
+        end
         time_screening = @elapsed begin
             violations = []
             for sc in instance.scenarios
@@ -64,10 +74,12 @@ function optimize!(
                 )
             end
         end
-        @info @sprintf(
-            "Verified transmission limits in %.2f seconds",
-            time_screening
-        )
+        if method.verbose
+            @info @sprintf(
+                "Verified transmission limits in %.2f seconds",
+                time_screening
+            )
+        end
 
         violations_found = false
         for v in violations
@@ -78,10 +90,12 @@ function optimize!(
 
         if violations_found
             for (i, v) in enumerate(violations)
-                _enforce_transmission(model.inner, v, instance.scenarios[i])
+                _enforce_transmission(model.inner, v, instance.scenarios[i], method)
             end
         else
-            @info "No violations found"
+            if method.verbose
+                @info "No violations found"
+            end
             if large_gap
                 large_gap = false
                 set_gap(method.gap_limit)

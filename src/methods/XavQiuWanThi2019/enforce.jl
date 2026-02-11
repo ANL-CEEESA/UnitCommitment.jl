@@ -6,6 +6,7 @@ function _enforce_transmission(
     model::JuMP.Model,
     violations::Vector{_Violation},
     sc::UnitCommitmentScenario,
+    method::XavQiuWanThi2019.Method,
 )::Nothing
     for v in violations
         _enforce_transmission(
@@ -14,6 +15,7 @@ function _enforce_transmission(
             violation = v,
             isf = sc[:isf],
             lodf = sc[:lodf],
+            method = method,
         )
     end
     return
@@ -25,6 +27,7 @@ function _enforce_transmission(;
     violation::_Violation,
     isf::Matrix{Float64},
     lodf::Matrix{Float64},
+    method::XavQiuWanThi2019.Method,
 )::Nothing
     instance = model[:instance]
     limit::Float64 = 0.0
@@ -33,23 +36,27 @@ function _enforce_transmission(;
 
     if violation.outage_line === nothing
         limit = violation.monitored_line.normal_flow_limit[violation.time]
-        @info @sprintf(
-            "    %8.3f MW overflow in %-5s time %3d (pre-contingency, scenario %s)",
-            violation.amount,
-            violation.monitored_line.name,
-            violation.time,
-            sc.name,
-        )
+        if method.verbose
+            @info @sprintf(
+                "    %8.3f MW overflow in %-5s time %3d (pre-contingency, scenario %s)",
+                violation.amount,
+                violation.monitored_line.name,
+                violation.time,
+                sc.name,
+            )
+        end
     else
         limit = violation.monitored_line.emergency_flow_limit[violation.time]
-        @info @sprintf(
-            "    %8.3f MW overflow in %-5s time %3d (outage: line %s, scenario %s)",
-            violation.amount,
-            violation.monitored_line.name,
-            violation.time,
-            violation.outage_line.name,
-            sc.name,
-        )
+        if method.verbose
+            @info @sprintf(
+                "    %8.3f MW overflow in %-5s time %3d (outage: line %s, scenario %s)",
+                violation.amount,
+                violation.monitored_line.name,
+                violation.time,
+                violation.outage_line.name,
+                sc.name,
+            )
+        end
     end
 
     fm = violation.monitored_line.name
