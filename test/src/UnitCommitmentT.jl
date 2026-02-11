@@ -5,115 +5,7 @@ using UnitCommitment
 using Test
 using HiGHS
 
-function test_optimizer()
-    return optimizer_with_attributes(HiGHS.Optimizer, "log_to_console" => false)
-end
-
-"""
-Define a test function with an embedded `@testset` of the same name.
-"""
-macro testfunction(name, body)
-    name_str = string(name)
-    quote
-        function $(esc(name))()
-            @testset $name_str begin
-                $(esc(body))
-            end
-        end
-        export $(esc(name))
-    end
-end
-
-macro test_binary_var(x)
-    return quote
-        let var = $(esc(x))
-            @test var isa VariableRef
-            @test is_binary(var)
-        end
-    end
-end
-
-macro test_integer_var(x, lb = nothing, ub = nothing)
-    return quote
-        let var = $(esc(x)), lb = $(esc(lb)), ub = $(esc(ub))
-            @test var isa VariableRef
-            @test is_integer(var)
-            if lb === nothing
-                @test !has_lower_bound(var)
-            else
-                @test has_lower_bound(var)
-                @test JuMP.lower_bound(var) ≈ lb
-            end
-            if ub === nothing
-                @test !has_upper_bound(var)
-            else
-                @test has_upper_bound(var)
-                @test JuMP.upper_bound(var) ≈ ub
-            end
-        end
-    end
-end
-
-macro test_continuous_var(x, lb = nothing, ub = nothing)
-    return quote
-        let var = $(esc(x)), lb = $(esc(lb)), ub = $(esc(ub))
-            @test var isa VariableRef
-            @test !is_binary(var)
-            @test !is_integer(var)
-            if lb === nothing
-                @test !has_lower_bound(var)
-            else
-                @test has_lower_bound(var)
-                @test JuMP.lower_bound(var) ≈ lb
-            end
-            if ub === nothing
-                @test !has_upper_bound(var)
-            else
-                @test has_upper_bound(var)
-                @test JuMP.upper_bound(var) ≈ ub
-            end
-        end
-    end
-end
-
-macro test_obj_coef(var, expected)
-    return quote
-        let v = $(esc(var)), e = $(esc(expected))
-            obj = objective_function(JuMP.owner_model(v))
-            coef = JuMP.coefficient(obj, v)
-            @test coef ≈ e atol = 1e-6
-        end
-    end
-end
-
-macro test_aff_expr(expr, var, expected)
-    return quote
-        @test JuMP.coefficient($(esc(expr)), $(esc(var))) ≈ $(esc(expected)) atol =
-            1e-6
-    end
-end
-
-macro test_constr(expr, rhs)
-    # Extract constraint name from model[:constraint_name][indices...]
-    model_ref = expr.args[1]
-    name_sym = model_ref.args[2]
-    if name_sym isa QuoteNode
-        name_sym = name_sym.value
-    end
-    name_str = string(name_sym)
-
-    # Extract and format indices (strings without quotes, others as-is)
-    indices = expr.args[2:end]
-    indices_str =
-        join([idx isa String ? idx : string(idx) for idx in indices], ",")
-
-    # Build expected string: "name[indices] : rhs"
-    expected = "$name_str[$indices_str] : $rhs"
-
-    return quote
-        @test repr($(esc(expr))) == $expected
-    end
-end
+include("util.jl")
 
 # include("instance/migrate_test.jl")
 # include("market/market_test.jl")
@@ -148,70 +40,16 @@ include("transmission/phaseangle/build_test.jl")
 include("transmission/phaseangle/flow_test.jl")
 include("transmission/phaseangle/read_test.jl")
 include("transmission/shiftfactors/build_test.jl")
-include("transmission/shiftfactors/read_test.jl")
 include("transmission/shiftfactors/flow_test.jl")
 include("transmission/shiftfactors/sensitivity_test.jl")
 include("usage_test.jl")
 
-basedir = dirname(@__FILE__)
-
-function fixture(path::String)::String
-    return "$basedir/../fixtures/$path"
-end
-
 function runtests()
     @testset "UnitCommitment" begin
-        # # transform_randomize_XavQiuAhm2021_test()
-        # instance_migrate_test()
-        #
-        # model_planning_test()
-        # regression_test()
-        # simple_market_test()
-        # solution_methods_ProgressiveHedging_usage_test()
-        # solution_methods_TimeDecomposition_initial_status_test()
-        # solution_methods_TimeDecomposition_optimize_test()
-        # solution_methods_TimeDecomposition_update_solution_test()
-        # stochastic_market_test()
-        # transform_initcond_test()
-        # transform_slice_test()
-        # validation_repair_test()
-        lmp_aelmp_test()
-        lmp_conventional_test()
-        components_bus_build_test()
-        components_bus_read_test()
-        components_profiled_build_test()
-        components_profiled_read_test()
-        components_psload_build_test()
-        components_psload_read_test()
-        components_storage_build_test()
-        components_storage_read_test()
-        components_thermal_build_test()
-        components_thermal_read_test()
-        components_thermal_read_sub_hourly_test()
-        components_thermal_read_commitment_status_test()
-        model_KnuOstWat2018_test()
-        model_MorLatRam2013_test()
-        solution_methods_XavQiuWanThi19_filter_test()
-        solution_methods_XavQiuWanThi19_find_test()
-        solution_methods_XavQiuWanThi19_injection_shift_factors_test()
-        solution_methods_XavQiuWanThi19_line_outage_factors_test()
-        solution_methods_XavQiuWanThi19_reduced_incidence_matrix_test()
-        solution_methods_XavQiuWanThi19_susceptance_matrix_test()
-        transmission_phaseangle_build_test()
-        transmission_phaseangle_flow_test()
-        transmission_phaseangle_read_test()
-        transmission_shiftfactors_base_flow_test()
-        transmission_shiftfactors_build_lazy_test()
-        transmission_shiftfactors_build_test()
-        transmission_shiftfactors_congested_flow_test()
-        transmission_shiftfactors_contingency_flow_test()
-        transmission_shiftfactors_injection_shift_factors_test()
-        transmission_shiftfactors_line_outage_factors_test()
-        transmission_shiftfactors_reduced_incidence_matrix_test()
-        transmission_shiftfactors_susceptance_matrix_test()
-        usage_deprecated_api_test()
-        usage_deterministic_test()
-        usage_stochastic_test()
+        for sym in sort(names(UnitCommitmentT))
+            endswith(string(sym), "_test") || continue
+            getfield(UnitCommitmentT, sym)()
+        end
     end
     return
 end
