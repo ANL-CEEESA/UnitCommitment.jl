@@ -4,7 +4,7 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction model_base_bus_test begin
+@testfunction components_bus_build_test begin
     model =
         build_model(
             UnitCommitment.read(
