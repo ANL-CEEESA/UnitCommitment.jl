@@ -116,3 +116,14 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_nodal_balance]["s1", "b2", 1] "ni[s1,b2,1] + flow[s1,l1,1] - flow[s1,l3,1] - flow[s1,l4,1] - flow[s1,l5,1] - flow[s1,l22,1] = 0"
     @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] + flow[s1,l3,1] - flow[s1,l6,1] + flow[s1,l21,1] = 0"
 end
+
+@testfunction transmission_phaseangle_contingency_error_test begin
+    # Test that PhaseAngleTransmissionExt throws an error when contingencies are present
+    @test_throws ErrorException build_model(
+        UnitCommitment.read(
+            fixture("case14/contingency.json"),
+            extensions = [UnitCommitment.PhaseAngleTransmissionExt()],
+        ),
+        optimizer = test_optimizer(),
+    )
+end

@@ -340,65 +340,6 @@
       "Max number of parallel circuits": 1
     }
   },
-  "Contingencies": {
-    "c1": {
-      "Affected lines": ["l1"]
-    },
-    "c2": {
-      "Affected lines": ["l2"]
-    },
-    "c3": {
-      "Affected lines": ["l3"]
-    },
-    "c4": {
-      "Affected lines": ["l4"]
-    },
-    "c5": {
-      "Affected lines": ["l5"]
-    },
-    "c6": {
-      "Affected lines": ["l6"]
-    },
-    "c7": {
-      "Affected lines": ["l7"]
-    },
-    "c8": {
-      "Affected lines": ["l8"]
-    },
-    "c9": {
-      "Affected lines": ["l9"]
-    },
-    "c10": {
-      "Affected lines": ["l10"]
-    },
-    "c11": {
-      "Affected lines": ["l11"]
-    },
-    "c12": {
-      "Affected lines": ["l12"]
-    },
-    "c13": {
-      "Affected lines": ["l13"]
-    },
-    "c15": {
-      "Affected lines": ["l15"]
-    },
-    "c16": {
-      "Affected lines": ["l16"]
-    },
-    "c17": {
-      "Affected lines": ["l17"]
-    },
-    "c18": {
-      "Affected lines": ["l18"]
-    },
-    "c19": {
-      "Affected lines": ["l19"]
-    },
-    "c20": {
-      "Affected lines": ["l20"]
-    }
-  },
   "Price-sensitive loads": {
     "ps1": {
       "Bus": "b3",

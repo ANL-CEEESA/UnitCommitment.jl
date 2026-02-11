@@ -9,6 +9,7 @@ function build_model(
     instance::UnitCommitmentInstance,
     ext::PhaseAngleTransmissionExt,
 )::Nothing
+    _check(instance, ext)
     _add_transmission_vars!(model, instance, ext)
     _add_transmission_obj!(model, instance, ext)
     _add_transmission_constr_flow!(model, instance, ext)
@@ -236,6 +237,22 @@ function _add_transmission_constr_invest!(
                     invest[line.name, t-1] <= invest[line.name, t],
                 )
             end
+        end
+    end
+    return
+end
+
+function _check(
+    instance::UnitCommitmentInstance,
+    ::PhaseAngleTransmissionExt,
+)::Nothing
+    # Check for contingencies - this extension does not support them
+    for sc in instance.scenarios
+        if !isempty(sc[:contingencies])
+            error(
+                "PhaseAngleTransmissionExt does not support contingencies. " *
+                "Scenario '$(sc.name)' has $(length(sc[:contingencies])) contingency/contingencies.",
+            )
         end
     end
     return
