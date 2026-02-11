@@ -13,6 +13,7 @@ using HiGHS, JuMP, UnitCommitment
                     UnitCommitment.ThermalExt(
                         pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
                     ),
+                    UnitCommitment.PhaseAngleTransmissionExt(),
                 ],
             ),
             optimizer = test_optimizer(),

@@ -25,3 +25,5 @@ Base.@kwdef struct PhaseAngleTransmissionExt <: UnitCommitmentExtension
     v_base_kv::Float64 = 500.0
     big_m::Float64 = 1e6
 end
+
+extension_slot(::PhaseAngleTransmissionExt) = :transmission

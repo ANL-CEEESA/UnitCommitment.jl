@@ -142,14 +142,12 @@ function _add_transmission_constr_flow!(
                     eq_dc_flow_bigm_ub[sc.name, line.name, t] = @constraint(
                         model,
                         flow[sc.name, line.name, t] <=
-                        b * angle_diff +
-                        ext.big_m * (1 - invest[line.name, t])
+                        b * angle_diff + ext.big_m * (1 - invest[line.name, t])
                     )
                     eq_dc_flow_bigm_lb[sc.name, line.name, t] = @constraint(
                         model,
                         flow[sc.name, line.name, t] >=
-                        b * angle_diff -
-                        ext.big_m * (1 - invest[line.name, t])
+                        b * angle_diff - ext.big_m * (1 - invest[line.name, t])
                     )
                 end
 
@@ -170,8 +168,7 @@ function _add_transmission_constr_flow!(
                 # Non-investment lines (standard DC power flow)
                 eq_dc_flow[sc.name, line.name, t] = @constraint(
                     model,
-                    flow[sc.name, line.name, t] ==
-                    b * angle_diff
+                    flow[sc.name, line.name, t] == b * angle_diff
                 )
 
                 # Flow capacity limits (fixed)

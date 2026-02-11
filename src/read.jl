@@ -10,8 +10,13 @@ import Base: getindex, time
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
 
-const DEFAULT_EXTENSIONS =
-    [ThermalExt(), ProfiledUnitsExt(), PriceSensitiveLoadsExt(), StorageExt()]
+const DEFAULT_EXTENSIONS = [
+    ThermalExt(),
+    ProfiledUnitsExt(),
+    PriceSensitiveLoadsExt(),
+    StorageExt(),
+    ShiftFactorsTransmissionExt(),
+]
 
 """
     read_benchmark(name; quiet=false, extensions=[])::UnitCommitmentInstance
@@ -81,6 +86,7 @@ function read(
         time = scenario[:time];
         scenarios = [scenario],
         extensions,
+        extension_by_slot = _build_extension_by_slot(extensions),
     )
     repair && repair!(instance)
     return instance
@@ -117,6 +123,7 @@ function read(
         time = scenarios[1][:time];
         scenarios,
         extensions,
+        extension_by_slot = _build_extension_by_slot(extensions),
     )
     repair && repair!(instance)
     return instance
@@ -127,14 +134,26 @@ end
 function _merge_extensions(user_extensions)
     merged = deepcopy(DEFAULT_EXTENSIONS)
     for ext in user_extensions
-        idx = findfirst(d -> typeof(d) == typeof(ext), merged)
+        slot = extension_slot(ext)
+        idx = if slot !== nothing
+            findfirst(d -> extension_slot(d) == slot, merged)
+        else
+            findfirst(d -> typeof(d) == typeof(ext), merged)
+        end
         if idx !== nothing
-            merged[idx] = ext   # override default config
+            merged[idx] = ext   # override default (same slot or same type)
         else
             push!(merged, ext)  # add new extension
         end
     end
     return merged
+end
+
+function _build_extension_by_slot(extensions)
+    return Dict(
+        extension_slot(ext) => ext for
+        ext in extensions if extension_slot(ext) !== nothing
+    )
 end
 
 function _parse_json_file(path::String)

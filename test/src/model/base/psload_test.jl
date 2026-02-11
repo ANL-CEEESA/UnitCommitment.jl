@@ -7,7 +7,10 @@ using HiGHS, JuMP, UnitCommitment
 @testfunction model_base_psload_test begin
     model =
         build_model(
-            UnitCommitment.read(fixture("base.json")),
+            UnitCommitment.read(
+                fixture("base.json"),
+                extensions = [UnitCommitment.PhaseAngleTransmissionExt()],
+            ),
             optimizer = test_optimizer(),
             variable_names = true,
         ).inner

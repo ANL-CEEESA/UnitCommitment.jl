@@ -7,6 +7,12 @@ function optimize!(
     method::XavQiuWanThi2019.Method,
 )::Nothing
     instance = model.inner[:instance]
+    ext = get(instance.extension_by_slot, :transmission, nothing)
+    if !(ext isa ShiftFactorsTransmissionExt)
+        error(
+            "XavQiuWanThi2019 method requires ShiftFactorsTransmissionExt, found: $(ext)",
+        )
+    end
     if !occursin("Gurobi", JuMP.solver_name(model.inner))
         method.two_phase_gap = false
     end

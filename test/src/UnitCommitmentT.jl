@@ -5,10 +5,9 @@ using UnitCommitment
 using Test
 using HiGHS
 
-test_optimizer() = optimizer_with_attributes(
-    HiGHS.Optimizer,
-    "log_to_console" => false,
-)
+function test_optimizer()
+    return optimizer_with_attributes(HiGHS.Optimizer, "log_to_console" => false)
+end
 
 """
 Define a test function with an embedded `@testset` of the same name.
@@ -21,6 +20,7 @@ macro testfunction(name, body)
                 $(esc(body))
             end
         end
+        export $(esc(name))
     end
 end
 

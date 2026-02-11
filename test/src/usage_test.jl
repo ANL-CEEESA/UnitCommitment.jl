@@ -61,3 +61,15 @@ end
     @test sol["Thermal: Is on"]["g1"] == [1.0, 1.0, 1.0, 1.0]
     @test sol["Thermal: Is on"]["g2"] == [1.0, 1.0, 1.0, 1.0]
 end
+
+@testfunction usage_XavQiuWanThi2019_requires_shiftfactors_test begin
+    instance = UnitCommitment.read(
+        fixture("case14/base.json"),
+        extensions = [UnitCommitment.PhaseAngleTransmissionExt()],
+    )
+    model = build_model(instance)
+    @test_throws ErrorException optimize!(
+        model,
+        UnitCommitment.XavQiuWanThi2019.Method(),
+    )
+end

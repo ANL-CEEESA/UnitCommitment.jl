@@ -76,7 +76,7 @@ function _init(model::JuMP.Model, key::Symbol)::OrderedDict
 end
 
 function _set_names!(model::JuMP.Model)
-    _set_names!(object_dictionary(model))
+    return _set_names!(object_dictionary(model))
 end
 
 function _set_names!(dict::Dict)

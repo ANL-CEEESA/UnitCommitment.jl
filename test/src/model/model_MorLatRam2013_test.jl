@@ -14,6 +14,7 @@ using HiGHS, JuMP, UnitCommitment
                         ramping = UnitCommitment.MorLatRam2013.Ramping(),
                         slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
                     ),
+                    UnitCommitment.PhaseAngleTransmissionExt(),
                 ],
             ),
             optimizer = test_optimizer(),

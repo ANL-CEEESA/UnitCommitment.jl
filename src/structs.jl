@@ -12,13 +12,39 @@ as `read_json`, `build_model`, `solution`, `validate` and `summarize`.
 abstract type UnitCommitmentExtension end
 
 """
+    extension_slot(ext) -> Union{Symbol, Nothing}
+
+Return the slot that this extension occupies, or `nothing` if it does not
+belong to any slot. When merging user-provided extensions with the defaults,
+an extension whose slot matches a default extension's slot will **replace**
+it, even if the two have different concrete types.
+
+Third-party extensions can participate in the slot system by defining a
+method for their type:
+
+```julia
+UnitCommitment.extension_slot(::MyTransmissionExt) = :transmission
+```
+"""
+extension_slot(::UnitCommitmentExtension) = nothing
+
+"""
     abstract type SolutionMethod end
 
-Base type for solution methods (e.g. `XavQiuWanThi2024`). A solution method
+Base type for solution methods (e.g. `XavQiuWanThi19`). A solution method
 controls how the optimization model is solved, including any decomposition or
 callback strategies.
 """
 abstract type SolutionMethod end
+
+"""
+    DirectMethod <: SolutionMethod
+
+Standard solution method that solves the unit commitment model directly as a
+single MILP, without decomposition or lazy constraint generation.
+```
+"""
+struct DirectMethod <: SolutionMethod end
 
 """
     UnitCommitmentScenario(; name)
@@ -48,7 +74,7 @@ Base.haskey(sc::UnitCommitmentScenario, key) = haskey(sc.data, key)
 Base.get(sc::UnitCommitmentScenario, key, default) = get(sc.data, key, default)
 
 """
-    UnitCommitmentInstance(; time, scenarios, extensions)
+    UnitCommitmentInstance(; time, scenarios, extensions, extension_by_slot)
 
 Top-level structure representing a stochastic unit commitment
 instance. Use [`UnitCommitment.read`](@ref) or
@@ -58,11 +84,13 @@ instance. Use [`UnitCommitment.read`](@ref) or
 - `time::Int`: number of time steps.
 - `scenarios::Vector{UnitCommitmentScenario}`: one or more scenarios.
 - `extensions::Vector`: active extensions that define the model components.
+- `extension_by_slot::Dict{Symbol,Any}`: extensions indexed by their slot.
 """
 Base.@kwdef mutable struct UnitCommitmentInstance
     time::Int
     scenarios::Vector{UnitCommitmentScenario}
     extensions::Vector
+    extension_by_slot::Dict{Symbol,Any} = Dict{Symbol,Any}()
 end
 
 function Base.show(io::IO, instance::UnitCommitmentInstance)

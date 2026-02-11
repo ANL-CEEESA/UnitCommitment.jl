@@ -46,6 +46,8 @@ lmp = solution["s1"]["LMP: Total (\$/MWh)"]
 """
 struct ConventionalLMP <: UnitCommitmentExtension end
 
+extension_slot(::ConventionalLMP) = :lmp
+
 """
     AELMP(;
         allow_offline_participation::Bool = true,
@@ -127,3 +129,5 @@ Base.@kwdef struct AELMP <: UnitCommitmentExtension
     consider_startup_costs::Bool = true
     optimizer::Any
 end
+
+extension_slot(::AELMP) = :lmp

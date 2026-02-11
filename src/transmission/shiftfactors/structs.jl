@@ -7,3 +7,5 @@ Base.@kwdef struct ShiftFactorsTransmissionExt <: UnitCommitmentExtension
     lodf_cutoff::Float64 = 0.001
     lazy::Bool = false
 end
+
+extension_slot(::ShiftFactorsTransmissionExt) = :transmission
