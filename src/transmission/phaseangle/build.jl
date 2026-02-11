@@ -10,10 +10,10 @@ function build_model(
     ext::PhaseAngleTransmissionExt,
 )::Nothing
     _add_transmission_vars!(model, instance, ext)
-    _add_transmission_obj!(model, instance)
+    _add_transmission_obj!(model, instance, ext)
     _add_transmission_constr_flow!(model, instance, ext)
-    _add_transmission_constr_nodal_balance!(model, instance)
-    _add_transmission_constr_invest!(model, instance)
+    _add_transmission_constr_nodal_balance!(model, instance, ext)
+    _add_transmission_constr_invest!(model, instance, ext)
     return
 end
 
@@ -67,6 +67,7 @@ end
 function _add_transmission_obj!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
+    ext::PhaseAngleTransmissionExt,
 )::Nothing
     T = instance.time
     overflow = model[:overflow]
@@ -107,14 +108,9 @@ function _add_transmission_constr_flow!(
     overflow = model[:overflow]
     invest = model[:invest]
 
-    # DC power flow equation: flow = susceptance * (theta_source - theta_target)
     eq_dc_flow = _init(model, :eq_dc_flow)
-
-    # Big-M formulation for binary investment decisions (single copy lines)
     eq_dc_flow_bigm_ub = _init(model, :eq_dc_flow_bigm_ub)
     eq_dc_flow_bigm_lb = _init(model, :eq_dc_flow_bigm_lb)
-
-    # Flow capacity limits (with overflow penalty)
     eq_flow_limit_ub = _init(model, :eq_flow_limit_ub)
     eq_flow_limit_lb = _init(model, :eq_flow_limit_lb)
 
@@ -122,6 +118,9 @@ function _add_transmission_constr_flow!(
         lines = sc[:lines]
 
         for line in lines, t in 1:T
+            # Susceptance in MW/rad: V_base^2 (kV^2) * B (siemens) = MW/rad
+            b = line.susceptance * ext.v_base_kv^2
+
             # Compute angle difference
             angle_diff =
                 theta[sc.name, line.source.name, t] -
@@ -130,27 +129,27 @@ function _add_transmission_constr_flow!(
             if line.invest[1] > 0.0
                 # Investment lines
                 if line.max_copy > 1
-                    # Multiple parallel circuits: flow = invest * susceptance * angle_diff
+                    # Multiple parallel circuits: flow = invest * b * angle_diff
                     eq_dc_flow[sc.name, line.name, t] = @constraint(
                         model,
                         flow[sc.name, line.name, t] ==
-                        invest[line.name, t] * line.susceptance * angle_diff
+                        invest[line.name, t] * b * angle_diff
                     )
                 else
                     # Single circuit with big-M formulation
-                    # When invest=1: flow = susceptance * angle_diff
+                    # When invest=1: flow = b * angle_diff
                     # When invest=0: flow is unconstrained (big-M makes constraints inactive)
                     eq_dc_flow_bigm_ub[sc.name, line.name, t] = @constraint(
                         model,
                         flow[sc.name, line.name, t] <=
-                        line.susceptance * angle_diff +
-                        ext.bigM * (1 - invest[line.name, t])
+                        b * angle_diff +
+                        ext.big_m * (1 - invest[line.name, t])
                     )
                     eq_dc_flow_bigm_lb[sc.name, line.name, t] = @constraint(
                         model,
                         flow[sc.name, line.name, t] >=
-                        line.susceptance * angle_diff -
-                        ext.bigM * (1 - invest[line.name, t])
+                        b * angle_diff -
+                        ext.big_m * (1 - invest[line.name, t])
                     )
                 end
 
@@ -172,7 +171,7 @@ function _add_transmission_constr_flow!(
                 eq_dc_flow[sc.name, line.name, t] = @constraint(
                     model,
                     flow[sc.name, line.name, t] ==
-                    line.susceptance * angle_diff
+                    b * angle_diff
                 )
 
                 # Flow capacity limits (fixed)
@@ -196,6 +195,7 @@ end
 function _add_transmission_constr_nodal_balance!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
+    ext::PhaseAngleTransmissionExt,
 )::Nothing
     T = instance.time
     flow = model[:flow]
@@ -207,13 +207,13 @@ function _add_transmission_constr_nodal_balance!(
             for b in sc[:bus]
                 eq_nodal_balance[sc.name, b.name, t] = @constraint(
                     model,
-                    sum(
-                        flow[sc.name, lm.name, t] for
-                        lm in lines if lm.source == b
-                    ) - sum(
+                    model[:ni][sc.name, b.name, t] + sum(
                         flow[sc.name, lm.name, t] for
                         lm in lines if lm.target == b
-                    ) + model[:ni][sc.name, b.name, t] == 0
+                    ) == sum(
+                        flow[sc.name, lm.name, t] for
+                        lm in lines if lm.source == b
+                    )
                 )
             end
         end
@@ -224,6 +224,7 @@ end
 function _add_transmission_constr_invest!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
+    ext::PhaseAngleTransmissionExt,
 )::Nothing
     T = instance.time
     invest = model[:invest]

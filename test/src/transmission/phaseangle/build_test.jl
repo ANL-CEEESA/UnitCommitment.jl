@@ -4,7 +4,7 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction model_transmission_phaseangle_test begin
+@testfunction transmission_phaseangle_build_test begin
     model =
         build_model(
             UnitCommitment.read(
@@ -12,11 +12,12 @@ using HiGHS, JuMP, UnitCommitment
                 extensions = [
                     UnitCommitment.PhaseAngleTransmissionExt(
                         phase_angle_limit = pi,
-                        bigM = 1e6,
+                        big_m = 1e6,
+                        v_base_kv = 1e2,
                     ),
                 ],
             ),
-            optimizer = HiGHS.Optimizer,
+            optimizer = test_optimizer(),
             variable_names = true,
         ).inner
 
@@ -71,17 +72,17 @@ using HiGHS, JuMP, UnitCommitment
     # -------------------------------------------------------------------------
 
     # l1: existing line (no investment), susceptance = 29.497
-    @test_constr model[:eq_dc_flow]["s1", "l1", 1] "-29.497 theta[s1,b1,1] + 29.497 theta[s1,b2,1] + flow[s1,l1,1] = 0"
+    @test_constr model[:eq_dc_flow]["s1", "l1", 1] "-294970 theta[s1,b1,1] + 294970 theta[s1,b2,1] + flow[s1,l1,1] = 0"
     @test ("s1", "l1", 1) ∉ keys(model[:eq_dc_flow_bigm_ub])
 
     # l21: investment line with max_copy=3, susceptance = 10.0
-    @test_constr model[:eq_dc_flow]["s1", "l21", 1] "-10 invest[l21,1]*theta[s1,b1,1] + 10 invest[l21,1]*theta[s1,b3,1] + flow[s1,l21,1] = 0"
+    @test_constr model[:eq_dc_flow]["s1", "l21", 1] "-100000 invest[l21,1]*theta[s1,b1,1] + 100000 invest[l21,1]*theta[s1,b3,1] + flow[s1,l21,1] = 0"
     @test ("s1", "l21", 1) ∉ keys(model[:eq_dc_flow_bigm_ub])
 
     # # l22: investment line with max_copy=1, susceptance = 15.0, bigM = 1e6
     @test ("s1", "l22", 1) ∉ keys(model[:eq_dc_flow])
-    @test_constr model[:eq_dc_flow_bigm_ub]["s1", "l22", 1] "1000000 invest[l22,1] - 15 theta[s1,b2,1] + 15 theta[s1,b6,1] + flow[s1,l22,1] ≤ 1000000"
-    @test_constr model[:eq_dc_flow_bigm_lb]["s1", "l22", 1] "-1000000 invest[l22,1] - 15 theta[s1,b2,1] + 15 theta[s1,b6,1] + flow[s1,l22,1] ≥ -1000000"
+    @test_constr model[:eq_dc_flow_bigm_ub]["s1", "l22", 1] "1000000 invest[l22,1] - 150000 theta[s1,b2,1] + 150000 theta[s1,b6,1] + flow[s1,l22,1] ≤ 1000000"
+    @test_constr model[:eq_dc_flow_bigm_lb]["s1", "l22", 1] "-1000000 invest[l22,1] - 150000 theta[s1,b2,1] + 150000 theta[s1,b6,1] + flow[s1,l22,1] ≥ -1000000"
 
     # eq_flow_limit_ub and eq_flow_limit_lb
     # -------------------------------------------------------------------------
@@ -110,7 +111,8 @@ using HiGHS, JuMP, UnitCommitment
 
     # eq_nodal_balance
     # -------------------------------------------------------------------------
-    @test_constr model[:eq_nodal_balance]["s1", "b1", 1] "100 is_on[g1,1] + prod_above[s1,g1,1] + flow[s1,l1,1] + flow[s1,l2,1] + flow[s1,l21,1] = 0"
-    @test_constr model[:eq_nodal_balance]["s1", "b2", 1] "prod_above[s1,g2,1] - flow[s1,l1,1] + flow[s1,l3,1] + flow[s1,l4,1] + flow[s1,l5,1] + flow[s1,l22,1] = 26.01527"
-    @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "prod_above[s1,g3,1] - flow[s1,l3,1] + flow[s1,l6,1] - flow[s1,l21,1] = 112.93263"
+    @test_constr model[:eq_nodal_balance]["s1", "b1", 1] "ni[s1,b1,1] - flow[s1,l1,1] - flow[s1,l2,1] - flow[s1,l21,1] = 0"
+    @test_constr model[:eq_nodal_balance]["s1", "b1", 2] "ni[s1,b1,2] - flow[s1,l1,2] - flow[s1,l2,2] - flow[s1,l21,2] = 0"
+    @test_constr model[:eq_nodal_balance]["s1", "b2", 1] "ni[s1,b2,1] + flow[s1,l1,1] - flow[s1,l3,1] - flow[s1,l4,1] - flow[s1,l5,1] - flow[s1,l22,1] = 0"
+    @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] + flow[s1,l3,1] - flow[s1,l6,1] + flow[s1,l21,1] = 0"
 end

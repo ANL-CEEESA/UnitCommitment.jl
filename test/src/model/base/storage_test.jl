@@ -8,7 +8,7 @@ using HiGHS, JuMP, UnitCommitment
     model =
         build_model(
             UnitCommitment.read(fixture("base.json")),
-            optimizer = HiGHS.Optimizer,
+            optimizer = test_optimizer(),
             variable_names = true,
         ).inner
 

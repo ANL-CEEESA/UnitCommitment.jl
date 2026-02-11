@@ -24,10 +24,7 @@ instance = UnitCommitment.read(
 # Build JuMP model
 model = UnitCommitment.build_model(
     instance = instance,
-    optimizer = optimizer_with_attributes(
-        HiGHS.Optimizer,
-        MOI.Silent() => true,
-    ),
+    optimizer = test_optimizer(),
 )
 
 # Run the decentralized optimization algorithm

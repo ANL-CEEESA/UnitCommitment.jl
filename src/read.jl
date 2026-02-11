@@ -10,13 +10,8 @@ import Base: getindex, time
 
 const INSTANCES_URL = "https://axavier.org/UnitCommitment.jl/0.4/instances"
 
-const DEFAULT_EXTENSIONS = [
-    ThermalExt(),
-    ProfiledUnitsExt(),
-    PriceSensitiveLoadsExt(),
-    StorageExt(),
-    PhaseAngleTransmissionExt(),
-]
+const DEFAULT_EXTENSIONS =
+    [ThermalExt(), ProfiledUnitsExt(), PriceSensitiveLoadsExt(), StorageExt()]
 
 """
     read_benchmark(name; quiet=false, extensions=[])::UnitCommitmentInstance

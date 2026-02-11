@@ -71,9 +71,5 @@ function read_json(
     sc[:contingencies_by_name] = Dict(c.name => c for c in contingencies)
     sc[:contingencies] = contingencies
 
-    # Initialize ISF and LODF matrices
-    sc[:isf] = spzeros(Float64, length(lines), length(sc[:bus]) - 1)
-    sc[:lodf] = spzeros(Float64, length(lines), length(lines))
-
     return
 end

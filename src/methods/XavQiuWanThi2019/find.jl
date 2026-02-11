@@ -11,7 +11,7 @@ function _find_violations(
     max_per_period::Int,
 )
     instance = model[:instance]
-    net_injection = model[:net_injection]
+    net_injection = model[:ni]
     overflow = model[:overflow]
     length(sc[:bus]) > 1 || return []
     violations = []

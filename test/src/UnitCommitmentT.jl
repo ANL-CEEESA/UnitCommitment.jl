@@ -5,6 +5,11 @@ using UnitCommitment
 using Test
 using HiGHS
 
+test_optimizer() = optimizer_with_attributes(
+    HiGHS.Optimizer,
+    "log_to_console" => false,
+)
+
 """
 Define a test function with an embedded `@testset` of the same name.
 """
@@ -128,15 +133,19 @@ end
 # include("market/market_test.jl")
 # include("planning/planning_test.jl")
 # include("regression.jl")
-include("usage_test.jl")
 include("model/base/bus_test.jl")
-include("model/base/thermal_test.jl")
 include("model/base/profiled_test.jl")
 include("model/base/psload_test.jl")
 include("model/base/storage_test.jl")
-include("model/transmission/phaseangle_test.jl")
-include("model/model_MorLatRam2013_test.jl")
+include("model/base/thermal_test.jl")
 include("model/model_KnuOstWat2018_test.jl")
+include("model/model_MorLatRam2013_test.jl")
+include("transmission/phaseangle/flow_test.jl")
+include("transmission/phaseangle/build_test.jl")
+include("transmission/shiftfactors/build_test.jl")
+include("transmission/shiftfactors/flow_test.jl")
+include("transmission/shiftfactors/sensitivity_test.jl")
+include("usage_test.jl")
 
 basedir = dirname(@__FILE__)
 
@@ -156,6 +165,17 @@ function runtests()
         model_base_storage_test()
         model_MorLatRam2013_test()
         model_KnuOstWat2018_test()
+        transmission_shiftfactors_susceptance_matrix_test()
+        transmission_shiftfactors_reduced_incidence_matrix_test()
+        transmission_shiftfactors_injection_shift_factors_test()
+        transmission_shiftfactors_line_outage_factors_test()
+        transmission_shiftfactors_build_test()
+        transmission_shiftfactors_build_lazy_test()
+        transmission_shiftfactors_base_flow_test()
+        transmission_shiftfactors_contingency_flow_test()
+        transmission_shiftfactors_congested_flow_test()
+        transmission_phaseangle_flow_test()
+        transmission_phaseangle_build_test()
         # model_planning_test()
         # instance_read_test()
         # instance_migrate_test()

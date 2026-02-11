@@ -15,19 +15,13 @@ function solve_aelmp_testcase(
             UnitCommitment.AELMP(
                 allow_offline_participation,
                 consider_startup_costs,
-                optimizer_with_attributes(
-                    HiGHS.Optimizer,
-                    "log_to_console" => false,
-                ),
+                test_optimizer(),
             ),
         ],
     )
     model = UnitCommitment.build_model(
         instance = instance,
-        optimizer = optimizer_with_attributes(
-            HiGHS.Optimizer,
-            "log_to_console" => false,
-        ),
+        optimizer = test_optimizer(),
         variable_names = true,
     )
     JuMP.set_silent(model)

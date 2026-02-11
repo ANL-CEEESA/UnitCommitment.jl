@@ -9,7 +9,7 @@ function regression_test()
         instance = UnitCommitment.read(fixture("issue-0057.json.gz"))
         model = UnitCommitment.build_model(
             instance = instance,
-            optimizer = HiGHS.Optimizer,
+            optimizer = test_optimizer(),
         )
         JuMP.set_silent(model)
         UnitCommitment.optimize!(model)

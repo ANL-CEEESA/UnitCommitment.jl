@@ -38,10 +38,7 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer = optimizer_with_attributes(
-            HiGHS.Optimizer,
-            "log_to_console" => false,
-        )
+        optimizer = test_optimizer()
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -61,10 +58,7 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer = optimizer_with_attributes(
-            HiGHS.Optimizer,
-            "log_to_console" => false,
-        )
+        optimizer = test_optimizer()
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -84,10 +78,7 @@ function transform_slice_test()
         @test modified.extensions[1] isa UnitCommitment.ConventionalLMP
 
         # Should be able to optimize and get LMPs in the solution
-        optimizer = optimizer_with_attributes(
-            HiGHS.Optimizer,
-            "log_to_console" => false,
-        )
+        optimizer = test_optimizer()
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,
@@ -120,10 +111,7 @@ function transform_slice_test()
         end
 
         # Should be able to build model without errors
-        optimizer = optimizer_with_attributes(
-            HiGHS.Optimizer,
-            "log_to_console" => false,
-        )
+        optimizer = test_optimizer()
         model = UnitCommitment.build_model(
             instance = modified,
             optimizer = optimizer,

@@ -14,10 +14,7 @@ function solve_conventional_testcase(path::String)
     )
     model = UnitCommitment.build_model(
         instance = instance,
-        optimizer = optimizer_with_attributes(
-            HiGHS.Optimizer,
-            "log_to_console" => false,
-        ),
+        optimizer = test_optimizer(),
         variable_names = true,
     )
     JuMP.set_silent(model)

@@ -66,9 +66,9 @@ function _add_bus_constrs!(
             for b in sc[:bus]
                 eq_net_injection[sc.name, b.name, t] = @constraint(
                     model,
-                    -ni[sc.name, b.name, t] +
-                    curtail[sc.name, b.name, t] +
-                    model[:net_injection][sc.name, b.name, t] == 0,
+                    ni[sc.name, b.name, t] ==
+                    model[:net_injection][sc.name, b.name, t] +
+                    curtail[sc.name, b.name, t],
                 )
             end
 

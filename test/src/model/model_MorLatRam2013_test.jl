@@ -16,7 +16,7 @@ using HiGHS, JuMP, UnitCommitment
                     ),
                 ],
             ),
-            optimizer = HiGHS.Optimizer,
+            optimizer = test_optimizer(),
             variable_names = true,
         ).inner
 

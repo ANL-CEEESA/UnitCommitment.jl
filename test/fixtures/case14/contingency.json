@@ -269,8 +269,8 @@
             "Target bus": "b2",
             "Reactance (ohms)": 0.059,
             "Susceptance (S)": 29.497,
-            "Normal flow limit (MW)": 100,
-            "Emergency flow limit (MW)": 400.0,
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15,
             "Flow limit penalty ($/MW)": 1000.0
         },
         "l2": {
@@ -278,133 +278,249 @@
             "Target bus": "b5",
             "Reactance (ohms)": 0.223,
             "Susceptance (S)": 7.825,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l3": {
             "Source bus": "b2",
             "Target bus": "b3",
             "Reactance (ohms)": 0.198,
             "Susceptance (S)": 8.816,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l4": {
             "Source bus": "b2",
             "Target bus": "b4",
             "Reactance (ohms)": 0.176,
             "Susceptance (S)": 9.899,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l5": {
             "Source bus": "b2",
             "Target bus": "b5",
             "Reactance (ohms)": 0.174,
             "Susceptance (S)": 10.038,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l6": {
             "Source bus": "b3",
             "Target bus": "b4",
             "Reactance (ohms)": 0.171,
             "Susceptance (S)": 10.205,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l7": {
             "Source bus": "b4",
             "Target bus": "b5",
             "Reactance (ohms)": 0.042,
             "Susceptance (S)": 41.447,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l8": {
             "Source bus": "b4",
             "Target bus": "b7",
             "Reactance (ohms)": 0.209,
             "Susceptance (S)": 8.346,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l9": {
             "Source bus": "b4",
             "Target bus": "b9",
             "Reactance (ohms)": 0.556,
             "Susceptance (S)": 3.138,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l10": {
             "Source bus": "b5",
             "Target bus": "b6",
             "Reactance (ohms)": 0.252,
             "Susceptance (S)": 6.925,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l11": {
             "Source bus": "b6",
             "Target bus": "b11",
             "Reactance (ohms)": 0.199,
             "Susceptance (S)": 8.775,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l12": {
             "Source bus": "b6",
             "Target bus": "b12",
             "Reactance (ohms)": 0.256,
             "Susceptance (S)": 6.823,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l13": {
             "Source bus": "b6",
             "Target bus": "b13",
             "Reactance (ohms)": 0.13,
             "Susceptance (S)": 13.398,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l14": {
             "Source bus": "b7",
             "Target bus": "b8",
             "Reactance (ohms)": 0.176,
             "Susceptance (S)": 9.908,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l15": {
             "Source bus": "b7",
             "Target bus": "b9",
             "Reactance (ohms)": 0.11,
             "Susceptance (S)": 15.865,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l16": {
             "Source bus": "b9",
             "Target bus": "b10",
             "Reactance (ohms)": 0.085,
             "Susceptance (S)": 20.655,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l17": {
             "Source bus": "b9",
             "Target bus": "b14",
             "Reactance (ohms)": 0.27,
             "Susceptance (S)": 6.455,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l18": {
             "Source bus": "b10",
             "Target bus": "b11",
             "Reactance (ohms)": 0.192,
             "Susceptance (S)": 9.087,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l19": {
             "Source bus": "b12",
             "Target bus": "b13",
             "Reactance (ohms)": 0.2,
             "Susceptance (S)": 8.732,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
         },
         "l20": {
             "Source bus": "b13",
             "Target bus": "b14",
             "Reactance (ohms)": 0.348,
             "Susceptance (S)": 5.015,
-            "Normal flow limit (MW)": 100
+            "Normal flow limit (MW)": 15,
+            "Emergency flow limit (MW)": 15
+        }
+    },
+    "Contingencies": {
+        "c1": {
+            "Affected lines": [
+                "l1"
+            ]
+        },
+        "c2": {
+            "Affected lines": [
+                "l2"
+            ]
+        },
+        "c3": {
+            "Affected lines": [
+                "l3"
+            ]
+        },
+        "c4": {
+            "Affected lines": [
+                "l4"
+            ]
+        },
+        "c5": {
+            "Affected lines": [
+                "l5"
+            ]
+        },
+        "c6": {
+            "Affected lines": [
+                "l6"
+            ]
+        },
+        "c7": {
+            "Affected lines": [
+                "l7"
+            ]
+        },
+        "c8": {
+            "Affected lines": [
+                "l8"
+            ]
+        },
+        "c9": {
+            "Affected lines": [
+                "l9"
+            ]
+        },
+        "c10": {
+            "Affected lines": [
+                "l10"
+            ]
+        },
+        "c11": {
+            "Affected lines": [
+                "l11"
+            ]
+        },
+        "c12": {
+            "Affected lines": [
+                "l12"
+            ]
+        },
+        "c13": {
+            "Affected lines": [
+                "l13"
+            ]
+        },
+        "c15": {
+            "Affected lines": [
+                "l15"
+            ]
+        },
+        "c16": {
+            "Affected lines": [
+                "l16"
+            ]
+        },
+        "c17": {
+            "Affected lines": [
+                "l17"
+            ]
+        },
+        "c18": {
+            "Affected lines": [
+                "l18"
+            ]
+        },
+        "c19": {
+            "Affected lines": [
+                "l19"
+            ]
+        },
+        "c20": {
+            "Affected lines": [
+                "l20"
+            ]
         }
     },
     "Price-sensitive loads": {

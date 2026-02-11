@@ -12,10 +12,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(
-                HiGHS.Optimizer,
-                "log_to_console" => false,
-            ),
+            optimizer = test_optimizer(),
         )
         @test length(solution["Thermal: Production (MW)"]["g1"]) == 4
         @test length(solution["Thermal: Is on"]["g2"]) == 4
@@ -29,10 +26,7 @@ function solution_methods_TimeDecomposition_optimize_test()
         solution = UnitCommitment.optimize!(
             instance,
             TimeDecomposition(time_window = 3, time_increment = 2),
-            optimizer = optimizer_with_attributes(
-                HiGHS.Optimizer,
-                "log_to_console" => false,
-            ),
+            optimizer = test_optimizer(),
         )
         @test length(solution["case14"]["Thermal: Production (MW)"]["g3"]) == 4
         @test length(solution["case14"]["Thermal: Is on"]["g4"]) == 4

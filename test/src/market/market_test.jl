@@ -19,10 +19,7 @@ function simple_market_test()
             da_path,
             rt_paths,
             settings = MarketSettings(),
-            optimizer = optimizer_with_attributes(
-                HiGHS.Optimizer,
-                "log_to_console" => false,
-            ),
+            optimizer = test_optimizer(),
         )
 
         # the commitment status must agree with DA market
@@ -56,10 +53,7 @@ function stochastic_market_test()
             da_path,
             rt_paths,
             settings = MarketSettings(),
-            optimizer = optimizer_with_attributes(
-                HiGHS.Optimizer,
-                "log_to_console" => false,
-            ),
+            optimizer = test_optimizer(),
         )
         # the commitment status must agree with DA market
         da_solution_sp = solution["DA"]["market_da_simple"]

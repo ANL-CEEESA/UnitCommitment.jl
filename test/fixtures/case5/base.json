@@ -1,0 +1,90 @@
+{
+    "Parameters": {
+        "Version": "0.4",
+        "Time horizon (h)": 1,
+        "Power balance penalty ($/MW)": 100000
+    },
+    "Generators": {},
+    "Buses": {
+        "b1": {
+            "Load (MW)": 0.0
+        },
+        "b2": {
+            "Load (MW)": 50.0
+        },
+        "b3": {
+            "Load (MW)": 30.0
+        },
+        "b4": {
+            "Load (MW)": 40.0
+        },
+        "b5": {
+            "Load (MW)": 20.0
+        }
+    },
+    "Transmission lines": {
+        "l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Susceptance (S)": 10.0,
+            "Normal flow limit (MW)": 100,
+            "Emergency flow limit (MW)": 200,
+            "Flow limit penalty ($/MW)": 1000.0
+        },
+        "l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Susceptance (S)": 20.0,
+            "Normal flow limit (MW)": 150,
+            "Emergency flow limit (MW)": 300,
+            "Flow limit penalty ($/MW)": 2000.0
+        },
+        "l3": {
+            "Source bus": "b2",
+            "Target bus": "b3",
+            "Susceptance (S)": 15.0,
+            "Normal flow limit (MW)": 80,
+            "Emergency flow limit (MW)": 160,
+            "Flow limit penalty ($/MW)": 1500.0
+        },
+        "l4": {
+            "Source bus": "b2",
+            "Target bus": "b4",
+            "Susceptance (S)": 8.0,
+            "Normal flow limit (MW)": 120,
+            "Emergency flow limit (MW)": 240,
+            "Flow limit penalty ($/MW)": 1200.0
+        },
+        "l5": {
+            "Source bus": "b3",
+            "Target bus": "b5",
+            "Susceptance (S)": 12.0,
+            "Normal flow limit (MW)": 90,
+            "Emergency flow limit (MW)": 180,
+            "Flow limit penalty ($/MW)": 1800.0
+        },
+        "l6": {
+            "Source bus": "b4",
+            "Target bus": "b5",
+            "Susceptance (S)": 25.0,
+            "Normal flow limit (MW)": 110,
+            "Emergency flow limit (MW)": 220,
+            "Flow limit penalty ($/MW)": 2200.0
+        },
+        "l7": {
+            "Source bus": "b1",
+            "Target bus": "b4",
+            "Susceptance (S)": 5.0,
+            "Normal flow limit (MW)": 70,
+            "Emergency flow limit (MW)": 140,
+            "Flow limit penalty ($/MW)": 700.0
+        }
+    },
+    "Contingencies": {
+        "c1": {
+            "Affected lines": [
+                "l3"
+            ]
+        }
+    }
+}

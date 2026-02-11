@@ -80,7 +80,7 @@ function _enforce_transmission(;
                             violation.outage_line.offset,
                         ] * isf[violation.outage_line.offset, b.offset]
                     )
-                ) for b in sc.buses if b.offset > 0
+                ) for b in sc[:bus] if b.offset > 0
             )
         )
     end

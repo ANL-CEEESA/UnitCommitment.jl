@@ -21,6 +21,7 @@ Base.@kwdef mutable struct Contingency
 end
 
 Base.@kwdef struct PhaseAngleTransmissionExt <: UnitCommitmentExtension
-    phase_angle_limit::Float64 = pi
-    bigM::Float64 = 1e6
+    phase_angle_limit::Float64 = π
+    v_base_kv::Float64 = 500.0
+    big_m::Float64 = 1e6
 end

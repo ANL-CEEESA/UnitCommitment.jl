@@ -13,20 +13,20 @@ function store_solution(
     for sc in instance.scenarios
         lines = sc[:lines]
         flows = _timeseries(model, :flow, lines, T, sc = sc)
-        sol[sc.name]["Line: Flow (MW)"] = OrderedDict(
+        sol[sc.name]["Line: Base Flow (MW)"] = OrderedDict(
             line.name =>
                 [round(flows[line.name][t], digits = 5) for t in 1:T] for
             line in lines
         )
-        sol[sc.name]["Line: Overflow (MW)"] =
+        sol[sc.name]["Line: Base Overflow (MW)"] =
             _timeseries(model, :overflow, lines, T, sc = sc)
-        sol[sc.name]["Line: Overflow penalty (\$)"] = OrderedDict(
+        sol[sc.name]["Line: Base Overflow penalty (\$)"] = OrderedDict(
             line.name => [
                 value(model[:overflow][sc.name, line.name, t]) *
                 line.flow_limit_penalty[t] for t in 1:T
             ] for line in lines
         )
-        sol[sc.name]["Line: Utilization (%)"] = OrderedDict(
+        sol[sc.name]["Line: Base Utilization (%)"] = OrderedDict(
             line.name => [
                 round(
                     100.0 * abs(flows[line.name][t]) /

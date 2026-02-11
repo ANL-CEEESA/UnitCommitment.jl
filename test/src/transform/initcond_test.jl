@@ -8,8 +8,7 @@ function transform_initcond_test()
     @testset "generate_initial_conditions!" begin
         # Load instance
         instance = UnitCommitment.read(fixture("case118-initcond.json.gz"))
-        optimizer =
-            optimizer_with_attributes(HiGHS.Optimizer, MOI.Silent() => true)
+        optimizer = test_optimizer()
 
         # All units should have unknown initial conditions
         for sc in instance.scenarios
