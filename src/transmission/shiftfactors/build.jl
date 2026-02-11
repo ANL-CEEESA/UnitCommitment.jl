@@ -89,6 +89,8 @@ function _add_transmission_constr_flow!(
     eq_flow_cont_limit_lb = _init(model, :eq_flow_cont_limit_lb)
 
     for sc in instance.scenarios
+        length(sc[:lines]) > 0 || continue
+
         isf = sc[:isf]
         lodf = sc[:lodf]
         lines = sc[:lines]

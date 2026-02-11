@@ -16,6 +16,7 @@ const DEFAULT_EXTENSIONS = [
     PriceSensitiveLoadsExt(),
     StorageExt(),
     ShiftFactorsTransmissionExt(),
+    ConventionalLMP(),
 ]
 
 """

@@ -4,7 +4,7 @@
 
 using UnitCommitment, HiGHS, JuMP
 
-function solve_aelmp_testcase(
+function _lmp_aelmp_solve(
     path::String,
     allow_offline_participation::Bool,
     consider_startup_costs::Bool,
@@ -13,36 +13,29 @@ function solve_aelmp_testcase(
         path,
         extensions = [
             UnitCommitment.AELMP(
-                allow_offline_participation,
-                consider_startup_costs,
-                test_optimizer(),
+                allow_offline_participation = allow_offline_participation,
+                consider_startup_costs = consider_startup_costs,
+                optimizer = test_optimizer(),
             ),
         ],
     )
-    model = UnitCommitment.build_model(
-        instance = instance,
-        optimizer = test_optimizer(),
-        variable_names = true,
-    )
-    JuMP.set_silent(model)
-    UnitCommitment.optimize!(model)
-    return UnitCommitment.solution(model)
+    model = UnitCommitment.build_model(instance, optimizer = test_optimizer())
+    optimize!(model)
+    return solution(model)
 end
 
-function lmp_aelmp_test()
-    @testset "aelmp" begin
-        path = fixture("aelmp_simple.json.gz")
+@testfunction lmp_aelmp_test begin
+    path = fixture("aelmp_simple.json.gz")
 
-        # policy 1: allow offlines; consider startups
-        sol_1 = solve_aelmp_testcase(path, true, true)
-        @test sol_1["LMP: Total (\$/MWh)"]["B1"][1] ≈ 231.7 atol = 0.1
-        @test sol_1["LMP: Energy (\$/MWh)"]["B1"][1] ≈ 231.7 atol = 0.1
-        @test sol_1["LMP: Congestion (\$/MWh)"]["B1"][1] ≈ 0.0 atol = 0.1
+    # policy 1: allow offlines; consider startups
+    sol_1 = _lmp_aelmp_solve(path, true, true)
+    @test sol_1["LMP: Total (\$/MWh)"]["B1"][1] ≈ 231.7 atol = 0.1
+    @test sol_1["LMP: Energy (\$/MWh)"]["B1"][1] ≈ 231.7 atol = 0.1
+    @test sol_1["LMP: Congestion (\$/MWh)"]["B1"][1] ≈ 0.0 atol = 0.1
 
-        # policy 2: do not allow offlines; but consider startups
-        sol_2 = solve_aelmp_testcase(path, false, true)
-        @test sol_2["LMP: Total (\$/MWh)"]["B1"][1] ≈ 274.3 atol = 0.1
-        @test sol_2["LMP: Energy (\$/MWh)"]["B1"][1] ≈ 274.3 atol = 0.1
-        @test sol_2["LMP: Congestion (\$/MWh)"]["B1"][1] ≈ 0.0 atol = 0.1
-    end
+    # policy 2: do not allow offlines; but consider startups
+    sol_2 = _lmp_aelmp_solve(path, false, true)
+    @test sol_2["LMP: Total (\$/MWh)"]["B1"][1] ≈ 274.3 atol = 0.1
+    @test sol_2["LMP: Energy (\$/MWh)"]["B1"][1] ≈ 274.3 atol = 0.1
+    @test sol_2["LMP: Congestion (\$/MWh)"]["B1"][1] ≈ 0.0 atol = 0.1
 end

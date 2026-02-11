@@ -5,16 +5,12 @@
 using JuMP
 using UnitCommitment
 
-function _after_optimize!(model::JuMP.Model, method::AELMP)::Nothing
-    @info "Building the approximation model..."
-    instance = deepcopy(model[:instance])
-    _aelmp_check_parameters(instance, model, method)
-    _modify_scenario!(instance.scenarios[1], model, method)
-
-    @info "Solving the approximation model."
-    approx_model = build_model(instance = instance, variable_names = true)
-
-    # Relax the binary constraint, and relax integrality
+function _after_optimize!(instance::UnitCommitmentInstance, model::UnitCommitmentModel, method::AELMP)::Nothing
+    # Build the approximation model
+    approx_instance = deepcopy(instance)
+    _aelmp_check_parameters(approx_instance, model, method)
+    _modify_scenario!(approx_instance.scenarios[1], model, method)
+    approx_model = build_model(approx_instance, variable_names = true)
     for v in all_variables(approx_model.inner)
         if is_binary(v)
             unset_binary(v)
@@ -23,25 +19,21 @@ function _after_optimize!(model::JuMP.Model, method::AELMP)::Nothing
     relax_integrality(approx_model.inner)
     set_optimizer(approx_model.inner, method.optimizer)
 
-    # Solve the model
+    # Solve the approximation model
     set_silent(approx_model.inner)
     JuMP.optimize!(approx_model.inner)
 
-    # Store dual values as LMPs
-    @info "Getting dual values (AELMPs)."
-    model.ext[:lmp_values] = OrderedDict()
+    # Store LMPs
+    model.data[:lmp] = OrderedDict()
     for (key, val) in approx_model.inner[:eq_net_injection]
-        model.ext[:lmp_values][key] = dual(val)
+        model.data[:lmp][key] = -dual(val)
     end
-end
-
-function store_solution(sol::AbstractDict, model::JuMP.Model, ::AELMP)::Nothing
-    return store_solution(sol, model, ConventionalLMP())
+    _update_solution(instance, model, ConventionalLMP())
 end
 
 function _aelmp_check_parameters(
     instance::UnitCommitmentInstance,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     method::AELMP,
 )
     # CHECK: model cannot have multiple scenarios
@@ -51,7 +43,7 @@ function _aelmp_check_parameters(
     sc = instance.scenarios[1]
     # CHECK: model must be solved if allow_offline_participation=false
     if !method.allow_offline_participation
-        if isnothing(model) || !has_values(model)
+        if !has_values(model.inner)
             error(
                 "A solved UC model is required if allow_offline_participation=false.",
             )
@@ -78,7 +70,7 @@ end
 
 function _modify_scenario!(
     sc::UnitCommitmentScenario,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     method::AELMP,
 )
     # this function modifies the sc units (generators)
@@ -88,7 +80,7 @@ function _modify_scenario!(
         for unit in sc[:thermal]
             # remove based on the solved UC model result
             # remove the unit if it is never on
-            if all(t -> value(model[:is_on][unit.name, t]) == 0, sc[:time])
+            if all(t -> value(model.inner[:is_on][unit.name, t]) == 0, sc[:time])
                 # unregister from the reserve
                 for r in unit.reserves
                     filter!(x -> x.name != unit.name, r.thermal_units)

@@ -31,12 +31,13 @@ Solve the unit commitment model using the direct method, which solves the
 complete problem as a single MILP.
 """
 function optimize!(model::UnitCommitmentModel, ::DirectMethod)::Nothing
+    instance = model.inner[:instance]
     optimize!(model.inner)
     _store_solution!(model)
-    for ext in model.inner[:instance].extensions
-        _after_optimize!(model.inner, ext)
+    for ext in instance.extensions
+        _after_optimize!(instance, model, ext)
     end
-    validate(model.inner[:instance], model.data[:solution]) ||
+    validate(instance, model.data[:solution]) ||
         error("Invalid solution found.")
     return
 end

@@ -45,17 +45,9 @@ function build_model(
     # nop
 end
 
-"""
-    _after_optimize!(model, ext)
-
-Run post-solve logic (e.g. fixing variables, computing prices) immediately
-after the solver returns.
-
-- `model::JuMP.Model` — solved optimization model.
-- `ext::UnitCommitmentExtension` — extension instance.
-"""
 function _after_optimize!(
-    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    model::UnitCommitmentModel,
     ext::UnitCommitmentExtension,
 )::Nothing end
 

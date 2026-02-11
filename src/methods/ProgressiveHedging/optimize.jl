@@ -64,7 +64,7 @@ function optimize!(
     end
     _store_solution!(model)
     for ext in instance.extensions
-        _after_optimize!(model.inner, ext)
+        _after_optimize!(instance, model, ext)
     end
     return
 end

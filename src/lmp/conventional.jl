@@ -4,9 +4,14 @@
 
 using JuMP
 
-function _after_optimize!(model::JuMP.Model, ::ConventionalLMP)::Nothing
+function _after_optimize!(instance::UnitCommitmentInstance, model::UnitCommitmentModel, ext::ConventionalLMP)::Nothing
+    _compute(model, ext)
+    _update_solution(instance, model, ext)
+end
+
+function _compute(model::UnitCommitmentModel, ::ConventionalLMP)
     # Record binary variables and their optimal values
-    binary_vars = [(v, value(v)) for v in all_variables(model) if is_binary(v)]
+    binary_vars = [(v, value(v)) for v in all_variables(model.inner) if is_binary(v)]
 
     # Fix binary variables and remove binary constraint
     for (v, val) in binary_vars
@@ -15,14 +20,13 @@ function _after_optimize!(model::JuMP.Model, ::ConventionalLMP)::Nothing
     end
 
     # Relax any remaining integer variables
-    undo_relax = relax_integrality(model)
+    undo_relax = relax_integrality(model.inner)
 
     # Solve LP and extract duals
-    JuMP.optimize!(model)
-
-    model.ext[:lmp_values] = OrderedDict()
-    for (key, val) in model[:eq_net_injection]
-        model.ext[:lmp_values][key] = dual(val)
+    JuMP.optimize!(model.inner)
+    model.data[:lmp] = OrderedDict()
+    for (key, val) in model.inner[:eq_net_injection]
+        model.data[:lmp][key] = -dual(val)
     end
 
     # Restore model state
@@ -33,31 +37,31 @@ function _after_optimize!(model::JuMP.Model, ::ConventionalLMP)::Nothing
     end
 end
 
-function store_solution(
-    sol::AbstractDict,
-    model::JuMP.Model,
+function _update_solution(
+    instance::UnitCommitmentInstance,
+    model::UnitCommitmentModel,
     ::ConventionalLMP,
 )::Nothing
-    instance = model[:instance]
     T = instance.time
+    sol = model.data[:solution]
     for sc in instance.scenarios
         lmp_total =
             sol[sc.name]["LMP: Total (\$/MWh)"] = OrderedDict(
                 b.name => [
-                    model.ext[:lmp_values][sc.name, b.name, t] for t in 1:T
+                    model.data[:lmp][sc.name, b.name, t] for t in 1:T
                 ] for b in sc[:bus]
             )
         sol[sc.name]["LMP: Energy (\$/MWh)"] = OrderedDict(
             b.name => [
                 minimum(lmp_total[bb.name][t] for bb in sc[:bus]) for t in 1:T
-            ] for b in sc.buses
+            ] for b in sc[:bus]
         )
         sol[sc.name]["LMP: Congestion (\$/MWh)"] = OrderedDict(
             b.name => [
                 lmp_total[b.name][t] -
                 sol[sc.name]["LMP: Energy (\$/MWh)"][b.name][t] for
                 t in 1:T
-            ] for b in sc.buses
+            ] for b in sc[:bus]
         )
         if haskey(sc, :thermal)
             thermal_units = sc[:thermal]
@@ -107,7 +111,7 @@ function store_solution(
         end
         sol[sc.name]["Bus: Fixed load expense (\$)"] = OrderedDict(
             b.name => [b.load[t] * lmp_total[b.name][t] for t in 1:T] for
-            b in sc.buses
+            b in sc[:bus]
         )
 
         if "Price-sensitive load: Demand served (MW)" in keys(sol[sc.name])
