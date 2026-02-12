@@ -2,7 +2,7 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using UnitCommitment, JSON
+using UnitCommitment, JSON, Logging
 
 function _read_modified(modify!, path)
     json = JSON.parsefile(path)
@@ -19,7 +19,12 @@ end
         json["Generators"]["g1"]["Production cost curve (MW)"] = [100, 150, 200]
         json["Generators"]["g1"]["Production cost curve (\$)"] = [10, 25, 30]
     end
-    @test UnitCommitment.repair!(instance) == 4
+    @test_logs (
+        :warn,
+        r"Generator .* has non-convex production cost curve"
+    ) match_mode=:any begin
+        @test UnitCommitment.repair!(instance) == 4
+    end
 end
 
 @testfunction components_thermal_repair_startup_limit_test begin
@@ -28,7 +33,12 @@ end
         json["Generators"]["g1"]["Production cost curve (\$)"] = [100, 150]
         json["Generators"]["g1"]["Startup limit (MW)"] = 80
     end
-    @test UnitCommitment.repair!(instance) == 1
+    @test_logs (
+        :warn,
+        r"Generator .* has startup limit lower than minimum power"
+    ) match_mode=:any begin
+        @test UnitCommitment.repair!(instance) == 1
+    end
 end
 
 @testfunction components_thermal_repair_startup_costs_test begin
@@ -36,5 +46,10 @@ end
         json["Generators"]["g1"]["Startup costs (\$)"] = [300, 200, 100]
         json["Generators"]["g1"]["Startup delays (h)"] = [8, 4, 2]
     end
-    @test UnitCommitment.repair!(instance) == 4
+    @test_logs (
+        :warn,
+        r"Generator .* has (non-increasing startup delays|decreasing startup cost)"
+    ) match_mode=:any begin
+        @test UnitCommitment.repair!(instance) == 4
+    end
 end

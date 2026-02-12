@@ -1,9 +1,11 @@
 module UnitCommitmentT
 
-using JuliaFormatter
-using UnitCommitment
-using Test
 using HiGHS
+using JuliaFormatter
+using JuMP
+using Logging
+using Test
+using UnitCommitment
 
 include("util.jl")
 
@@ -49,11 +51,17 @@ include("transform/slice_test.jl")
 include("usage_test.jl")
 
 function runtests()
-    @testset "UnitCommitment" begin
-        for sym in sort(names(UnitCommitmentT))
-            endswith(string(sym), "_test") || continue
-            getfield(UnitCommitmentT, sym)()
+    original_logger = global_logger()
+    global_logger(ConsoleLogger(stderr, Logging.Info))
+    try
+        @testset "UnitCommitment" begin
+            for sym in sort(names(UnitCommitmentT))
+                endswith(string(sym), "_test") || continue
+                getfield(UnitCommitmentT, sym)()
+            end
         end
+    finally
+        global_logger(original_logger)
     end
     return
 end

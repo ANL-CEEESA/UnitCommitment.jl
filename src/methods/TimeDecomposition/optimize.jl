@@ -70,7 +70,6 @@ function optimize!(
         # if t_end exceed total T
         t_end = t_end > T ? T : t_end
         # slice the model 
-        @info "Solving the sub-problem of time $t_start to $t_end..."
         sub_instance = UnitCommitment.slice(instance, t_start:t_end)
         # build and optimize the model 
         sub_model = UnitCommitment.build_model(
