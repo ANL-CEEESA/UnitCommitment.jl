@@ -1,5 +1,5 @@
 # UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
-# Copyright (C) 2020, UChicago Argonne, LLC. All rights reserved.
+# Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
 using JuMP
@@ -19,12 +19,15 @@ function generate_initial_conditions!(
     _generate_initial_conditions!(instance.scenarios[1], optimizer)
 
     # Copy initial conditions to remaining scenarios
+    sc1 = instance.scenarios[1]
     for (si, sc) in enumerate(instance.scenarios)
         si > 1 || continue
-        for (gi, g) in sc.thermal_units
-            g_ref = instance.scenarios[1].thermal_units[gi]
-            g.initial_power = g_ref.initial_power
-            g.initial_status = g_ref.initial_status
+        if haskey(sc, :thermal)
+            for (i, g) in enumerate(sc[:thermal])
+                g_ref = sc1[:thermal][i]
+                g.initial_power = g_ref.initial_power
+                g.initial_status = g_ref.initial_status
+            end
         end
     end
 end
@@ -33,39 +36,57 @@ function _generate_initial_conditions!(
     sc::UnitCommitmentScenario,
     optimizer,
 )::Nothing
-    G = sc.thermal_units
-    B = sc.buses
-    PU = sc[:profiled]
+    G = get(sc, :thermal, [])
+    B = sc[:bus]
+    PU = get(sc, :profiled, [])
+    SU = get(sc, :storage, [])
+    PS = get(sc, :psload, [])
     t = 1
     mip = JuMP.Model(optimizer)
 
-    # Decision variables
-    @variable(mip, x[G], Bin)
-    @variable(mip, p[G] >= 0)
-    @variable(mip, pu[PU])
+    # Decision variables: thermal units
+    @variable(mip, is_on[G], Bin)
+    @variable(mip, prod_thermal[G] >= 0)
 
-    # Constraint: Minimum power
-    @constraint(mip, min_power[g in G], p[g] >= g.min_power[t] * x[g])
-    @constraint(mip, pu_min_power[k in PU], pu[k] >= k.min_power[t])
+    # Decision variables: profiled units
+    @variable(mip, prod_profiled[PU])
 
-    # Constraint: Maximum power
-    @constraint(mip, max_power[g in G], p[g] <= g.max_power[t] * x[g])
-    @constraint(mip, pu_max_power[k in PU], pu[k] <= k.max_power[t])
+    # Decision variables: storage units
+    @variable(mip, discharge[SU] >= 0)
+    @variable(mip, charge[SU] >= 0)
 
-    # Constraint: Production equals demand
+    # Decision variables: price-sensitive loads
+    @variable(mip, prod_ps[PS] >= 0)
+
+    # Constraints: thermal units
+    @constraint(mip, [g in G], prod_thermal[g] >= g.min_power[t] * is_on[g])
+    @constraint(mip, [g in G], prod_thermal[g] <= g.max_power[t] * is_on[g])
+    for g in G
+        if g.must_run[t]
+            @constraint(mip, is_on[g] == 1)
+        end
+    end
+
+    # Constraints: profiled units
+    @constraint(mip, [k in PU], prod_profiled[k] >= k.min_power[t])
+    @constraint(mip, [k in PU], prod_profiled[k] <= k.max_power[t])
+
+    # Constraints: storage units
+    @constraint(mip, [su in SU], charge[su] <= su.max_charge_rate[t])
+    @constraint(mip, [su in SU], discharge[su] <= su.max_discharge_rate[t])
+
+    # Constraints: price-sensitive loads
+    @constraint(mip, [ps in PS], prod_ps[ps] <= ps.demand[t])
+
+    # Constraint: production equals demand
     @constraint(
         mip,
         power_balance,
-        sum(b.load[t] for b in B) ==
-        sum(p[g] for g in G) + sum(pu[k] for k in PU)
+        sum(b.load[t] for b in B) - sum(prod_ps[ps] for ps in PS) ==
+        sum(prod_thermal[g] for g in G) +
+        sum(prod_profiled[k] for k in PU) +
+        sum(discharge[su] - charge[su] for su in SU),
     )
-
-    # Constraint: Must run
-    for g in G
-        if g.must_run[t]
-            @constraint(mip, x[g] == 1)
-        end
-    end
 
     # Objective function
     function cost_slope(g)
@@ -84,15 +105,22 @@ function _generate_initial_conditions!(
     @objective(
         mip,
         Min,
-        sum(p[g] * cost_slope(g) for g in G) +
-        sum(pu[k] * k.cost[t] for k in PU)
+        sum(prod_thermal[g] * cost_slope(g) for g in G) +
+        sum(prod_profiled[k] * k.cost[t] for k in PU) +
+        sum(
+            discharge[su] * su.discharge_cost[t] +
+            charge[su] * su.charge_cost[t]
+            for su in SU;
+            init = 0.0,
+        ) -
+        sum(prod_ps[ps] * ps.revenue[t] for ps in PS; init = 0.0),
     )
 
     JuMP.optimize!(mip)
 
     for g in G
-        if JuMP.value(x[g]) > 0
-            g.initial_power = JuMP.value(p[g])
+        if JuMP.value(is_on[g]) > 0
+            g.initial_power = JuMP.value(prod_thermal[g])
             g.initial_status = 24
         else
             g.initial_power = 0
