@@ -40,7 +40,7 @@ struct SpResult
 end
 
 Base.@kwdef mutable struct PHSubProblem
-    mip::JuMP.Model
+    model::UnitCommitmentModel
     obj::AffExpr
     consensus_vars::Array{VariableRef,1}
     weights::Array{Float64,1}

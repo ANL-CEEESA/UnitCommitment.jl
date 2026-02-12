@@ -1,37 +1,27 @@
-using HiGHS
+using SCIP
 using MPI
 using JuMP
 using UnitCommitment
 
-UnitCommitment._setup_logger(level = Base.CoreLogging.Error)
 function fixture(path::String)::String
     basedir = dirname(@__FILE__)
     return "$basedir/../../../../fixtures/$path"
 end
 
-# Initialize MPI
 MPI.Init()
+mpi = UnitCommitment.MpiInfo(MPI.COMM_WORLD)
+instances = [fixture("case14/base.json"), fixture("case14/base.json")]
 
-# Configure progressive hedging method
 ph = UnitCommitment.ProgressiveHedging()
-
-# Read problem instance
-instance = UnitCommitment.read(
-    [fixture("case14.json.gz"), fixture("case14.json.gz")],
-    ph,
+instance = UnitCommitment.read(instances, ph)
+model = build_model(
+    instance,
+    optimizer = optimizer_with_attributes(
+        SCIP.Optimizer,
+        "display/verblevel" => (mpi.rank == 1 ? 1 : 0),
+    ),
 )
+optimize!(model, ph)
+sol = solution(model, ph)
 
-# Build JuMP model
-model = UnitCommitment.build_model(
-    instance = instance,
-    optimizer = test_optimizer(),
-)
-
-# Run the decentralized optimization algorithm
-UnitCommitment.optimize!(model, ph)
-
-# Fetch the solution
-solution = UnitCommitment.solution(model, ph)
-
-# Close MPI
 MPI.Finalize()

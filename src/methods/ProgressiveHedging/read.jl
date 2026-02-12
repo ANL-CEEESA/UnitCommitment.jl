@@ -14,5 +14,12 @@ function read(
     bundled_scenarios = length(paths) ÷ mpi.nprocs
     sc_num_start = (mpi.rank - 1) * bundled_scenarios + 1
     sc_num_end = mpi.rank * bundled_scenarios
-    return read(paths[sc_num_start:sc_num_end])
+    instance = read(paths[sc_num_start:sc_num_end])
+
+    # Remove the LMP extension
+    filter!(ext -> extension_slot(ext) != :lmp, instance.extensions)
+    delete!(instance.extension_by_slot, :lmp)
+
+    # Return
+    return instance
 end

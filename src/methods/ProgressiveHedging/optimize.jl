@@ -29,7 +29,7 @@ function optimize!(
         λ = [method.λ for _ in 1:nvars],
         target = target,
     )
-    sp = PHSubProblem(model.inner, model.inner[:obj], consensus_vars, weights)
+    sp = PHSubProblem(model, model.inner[:obj], consensus_vars, weights)
     while true
         iteration_time = @elapsed begin
             solution = solve_subproblem(sp, params, method.inner_method)
@@ -116,12 +116,13 @@ function solve_subproblem(
     params::PHSubProblemParams,
     method::SolutionMethod,
 )::PhSubProblemSolution
+    mip = sp.model.inner
     G = length(sp.consensus_vars)
     if norm(params.λ) < 1e-3
-        @objective(sp.mip, Min, sp.obj)
+        @objective(mip, Min, sp.obj)
     else
         @objective(
-            sp.mip,
+            mip,
             Min,
             sp.obj +
             sum(
@@ -135,8 +136,8 @@ function solve_subproblem(
             )
         )
     end
-    optimize!(sp.mip, method)
-    obj = objective_value(sp.mip)
+    optimize!(sp.model, method)
+    obj = objective_value(mip)
     sp_vals = value.(sp.consensus_vars)
     return PhSubProblemSolution(obj = obj, vals = sp_vals, residuals = zeros(G))
 end
