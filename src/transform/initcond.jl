@@ -109,11 +109,9 @@ function _generate_initial_conditions!(
         sum(prod_profiled[k] * k.cost[t] for k in PU) +
         sum(
             discharge[su] * su.discharge_cost[t] +
-            charge[su] * su.charge_cost[t]
-            for su in SU;
+            charge[su] * su.charge_cost[t] for su in SU;
             init = 0.0,
-        ) -
-        sum(prod_ps[ps] * ps.revenue[t] for ps in PS; init = 0.0),
+        ) - sum(prod_ps[ps] * ps.revenue[t] for ps in PS; init = 0.0),
     )
 
     JuMP.optimize!(mip)

@@ -8,18 +8,14 @@ using UnitCommitment, DataStructures
     psuedo_solution = OrderedDict()
     time_increment = 4
     psuedo_sub_solution = OrderedDict(
-        "Thermal: Production (MW)" => OrderedDict(
-            "g1" => [100.0, 200.0, 300.0, 400.0, 500.0, 600.0],
-        ),
+        "Thermal: Production (MW)" =>
+            OrderedDict("g1" => [100.0, 200.0, 300.0, 400.0, 500.0, 600.0]),
         "Thermal: Is on" =>
             OrderedDict("g1" => [1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
-        "Profiled: Production (MW)" => OrderedDict(
-            "g1" => [199.0, 299.0, 399.0, 499.0, 599.0, 699.0],
-        ),
+        "Profiled: Production (MW)" =>
+            OrderedDict("g1" => [199.0, 299.0, 399.0, 499.0, 599.0, 699.0]),
         "Reserve: Spinning (MW)" => OrderedDict(
-            "r1" => OrderedDict(
-                "g1" => [31.0, 32.0, 33.0, 34.0, 35.0, 36.0],
-            ),
+            "r1" => OrderedDict("g1" => [31.0, 32.0, 33.0, 34.0, 35.0, 36.0]),
         ),
     )
 

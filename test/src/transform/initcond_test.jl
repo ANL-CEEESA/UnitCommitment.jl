@@ -12,7 +12,7 @@ function _read_without_initcond(path)
     end
     tmpfile = tempname() * ".json"
     open(tmpfile, "w") do io
-        JSON.print(io, json)
+        return JSON.print(io, json)
     end
     return UnitCommitment.read(tmpfile)
 end

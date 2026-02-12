@@ -4,14 +4,19 @@
 
 using JuMP
 
-function _after_optimize!(instance::UnitCommitmentInstance, model::UnitCommitmentModel, ext::ConventionalLMP)::Nothing
+function _after_optimize!(
+    instance::UnitCommitmentInstance,
+    model::UnitCommitmentModel,
+    ext::ConventionalLMP,
+)::Nothing
     _compute(model, ext)
-    _update_solution(instance, model, ext)
+    return _update_solution(instance, model, ext)
 end
 
 function _compute(model::UnitCommitmentModel, ::ConventionalLMP)
     # Record binary variables and their optimal values
-    binary_vars = [(v, value(v)) for v in all_variables(model.inner) if is_binary(v)]
+    binary_vars =
+        [(v, value(v)) for v in all_variables(model.inner) if is_binary(v)]
 
     # Fix binary variables and remove binary constraint
     for (v, val) in binary_vars
@@ -47,9 +52,9 @@ function _update_solution(
     for sc in instance.scenarios
         lmp_total =
             sol[sc.name]["LMP: Total (\$/MWh)"] = OrderedDict(
-                b.name => [
-                    model.data[:lmp][sc.name, b.name, t] for t in 1:T
-                ] for b in sc[:bus]
+                b.name =>
+                    [model.data[:lmp][sc.name, b.name, t] for t in 1:T] for
+                b in sc[:bus]
             )
         sol[sc.name]["LMP: Energy (\$/MWh)"] = OrderedDict(
             b.name => [

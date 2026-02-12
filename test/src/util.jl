@@ -38,14 +38,20 @@ macro testfunction(name, body)
                 $(esc(body))
             end
             local elapsed = time() - t0
-            printstyled(rpad($name_str, $_TESTFUNCTION_NAME_WIDTH), color = :cyan)
+            printstyled(
+                rpad($name_str, $_TESTFUNCTION_NAME_WIDTH),
+                color = :cyan,
+            )
             if _testset_passed(ts)
                 printstyled("PASS", color = :green, bold = true)
             else
                 printstyled("FAIL", color = :red, bold = true)
             end
-            printstyled(" ($(round(elapsed, digits=2))s)\n", color = :light_black)
-            flush(stdout)
+            printstyled(
+                " ($(round(elapsed, digits=2))s)\n",
+                color = :light_black,
+            )
+            return flush(stdout)
         end
         export $(esc(name))
     end

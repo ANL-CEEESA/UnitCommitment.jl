@@ -17,7 +17,6 @@ using UnitCommitment
     @test sc[:lines][1].susceptance ≈ 71.94244604316548
     @test sc[:lines][1].normal_flow_limit == [175.0]
 
-
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     sc = instance.scenarios[1]
     @test length(sc[:lines]) == 20

@@ -62,40 +62,18 @@ end
 @testfunction transform_randomize_XavQiuAhm2021_load_profile_test begin
     sc = get_scenario()
     # Check original load profile
-    @test round.(system_load(sc), digits = 1)[1:8] ≈ [
-        3059.5,
-        2983.2,
-        2937.5,
-        2953.9,
-        3073.1,
-        3356.4,
-        4068.5,
-        4018.8,
-    ]
+    @test round.(system_load(sc), digits = 1)[1:8] ≈
+          [3059.5, 2983.2, 2937.5, 2953.9, 3073.1, 3356.4, 4068.5, 4018.8]
 
-    randomize!(
-        sc,
-        XavQiuAhm2021.Randomization();
-        rng = MersenneTwister(42),
-    )
+    randomize!(sc, XavQiuAhm2021.Randomization(); rng = MersenneTwister(42))
 
     # Check randomized load profile
-    @test round.(system_load(sc), digits = 1)[1:8] ≈ [
-        4089.7,
-        3996.3,
-        3847.2,
-        3876.7,
-        3887.5,
-        4127.3,
-        4923.5,
-        5087.3,
-    ]
+    @test round.(system_load(sc), digits = 1)[1:8] ≈
+          [4089.7, 3996.3, 3847.2, 3876.7, 3887.5, 4127.3, 4923.5, 5087.3]
 end
 
 @testfunction transform_randomize_XavQiuAhm2021_profiled_unit_cost_test begin
-    sc = UnitCommitment.read(
-        fixture("case14-profiled.json.gz"),
-    ).scenarios[1]
+    sc = UnitCommitment.read(fixture("case14-profiled.json.gz")).scenarios[1]
     # Check original costs
     pu1 = sc[:profiled][1]
     pu2 = sc[:profiled][2]
@@ -112,9 +90,7 @@ end
 end
 
 @testfunction transform_randomize_XavQiuAhm2021_storage_unit_cost_test begin
-    sc = UnitCommitment.read(
-        fixture("case14-storage.json.gz"),
-    ).scenarios[1]
+    sc = UnitCommitment.read(fixture("case14-storage.json.gz")).scenarios[1]
     # Check original costs
     su1 = sc[:storage][1]
     su3 = sc[:storage][3]

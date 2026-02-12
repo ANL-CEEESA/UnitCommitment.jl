@@ -5,7 +5,11 @@
 using JuMP
 using UnitCommitment
 
-function _after_optimize!(instance::UnitCommitmentInstance, model::UnitCommitmentModel, method::AELMP)::Nothing
+function _after_optimize!(
+    instance::UnitCommitmentInstance,
+    model::UnitCommitmentModel,
+    method::AELMP,
+)::Nothing
     # Build the approximation model
     approx_instance = deepcopy(instance)
     _aelmp_check_parameters(approx_instance, model, method)
@@ -28,7 +32,7 @@ function _after_optimize!(instance::UnitCommitmentInstance, model::UnitCommitmen
     for (key, val) in approx_model.inner[:eq_net_injection]
         model.data[:lmp][key] = -dual(val)
     end
-    _update_solution(instance, model, ConventionalLMP())
+    return _update_solution(instance, model, ConventionalLMP())
 end
 
 function _aelmp_check_parameters(
@@ -80,7 +84,10 @@ function _modify_scenario!(
         for unit in sc[:thermal]
             # remove based on the solved UC model result
             # remove the unit if it is never on
-            if all(t -> value(model.inner[:is_on][unit.name, t]) == 0, sc[:time])
+            if all(
+                t -> value(model.inner[:is_on][unit.name, t]) == 0,
+                sc[:time],
+            )
                 # unregister from the reserve
                 for r in unit.reserves
                     filter!(x -> x.name != unit.name, r.thermal_units)

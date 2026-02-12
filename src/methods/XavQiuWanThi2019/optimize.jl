@@ -90,7 +90,12 @@ function optimize!(
 
         if violations_found
             for (i, v) in enumerate(violations)
-                _enforce_transmission(model.inner, v, instance.scenarios[i], method)
+                _enforce_transmission(
+                    model.inner,
+                    v,
+                    instance.scenarios[i],
+                    method,
+                )
             end
         else
             if method.verbose

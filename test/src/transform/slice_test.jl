@@ -20,7 +20,7 @@ using UnitCommitment
     # Extensions should survive through slice
     @test length(modified.extensions) == length(instance.extensions)
     @test all(
-        typeof(e) == typeof(orig_e)
-        for (e, orig_e) in zip(modified.extensions, instance.extensions)
+        typeof(e) == typeof(orig_e) for
+        (e, orig_e) in zip(modified.extensions, instance.extensions)
     )
 end

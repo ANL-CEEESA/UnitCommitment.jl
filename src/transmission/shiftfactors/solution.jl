@@ -63,7 +63,8 @@ function store_solution(
             isf = sc[:isf]
             lodf = sc[:lodf]
             non_slack = [b for b in buses if b.offset > 0]
-            net_inj = [value(ni[sc.name, b.name, t]) for b in non_slack, t in 1:T]
+            net_inj =
+                [value(ni[sc.name, b.name, t]) for b in non_slack, t in 1:T]
             pre_flow, post_flow = _compute_line_flows(
                 net_injections = net_inj,
                 isf = isf,

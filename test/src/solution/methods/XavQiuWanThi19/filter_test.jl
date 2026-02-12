@@ -8,8 +8,7 @@ import UnitCommitment: _Violation, _offer, _query
 @testfunction solution_methods_XavQiuWanThi19_filter_test begin
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     sc = instance.scenarios[1]
-    filter =
-        UnitCommitment._ViolationFilter(max_per_line = 1, max_total = 2)
+    filter = UnitCommitment._ViolationFilter(max_per_line = 1, max_total = 2)
     _offer(
         filter,
         _Violation(
