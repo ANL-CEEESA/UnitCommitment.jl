@@ -4,7 +4,7 @@
 
 using MPI
 
-@testfunction solution_methods_ProgressiveHedging_usage_test begin
+@testfunction methods_ProgressiveHedging_usage_test begin
     basedir = dirname(@__FILE__)
     mpiexec() do exe
         return run(

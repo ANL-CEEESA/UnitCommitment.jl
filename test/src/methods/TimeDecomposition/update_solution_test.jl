@@ -4,7 +4,7 @@
 
 using UnitCommitment, DataStructures
 
-@testfunction solution_methods_TimeDecomposition_update_solution_test begin
+@testfunction methods_TimeDecomposition_update_solution_test begin
     psuedo_solution = OrderedDict()
     time_increment = 4
     psuedo_sub_solution = OrderedDict(

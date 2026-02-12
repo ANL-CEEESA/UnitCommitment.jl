@@ -4,7 +4,7 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction model_MorLatRam2013_test begin
+@testfunction components_thermal_build_MorLatRam2013_test begin
     model =
         build_model(
             UnitCommitment.read(

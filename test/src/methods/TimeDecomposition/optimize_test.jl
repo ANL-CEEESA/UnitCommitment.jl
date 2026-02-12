@@ -5,7 +5,7 @@
 using UnitCommitment, DataStructures, HiGHS
 import UnitCommitment: TimeDecomposition
 
-@testfunction solution_methods_TimeDecomposition_optimize_test begin
+@testfunction methods_TimeDecomposition_optimize_test begin
     # read one scenario
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     solution = UnitCommitment.optimize!(

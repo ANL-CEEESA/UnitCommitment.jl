@@ -5,7 +5,7 @@ using UnitCommitment
 
 function fixture(path::String)::String
     basedir = dirname(@__FILE__)
-    return "$basedir/../../../../fixtures/$path"
+    return "$basedir/../../../fixtures/$path"
 end
 
 MPI.Init()

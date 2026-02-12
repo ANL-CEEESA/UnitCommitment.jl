@@ -5,7 +5,7 @@
 using UnitCommitment, Test, LinearAlgebra
 import UnitCommitment: _Violation, _offer, _query
 
-@testfunction solution_methods_XavQiuWanThi19_find_test begin
+@testfunction methods_XavQiuWanThi19_find_test begin
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     sc = instance.scenarios[1]
     for line in sc[:lines], t in 1:instance.time

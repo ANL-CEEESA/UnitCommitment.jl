@@ -4,7 +4,7 @@
 
 using UnitCommitment, Test, LinearAlgebra
 
-@testfunction solution_methods_XavQiuWanThi19_susceptance_matrix_test begin
+@testfunction methods_XavQiuWanThi19_susceptance_matrix_test begin
     instance = UnitCommitment.read(fixture("/case14.json.gz"))
     sc = instance.scenarios[1]
     actual = UnitCommitment._susceptance_matrix(sc[:lines])
@@ -34,7 +34,7 @@ using UnitCommitment, Test, LinearAlgebra
     @test round.(actual, digits = 2) == expected
 end
 
-@testfunction solution_methods_XavQiuWanThi19_reduced_incidence_matrix_test begin
+@testfunction methods_XavQiuWanThi19_reduced_incidence_matrix_test begin
     instance = UnitCommitment.read(fixture("/case14.json.gz"))
     sc = instance.scenarios[1]
     actual = UnitCommitment._reduced_incidence_matrix(
@@ -82,7 +82,7 @@ end
     @test actual[20, 13] == -1.0
 end
 
-@testfunction solution_methods_XavQiuWanThi19_injection_shift_factors_test begin
+@testfunction methods_XavQiuWanThi19_injection_shift_factors_test begin
     instance = UnitCommitment.read(fixture("/case14.json.gz"))
     sc = instance.scenarios[1]
     actual = UnitCommitment._injection_shift_factors(
@@ -114,7 +114,7 @@ end
     ]
 end
 
-@testfunction solution_methods_XavQiuWanThi19_line_outage_factors_test begin
+@testfunction methods_XavQiuWanThi19_line_outage_factors_test begin
     instance = UnitCommitment.read(fixture("/case14.json.gz"))
     sc = instance.scenarios[1]
     isf_before = UnitCommitment._injection_shift_factors(

@@ -4,7 +4,7 @@
 
 using UnitCommitment, DataStructures
 
-@testfunction solution_methods_TimeDecomposition_determine_initial_status_test begin
+@testfunction methods_TimeDecomposition_determine_initial_status_test begin
     hot_start = 100
     cold_start = -100
 
@@ -67,7 +67,7 @@ using UnitCommitment, DataStructures
     @test new_stat == 12
 end
 
-@testfunction solution_methods_TimeDecomposition_set_initial_status_test begin
+@testfunction methods_TimeDecomposition_set_initial_status_test begin
     # read one scenario
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     psuedo_solution = OrderedDict(
