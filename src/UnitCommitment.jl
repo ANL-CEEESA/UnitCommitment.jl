@@ -44,7 +44,7 @@ include("methods/XavQiuWanThi2019/structs.jl")
 # include("model/formulations/PanGua2016/ramp.jl")
 # include("model/formulations/WanHob2016/ramp.jl")
 # include("transform/initcond.jl")
-# include("transform/randomize/XavQiuAhm2021.jl")
+include("transform/randomize/XavQiuAhm2021.jl")
 
 include("build.jl")
 include("components/bus/build.jl")
