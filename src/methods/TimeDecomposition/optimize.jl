@@ -114,7 +114,7 @@ function _set_initial_status!(
     time_increment::Int,
 )
     for sc in instance.scenarios
-        for thermal_unit in sc.thermal_units
+        for thermal_unit in sc[:thermal]
             if length(instance.scenarios) == 1
                 prod = solution["Thermal: Production (MW)"][thermal_unit.name]
                 is_on = solution["Thermal: Is on"][thermal_unit.name]
