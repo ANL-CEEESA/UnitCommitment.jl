@@ -4,39 +4,40 @@
 
 function store_solution(
     sol::AbstractDict,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     ::StorageExt,
 )::Nothing
-    instance = model[:instance]
+    instance = model.instance
+    inner = model.inner
     T = instance.time
     for sc in instance.scenarios
         storage_units = sc[:storage]
 
         sol[sc.name]["Storage: Level (MWh)"] =
-            _timeseries(model, :storage_level, storage_units, T, sc = sc)
+            _timeseries(inner, :storage_level, storage_units, T, sc = sc)
         sol[sc.name]["Storage: Is charging"] =
-            _timeseries(model, :is_charging, storage_units, T, sc = sc)
+            _timeseries(inner, :is_charging, storage_units, T, sc = sc)
         sol[sc.name]["Storage: Charging rate (MW)"] =
-            _timeseries(model, :charge_rate, storage_units, T, sc = sc)
+            _timeseries(inner, :charge_rate, storage_units, T, sc = sc)
         sol[sc.name]["Storage: Charging cost (\$)"] = OrderedDict(
             su.name => [
-                value(model[:charge_rate][sc.name, su.name, t]) *
+                value(inner[:charge_rate][sc.name, su.name, t]) *
                 su.charge_cost[t] for t in 1:T
             ] for su in storage_units
         )
         sol[sc.name]["Storage: Is discharging"] =
-            _timeseries(model, :is_discharging, storage_units, T, sc = sc)
+            _timeseries(inner, :is_discharging, storage_units, T, sc = sc)
         sol[sc.name]["Storage: Discharging rate (MW)"] =
-            _timeseries(model, :discharge_rate, storage_units, T, sc = sc)
+            _timeseries(inner, :discharge_rate, storage_units, T, sc = sc)
         sol[sc.name]["Storage: Discharging cost (\$)"] = OrderedDict(
             su.name => [
-                value(model[:discharge_rate][sc.name, su.name, t]) *
+                value(inner[:discharge_rate][sc.name, su.name, t]) *
                 su.discharge_cost[t] for t in 1:T
             ] for su in storage_units
         )
         sol[sc.name]["Storage: Investment status"] = OrderedDict(
             su.name =>
-                [value(model[:invest_storage][su.name, t]) for t in 1:T] for
+                [value(inner[:invest_storage][su.name, t]) for t in 1:T] for
             su in storage_units if su.invest[1] > 0.0
         )
     end

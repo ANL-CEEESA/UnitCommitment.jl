@@ -57,14 +57,15 @@ end
 
 function store_solution(
     sol::AbstractDict,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     ::PriceSensitiveLoadsExt,
 )::Nothing
-    instance = model[:instance]
+    instance = model.instance
+    inner = model.inner
     T = instance.time
     for sc in instance.scenarios
         sol[sc.name]["Price-sensitive load: Demand served (MW)"] =
-            _timeseries(model, :loads, sc[:psload], T, sc = sc)
+            _timeseries(inner, :loads, sc[:psload], T, sc = sc)
     end
     return
 end

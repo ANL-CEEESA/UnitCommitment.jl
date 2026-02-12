@@ -23,13 +23,13 @@ function solution(model::UnitCommitmentModel)::OrderedDict
 end
 
 function _store_solution!(model::UnitCommitmentModel)::Nothing
-    instance = model.inner[:instance]
+    instance = model.instance
     sol = OrderedDict(sc.name => OrderedDict() for sc in instance.scenarios)
     for sc in instance.scenarios
         _store_bus_solution!(sol[sc.name], model.inner, sc, instance.time)
     end
     for ext in instance.extensions
-        store_solution(sol, model.inner, ext)
+        store_solution(sol, model, ext)
     end
     model.data[:solution] = sol
     return

@@ -52,7 +52,7 @@ include("usage_test.jl")
 
 function runtests()
     original_logger = global_logger()
-    global_logger(ConsoleLogger(stderr, Logging.Info))
+    global_logger(ConsoleLogger(stderr, Logging.Warn))
     try
         @testset "UnitCommitment" begin
             for sym in sort(names(UnitCommitmentT))
@@ -67,9 +67,9 @@ function runtests()
 end
 
 function format()
-    JuliaFormatter.format(basedir, verbose = true)
-    JuliaFormatter.format("$basedir/../../src", verbose = true)
-    JuliaFormatter.format("$basedir/../../docs/src", verbose = true)
+    JuliaFormatter.format(basedir)
+    JuliaFormatter.format("$basedir/../../src")
+    JuliaFormatter.format("$basedir/../../docs/src")
     return
 end
 

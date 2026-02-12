@@ -10,7 +10,7 @@ function optimize!(
     model::UnitCommitmentModel,
     method::ProgressiveHedging,
 )::Nothing
-    instance = model.inner[:instance]
+    instance = model.instance
     mpi = MpiInfo(MPI.COMM_WORLD)
     iterations = PHIterationInfo[]
     consensus_vars =

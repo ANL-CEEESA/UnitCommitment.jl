@@ -58,12 +58,12 @@ Extract extension-specific results from the solved model and write them into
 the solution dictionary.
 
 - `sol::AbstractDict` — solution dictionary, keyed by scenario name.
-- `model::JuMP.Model` — solved optimization model.
+- `model::UnitCommitmentModel` — solved optimization model.
 - `ext::UnitCommitmentExtension` — extension instance.
 """
 function store_solution(
     sol::AbstractDict,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     ext::UnitCommitmentExtension,
 )::Nothing
     # nop

@@ -48,12 +48,13 @@ end
 
 function store_solution(
     sol::AbstractDict,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     ::ShiftFactorsTransmissionExt,
 )::Nothing
-    instance = model[:instance]
+    instance = model.instance
+    inner = model.inner
     T = instance.time
-    ni = model[:ni]
+    ni = inner[:ni]
 
     for sc in instance.scenarios
         lines = sc[:lines]

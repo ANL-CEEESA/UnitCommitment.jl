@@ -6,7 +6,7 @@ function optimize!(
     model::UnitCommitmentModel,
     method::XavQiuWanThi2019.Method,
 )::Nothing
-    instance = model.inner[:instance]
+    instance = model.instance
     ext = get(instance.extension_by_slot, :transmission, nothing)
     if !(ext isa ShiftFactorsTransmissionExt)
         error(
@@ -66,6 +66,7 @@ function optimize!(
                 push!(
                     violations,
                     _find_violations(
+                        instance,
                         model.inner,
                         sc,
                         max_per_line = method.max_violations_per_line,

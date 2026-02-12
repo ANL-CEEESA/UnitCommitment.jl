@@ -4,14 +4,14 @@
 
 function store_solution(
     sol::AbstractDict,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     ::ThermalExt,
 )::Nothing
-    instance = model[:instance]
+    instance = model.instance
     T = instance.time
     for sc in instance.scenarios
-        _store_thermal_solution!(sol[sc.name], model, sc, T)
-        _store_reserve_solution!(sol[sc.name], model, sc, T)
+        _store_thermal_solution!(sol[sc.name], model.inner, sc, T)
+        _store_reserve_solution!(sol[sc.name], model.inner, sc, T)
     end
     return
 end

@@ -15,7 +15,7 @@ JuMP.optimize!(model)
 ```
 """
 function JuMP.optimize!(model::UnitCommitmentModel)::Nothing
-    instance = model.inner[:instance]
+    instance = model.instance
     transmission_ext = get(instance.extension_by_slot, :transmission, nothing)
     if transmission_ext isa ShiftFactorsTransmissionExt && transmission_ext.lazy
         optimize!(model, XavQiuWanThi2019.Method())
@@ -31,7 +31,7 @@ Solve the unit commitment model using the direct method, which solves the
 complete problem as a single MILP.
 """
 function optimize!(model::UnitCommitmentModel, ::DirectMethod)::Nothing
-    instance = model.inner[:instance]
+    instance = model.instance
     optimize!(model.inner)
     _store_solution!(model)
     for ext in instance.extensions

@@ -39,11 +39,10 @@ function build_model(
         (sc.name, b.name, t) => AffExpr(-b.load[t]) for
         sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
     )
-    model[:ni] = Dict(
+    model[:ni] = OrderedDict(
         (sc.name, b.name, t) => @variable(model) for
         sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
     )
-    model[:instance] = instance
     for ext in instance.extensions
         build_model(model, instance, ext)
     end
@@ -55,7 +54,7 @@ function build_model(
     if optimizer !== nothing
         set_optimizer(model, optimizer)
     end
-    return UnitCommitmentModel(model, Dict())
+    return UnitCommitmentModel(instance, model, Dict(), optimizer)
 end
 
 """

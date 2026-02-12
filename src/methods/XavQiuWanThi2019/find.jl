@@ -5,12 +5,12 @@
 import Base.Threads: @threads, maxthreadid
 
 function _find_violations(
+    instance::UnitCommitmentInstance,
     model::JuMP.Model,
     sc::UnitCommitmentScenario;
     max_per_line::Int,
     max_per_period::Int,
 )
-    instance = model[:instance]
     net_injection = model[:ni]
     overflow = model[:overflow]
     length(sc[:bus]) > 1 || return []

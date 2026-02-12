@@ -29,7 +29,6 @@ function _enforce_transmission(;
     lodf::Matrix{Float64},
     method::XavQiuWanThi2019.Method,
 )::Nothing
-    instance = model[:instance]
     limit::Float64 = 0.0
     overflow = model[:overflow]
     net_injection = model[:net_injection]

@@ -14,31 +14,27 @@ function _after_optimize!(
 end
 
 function _compute(model::UnitCommitmentModel, ::ConventionalLMP)
-    # Record binary variables and their optimal values
-    binary_vars =
-        [(v, value(v)) for v in all_variables(model.inner) if is_binary(v)]
+    # Create a copy of the model to avoid modifying the original MIP
+    lp, ref_map = copy_model(model.inner)
+    set_optimizer(lp, model.optimizer)
 
-    # Fix binary variables and remove binary constraint
-    for (v, val) in binary_vars
-        unset_binary(v)
-        fix(v, val)
+    # Fix binary variables at their optimal values
+    for v in all_variables(model.inner)
+        if is_binary(v)
+            lp_v = ref_map[v]
+            unset_binary(lp_v)
+            fix(lp_v, value(v))
+        end
     end
 
     # Relax any remaining integer variables
-    undo_relax = relax_integrality(model.inner)
+    relax_integrality(lp)
 
     # Solve LP and extract duals
-    JuMP.optimize!(model.inner)
+    JuMP.optimize!(lp)
     model.data[:lmp] = OrderedDict()
     for (key, val) in model.inner[:eq_net_injection]
-        model.data[:lmp][key] = -dual(val)
-    end
-
-    # Restore model state
-    undo_relax()
-    for (v, _) in binary_vars
-        unfix(v)
-        set_binary(v)
+        model.data[:lmp][key] = -dual(ref_map[val])
     end
 end
 

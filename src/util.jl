@@ -68,6 +68,10 @@ function set_name(x::Float64, n::String)
     # nop
 end
 
+function Base.getindex(map::GenericReferenceMap, dict::OrderedDict)
+    return OrderedDict(k => map[v] for (k, v) in dict)
+end
+
 function _init(model::JuMP.Model, key::Symbol)::OrderedDict
     if !(key in keys(object_dictionary(model)))
         model[key] = OrderedDict()

@@ -114,12 +114,15 @@ Wrapper around a `JuMP.Model` returned by [`build_model`](@ref). Use
 (e.g. for setting solver attributes or inspecting variables).
 
 # Fields
+- `instance::UnitCommitmentInstance`: the problem instance.
 - `inner::JuMP.Model`: the underlying JuMP optimization model.
 - `data::Dict`: storage for UC.jl-specific data (e.g. extracted solution).
 """
 struct UnitCommitmentModel
+    instance::UnitCommitmentInstance
     inner::JuMP.Model
     data::Dict
+    optimizer::Any
 end
 
 export UnitCommitmentModel

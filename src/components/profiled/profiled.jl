@@ -138,21 +138,22 @@ end
 
 function store_solution(
     sol::AbstractDict,
-    model::JuMP.Model,
+    model::UnitCommitmentModel,
     ::ProfiledUnitsExt,
 )::Nothing
-    instance = model[:instance]
+    instance = model.instance
+    inner = model.inner
     T = instance.time
     for sc in instance.scenarios
         profiled_units = sc[:profiled]
 
         sol[sc.name]["Profiled: Production (MW)"] =
-            _timeseries(model, :prod, profiled_units, T, sc = sc)
+            _timeseries(inner, :prod, profiled_units, T, sc = sc)
 
         sol[sc.name]["Profiled: Utilization (%)"] = OrderedDict(
             pu.name => [
                 round(
-                    100.0 * value(model[:prod][sc.name, pu.name, t]) /
+                    100.0 * value(inner[:prod][sc.name, pu.name, t]) /
                     pu.max_power[t],
                     digits = 2,
                 ) for t in 1:T
@@ -161,13 +162,13 @@ function store_solution(
 
         sol[sc.name]["Profiled: Production cost (\$)"] = OrderedDict(
             pu.name => [
-                value(model[:prod][sc.name, pu.name, t]) * pu.cost[t]
+                value(inner[:prod][sc.name, pu.name, t]) * pu.cost[t]
                 for t in 1:T
             ] for pu in profiled_units
         )
 
         sol[sc.name]["Profiled: Investment status"] = OrderedDict(
-            pu.name => [value(model[:invest][pu.name, t]) for t in 1:T] for
+            pu.name => [value(inner[:invest][pu.name, t]) for t in 1:T] for
             pu in profiled_units if pu.invest[1] > 0.0
         )
     end
