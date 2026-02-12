@@ -60,7 +60,6 @@ function solve_market(
     optimizer,
 )::OrderedDict
     # solve da instance as usual
-    @info "Solving the day-ahead market with file $da_path..."
     instance_da = UnitCommitment.read(da_path, extensions = settings.extensions)
     # build and optimize the DA market
     _, solution_da =
@@ -91,7 +90,6 @@ function solve_market(
     solution_rt = OrderedDict()
     prev_initial_status = OrderedDict()
     for rt_path in rt_paths
-        @info "Solving the real-time market with file $rt_path..."
         instance_rt =
             UnitCommitment.read(rt_path, extensions = settings.extensions)
         # check instance time

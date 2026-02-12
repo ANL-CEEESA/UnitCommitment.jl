@@ -26,7 +26,7 @@ function optimize!(
     large_gap = false
     has_transmission = false
     for sc in instance.scenarios
-        if length(sc[:isf]) > 0
+        if haskey(sc, :isf) && length(sc[:isf]) > 0
             has_transmission = true
         end
         if has_transmission && method.two_phase_gap

@@ -9,7 +9,7 @@ using UnitCommitment
 
 include("util.jl")
 
-# include("market/market_test.jl")
+include("market/market_test.jl")
 # include("solution/methods/ProgressiveHedging/usage_test.jl")
 include("solution/methods/TimeDecomposition/initial_status_test.jl")
 include("solution/methods/TimeDecomposition/optimize_test.jl")
