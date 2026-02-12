@@ -7,7 +7,7 @@ using Printf
 function validate(
     instance::UnitCommitmentInstance,
     solution::AbstractDict,
-    ::FlexirampExt,
+    ::WanHob2016.FlexirampExt,
 )::Int
     err_count = 0
     tol = 0.01

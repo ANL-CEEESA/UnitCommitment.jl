@@ -5,7 +5,7 @@
 function read_json(
     json::AbstractDict,
     sc::UnitCommitmentScenario,
-    ::FlexirampExt,
+    ::WanHob2016.FlexirampExt,
 )
     T = sc[:time]
     reserves = FlexirampReserve[]

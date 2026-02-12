@@ -5,7 +5,7 @@
 function slice!(
     sc::UnitCommitmentScenario,
     range::UnitRange{Int},
-    ::FlexirampExt,
+    ::WanHob2016.FlexirampExt,
 )::Nothing
     haskey(sc, :flexiramp_reserves) || return
     for r in sc[:flexiramp_reserves]

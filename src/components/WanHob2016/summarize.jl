@@ -4,7 +4,7 @@
 
 function summarize(
     instance::UnitCommitmentInstance,
-    ::FlexirampExt,
+    ::WanHob2016.FlexirampExt,
     io::IO,
 )::Nothing
     haskey(instance.scenarios[1], :flexiramp_reserves) || return

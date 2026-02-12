@@ -5,7 +5,7 @@
 function store_solution(
     sol::AbstractDict,
     model::UnitCommitmentModel,
-    ::FlexirampExt,
+    ::WanHob2016.FlexirampExt,
 )::Nothing
     instance = model.instance
     T = instance.time
@@ -20,7 +20,7 @@ function store_solution(
                     round(
                         value(inner[:upflexiramp][sc.name, r.name, g.name, t]),
                         digits = 5,
-                    ) for t in 1:T
+                    ) for t in 1:(T-1)
                 ] for g in r.thermal_units
             ) for r in sc[:flexiramp_reserves]
         )
@@ -31,7 +31,7 @@ function store_solution(
                     round(
                         value(inner[:dwflexiramp][sc.name, r.name, g.name, t]),
                         digits = 5,
-                    ) for t in 1:T
+                    ) for t in 1:(T-1)
                 ] for g in r.thermal_units
             ) for r in sc[:flexiramp_reserves]
         )
@@ -57,7 +57,7 @@ function store_solution(
                 round(
                     value(inner[:upflexiramp_shortfall][sc.name, r.name, t]),
                     digits = 5,
-                ) for t in 1:T
+                ) for t in 1:(T-1)
             ] for r in sc[:flexiramp_reserves]
         )
 
@@ -66,7 +66,7 @@ function store_solution(
                 round(
                     value(inner[:dwflexiramp_shortfall][sc.name, r.name, t]),
                     digits = 5,
-                ) for t in 1:T
+                ) for t in 1:(T-1)
             ] for r in sc[:flexiramp_reserves]
         )
     end
