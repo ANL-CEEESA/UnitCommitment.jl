@@ -4,6 +4,7 @@
 
 abstract type PiecewiseLinearCostsFormulation end
 abstract type RampingFormulation end
+struct NoRamping <: RampingFormulation end
 abstract type StartupCostsFormulation end
 abstract type StartupShutdownLimitsFormulation end
 

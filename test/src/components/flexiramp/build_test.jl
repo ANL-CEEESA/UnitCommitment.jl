@@ -1,0 +1,81 @@
+# UnitCommitment.jl: Optimization Package for Security-Constrained Unit Commitment
+# Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
+# Released under the modified BSD license. See COPYING.md for more details.
+
+using HiGHS, JuMP, UnitCommitment
+
+@testfunction components_flexiramp_build_test begin
+    model =
+        build_model(
+            UnitCommitment.read(
+                fixture("case14/flex.json"),
+                extensions = [
+                    UnitCommitment.ThermalExt(
+                        ramping = UnitCommitment.NoRamping(),
+                    ),
+                    UnitCommitment.FlexirampExt(),
+                ],
+            ),
+            optimizer = test_optimizer(),
+            variable_names = true,
+        ).inner
+
+    # Decision variables
+    # -------------------------------------------------------------------------
+    @test_continuous_var model[:mfg]["s1", "g2", 1] lb = 0
+    @test_continuous_var model[:mfg]["s1", "g2", 4] lb = 0
+    @test_continuous_var model[:mfg]["s1", "g3", 1] lb = 0
+    @test_continuous_var model[:mfg]["s1", "g3", 4] lb = 0
+    @test_continuous_var model[:upflexiramp]["s1", "r1", "g2", 1]
+    @test_continuous_var model[:upflexiramp]["s1", "r1", "g3", 1]
+    @test_continuous_var model[:dwflexiramp]["s1", "r1", "g2", 1]
+    @test_continuous_var model[:dwflexiramp]["s1", "r1", "g3", 1]
+    @test_continuous_var model[:upflexiramp_shortfall]["s1", "r1", 1] lb = 0 ub =
+        0
+    @test_continuous_var model[:dwflexiramp_shortfall]["s1", "r1", 1] lb = 0 ub =
+        0
+    @test_continuous_var model[:upflexiramp_shortfall]["s1", "r1", 4] lb = 0 ub =
+        0
+    @test_continuous_var model[:dwflexiramp_shortfall]["s1", "r1", 4] lb = 0 ub =
+        0
+    @test ("s1", "g1", 1) ∉ keys(model[:mfg])
+
+    # Generator-level constraints
+    # -------------------------------------------------------------------------
+    @test_constr model[:eq_mfg_lb]["s1", "g2", 1] "prod_above[s1,g2,1] - mfg[s1,g2,1] ≤ 0"
+    @test_constr model[:eq_mfg_lb]["s1", "g3", 1] "prod_above[s1,g3,1] - mfg[s1,g3,1] ≤ 0"
+    @test_constr model[:eq_mfg_ub]["s1", "g2", 1] "-140 is_on[g2,1] + mfg[s1,g2,1] ≤ 0"
+    @test_constr model[:eq_mfg_ub]["s1", "g3", 1] "-100 is_on[g3,1] + mfg[s1,g3,1] ≤ 0"
+    @test_constr model[:eq_ramp_up]["s1", "g2", 1] "42 is_on[g2,1] + mfg[s1,g2,1] ≤ 140"
+    @test_constr model[:eq_ramp_up]["s1", "g3", 1] "30 is_on[g3,1] + mfg[s1,g3,1] ≤ 100"
+    @test_constr model[:eq_ramp_up]["s1", "g2", 2] "-prod_above[s1,g2,1] + 42 is_on[g2,2] + mfg[s1,g2,2] ≤ 140"
+    @test_constr model[:eq_ramp_up]["s1", "g3", 2] "-prod_above[s1,g3,1] + 30 is_on[g3,2] + mfg[s1,g3,2] ≤ 100"
+    @test_constr model[:eq_ramp_down]["s1", "g2", 1] "-prod_above[s1,g2,1] ≤ 140"
+    @test_constr model[:eq_ramp_down]["s1", "g2", 2] "42 is_on[g2,1] + prod_above[s1,g2,1] - prod_above[s1,g2,2] ≤ 140"
+    @test_constr model[:eq_mfg_shutdown]["s1", "g2", 1] "-98 is_on[g2,1] - 42 is_on[g2,2] + mfg[s1,g2,1] ≤ 0"
+    @test ("s1", "g2", 4) ∉ keys(model[:eq_mfg_shutdown])
+
+    # Reserve-generator constraints
+    # -------------------------------------------------------------------------
+    @test_constr model[:eq_dwflexi_lb]["s1", "r1", "g2", 1] "-prod_above[s1,g2,1] + dwflexiramp[s1,r1,g2,1] ≤ 0"
+    @test_constr model[:eq_dwflexi_ub]["s1", "r1", "g2", 1] "prod_above[s1,g2,1] + 140 is_on[g2,2] - mfg[s1,g2,2] - dwflexiramp[s1,r1,g2,1] ≤ 140"
+    @test_constr model[:eq_upflexi_lb]["s1", "r1", "g2", 1] "-prod_above[s1,g2,1] - upflexiramp[s1,r1,g2,1] ≤ 0"
+    @test_constr model[:eq_upflexi_ub]["s1", "r1", "g2", 1] "prod_above[s1,g2,1] + 140 is_on[g2,2] - mfg[s1,g2,2] + upflexiramp[s1,r1,g2,1] ≤ 140"
+    @test ("s1", "r1", "g2", 4) ∉ keys(model[:eq_dwflexi_lb])
+    @test ("s1", "r1", "g2", 4) ∉ keys(model[:eq_upflexi_lb])
+    @test_constr model[:eq_upflexi_ramp_lb]["s1", "r1", "g2", 1] "42 is_on[g2,1] - upflexiramp[s1,r1,g2,1] ≤ 140"
+    @test_constr model[:eq_upflexi_ramp_ub]["s1", "r1", "g2", 1] "42 is_on[g2,2] + upflexiramp[s1,r1,g2,1] ≤ 140"
+    @test_constr model[:eq_dwflexi_ramp_lb]["s1", "r1", "g2", 1] "42 is_on[g2,2] - dwflexiramp[s1,r1,g2,1] ≤ 140"
+    @test_constr model[:eq_dwflexi_ramp_ub]["s1", "r1", "g2", 1] "42 is_on[g2,1] + dwflexiramp[s1,r1,g2,1] ≤ 140"
+    @test_constr model[:eq_upflexi_power_lb]["s1", "r1", "g2", 1] "-140 is_on[g2,1] - upflexiramp[s1,r1,g2,1] ≤ 0"
+    @test_constr model[:eq_upflexi_power_ub]["s1", "r1", "g2", 1] "-140 is_on[g2,2] + upflexiramp[s1,r1,g2,1] ≤ 0"
+    @test_constr model[:eq_dwflexi_power_lb]["s1", "r1", "g2", 1] "-140 is_on[g2,2] - dwflexiramp[s1,r1,g2,1] ≤ 0"
+    @test_constr model[:eq_dwflexi_power_ub]["s1", "r1", "g2", 1] "-140 is_on[g2,1] + dwflexiramp[s1,r1,g2,1] ≤ 0"
+
+    # Requirement constraints
+    # -------------------------------------------------------------------------
+    @test_constr model[:eq_min_flexiramp_up]["s1", "r1", 1] "upflexiramp_shortfall[s1,r1,1] + upflexiramp[s1,r1,g2,1] + upflexiramp[s1,r1,g3,1] ≥ 20.31042"
+    @test_constr model[:eq_min_flexiramp_down]["s1", "r1", 1] "dwflexiramp_shortfall[s1,r1,1] + dwflexiramp[s1,r1,g2,1] + dwflexiramp[s1,r1,g3,1] ≥ 20.31042"
+    @test_obj_coef model[:upflexiramp_shortfall]["s1", "r1", 1] 0.0
+    @test_obj_coef model[:dwflexiramp_shortfall]["s1", "r1", 1] 0.0
+end

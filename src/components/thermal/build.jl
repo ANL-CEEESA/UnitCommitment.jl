@@ -404,6 +404,14 @@ function _add_thermal_constr_reserves!(
     return
 end
 
+function _add_thermal_constr_ramping!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    ::NoRamping,
+)
+    return
+end
+
 function _total_reserves(model, instance, g, sc)::Vector
     T = instance.time
     reserve = [0.0 for _ in 1:T]
