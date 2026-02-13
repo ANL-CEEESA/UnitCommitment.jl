@@ -42,3 +42,4 @@ instances/**/*.json
 instances/_source
 local
 notebooks
+*.local*
