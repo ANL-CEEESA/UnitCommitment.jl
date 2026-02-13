@@ -14,7 +14,7 @@ using UnitCommitment
     @test sc[:lines][1].name == "l1"
     @test sc[:lines][1].source.name == "b1"
     @test sc[:lines][1].target.name == "b2"
-    @test sc[:lines][1].susceptance ≈ 71.94244604316548
+    @test sc[:lines][1].susceptance ≈ 69.51042656398461
     @test sc[:lines][1].normal_flow_limit == [175.0]
 
     instance = UnitCommitment.read(fixture("case14.json.gz"))

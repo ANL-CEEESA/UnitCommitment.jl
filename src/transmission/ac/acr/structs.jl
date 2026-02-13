@@ -2,14 +2,15 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-mutable struct Bus
-    name::String
-    offset::Int
-    load::Vector{Float64}
-    reactive_load::Vector{Float64}
-    vmin::Float64
-    vmax::Float64
-    vm::Float64
-    va::Float64
-    bus_type::String
+"""
+Rectangular AC power flow formulation.
+
+Voltage is represented using real and imaginary components (vr, vi).
+"""
+module ACR
+
+import ..ACFormulation
+
+struct Formulation <: ACFormulation end
+
 end

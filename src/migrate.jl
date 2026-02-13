@@ -18,6 +18,7 @@ function _migrate(json)
     version = VersionNumber(version)
     version >= v"0.3" || _migrate_to_v03(json)
     version >= v"0.4" || _migrate_to_v04(json)
+    version >= v"0.5" || _migrate_to_v05(json)
     return
 end
 
@@ -46,5 +47,29 @@ function _migrate_to_v04(json)
                 gen["Type"] = "Thermal"
             end
         end
+    end
+end
+
+function _migrate_to_v05(json)
+    # Migrate transmission lines
+    if haskey(json, "Transmission lines") &&
+       json["Transmission lines"] !== nothing
+        for (line_name, line) in json["Transmission lines"]
+            # Rename flow limit fields from MW to MVA
+            if line["Normal flow limit (MW)"] !== nothing
+                line["Normal flow limit (MVA)"] = line["Normal flow limit (MW)"]
+                line["Normal flow limit (MW)"] = nothing
+            end
+            if line["Emergency flow limit (MW)"] !== nothing
+                line["Emergency flow limit (MVA)"] =
+                    line["Emergency flow limit (MW)"]
+                line["Emergency flow limit (MW)"] = nothing
+            end
+        end
+    end
+
+    # Default Base MVA in parameters
+    if json["Parameters"]["Base MVA"] === nothing
+        json["Parameters"]["Base MVA"] = 100
     end
 end

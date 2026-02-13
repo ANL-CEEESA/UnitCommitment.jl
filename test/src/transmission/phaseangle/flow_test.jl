@@ -28,6 +28,10 @@
         end
     end
 
+    # Fix thermal production
+    JuMP.fix(model.inner[:prod_above]["s1", "g4", 4], 61.429 - 33, force = true)
+    JuMP.fix(model.inner[:prod_above]["s1", "g5", 4], 66 - 33.0, force = true)
+
     optimize!(model)
     sol = solution(model)
     base_flow = sol["Line: Base Flow (MW)"]

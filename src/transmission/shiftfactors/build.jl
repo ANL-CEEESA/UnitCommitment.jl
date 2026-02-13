@@ -9,6 +9,7 @@ function build_model(
     instance::UnitCommitmentInstance,
     ext::ShiftFactorsTransmissionExt,
 )::Nothing
+    build_model(model, instance, CopperPlateTransmissionExt())
     _add_transmission_vars!(model, instance, ext)
     _add_transmission_obj!(model, instance, ext)
     _add_transmission_constr_flow!(model, instance, ext)

@@ -40,6 +40,8 @@ function store_solution(
                 [value(inner[:invest_storage][su.name, t]) for t in 1:T] for
             su in storage_units if su.invest[1] > 0.0
         )
+        sol[sc.name]["Storage: Reactive power (MVAr)"] =
+            _timeseries(inner, :qs, storage_units, T, sc = sc)
     end
 
     return

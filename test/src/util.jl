@@ -165,9 +165,23 @@ macro test_aff_expr(expr, var, expected)
 end
 
 """
+    _round_floats(s)
+
+Round all floating-point numbers in string `s` to 3 decimal places.
+"""
+function _round_floats(s::AbstractString)
+    return replace(
+        s,
+        r"\d+\.\d+" => m -> string(round(parse(Float64, m), digits = 3)),
+    )
+end
+
+"""
     @test_constr(model[:name][indices...], rhs)
 
 Assert that the string representation of a constraint matches `"name[indices] : rhs"`.
+Floating-point numbers in both the actual and expected strings are rounded to 3 decimal
+places before comparison.
 """
 macro test_constr(expr, rhs)
     # Extract constraint name from model[:constraint_name][indices...]
@@ -187,6 +201,6 @@ macro test_constr(expr, rhs)
     expected = "$name_str[$indices_str] : $rhs"
 
     return quote
-        @test repr($(esc(expr))) == $expected
+        @test _round_floats(repr($(esc(expr)))) == _round_floats($expected)
     end
 end

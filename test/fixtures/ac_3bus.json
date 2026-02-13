@@ -1,0 +1,135 @@
+{
+    "Parameters": {
+        "Version": "0.5",
+        "Time horizon (h)": 1,
+        "Base MVA": 100,
+        "Power balance penalty ($/MW)": 100000
+    },
+    "Buses": {
+        "b1": {
+            "Load (MW)": [0.0],
+            "Load (MVAr)": [0.0],
+            "Minimum voltage (p.u.)": 0.95,
+            "Maximum voltage (p.u.)": 1.05,
+            "Bus type": "Slack"
+        },
+        "b2": {
+            "Load (MW)": [50.0],
+            "Load (MVAr)": [20.0],
+            "Minimum voltage (p.u.)": 0.95,
+            "Maximum voltage (p.u.)": 1.05,
+            "Bus type": "PQ"
+        },
+        "b3": {
+            "Load (MW)": [30.0],
+            "Load (MVAr)": [10.0],
+            "Minimum voltage (p.u.)": 0.95,
+            "Maximum voltage (p.u.)": 1.05,
+            "Bus type": "PQ"
+        }
+    },
+    "Generators": {
+        "g1": {
+            "Bus": "b1",
+            "Type": "Thermal",
+            "Production cost curve (MW)": [10, 50, 100],
+            "Production cost curve ($)": [100, 500, 1200],
+            "Startup delays (h)": [1],
+            "Startup costs ($)": [500.0],
+            "Ramp up limit (MW)": 80.0,
+            "Ramp down limit (MW)": 80.0,
+            "Startup limit (MW)": 80.0,
+            "Shutdown limit (MW)": 80.0,
+            "Minimum uptime (h)": 1,
+            "Minimum downtime (h)": 1,
+            "Initial status (h)": 1,
+            "Initial power (MW)": 60.0,
+            "Reactive power min (MVAr)": -40.0,
+            "Reactive power max (MVAr)": 50.0,
+            "Voltage set-point (p.u.)": 1.02
+        },
+        "p1": {
+            "Bus": "b2",
+            "Type": "Profiled",
+            "Cost ($/MW)": 30.0,
+            "Minimum power (MW)": [0.0],
+            "Maximum power (MW)": [40.0],
+            "Reactive power min (MVAr)": -15.0,
+            "Reactive power max (MVAr)": 15.0
+        }
+    },
+    "Storage units": {
+        "su1": {
+            "Bus": "b3",
+            "Maximum level (MWh)": 100.0,
+            "Minimum level (MWh)": 10.0,
+            "Maximum charge rate (MW)": 25.0,
+            "Minimum charge rate (MW)": 0.0,
+            "Maximum discharge rate (MW)": 25.0,
+            "Minimum discharge rate (MW)": 0.0,
+            "Charge cost ($/MW)": 2.0,
+            "Discharge cost ($/MW)": 1.5,
+            "Charge efficiency": 0.95,
+            "Discharge efficiency": 0.95,
+            "Loss factor": 0.01,
+            "Initial level (MWh)": 50.0,
+            "Last period minimum level (MWh)": 10.0,
+            "Last period maximum level (MWh)": 100.0,
+            "Allow simultaneous charging and discharging": false,
+            "Reactive power min (MVAr)": -10.0,
+            "Reactive power max (MVAr)": 10.0
+        }
+    },
+    "Transmission lines": {
+        "l1": {
+            "Source bus": "b1",
+            "Target bus": "b2",
+            "Resistance (p.u.)": 0.01,
+            "Reactance (p.u.)": 0.05,
+            "Shunt susceptance (p.u.)": 0.04,
+            "Shunt conductance (p.u.)": 0.0,
+            "Tap ratio (p.u.)": 1.0,
+            "Phase shift (rad)": 0.0,
+            "Transformer": false,
+            "Normal flow limit (MVA)": [150.0],
+            "Emergency flow limit (MVA)": [200.0],
+            "Flow limit penalty ($/MW)": [5000.0]
+        },
+        "l2": {
+            "Source bus": "b1",
+            "Target bus": "b3",
+            "Resistance (p.u.)": 0.02,
+            "Reactance (p.u.)": 0.06,
+            "Shunt susceptance (p.u.)": 0.03,
+            "Shunt conductance (p.u.)": 0.0,
+            "Tap ratio (p.u.)": 1.05,
+            "Phase shift (rad)": 0.0,
+            "Transformer": true,
+            "Normal flow limit (MVA)": [100.0],
+            "Emergency flow limit (MVA)": [130.0],
+            "Flow limit penalty ($/MW)": [5000.0]
+        },
+        "l3": {
+            "Source bus": "b2",
+            "Target bus": "b3",
+            "Resistance (p.u.)": 0.015,
+            "Reactance (p.u.)": 0.04,
+            "Shunt susceptance (p.u.)": 0.025,
+            "Shunt conductance (p.u.)": 0.0,
+            "Tap ratio (p.u.)": 1.0,
+            "Phase shift (rad)": 0.0,
+            "Transformer": false,
+            "Normal flow limit (MVA)": [120.0],
+            "Emergency flow limit (MVA)": [160.0],
+            "Flow limit penalty ($/MW)": [5000.0]
+        }
+    },
+    "Shunt devices": {
+        "sh1": {
+            "Bus": "b2",
+            "Conductance (p.u.)": 0.0,
+            "Susceptance (p.u.)": 0.05,
+            "Status": [true]
+        }
+    }
+}

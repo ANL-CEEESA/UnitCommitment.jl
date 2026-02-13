@@ -49,6 +49,8 @@ function _store_thermal_solution!(
         g.name => [value(model[:invest][g.name, t]) for t in 1:T] for
         g in sc[:thermal] if g.invest[1] > 0.0
     )
+    sol["Thermal: Reactive power (MVAr)"] =
+        _timeseries(model, :qg_thermal, sc[:thermal], T, sc = sc)
     return
 end
 

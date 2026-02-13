@@ -78,6 +78,18 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::StorageExt)
                     to_scalar(dict["Investment cost (\$)"], default = 0.0),
                     T,
                 ),
+                qmin = to_scalar(
+                    dict["Reactive power min (MVAr)"],
+                    default = 0.0,
+                ),
+                qmax = to_scalar(
+                    dict["Reactive power max (MVAr)"],
+                    default = 0.0,
+                ),
+                apparent_power_limit = to_scalar(
+                    dict["Apparent power limit (MVA)"],
+                    default = Inf,
+                ),
             )
             push!(storage_units, storage)
         end

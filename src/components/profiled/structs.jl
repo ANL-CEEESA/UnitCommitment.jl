@@ -9,6 +9,8 @@ Base.@kwdef mutable struct ProfiledUnit
     max_power::Vector{Float64}
     cost::Vector{Float64}
     invest::Vector{Float64}
+    qmin::Float64 = 0.0
+    qmax::Float64 = 0.0
 end
 
 struct ProfiledUnitsExt <: UnitCommitmentExtension end

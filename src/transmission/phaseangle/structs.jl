@@ -22,7 +22,6 @@ end
 
 Base.@kwdef struct PhaseAngleTransmissionExt <: UnitCommitmentExtension
     phase_angle_limit::Float64 = π
-    v_base_kv::Float64 = 500.0
     big_m::Float64 = 1e6
 end
 

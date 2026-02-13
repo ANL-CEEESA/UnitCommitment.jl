@@ -43,6 +43,14 @@ function build_model(
         (sc.name, b.name, t) => @variable(model) for
         sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
     )
+    model[:net_reactive_injection] = OrderedDict(
+        (sc.name, b.name, t) => AffExpr(-b.reactive_load[t]) for
+        sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
+    )
+    model[:qi] = OrderedDict(
+        (sc.name, b.name, t) => @variable(model) for
+        sc in instance.scenarios for b in sc[:bus] for t in 1:instance.time
+    )
     for ext in instance.extensions
         build_model(model, instance, ext)
     end

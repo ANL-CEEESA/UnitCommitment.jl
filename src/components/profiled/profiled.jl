@@ -35,6 +35,14 @@ function read_json(
                     dict["Investment cost (\$)"] : 0.0,
                     T,
                 ),
+                qmin = to_scalar(
+                    dict["Reactive power min (MVAr)"],
+                    default = 0.0,
+                ),
+                qmax = to_scalar(
+                    dict["Reactive power max (MVAr)"],
+                    default = 0.0,
+                ),
             )
             push!(profiled_units, pu)
         end
@@ -53,6 +61,7 @@ function build_model(
     T = instance.time
     prod = _init(model, :prod)
     invest = _init(model, :invest)
+    qg_profiled = _init(model, :qg_profiled)
 
     # Production variables
     for sc in instance.scenarios
@@ -65,6 +74,19 @@ function build_model(
             add_to_expression!(
                 model[:net_injection][sc.name, pu.bus.name, t],
                 prod[sc.name, pu.name, t],
+                1.0,
+            )
+        end
+    end
+
+    # Reactive power variables
+    for sc in instance.scenarios
+        for pu in sc[:profiled], t in 1:T
+            qg_profiled[sc.name, pu.name, t] =
+                @variable(model, lower_bound = pu.qmin, upper_bound = pu.qmax,)
+            add_to_expression!(
+                model[:net_reactive_injection][sc.name, pu.bus.name, t],
+                qg_profiled[sc.name, pu.name, t],
                 1.0,
             )
         end
@@ -171,6 +193,9 @@ function store_solution(
             pu.name => [value(inner[:invest][pu.name, t]) for t in 1:T] for
             pu in profiled_units if pu.invest[1] > 0.0
         )
+
+        sol[sc.name]["Profiled: Reactive power (MVAr)"] =
+            _timeseries(inner, :qg_profiled, profiled_units, T, sc = sc)
     end
 
     return

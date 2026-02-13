@@ -9,6 +9,7 @@ function build_model(
     instance::UnitCommitmentInstance,
     ext::PhaseAngleTransmissionExt,
 )::Nothing
+    build_model(model, instance, CopperPlateTransmissionExt())
     _check(instance, ext)
     _add_transmission_vars!(model, instance, ext)
     _add_transmission_obj!(model, instance, ext)
@@ -119,8 +120,8 @@ function _add_transmission_constr_flow!(
         lines = sc[:lines]
 
         for line in lines, t in 1:T
-            # Susceptance in MW/rad: V_base^2 (kV^2) * B (siemens) = MW/rad
-            b = line.susceptance * ext.v_base_kv^2
+            # Susceptance in MW/rad: B_pu * base_mva = MW/rad
+            b = line.susceptance * sc[:base_mva]
 
             # Compute angle difference
             angle_diff =

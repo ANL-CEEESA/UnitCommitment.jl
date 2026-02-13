@@ -20,14 +20,22 @@ function read_json(
                 offset = length(lines) + 1,
                 source = sc[:bus_by_name][dict["Source bus"]],
                 target = sc[:bus_by_name][dict["Target bus"]],
-                susceptance = to_scalar(dict["Susceptance (S)"]),
+                susceptance = if dict["Reactance (p.u.)"] !== nothing
+                    begin
+                        x = to_scalar(dict["Reactance (p.u.)"])
+                        r = to_scalar(dict["Resistance (p.u.)"], default = 0.0)
+                        x / (r^2 + x^2)
+                    end
+                else
+                    to_scalar(dict["Susceptance (S)"])
+                end,
                 normal_flow_limit = to_timeseries(
-                    dict["Normal flow limit (MW)"],
+                    dict["Normal flow limit (MVA)"],
                     T,
                     default = [1e8 for t in 1:T],
                 ),
                 emergency_flow_limit = to_timeseries(
-                    dict["Emergency flow limit (MW)"],
+                    dict["Emergency flow limit (MVA)"],
                     T,
                     default = [1e8 for t in 1:T],
                 ),

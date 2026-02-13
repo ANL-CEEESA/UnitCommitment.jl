@@ -10,6 +10,7 @@ function build_model(
     ::StorageExt,
 )::Nothing
     _add_storage_vars!(model, instance)
+    _add_storage_reactive_vars!(model, instance)
     _add_storage_obj!(model, instance)
     _add_storage_constrs!(model, instance)
     _add_storage_constr_invest!(model, instance)
@@ -62,6 +63,42 @@ function _add_storage_vars!(
         for t in 1:T
             invest_storage[su.name, t] = @variable(model, binary = true)
         end
+    end
+    return
+end
+
+function _add_storage_reactive_vars!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+)::Nothing
+    T = instance.time
+    qs = _init(model, :qs)
+    discharge_rate = model[:discharge_rate]
+    charge_rate = model[:charge_rate]
+    eq_storage_apparent_power = _init(model, :eq_storage_apparent_power)
+
+    for sc in instance.scenarios, su in sc[:storage], t in 1:T
+        qs[sc.name, su.name, t] =
+            @variable(model, lower_bound = su.qmin, upper_bound = su.qmax,)
+
+        # Apparent power constraint
+        if isfinite(su.apparent_power_limit)
+            eq_storage_apparent_power[sc.name, su.name, t] = @constraint(
+                model,
+                (
+                    discharge_rate[sc.name, su.name, t] -
+                    charge_rate[sc.name, su.name, t]
+                )^2 + qs[sc.name, su.name, t]^2 <=
+                su.apparent_power_limit^2
+            )
+        end
+
+        # Net reactive injection
+        add_to_expression!(
+            model[:net_reactive_injection][sc.name, su.bus.name, t],
+            qs[sc.name, su.name, t],
+            1.0,
+        )
     end
     return
 end

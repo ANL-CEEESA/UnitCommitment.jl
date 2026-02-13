@@ -186,6 +186,7 @@ function _read_scenario(
         T,
         default = fill(1000.0, T),
     )
+    scenario[:base_mva] = to_scalar(params["Base MVA"], default = 100.0)
 
     _read_buses!(json, scenario)
     for ext in extensions

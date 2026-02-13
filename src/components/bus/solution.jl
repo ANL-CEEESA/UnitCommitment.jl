@@ -7,5 +7,7 @@ function _store_bus_solution!(sol::OrderedDict, model::JuMP.Model, sc, T::Int)
         _timeseries(model, :net_injection, sc[:bus], T, sc = sc)
     sol["Bus: Load curtail (MW)"] =
         _timeseries(model, :curtail, sc[:bus], T, sc = sc)
+    sol["Bus: Reactive load curtail (MVAr)"] =
+        _timeseries(model, :reactive_curtail, sc[:bus], T, sc = sc)
     return
 end

@@ -10,6 +10,7 @@ function build_model(
     ext::ThermalExt,
 )::Nothing
     _add_thermal_vars!(model, instance)
+    _add_thermal_reactive_vars!(model, instance)
     _add_thermal_obj!(model, instance)
     _add_thermal_constr_status!(model, instance)
     _add_thermal_constr_startup!(model, instance)
@@ -99,6 +100,45 @@ function _add_thermal_vars!(
                 end
             end
         end
+    end
+    return
+end
+
+function _add_thermal_reactive_vars!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+)::Nothing
+    T = instance.time
+    is_on = model[:is_on]
+    qg_thermal = _init(model, :qg_thermal)
+    eq_thermal_reactive_lb = _init(model, :eq_thermal_reactive_lb)
+    eq_thermal_reactive_ub = _init(model, :eq_thermal_reactive_ub)
+
+    for sc in instance.scenarios, g in sc[:thermal], t in 1:T
+        qg_thermal[sc.name, g.name, t] = @variable(
+            model,
+            lower_bound = min(0, g.qmin),
+            upper_bound = max(0, g.qmax),
+        )
+
+        # Linking constraints: reactive output forced to zero when unit is off
+        if g.qmin != 0 || g.qmax != 0
+            eq_thermal_reactive_lb[sc.name, g.name, t] = @constraint(
+                model,
+                qg_thermal[sc.name, g.name, t] >= g.qmin * is_on[g.name, t]
+            )
+            eq_thermal_reactive_ub[sc.name, g.name, t] = @constraint(
+                model,
+                qg_thermal[sc.name, g.name, t] <= g.qmax * is_on[g.name, t]
+            )
+        end
+
+        # Net reactive injection
+        add_to_expression!(
+            model[:net_reactive_injection][sc.name, g.bus.name, t],
+            qg_thermal[sc.name, g.name, t],
+            1.0,
+        )
     end
     return
 end

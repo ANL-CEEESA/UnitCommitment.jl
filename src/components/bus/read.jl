@@ -9,7 +9,17 @@ function _read_buses!(json::AbstractDict, sc::UnitCommitmentScenario)::Nothing
 
     # Read buses
     for (bus_name, dict) in json["Buses"]
-        bus = Bus(bus_name, length(buses), to_timeseries(dict["Load (MW)"], T))
+        bus = Bus(
+            bus_name,
+            length(buses),
+            to_timeseries(dict["Load (MW)"], T),
+            to_timeseries(dict["Load (MVAr)"], T, default = zeros(T)),
+            to_scalar(dict["Minimum voltage (p.u.)"], default = 0.9),
+            to_scalar(dict["Maximum voltage (p.u.)"], default = 1.1),
+            to_scalar(dict["Voltage magnitude (p.u.)"], default = 1.0),
+            to_scalar(dict["Voltage angle (rad)"], default = 0.0),
+            to_scalar(dict["Bus type"], default = "PQ"),
+        )
         name_to_bus[bus_name] = bus
         push!(buses, bus)
     end

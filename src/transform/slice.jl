@@ -28,6 +28,7 @@ function slice(
         sc[:power_balance_penalty] = sc[:power_balance_penalty][range]
         for b in sc[:bus]
             b.load = b.load[range]
+            b.reactive_load = b.reactive_load[range]
         end
         for ext in modified.extensions
             slice!(sc, range, ext)

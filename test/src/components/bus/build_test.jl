@@ -54,8 +54,16 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_net_injection]["s1", "b15", 1] "ni[s1,b15,1] - curtail[s1,b15,1] = 5"
     @test_constr model[:eq_net_injection]["s1", "b15", 2] "ni[s1,b15,2] - curtail[s1,b15,2] = -10"
 
-    # eq_power_balance
+    # reactive_curtail: all buses default to zero reactive load
+    @test_continuous_var model[:reactive_curtail]["s1", "b1", 1] lb = 0 ub = 0
+    @test_continuous_var model[:reactive_curtail]["s1", "b2", 1] lb = 0 ub = 0
+
+    # reactive curtail objective (zero reactive load => coefficient is 1000)
+    @test_obj_coef model[:reactive_curtail]["s1", "b1", 1] 1000.0
+    @test_obj_coef model[:reactive_curtail]["s1", "b2", 1] 1000.0
+
+    # eq_net_reactive_injection
     # -------------------------------------------------------------------------
-    @test_constr model[:eq_power_balance]["s1", 1] "ni[s1,b1,1] + ni[s1,b2,1] + ni[s1,b3,1] + ni[s1,b4,1] + ni[s1,b5,1] + ni[s1,b6,1] + ni[s1,b7,1] + ni[s1,b8,1] + ni[s1,b9,1] + ni[s1,b10,1] + ni[s1,b11,1] + ni[s1,b12,1] + ni[s1,b13,1] + ni[s1,b14,1] + ni[s1,b15,1] = 0"
-    @test_constr model[:eq_power_balance]["s1", 2] "ni[s1,b1,2] + ni[s1,b2,2] + ni[s1,b3,2] + ni[s1,b4,2] + ni[s1,b5,2] + ni[s1,b6,2] + ni[s1,b7,2] + ni[s1,b8,2] + ni[s1,b9,2] + ni[s1,b10,2] + ni[s1,b11,2] + ni[s1,b12,2] + ni[s1,b13,2] + ni[s1,b14,2] + ni[s1,b15,2] = 0"
+    @test_constr model[:eq_net_reactive_injection]["s1", "b1", 1] "qi[s1,b1,1] - qg_thermal[s1,g1,1] - qg_profiled[s1,p1,1] - reactive_curtail[s1,b1,1] = 0"
+    @test_constr model[:eq_net_reactive_injection]["s1", "b2", 1] "qi[s1,b2,1] - qg_thermal[s1,g2,1] - qg_profiled[s1,p2,1] - reactive_curtail[s1,b2,1] = 0"
 end
