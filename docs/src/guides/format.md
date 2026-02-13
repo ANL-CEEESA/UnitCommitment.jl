@@ -10,17 +10,23 @@ provided. Fields that are allowed to differ among scenarios are marked as
 "uncertain". Fields that are allowed to be time-dependent are marked as "time
 series".
 
+**Mixed-unit convention.** This format uses a mixed-unit convention: active and
+reactive power quantities are expressed in MW and MVAr, respectively, while
+impedance, admittance, voltage, and tap-ratio quantities are expressed in per
+unit (p.u.) on the system `Base MVA`.
+
 - [Parameters](#Parameters)
 - [Buses](#Buses)
 - [Generators](#Generators)
 - [Storage units](#Storage-units)
 - [Price-sensitive loads](#Price-sensitive-loads)
 - [Transmission lines](#Transmission-lines)
+- [Shunt devices](#Shunt-devices)
 - [Reserves](#Reserves)
 - [Contingencies](#Contingencies)
 
 Each section is described in detail below. See
-[case118/2017-01-01.json.gz](https://axavier.org/UnitCommitment.jl/0.4/instances/matpower/case118/2017-01-01.json.gz)
+[case118/2017-01-01.json.gz](https://axavier.org/UnitCommitment.jl/0.5/instances/matpower/case118/2017-01-01.json.gz)
 for a complete example.
 
 ### Parameters
@@ -31,7 +37,8 @@ time.
 
 | Key                                        | Description                                                                                                                                                                                                                          | Default  | Time series? | Uncertain? |
 | :----------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
-| `Version`                                  | Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal `0.4`.    | Required |      No      |     No     |
+| `Version`                                  | Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal `0.5`.    | Required |      No      |     No     |
+| `Base MVA`                                 | System-wide base apparent power (in MVA) used for per-unit conversion of impedance, admittance, and voltage quantities.                                                                                                              | Required |      No      |     No     |
 | `Time horizon (min)` or `Time horizon (h)` | Length of the planning horizon (in minutes or hours). Either `Time horizon (min)` or `Time horizon (h)` is required, but not both.                                                                                                   | Required |      No      |     No     |
 | `Time step (min)`                          | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc).                                                                                                                                           |   `60`   |      No      |     No     |
 | `Power balance penalty ($/MW)`             | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.                       | `1000.0` |      No      |    Yes     |
@@ -44,7 +51,8 @@ time.
 ```json
 {
   "Parameters": {
-    "Version": "0.4",
+    "Version": "0.5",
+    "Base MVA": 100.0,
     "Time horizon (h)": 4,
     "Power balance penalty ($/MW)": 1000.0,
     "Scenario name": "s1",
@@ -58,9 +66,15 @@ time.
 
 This section describes the characteristics of each bus in the system.
 
-| Key         | Description                              | Default  | Time series? | Uncertain? |
-| :---------- | :--------------------------------------- | -------- | :----------: | :--------: |
-| `Load (MW)` | Fixed load connected to the bus (in MW). | Required |     Yes      |    Yes     |
+| Key                          | Description                                                                                                  | Default  | Time series? | Uncertain? |
+| :--------------------------- | :----------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Load (MW)`                  | Fixed active load connected to the bus (in MW).                                                              | Required |     Yes      |    Yes     |
+| `Load (MVAr)`                | Fixed reactive load connected to the bus (in MVAr).                                                          |  `0.0`   |     Yes      |    Yes     |
+| `Minimum voltage (p.u.)`     | Lower bound on the voltage magnitude at this bus (in per unit).                                              |  `0.9`   |      No      |    Yes     |
+| `Maximum voltage (p.u.)`     | Upper bound on the voltage magnitude at this bus (in per unit).                                              |  `1.1`   |      No      |    Yes     |
+| `Voltage magnitude (p.u.)`   | Initial or operating-point voltage magnitude at this bus (in per unit).                                      |  `1.0`   |      No      |    Yes     |
+| `Voltage angle (rad)`        | Initial or operating-point voltage angle at this bus (in radians).                                           |  `0.0`   |      No      |    Yes     |
+| `Bus type`                   | Bus classification: `"PQ"` (load bus), `"PV"` (generator bus with voltage control), or `"Slack"` (reference). | `"PQ"`  |      No      |     No     |
 
 #### Example
 
@@ -68,10 +82,17 @@ This section describes the characteristics of each bus in the system.
 {
   "Buses": {
     "b1": {
-      "Load (MW)": 0.0
+      "Load (MW)": 0.0,
+      "Load (MVAr)": 0.0,
+      "Bus type": "Slack",
+      "Voltage magnitude (p.u.)": 1.0,
+      "Voltage angle (rad)": 0.0
     },
     "b2": {
-      "Load (MW)": [26.01527, 24.46212, 23.29725, 22.90897]
+      "Load (MW)": [26.01527, 24.46212, 23.29725, 22.90897],
+      "Load (MVAr)": [8.50, 7.95, 7.60, 7.45],
+      "Minimum voltage (p.u.)": 0.95,
+      "Maximum voltage (p.u.)": 1.05
     }
   }
 }
@@ -110,6 +131,9 @@ specified:
 | `Reserve eligibility`                                        | List of reserve products this generator is eligible to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `[]`              |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be committed at that time period; if `false`, the generator must not be committed at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                       | `null`            |     Yes      |    Yes     |
 | `Investment cost ($)`                                        | Cost to build a candidate generation unit. Should be zero for existing units.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `0.0`             |      No      |     No     |
+| `Reactive power min (MVAr)`                                  | Minimum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `-inf`            |      No      |    Yes     |
+| `Reactive power max (MVAr)`                                  | Maximum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `+inf`            |      No      |    Yes     |
+| `Voltage set-point (p.u.)`                                   | Target voltage magnitude at the generator bus (in per unit). Used when the generator participates in voltage regulation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `1.0`             |      No      |    Yes     |
 
 #### Profiled Units
 
@@ -120,7 +144,9 @@ specified:
 | `Cost ($/MW)`         | Cost incurred for serving each MW of power by this generator.                     | Required |     Yes      |    Yes     |
 | `Minimum power (MW)`  | Minimum amount of power this generator may supply.                                |  `0.0`   |     Yes      |    Yes     |
 | `Maximum power (MW)`  | Maximum amount of power this generator may supply.                                | Required |     Yes      |    Yes     |
-| `Investment cost ($)` | Cost to build a candidate generation unit. Should be zero for existing units.     |  `0.0`.  |      No      |     No     |
+| `Investment cost ($)`       | Cost to build a candidate generation unit. Should be zero for existing units.     |  `0.0`.  |      No      |     No     |
+| `Reactive power min (MVAr)` | Minimum reactive power output (in MVAr).                                          |  `0.0`   |      No      |    Yes     |
+| `Reactive power max (MVAr)` | Maximum reactive power output (in MVAr).                                          |  `0.0`   |      No      |    Yes     |
 
 #### Production costs and limits
 
@@ -180,7 +206,10 @@ output.
       "Initial status (h)": 12,
       "Initial power (MW)": 115,
       "Must run?": false,
-      "Reserve eligibility": ["r1"]
+      "Reserve eligibility": ["r1"],
+      "Reactive power min (MVAr)": -50.0,
+      "Reactive power max (MVAr)": 80.0,
+      "Voltage set-point (p.u.)": 1.02
     },
     "gen2": {
       "Bus": "b5",
@@ -198,7 +227,9 @@ output.
       "Minimum power (MW)": 10.0,
       "Maximum power (MW)": 120.0,
       "Cost ($/MW)": 100.0,
-      "Investment cost ($)": 3000000.0
+      "Investment cost ($)": 3000000.0,
+      "Reactive power min (MVAr)": 0.0,
+      "Reactive power max (MVAr)": 0.0
     }
   }
 }
@@ -229,6 +260,9 @@ power while discharging.
 | `Last period minimum level (MWh)`             | Minimum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Minimum level (MWh)`. | `Minimum level (MWh)` |      No      |    Yes     |
 | `Last period maximum level (MWh)`             | Maximum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Maximum level (MWh)`. | `Maximum level (MWh)` |      No      |    Yes     |
 | `Investment cost ($)`                         | Cost to build a candidate storage unit. Should be zero for existing units.                                                                                  |        `0.0`.         |      No      |     No     |
+| `Reactive power min (MVAr)`                   | Minimum reactive power output (in MVAr).                                                                                                                    |         `0.0`         |      No      |    Yes     |
+| `Reactive power max (MVAr)`                   | Maximum reactive power output (in MVAr).                                                                                                                    |         `0.0`         |      No      |    Yes     |
+| `Apparent power limit (MVA)`                  | Inverter or thermal apparent-power rating (in MVA).                                                                                                         |        `+inf`         |      No      |    Yes     |
 
 #### Example
 
@@ -241,7 +275,10 @@ power while discharging.
       "Charge cost ($/MW)": 2.0,
       "Discharge cost ($/MW)": 2.5,
       "Maximum charge rate (MW)": 10.0,
-      "Maximum discharge rate (MW)": 8.0
+      "Maximum discharge rate (MW)": 8.0,
+      "Reactive power min (MVAr)": -5.0,
+      "Reactive power max (MVAr)": 5.0,
+      "Apparent power limit (MVA)": 12.0
     },
     "su2": {
       "Bus": "b2",
@@ -315,19 +352,27 @@ economical to do so.
 
 ### Transmission lines
 
-This section describes the characteristics of transmission system, such as its
-topology and the susceptance of each transmission line.
+This section describes the characteristics of the transmission system, such as
+its topology and the impedance of each transmission line or transformer.
 
-| Key                               | Description                                                                                                                                                                                                                               | Default  | Time series? | Uncertain? |
-| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
-| `Source bus`                      | Identifier of the bus where the transmission line originates.                                                                                                                                                                             | Required |      No      |    Yes     |
-| `Target bus`                      | Identifier of the bus where the transmission line reaches.                                                                                                                                                                                | Required |      No      |    Yes     |
-| `Susceptance (S)`                 | Susceptance of the transmission line (in siemens).                                                                                                                                                                                        | Required |      No      |    Yes     |
-| `Normal flow limit (MW)`          | Maximum amount of power (in MW) allowed to flow through the line when the system is in its regular, fully-operational state. For candidate lines, this represents the limit per invested circuit.                                         | `+inf`   |     Yes      |    Yes     |
-| `Emergency flow limit (MW)`       | Maximum amount of power (in MW) allowed to flow through the line when the system is in degraded state (for example, after the failure of another transmission line). For candidate lines, this represents the limit per invested circuit. | `+inf`   |      Y       |    Yes     |
-| `Flow limit penalty ($/MW)`       | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged.         | `5000.0` |     Yes      |    Yes     |
-| `Investment cost ($)`             | For candidate lines, the cost to build each parallel circuit along this corridor. For existing lines, this should be zero.                                                                                                                | `0.0`    |      No      |     No     |
-| `Max number of parallel circuits` | For candidate lines, the maximum number of parallel circuits that can be built along this corridor. Unused for existing lines.                                                                                                            | `1`      |      No      |     No     |
+| Key                               | Description                                                                                                                                                                                                                                | Default  | Time series? | Uncertain? |
+| :-------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Source bus`                       | Identifier of the bus where the transmission line originates.                                                                                                                                                                              | Required |      No      |    Yes     |
+| `Target bus`                       | Identifier of the bus where the transmission line reaches.                                                                                                                                                                                 | Required |      No      |    Yes     |
+| `Resistance (p.u.)`                | Series resistance of the branch (in per unit on system `Base MVA`).                                                                                                                                                                        |  `0.0`   |      No      |    Yes     |
+| `Reactance (p.u.)`                 | Series reactance of the branch (in per unit on system `Base MVA`).                                                                                                                                                                         | Required |      No      |    Yes     |
+| `Shunt conductance (p.u.)`         | Total line-charging shunt conductance (in per unit). The full amount is split equally between the two ends of the line in the standard pi-model.                                                                                           |  `0.0`   |      No      |    Yes     |
+| `Shunt susceptance (p.u.)`         | Total line-charging shunt susceptance (in per unit). The full amount is split equally between the two ends of the line in the standard pi-model.                                                                                           |  `0.0`   |      No      |    Yes     |
+| `Tap ratio (p.u.)`                 | Off-nominal transformer turns ratio (in per unit). A value of `1.0` indicates no transformation.                                                                                                                                          |  `1.0`   |      No      |    Yes     |
+| `Phase shift (rad)`                | Transformer phase-shift angle (in radians).                                                                                                                                                                                                |  `0.0`   |      No      |    Yes     |
+| `Transformer`                      | Whether this branch is a transformer (boolean). When `true`, the tap ratio and phase shift parameters are active.                                                                                                                          | `false`  |      No      |     No     |
+| `Normal flow limit (MVA)`          | Maximum apparent power (in MVA) allowed to flow through the branch when the system is in its regular, fully-operational state. For candidate lines, this represents the limit per invested circuit.                                        | `+inf`   |     Yes      |    Yes     |
+| `Emergency flow limit (MVA)`       | Maximum apparent power (in MVA) allowed to flow through the branch when the system is in degraded state (for example, after the failure of another transmission line). For candidate lines, this represents the limit per invested circuit. | `+inf`   |     Yes      |    Yes     |
+| `Angle difference min (rad)`       | Minimum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `-inf`   |      No      |    Yes     |
+| `Angle difference max (rad)`       | Maximum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `+inf`   |      No      |    Yes     |
+| `Flow limit penalty ($/MW)`        | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged.          | `5000.0` |     Yes      |    Yes     |
+| `Investment cost ($)`              | For candidate lines, the cost to build each parallel circuit along this corridor. For existing lines, this should be zero.                                                                                                                 |  `0.0`   |      No      |     No     |
+| `Max number of parallel circuits`  | For candidate lines, the maximum number of parallel circuits that can be built along this corridor. Unused for existing lines.                                                                                                             |   `1`    |      No      |     No     |
 
 #### Example
 
@@ -337,12 +382,57 @@ topology and the susceptance of each transmission line.
     "l1": {
       "Source bus": "b1",
       "Target bus": "b2",
-      "Susceptance (S)": 29.49686,
-      "Normal flow limit (MW)": 15000.0,
-      "Emergency flow limit (MW)": 20000.0,
+      "Resistance (p.u.)": 0.00281,
+      "Reactance (p.u.)": 0.0281,
+      "Shunt susceptance (p.u.)": 0.00712,
+      "Normal flow limit (MVA)": 400.0,
+      "Emergency flow limit (MVA)": 500.0,
       "Flow limit penalty ($/MW)": 5000.0,
       "Investment cost ($)": 3000000.0,
       "Max number of parallel circuits": 2
+    },
+    "t1": {
+      "Source bus": "b2",
+      "Target bus": "b3",
+      "Resistance (p.u.)": 0.0,
+      "Reactance (p.u.)": 0.01335,
+      "Transformer": true,
+      "Tap ratio (p.u.)": 1.05,
+      "Phase shift (rad)": 0.0,
+      "Normal flow limit (MVA)": 300.0
+    }
+  }
+}
+```
+
+### Shunt devices
+
+This section describes shunt devices (fixed or switchable) connected to the
+network. Shunt devices inject or absorb reactive power and are modeled as
+constant-impedance elements.
+
+| Key                    | Description                                                                  | Default  | Time series? | Uncertain? |
+| :--------------------- | :--------------------------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Bus`                  | Identifier of the bus where the shunt device is connected.                   | Required |      No      |    Yes     |
+| `Conductance (p.u.)`   | Shunt conductance (in per unit on system `Base MVA`).                        |  `0.0`   |      No      |    Yes     |
+| `Susceptance (p.u.)`   | Shunt susceptance (in per unit on system `Base MVA`). Positive = capacitive. | Required |      No      |    Yes     |
+| `Status`               | Whether the shunt device is active (boolean).                                |  `true`  |     Yes      |    Yes     |
+
+#### Example
+
+```json
+{
+  "Shunt devices": {
+    "sh1": {
+      "Bus": "b3",
+      "Susceptance (p.u.)": 0.19,
+      "Status": true
+    },
+    "sh2": {
+      "Bus": "b5",
+      "Conductance (p.u.)": 0.0,
+      "Susceptance (p.u.)": -0.10,
+      "Status": [true, true, false, false]
     }
   }
 }
@@ -438,9 +528,9 @@ table below illustrates.
   not currently supported.
 - Time-varying minimum production amounts are not currently compatible with
   ramp/startup/shutdown limits.
-- Flexible ramping products can only be acquired under the `WanHob2016`
-  formulation, which does not support spinning reserves.
 - The set of generators must be the same in all scenarios.
+- AC formulations are significantly more computationally expensive than DC
+  formulations and may require longer solve times for large instances.
 
 ## Output Format
 
@@ -479,11 +569,14 @@ removed for convenience:
 
 ### Buses
 
-| Key                             | Description                                                                                   | Unit |
-| :------------------------------ | :-------------------------------------------------------------------------------------------- | :--- |
-| `Bus: Net injection (MW)`       | Net power injection at each bus.                                                              | MW   |
-| `Bus: Load curtail (MW)`        | Amount of conventional load curtailed at each bus due to insufficient capacity or congestion. | MW   |
-| `Bus: Fixed load expense ($)`   | Expense for serving fixed load at each bus (load times LMP). Only available if LMPs are computed. | $    |
+| Key                                  | Description                                                                                        | Unit  |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------- | :---- |
+| `Bus: Net injection (MW)`            | Net active power injection at each bus.                                                            | MW    |
+| `Bus: Load curtail (MW)`             | Amount of active load curtailed at each bus due to insufficient capacity or congestion.            | MW    |
+| `Bus: Reactive load curtail (MVAr)`  | Amount of reactive load curtailed at each bus. Only present when AC formulation is used.           | MVAr  |
+| `Bus: Voltage magnitude (p.u.)`      | Voltage magnitude at each bus. Only present when AC formulation is used.                           | p.u.  |
+| `Bus: Voltage angle (rad)`           | Voltage angle at each bus. Only present when AC formulation is used.                               | rad   |
+| `Bus: Fixed load expense ($)`        | Expense for serving fixed load at each bus (load times LMP). Only available if LMPs are computed.  | $     |
 
 #### Example
 
@@ -496,6 +589,18 @@ removed for convenience:
   "Bus: Load curtail (MW)": {
     "b1": [0.0, 0.0, 0.0, 0.0],
     "b2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Bus: Reactive load curtail (MVAr)": {
+    "b1": [0.0, 0.0, 0.0, 0.0],
+    "b2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Bus: Voltage magnitude (p.u.)": {
+    "b1": [1.0, 1.0, 1.0, 1.0],
+    "b2": [0.985, 0.987, 0.983, 0.986]
+  },
+  "Bus: Voltage angle (rad)": {
+    "b1": [0.0, 0.0, 0.0, 0.0],
+    "b2": [-0.035, -0.032, -0.038, -0.033]
   },
   "Bus: Fixed load expense ($)": {
     "b1": [3138.75, 3255.0, 3217.5, 3375.0],
@@ -511,6 +616,9 @@ removed for convenience:
 | `LMP: Total ($/MWh)`        | Total locational marginal price at each bus. Only available if LMPs are computed.                                                                               | $/MWh   |
 | `LMP: Energy ($/MWh)`       | Energy component of LMP at each bus (minimum LMP across all buses at each time period). Only available if LMPs are computed.                                    | $/MWh   |
 | `LMP: Congestion ($/MWh)`   | Congestion component of LMP at each bus (total LMP minus energy component). Only available if LMPs are computed.                                                | $/MWh   |
+
+When an AC formulation is used, LMPs reflect AC marginal pricing and may differ
+from DC-based LMPs due to losses and reactive power constraints.
 
 #### Example
 
@@ -548,6 +656,7 @@ removed for convenience:
 | `Thermal: Gross revenue ($)`   | Revenue obtained from selling power at LMP (production times LMP). Only available if LMPs are computed.                                              | $      |
 | `Thermal: Net revenue ($)`     | Net revenue after subtracting production and startup costs from gross revenue. Only available if LMPs are computed.                                  | $      |
 | `Thermal: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                      | $      |
+| `Thermal: Reactive power (MVAr)` | Reactive power output from each thermal generator. Only present when AC formulation is used.                                                       | MVAr   |
 | `Thermal: Investment status`   | Investment status for candidate thermal units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
 
 #### Example
@@ -582,6 +691,10 @@ removed for convenience:
     "g1": [0.0, 0.0, 0.0, 0.0],
     "g2": [0.0, 0.0, 0.0, 0.0]
   },
+  "Thermal: Reactive power (MVAr)": {
+    "g1": [25.3, 28.1, 30.5, 26.8],
+    "g2": [0.0, 12.4, 15.2, 13.7]
+  },
   "Thermal: Gross revenue ($)": {
     "g1": [2875.0, 3012.5, 3132.5, 2967.5],
     "g2": [0.0, 1506.0, 1674.0, 1593.0]
@@ -601,7 +714,8 @@ removed for convenience:
 
 | Key                           | Description                                                                                                                                       | Unit    |
 | :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
-| `Line: Flow (MW)`             | Pre-contingency power flow through each transmission line (calculated using injection shift factors).                                             | MW      |
+| `Line: Flow (MW)`             | Pre-contingency active power flow through each transmission line.                                                                                 | MW      |
+| `Line: Reactive flow (MVAr)`  | Reactive power flow through each transmission line. Only present when AC formulation is used.                                                    | MVAr    |
 | `Line: Overflow (MW)`         | Amount of power flow exceeding the line's thermal limit.                                                                                          | MW      |
 | `Line: Overflow penalty ($)`  | Penalty cost incurred for overflow violations on each line (overflow amount times flow penalty cost).                                             | $       |
 | `Line: Utilization (%)`       | Percentage of line capacity being utilized (absolute flow divided by normal flow limit).                                                          | %       |
@@ -615,6 +729,10 @@ removed for convenience:
   "Line: Flow (MW)": {
     "l1": [125.3, 130.8, 128.2, 135.5],
     "l2": [-85.7, -92.5, -91.3, -87.3]
+  },
+  "Line: Reactive flow (MVAr)": {
+    "l1": [18.2, 19.5, 18.8, 20.1],
+    "l2": [-12.3, -14.1, -13.5, -12.8]
   },
   "Line: Overflow (MW)": {
     "l1": [0.0, 0.0, 0.0, 0.0],
@@ -669,6 +787,7 @@ removed for convenience:
 | `Profiled: Gross revenue ($)`   | Revenue obtained from selling power at LMP (production times LMP). Only available if LMPs are computed.                                               | $      |
 | `Profiled: Net revenue ($)`     | Net revenue after subtracting production costs from gross revenue. Only available if LMPs are computed.                                               | $      |
 | `Profiled: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                       | $      |
+| `Profiled: Reactive power (MVAr)` | Reactive power output from each profiled generator. Only present when AC formulation is used.                                                       | MVAr   |
 | `Profiled: Investment status`   | Investment status for candidate profiled units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
 
 #### Example
@@ -686,6 +805,10 @@ removed for convenience:
   "Profiled: Production cost ($)": {
     "wind1": [85.3, 92.1, 88.7, 95.2],
     "solar1": [0.0, 10.5, 45.8, 78.3]
+  },
+  "Profiled: Reactive power (MVAr)": {
+    "wind1": [0.0, 0.0, 0.0, 0.0],
+    "solar1": [0.0, 0.0, 0.0, 0.0]
   },
   "Profiled: Gross revenue ($)": {
     "wind1": [2132.5, 2302.5, 2217.5, 2380.0],
@@ -713,6 +836,7 @@ removed for convenience:
 | `Storage: Is discharging`        | Discharging indicator (1 if storage unit is discharging, 0 otherwise).                                                                               | Binary |
 | `Storage: Discharging rate (MW)` | Power rate at which each storage unit is discharging.                                                                                                | MW     |
 | `Storage: Discharging cost ($)`  | Cost incurred for discharging each storage unit (rate times cost).                                                                                   | $      |
+| `Storage: Reactive power (MVAr)` | Reactive power output from each storage unit. Only present when AC formulation is used.                                                              | MVAr   |
 | `Storage: Investment status`     | Investment status for candidate storage units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
 
 #### Example
@@ -746,6 +870,10 @@ removed for convenience:
   "Storage: Discharging cost ($)": {
     "su1": [12.5, 11.25, 0.0, 8.5],
     "su2": [0.0, 0.0, 17.5, 0.0]
+  },
+  "Storage: Reactive power (MVAr)": {
+    "su1": [2.5, 2.3, -1.8, 2.1],
+    "su2": [-3.0, -3.0, 1.5, -2.5]
   }
 }
 ```
