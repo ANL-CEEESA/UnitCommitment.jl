@@ -2,7 +2,7 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-function _solve_shiftfactors(fixture_path::String, lazy::Bool = false)
+function _solve_dc_shiftfactors(fixture_path::String, lazy::Bool = false)
     instance = UnitCommitment.read(
         fixture(fixture_path),
         extensions = [UnitCommitment.ShiftFactorsTransmissionExt(lazy = lazy)],
@@ -23,9 +23,9 @@ function _solve_shiftfactors(fixture_path::String, lazy::Bool = false)
     return base_flow, cont_flows
 end
 
-@testfunction transmission_shiftfactors_base_flow_test begin
+@testfunction transmission_dc_shiftfactors_base_flow_test begin
     for lazy in [false, true]
-        base_flow, _ = _solve_shiftfactors("case14/base.json", lazy)
+        base_flow, _ = _solve_dc_shiftfactors("case14/base.json", lazy)
 
         # Verify base case flows on a few lines
         @test round.(base_flow["l1"], digits = 1) == [100.0, 100.0, 97.9, 97.5]
@@ -38,10 +38,10 @@ end
     end
 end
 
-@testfunction transmission_shiftfactors_contingency_flow_test begin
+@testfunction transmission_dc_shiftfactors_contingency_flow_test begin
     for lazy in [false, true]
         base_flow, cont_flows =
-            _solve_shiftfactors("case14/contingency.json", lazy)
+            _solve_dc_shiftfactors("case14/contingency.json", lazy)
         cont_flow = cont_flows["c1"]
 
         # Verify base case flows
@@ -64,9 +64,9 @@ end
     end
 end
 
-@testfunction transmission_shiftfactors_congested_flow_test begin
+@testfunction transmission_dc_shiftfactors_congested_flow_test begin
     for lazy in [false, true]
-        base_flow, _ = _solve_shiftfactors("case14/congested.json", lazy)
+        base_flow, _ = _solve_dc_shiftfactors("case14/congested.json", lazy)
 
         # Verify base case flows on a few lines
         @test round.(base_flow["l1"], digits = 1) == [-8.0, -8.1, -6.7, -6.3]

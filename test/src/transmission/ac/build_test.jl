@@ -4,7 +4,7 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction transmission_ac_acr_build_test begin
+@testfunction transmission_ac_rect_build_test begin
     model =
         build_model(
             UnitCommitment.read(
@@ -97,14 +97,14 @@ using HiGHS, JuMP, UnitCommitment
     @test ("s1", 1) in keys(model[:eq_power_balance])
 end
 
-@testfunction transmission_ac_acp_build_test begin
+@testfunction transmission_ac_polar_build_test begin
     model =
         build_model(
             UnitCommitment.read(
                 fixture("ac_3bus.json"),
                 extensions = [
                     UnitCommitment.ACTransmissionExt(
-                        formulation = UnitCommitment.ACP.Formulation(),
+                        formulation = UnitCommitment.ACPolar(),
                     ),
                 ],
             ),

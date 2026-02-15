@@ -7,5 +7,8 @@ VERSION := 0.4
 docs:
 	cd docs; julia --project=. -e 'include("make.jl"); make()'; cd ..
 	rsync -avP --delete-after docs/build/ ../docs/$(VERSION)/
+
+test:
+	julia --project=test -e 'using UnitCommitmentT; format(); runtests()'
 	
-.PHONY: docs
+.PHONY: docs test

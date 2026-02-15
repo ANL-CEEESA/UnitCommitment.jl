@@ -4,7 +4,7 @@
 
 using UnitCommitment
 
-@testfunction transmission_phaseangle_read_test begin
+@testfunction transmission_dc_phaseangle_read_test begin
     instance = UnitCommitment.read(
         fixture("tep_ieee24.json.gz"),
         extensions = [UnitCommitment.PhaseAngleTransmissionExt()],

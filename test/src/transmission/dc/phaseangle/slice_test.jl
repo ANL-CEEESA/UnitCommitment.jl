@@ -4,7 +4,7 @@
 
 using UnitCommitment
 
-@testfunction transmission_phaseangle_slice_test begin
+@testfunction transmission_dc_phaseangle_slice_test begin
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     modified = UnitCommitment.slice(instance, 1:2)
     sc = modified.scenarios[1]

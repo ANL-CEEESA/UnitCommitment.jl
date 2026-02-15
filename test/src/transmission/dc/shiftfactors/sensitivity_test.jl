@@ -4,7 +4,7 @@
 
 using UnitCommitment, Test, LinearAlgebra
 
-@testfunction transmission_shiftfactors_susceptance_matrix_test begin
+@testfunction transmission_dc_shiftfactors_susceptance_matrix_test begin
     instance = UnitCommitment.read(
         fixture("case14/base.json"),
         extensions = [UnitCommitment.ShiftFactorsTransmissionExt()],
@@ -37,7 +37,7 @@ using UnitCommitment, Test, LinearAlgebra
     @test round.(actual, digits = 2) == expected
 end
 
-@testfunction transmission_shiftfactors_reduced_incidence_matrix_test begin
+@testfunction transmission_dc_shiftfactors_reduced_incidence_matrix_test begin
     instance = UnitCommitment.read(
         fixture("case14/base.json"),
         extensions = [UnitCommitment.ShiftFactorsTransmissionExt()],
@@ -88,7 +88,7 @@ end
     @test actual[20, 13] == -1.0
 end
 
-@testfunction transmission_shiftfactors_injection_shift_factors_test begin
+@testfunction transmission_dc_shiftfactors_injection_shift_factors_test begin
     instance = UnitCommitment.read(
         fixture("case14/base.json"),
         extensions = [UnitCommitment.ShiftFactorsTransmissionExt()],
@@ -123,7 +123,7 @@ end
     ]
 end
 
-@testfunction transmission_shiftfactors_line_outage_factors_test begin
+@testfunction transmission_dc_shiftfactors_line_outage_factors_test begin
     instance = UnitCommitment.read(
         fixture("case14/base.json"),
         extensions = [UnitCommitment.ShiftFactorsTransmissionExt()],

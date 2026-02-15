@@ -31,4 +31,8 @@ Base.@kwdef mutable struct ShuntDevice
     status::Vector{Bool}
 end
 
-# NOTE: ACTransmissionExt is defined in ext.jl (included after ACR/ACP modules).
+Base.@kwdef struct ACTransmissionExt <: UnitCommitmentExtension
+    formulation::ACFormulation = ACRectangular()
+end
+
+extension_slot(::ACTransmissionExt) = :transmission

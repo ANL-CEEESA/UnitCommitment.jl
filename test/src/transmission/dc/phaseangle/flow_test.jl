@@ -2,7 +2,7 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-@testfunction transmission_phaseangle_flow_test begin
+@testfunction transmission_dc_phaseangle_flow_test begin
     instance = UnitCommitment.read(
         fixture("case14/base.json"),
         extensions = [UnitCommitment.PhaseAngleTransmissionExt()],

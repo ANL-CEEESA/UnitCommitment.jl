@@ -2,8 +2,9 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-Base.@kwdef struct ACTransmissionExt <: UnitCommitmentExtension
-    formulation::ACFormulation = ACR.Formulation()
-end
+"""
+Polar AC power flow formulation.
 
-extension_slot(::ACTransmissionExt) = :transmission
+Voltage is represented using magnitude and angle (vm, va).
+"""
+struct ACPolar <: ACFormulation end

@@ -7,10 +7,4 @@ Rectangular AC power flow formulation.
 
 Voltage is represented using real and imaginary components (vr, vi).
 """
-module ACR
-
-import ..ACFormulation
-
-struct Formulation <: ACFormulation end
-
-end
+struct ACRectangular <: ACFormulation end

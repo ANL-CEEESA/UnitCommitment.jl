@@ -4,7 +4,7 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction transmission_phaseangle_build_test begin
+@testfunction transmission_dc_phaseangle_build_test begin
     model =
         build_model(
             UnitCommitment.read(
@@ -119,7 +119,7 @@ using HiGHS, JuMP, UnitCommitment
     @test ("s1", 1) in keys(model[:eq_power_balance])
 end
 
-@testfunction transmission_phaseangle_contingency_error_test begin
+@testfunction transmission_dc_phaseangle_contingency_error_test begin
     # Test that PhaseAngleTransmissionExt throws an error when contingencies are present
     @test_throws ErrorException build_model(
         UnitCommitment.read(

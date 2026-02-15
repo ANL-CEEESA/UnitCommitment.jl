@@ -4,7 +4,7 @@
 
 using HiGHS, JuMP, UnitCommitment
 
-@testfunction transmission_shiftfactors_build_test begin
+@testfunction transmission_dc_shiftfactors_build_test begin
     model =
         build_model(
             UnitCommitment.read(
@@ -125,7 +125,7 @@ using HiGHS, JuMP, UnitCommitment
     @test ("s1", 1) in keys(model[:eq_power_balance])
 end
 
-@testfunction transmission_shiftfactors_build_lazy_test begin
+@testfunction transmission_dc_shiftfactors_build_lazy_test begin
     model =
         build_model(
             UnitCommitment.read(
