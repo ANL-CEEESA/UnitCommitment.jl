@@ -17,9 +17,9 @@ function store_solution(
 
         # Shared extraction (formulation-agnostic flow variables)
         sol[sc.name]["Line: Base Flow (MW)"] =
-            _timeseries(inner, :pf, branches, T, sc = sc)
+            _timeseries(inner, :pf, branches, T, sc = sc, digits = 10)
         sol[sc.name]["Line: Reactive flow (MVAr)"] =
-            _timeseries(inner, :qf, branches, T, sc = sc)
+            _timeseries(inner, :qf, branches, T, sc = sc, digits = 10)
         sol[sc.name]["Line: Base Overflow (MW)"] =
             _timeseries(inner, :overflow, branches, T, sc = sc)
         sol[sc.name]["Line: Base Overflow penalty (\$)"] = OrderedDict(
@@ -65,7 +65,7 @@ function _store_ac_voltage_solution!(
                     value(vr[sc.name, b.name, t])^2 +
                     value(vi[sc.name, b.name, t])^2,
                 ),
-                digits = 5,
+                digits = 10,
             ) for t in 1:T
         ] for b in buses
     )
@@ -76,7 +76,7 @@ function _store_ac_voltage_solution!(
                     value(vi[sc.name, b.name, t]),
                     value(vr[sc.name, b.name, t]),
                 ),
-                digits = 5,
+                digits = 10,
             ) for t in 1:T
         ] for b in buses
     )
@@ -92,8 +92,8 @@ function _store_ac_voltage_solution!(
     ::ACP.Formulation,
 )::Nothing
     sol[sc.name]["Bus: Voltage magnitude (p.u.)"] =
-        _timeseries(model, :vm, buses, T, sc = sc)
+        _timeseries(model, :vm, buses, T, sc = sc, digits = 10)
     sol[sc.name]["Bus: Voltage angle (rad)"] =
-        _timeseries(model, :va, buses, T, sc = sc)
+        _timeseries(model, :va, buses, T, sc = sc, digits = 10)
     return
 end

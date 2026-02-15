@@ -36,18 +36,21 @@ function _timeseries(
     collection,
     T::Int;
     sc = nothing,
+    digits = 5,
 )
     isempty(collection) && return OrderedDict{String,Vector{Float64}}()
     vars = model[sym]
     if sc === nothing
         return OrderedDict(
-            b.name => [round(value(vars[b.name, t]), digits = 5) for t in 1:T]
+            b.name =>
+                [round(value(vars[b.name, t]), digits = digits) for t in 1:T]
             for b in collection
         )
     else
         return OrderedDict(
             b.name => [
-                round(value(vars[sc.name, b.name, t]), digits = 5) for t in 1:T
+                round(value(vars[sc.name, b.name, t]), digits = digits) for
+                t in 1:T
             ] for b in collection
         )
     end
