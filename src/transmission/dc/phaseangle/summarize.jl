@@ -8,7 +8,7 @@ function summarize(
     io::IO,
 )::Nothing
     sc = instance.scenarios[1]
-    print(io, "$(length(sc[:lines])) lines, ")
+    print(io, "$(length(sc[:branches])) branches, ")
     print(io, "$(length(sc[:contingencies])) contingencies, ")
     return
 end

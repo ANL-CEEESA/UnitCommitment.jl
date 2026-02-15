@@ -10,31 +10,32 @@ function read_json(
     # Reuse PhaseAngleTransmissionExt reader to read transmission data
     read_json(json, sc, PhaseAngleTransmissionExt())
 
-    # Check for investment lines (not supported)
-    for line in sc[:lines]
-        if line.invest[1] > 0.0
+    # Check for investment branches (not supported)
+    for branch in sc[:branches]
+        if branch.invest[1] > 0.0
             error(
-                "ShiftFactorsTransmissionExt does not support transmission line investment. " *
-                "Line '$(line.name)' has investment cost $(line.invest[1]). " *
+                "ShiftFactorsTransmissionExt does not support branch investment. " *
+                "Branch '$(branch.name)' has investment cost $(branch.invest[1]). " *
                 "Use PhaseAngleTransmissionExt instead.",
             )
         end
     end
 
-    # Only single-line contingencies are supported
+    # Only single-branch contingencies are supported
     for cont in sc[:contingencies]
-        length(cont.lines) == 1 || error(
+        length(cont.branches) == 1 || error(
             "ShiftFactorsTransmissionExt only supports contingencies with exactly one " *
-            "outage line. Contingency '$(cont.name)' has $(length(cont.lines)) lines.",
+            "outage branch. Contingency '$(cont.name)' has $(length(cont.branches)) branches.",
         )
     end
 
     # Compute ISF and LODF matrices
-    if length(sc[:lines]) > 0
-        isf = _injection_shift_factors(buses = sc[:bus], lines = sc[:lines])
+    if length(sc[:branches]) > 0
+        isf =
+            _injection_shift_factors(buses = sc[:bus], branches = sc[:branches])
         lodf = _line_outage_factors(
             buses = sc[:bus],
-            lines = sc[:lines],
+            branches = sc[:branches],
             isf = isf,
         )
 

@@ -34,7 +34,7 @@
 
     optimize!(model)
     sol = solution(model)
-    base_flow = sol["Line: Base Flow (MW)"]
+    base_flow = sol["Branch: Base flow (MW)"]
 
     # Verify base case flows on a few lines
     @test round.(base_flow["l1"], digits = 1) == [100.0, 100.0, 97.9, 97.5]

@@ -27,7 +27,7 @@ end
 Compute derived parameters for an AC branch, used by Ohm's law constraints.
 Returns a named tuple with fields: g, b, g_fr, b_fr, g_to, b_to, tr, ti, tm2.
 """
-function _ac_branch_params(branch::ACBranch)
+function _ac_branch_params(branch::Branch)
     r = branch.resistance
     x = branch.reactance
     z2 = r^2 + x^2
@@ -55,7 +55,7 @@ function _add_ac_flow_vars!(
     qt = _init(model, :qt)
     overflow = _init(model, :overflow)
 
-    for sc in instance.scenarios, l in sc[:ac_branches], t in 1:T
+    for sc in instance.scenarios, l in sc[:branches], t in 1:T
         pf[sc.name, l.name, t] = @variable(model)
         pt[sc.name, l.name, t] = @variable(model)
         qf[sc.name, l.name, t] = @variable(model)
@@ -80,7 +80,7 @@ function _add_ac_flow_limits!(
     eq_flow_limit_fr_ub = _init(model, :eq_flow_limit_fr_ub)
     eq_flow_limit_to_ub = _init(model, :eq_flow_limit_to_ub)
 
-    for sc in instance.scenarios, l in sc[:ac_branches], t in 1:T
+    for sc in instance.scenarios, l in sc[:branches], t in 1:T
         limit = l.normal_flow_limit[t]
         eq_flow_limit_fr_ub[sc.name, l.name, t] = @constraint(
             model,
@@ -103,7 +103,7 @@ function _add_ac_obj!(
     T = instance.time
     overflow = model[:overflow]
 
-    for sc in instance.scenarios, l in sc[:ac_branches], t in 1:T
+    for sc in instance.scenarios, l in sc[:branches], t in 1:T
         add_to_expression!(
             model[:obj],
             overflow[sc.name, l.name, t],

@@ -5,16 +5,16 @@
 import Base.Threads: @threads, maxthreadid, threadid
 
 """
-    _compute_line_flows(; net_injections, isf, lodf, contingencies)
+    _compute_branch_flows(; net_injections, isf, lodf, contingencies)
 
-Compute pre- and post-contingency line flows using ISF/LODF matrices.
+Compute pre- and post-contingency branch flows using ISF/LODF matrices.
 Uses multi-threaded computation over time periods.
 
 Returns `(pre_flow, post_flow)` where:
 - `pre_flow` is an L × T matrix of base case flows
-- `post_flow` is a Dict mapping outage line offset to L × T matrix of post-contingency flows
+- `post_flow` is a Dict mapping outage branch offset to L × T matrix of post-contingency flows
 """
-function _compute_line_flows(;
+function _compute_branch_flows(;
     net_injections::Array{Float64,2},
     isf::Array{Float64,2},
     lodf::Array{Float64,2},
@@ -23,7 +23,7 @@ function _compute_line_flows(;
     L = size(isf, 1)
     T = size(net_injections, 2)
     vulnerable = Set{Int}()
-    for c in contingencies, lc in c.lines
+    for c in contingencies, lc in c.branches
         push!(vulnerable, lc.offset)
     end
 
@@ -57,16 +57,16 @@ function store_solution(
     ni = inner[:ni]
 
     for sc in instance.scenarios
-        lines = sc[:lines]
+        branches = sc[:branches]
         buses = sc[:bus]
 
-        if length(sc[:lines]) > 0
+        if length(sc[:branches]) > 0
             isf = sc[:isf]
             lodf = sc[:lodf]
             non_slack = [b for b in buses if b.offset > 0]
             net_inj =
                 [value(ni[sc.name, b.name, t]) for b in non_slack, t in 1:T]
-            pre_flow, post_flow = _compute_line_flows(
+            pre_flow, post_flow = _compute_branch_flows(
                 net_injections = net_inj,
                 isf = isf,
                 lodf = lodf,
@@ -75,66 +75,66 @@ function store_solution(
         end
 
         # Base case results
-        sol[sc.name]["Line: Base Flow (MW)"] = OrderedDict(
-            l.name =>
-                [round(pre_flow[l.offset, t], digits = 5) for t in 1:T] for
-            l in lines
+        sol[sc.name]["Branch: Base flow (MW)"] = OrderedDict(
+            b.name =>
+                [round(pre_flow[b.offset, t], digits = 5) for t in 1:T] for
+            b in branches
         )
-        sol[sc.name]["Line: Base Overflow (MW)"] = OrderedDict(
-            l.name => [
+        sol[sc.name]["Branch: Base overflow (MW)"] = OrderedDict(
+            b.name => [
                 round(
                     max(
                         0.0,
-                        abs(pre_flow[l.offset, t]) - l.normal_flow_limit[t],
+                        abs(pre_flow[b.offset, t]) - b.normal_flow_limit[t],
                     ),
                     digits = 5,
                 ) for t in 1:T
-            ] for l in lines
+            ] for b in branches
         )
-        sol[sc.name]["Line: Base Overflow penalty (\$)"] = OrderedDict(
-            l.name => [
+        sol[sc.name]["Branch: Base overflow penalty (\$)"] = OrderedDict(
+            b.name => [
                 round(
                     max(
                         0.0,
-                        abs(pre_flow[l.offset, t]) - l.normal_flow_limit[t],
-                    ) * l.flow_limit_penalty[t],
+                        abs(pre_flow[b.offset, t]) - b.normal_flow_limit[t],
+                    ) * b.flow_limit_penalty[t],
                     digits = 5,
                 ) for t in 1:T
-            ] for l in lines
+            ] for b in branches
         )
-        sol[sc.name]["Line: Base Utilization (%)"] = OrderedDict(
-            l.name => [
+        sol[sc.name]["Branch: Base utilization (%)"] = OrderedDict(
+            b.name => [
                 round(
-                    100.0 * abs(pre_flow[l.offset, t]) / l.normal_flow_limit[t],
+                    100.0 * abs(pre_flow[b.offset, t]) / b.normal_flow_limit[t],
                     digits = 2,
                 ) for t in 1:T
-            ] for l in lines
+            ] for b in branches
         )
 
         # Contingency results
         cont_flow = OrderedDict{String,OrderedDict}()
         cont_overflow = OrderedDict{String,OrderedDict}()
         for cont in sc[:contingencies]
-            pf = post_flow[only(cont.lines).offset]
+            pf = post_flow[only(cont.branches).offset]
 
             cont_flow[cont.name] = OrderedDict(
-                l.name => [round(pf[l.offset, t], digits = 5) for t in 1:T]
-                for l in lines
+                b.name => [round(pf[b.offset, t], digits = 5) for t in 1:T]
+                for b in branches
             )
             cont_overflow[cont.name] = OrderedDict(
-                l.name => [
+                b.name => [
                     round(
                         max(
                             0.0,
-                            abs(pf[l.offset, t]) - l.emergency_flow_limit[t],
+                            abs(pf[b.offset, t]) - b.emergency_flow_limit[t],
                         ),
                         digits = 5,
                     ) for t in 1:T
-                ] for l in lines
+                ] for b in branches
             )
         end
-        sol[sc.name]["Line: Contingency Flow (MW)"] = cont_flow
-        sol[sc.name]["Line: Contingency Overflow (MW)"] = cont_overflow
+        sol[sc.name]["Branch: Contingency flow (MW)"] = cont_flow
+        sol[sc.name]["Branch: Contingency overflow (MW)"] = cont_overflow
     end
 
     return

@@ -7,7 +7,7 @@ function slice!(
     range::UnitRange{Int},
     ::ACTransmissionExt,
 )::Nothing
-    for l in sc[:ac_branches]
+    for l in sc[:branches]
         l.normal_flow_limit = l.normal_flow_limit[range]
         l.emergency_flow_limit = l.emergency_flow_limit[range]
         l.flow_limit_penalty = l.flow_limit_penalty[range]

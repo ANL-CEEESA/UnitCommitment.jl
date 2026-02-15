@@ -45,11 +45,11 @@ function _pm_solution_to_ucjl(pm_sol::Dict, instance::UnitCommitmentInstance)
         sc.name => Dict(
             "Bus: Voltage magnitude (p.u.)" => bus_vm,
             "Bus: Voltage angle (rad)" => bus_va,
-            "Line: Base Flow (MW)" => line_pf,
-            "Line: Reactive flow (MVAr)" => line_qf,
-            "Line: Base Flow to-end (MW)" => line_pt,
-            "Line: Reactive flow to-end (MVAr)" => line_qt,
-            "Line: Base Overflow (MW)" => line_overflow,
+            "Branch: Base flow (MW)" => line_pf,
+            "Branch: Reactive flow (MVAr)" => line_qf,
+            "Branch: Base flow to-end (MW)" => line_pt,
+            "Branch: Reactive flow to-end (MVAr)" => line_qt,
+            "Branch: Base overflow (MW)" => line_overflow,
         ),
     )
 end

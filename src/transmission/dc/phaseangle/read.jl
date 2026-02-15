@@ -10,24 +10,24 @@ function read_json(
     ::PhaseAngleTransmissionExt,
 )
     T = sc[:time]
-    lines = TransmissionLine[]
+    branches = Branch[]
 
-    # Read transmission lines
-    if "Transmission lines" in keys(json)
-        for (line_name, dict) in json["Transmission lines"]
-            line = TransmissionLine(
-                name = line_name,
-                offset = length(lines) + 1,
+    # Read branches
+    if "Branches" in keys(json)
+        for (branch_name, dict) in json["Branches"]
+            r = to_scalar(dict["Resistance (p.u.)"], default = 0.0)
+            x = to_scalar(dict["Reactance (p.u.)"], default = 0.0)
+            branch = Branch(
+                name = branch_name,
+                offset = length(branches) + 1,
                 source = sc[:bus_by_name][dict["Source bus"]],
                 target = sc[:bus_by_name][dict["Target bus"]],
-                susceptance = if dict["Reactance (p.u.)"] !== nothing
-                    begin
-                        x = to_scalar(dict["Reactance (p.u.)"])
-                        r = to_scalar(dict["Resistance (p.u.)"], default = 0.0)
-                        x / (r^2 + x^2)
-                    end
+                resistance = r,
+                reactance = x,
+                susceptance = if x != 0.0
+                    x / (r^2 + x^2)
                 else
-                    to_scalar(dict["Susceptance (S)"])
+                    to_scalar(dict["Susceptance (p.u.)"])
                 end,
                 normal_flow_limit = to_timeseries(
                     dict["Normal flow limit (MVA)"],
@@ -53,26 +53,26 @@ function read_json(
                     default = 1,
                 ),
             )
-            push!(lines, line)
+            push!(branches, branch)
         end
     end
 
-    sc[:lines] = lines
-    sc[:line_by_name] = Dict(l.name => l for l in lines)
+    sc[:branches] = branches
+    sc[:branch_by_name] = Dict(b.name => b for b in branches)
 
     # Read contingencies
     contingencies = Contingency[]
     if "Contingencies" in keys(json)
         for (cont_name, dict) in json["Contingencies"]
-            affected_lines = TransmissionLine[]
-            if "Affected lines" in keys(dict)
-                affected_lines =
-                    [sc[:line_by_name][l] for l in dict["Affected lines"]]
+            affected_branches = Branch[]
+            if "Affected branches" in keys(dict)
+                affected_branches =
+                    [sc[:branch_by_name][b] for b in dict["Affected branches"]]
             end
             if "Affected units" in keys(dict)
                 error("Unit contingencies are not currently supported")
             end
-            cont = Contingency(cont_name, affected_lines)
+            cont = Contingency(cont_name, affected_branches)
             push!(contingencies, cont)
         end
     end

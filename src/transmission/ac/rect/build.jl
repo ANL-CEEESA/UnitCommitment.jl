@@ -76,7 +76,7 @@ function _add_ac_ohms!(
     for sc in instance.scenarios
         base_mva = sc[:base_mva]
 
-        for l in sc[:ac_branches], t in 1:T
+        for l in sc[:branches], t in 1:T
             p = _ac_branch_params(l)
 
             vr_fr = vr[sc.name, l.source.name, t]
@@ -153,7 +153,7 @@ function _add_ac_angle_diff!(
     eq_angle_diff_lb = _init(model, :eq_angle_diff_lb)
     eq_angle_diff_ub = _init(model, :eq_angle_diff_ub)
 
-    for sc in instance.scenarios, l in sc[:ac_branches], t in 1:T
+    for sc in instance.scenarios, l in sc[:branches], t in 1:T
         vr_fr = vr[sc.name, l.source.name, t]
         vi_fr = vi[sc.name, l.source.name, t]
         vr_to = vr[sc.name, l.target.name, t]
@@ -199,7 +199,7 @@ function _add_ac_nodal_balance!(
         base_mva = sc[:base_mva]
 
         # Add line flow contributions to net injection expressions
-        for l in sc[:ac_branches], t in 1:T
+        for l in sc[:branches], t in 1:T
             # Active power: subtract flows leaving the bus
             add_to_expression!(
                 net_injection[sc.name, l.source.name, t],

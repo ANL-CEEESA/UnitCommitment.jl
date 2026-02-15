@@ -8,7 +8,7 @@ function _find_violations(
     instance::UnitCommitmentInstance,
     model::JuMP.Model,
     sc::UnitCommitmentScenario;
-    max_per_line::Int,
+    max_per_branch::Int,
     max_per_period::Int,
 )
     net_injection = model[:ni]
@@ -22,7 +22,7 @@ function _find_violations(
         t in 1:instance.time
     ]
     overflow_values = [
-        value(overflow[sc.name, lm.name, t]) for lm in sc[:lines],
+        value(overflow[sc.name, lm.name, t]) for lm in sc[:branches],
         t in 1:instance.time
     ]
     violations = UnitCommitment._find_violations(
@@ -32,7 +32,7 @@ function _find_violations(
         overflow = overflow_values,
         isf = sc[:isf],
         lodf = sc[:lodf],
-        max_per_line = max_per_line,
+        max_per_branch = max_per_branch,
         max_per_period = max_per_period,
     )
     return violations
@@ -44,7 +44,7 @@ end
         net_injections::Array{Float64, 2};
         isf::Array{Float64,2},
         lodf::Array{Float64,2},
-        max_per_line::Int,
+        max_per_branch::Int,
         max_per_period::Int,
     )::Array{_Violation, 1}
 
@@ -56,7 +56,7 @@ number of buses and T is the number of time periods. The arguments `isf` and
 `lodf` can be computed using UnitCommitment.injection_shift_factors and
 UnitCommitment.line_outage_factors. The argument `overflow` specifies how much
 flow above the transmission limits (in MW) is allowed. It should be an L x T
-matrix, where L is the number of transmission lines.
+matrix, where L is the number of transmission branches.
 """
 function _find_violations(;
     instance::UnitCommitmentInstance,
@@ -65,11 +65,11 @@ function _find_violations(;
     overflow::Array{Float64,2},
     isf::Array{Float64,2},
     lodf::Array{Float64,2},
-    max_per_line::Int,
+    max_per_branch::Int,
     max_per_period::Int,
 )::Array{_Violation,1}
     B = length(sc[:bus]) - 1
-    L = length(sc[:lines])
+    L = length(sc[:branches])
     T = instance.time
     K = maxthreadid()
 
@@ -80,7 +80,7 @@ function _find_violations(;
     filters = Dict(
         t => _ViolationFilter(
             max_total = max_per_period,
-            max_per_line = max_per_line,
+            max_per_branch = max_per_branch,
         ) for t in 1:T
     )
 
@@ -90,18 +90,18 @@ function _find_violations(;
     post_v::Array{Float64} = zeros(L, L, K)          # post_v[lm, lc, thread]
 
     normal_limits::Array{Float64,2} = [
-        l.normal_flow_limit[t] + overflow[l.offset, t] for l in sc[:lines],
-        t in 1:T
+        l.normal_flow_limit[t] + overflow[l.offset, t] for
+        l in sc[:branches], t in 1:T
     ]
 
     emergency_limits::Array{Float64,2} = [
         l.emergency_flow_limit[t] + overflow[l.offset, t] for
-        l in sc[:lines], t in 1:T
+        l in sc[:branches], t in 1:T
     ]
 
     is_vulnerable::Array{Bool} = zeros(Bool, L)
     for c in sc[:contingencies]
-        is_vulnerable[c.lines[1].offset] = true
+        is_vulnerable[c.branches[1].offset] = true
     end
 
     @threads :static for t in 1:T
@@ -141,8 +141,8 @@ function _find_violations(;
                     filters[t],
                     _Violation(
                         time = t,
-                        monitored_line = sc[:lines][lm],
-                        outage_line = nothing,
+                        monitored_branch = sc[:branches][lm],
+                        outage_branch = nothing,
                         amount = pre_v[lm, k],
                     ),
                 )
@@ -156,8 +156,8 @@ function _find_violations(;
                     filters[t],
                     _Violation(
                         time = t,
-                        monitored_line = sc[:lines][lm],
-                        outage_line = sc[:lines][lc],
+                        monitored_branch = sc[:branches][lm],
+                        outage_branch = sc[:branches][lc],
                         amount = post_v[lm, lc, k],
                     ),
                 )

@@ -20,7 +20,7 @@ unit (p.u.) on the system `Base MVA`.
 - [Generators](#Generators)
 - [Storage units](#Storage-units)
 - [Price-sensitive loads](#Price-sensitive-loads)
-- [Transmission lines](#Transmission-lines)
+- [Branches](#Branches)
 - [Shunt devices](#Shunt-devices)
 - [Reserves](#Reserves)
 - [Contingencies](#Contingencies)
@@ -350,7 +350,7 @@ economical to do so.
 }
 ```
 
-### Transmission lines
+### Branches
 
 This section describes the characteristics of the transmission system, such as
 its topology and the impedance of each transmission line or transformer.
@@ -378,7 +378,7 @@ its topology and the impedance of each transmission line or transformer.
 
 ```json
 {
-  "Transmission lines": {
+  "Branches": {
     "l1": {
       "Source bus": "b1",
       "Target bus": "b2",
@@ -474,7 +474,7 @@ as the loss of a transmission line or generator.
 | Key                   | Description                                                                                       | Default | Uncertain? |
 | :-------------------- | :------------------------------------------------------------------------------------------------ | :-----: | :--------: |
 | `Affected generators` | List of generators affected by this contingency. May be omitted if no generators are affected.    |  `[]`   |    Yes     |
-| `Affected lines`      | List of transmission lines affected by this contingency. May be omitted if no lines are affected. |  `[]`   |    Yes     |
+| `Affected branches`      | List of branches affected by this contingency. May be omitted if no branches are affected. |  `[]`   |    Yes     |
 
 #### Example
 
@@ -482,11 +482,11 @@ as the loss of a transmission line or generator.
 {
   "Contingencies": {
     "c1": {
-      "Affected lines": ["l1", "l2", "l3"],
+      "Affected branches": ["l1", "l2", "l3"],
       "Affected generators": ["g1"]
     },
     "c2": {
-      "Affected lines": ["l4"]
+      "Affected branches": ["l4"]
     }
   }
 }
@@ -710,46 +710,46 @@ from DC-based LMPs due to losses and reactive power constraints.
 }
 ```
 
-### Transmission Lines
+### Branches
 
-| Key                           | Description                                                                                                                                       | Unit    |
-| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
-| `Line: Flow (MW)`             | Pre-contingency active power flow through each transmission line.                                                                                 | MW      |
-| `Line: Reactive flow (MVAr)`  | Reactive power flow through each transmission line. Only present when AC formulation is used.                                                    | MVAr    |
-| `Line: Overflow (MW)`         | Amount of power flow exceeding the line's thermal limit.                                                                                          | MW      |
-| `Line: Overflow penalty ($)`  | Penalty cost incurred for overflow violations on each line (overflow amount times flow penalty cost).                                             | $       |
-| `Line: Utilization (%)`       | Percentage of line capacity being utilized (absolute flow divided by normal flow limit).                                                          | %       |
-| `Line: Investment cost ($)`   | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for lines with positive investment cost. | $       |
-| `Line: Investment status`     | Number of parallel circuits invested along each candidate line corridor by this time step. Only included for lines with positive investment cost. | Integer |
+| Key                                  | Description                                                                                                                                       | Unit    |
+| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
+| `Branch: Base flow (MW)`             | Pre-contingency active power flow through each branch.                                                                                            | MW      |
+| `Branch: Reactive flow (MVAr)`       | Reactive power flow through each branch. Only present when AC formulation is used.                                                                | MVAr    |
+| `Branch: Base overflow (MW)`         | Amount of power flow exceeding the branch's thermal limit.                                                                                        | MW      |
+| `Branch: Base overflow penalty ($)`  | Penalty cost incurred for overflow violations on each branch (overflow amount times flow penalty cost).                                           | $       |
+| `Branch: Utilization (%)`            | Percentage of branch capacity being utilized (absolute flow divided by normal flow limit).                                                        | %       |
+| `Branch: Investment cost ($)`        | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for branches with positive investment cost. | $       |
+| `Branch: Investment status`          | Number of parallel circuits invested along each candidate branch corridor by this time step. Only included for branches with positive investment cost. | Integer |
 
 #### Example
 
 ```json
 {
-  "Line: Flow (MW)": {
+  "Branch: Base flow (MW)": {
     "l1": [125.3, 130.8, 128.2, 135.5],
     "l2": [-85.7, -92.5, -91.3, -87.3]
   },
-  "Line: Reactive flow (MVAr)": {
+  "Branch: Reactive flow (MVAr)": {
     "l1": [18.2, 19.5, 18.8, 20.1],
     "l2": [-12.3, -14.1, -13.5, -12.8]
   },
-  "Line: Overflow (MW)": {
+  "Branch: Base overflow (MW)": {
     "l1": [0.0, 0.0, 0.0, 0.0],
     "l2": [0.0, 2.5, 1.3, 0.0]
   },
-  "Line: Overflow penalty ($)": {
+  "Branch: Base overflow penalty ($)": {
     "l1": [0.0, 0.0, 0.0, 0.0],
     "l2": [0.0, 12500.0, 6500.0, 0.0]
   },
-  "Line: Utilization (%)": {
+  "Branch: Utilization (%)": {
     "l1": [83.53, 87.2, 85.47, 90.33],
     "l2": [95.22, 102.78, 101.44, 97.0]
   },
-  "Line: Investment cost ($)": {
+  "Branch: Investment cost ($)": {
     "l3": [0.0, 3000000.0, 0.0, 3000000.0]
   },
-  "Line: Investment status": {
+  "Branch: Investment status": {
     "l3": [0.0, 1.0, 1.0, 2.0]
   }
 }

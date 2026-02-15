@@ -8,7 +8,7 @@ function summarize(
     io::IO,
 )::Nothing
     sc = instance.scenarios[1]
-    print(io, "$(length(sc[:ac_branches])) AC branches, ")
+    print(io, "$(length(sc[:branches])) branches, ")
     print(io, "$(length(sc[:shunts])) shunt devices, ")
     return
 end

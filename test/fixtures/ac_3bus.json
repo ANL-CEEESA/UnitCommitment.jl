@@ -80,7 +80,7 @@
             "Reactive power max (MVAr)": 10.0
         }
     },
-    "Transmission lines": {
+    "Branches": {
         "l1": {
             "Source bus": "b1",
             "Target bus": "b2",

@@ -4,25 +4,6 @@
 
 abstract type ACFormulation end
 
-Base.@kwdef mutable struct ACBranch
-    name::String
-    offset::Int
-    source::Bus
-    target::Bus
-    resistance::Float64
-    reactance::Float64
-    shunt_conductance::Float64
-    shunt_susceptance::Float64
-    tap_ratio::Float64
-    phase_shift::Float64
-    is_transformer::Bool
-    normal_flow_limit::Vector{Float64}
-    emergency_flow_limit::Vector{Float64}
-    flow_limit_penalty::Vector{Float64}
-    angle_diff_min::Float64
-    angle_diff_max::Float64
-end
-
 Base.@kwdef mutable struct ShuntDevice
     name::String
     bus::Bus

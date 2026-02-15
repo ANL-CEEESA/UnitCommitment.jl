@@ -69,7 +69,7 @@ function optimize!(
                         instance,
                         model.inner,
                         sc,
-                        max_per_line = method.max_violations_per_line,
+                        max_per_branch = method.max_violations_per_branch,
                         max_per_period = method.max_violations_per_period,
                     ),
                 )

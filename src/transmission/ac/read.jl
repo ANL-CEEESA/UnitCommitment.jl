@@ -8,18 +8,18 @@ function read_json(
     ::ACTransmissionExt,
 )
     T = sc[:time]
-    branches = ACBranch[]
+    branches = Branch[]
 
     # Read AC branches from transmission lines
-    if "Transmission lines" in keys(json)
-        for (line_name, dict) in json["Transmission lines"]
+    if "Branches" in keys(json)
+        for (branch_name, dict) in json["Branches"]
             tap = to_scalar(dict["Tap ratio (p.u.)"], default = 1.0)
             is_transformer = to_scalar(dict["Transformer"], default = false)
             if !is_transformer && tap != 1.0
                 is_transformer = true
             end
-            branch = ACBranch(
-                name = line_name,
+            branch = Branch(
+                name = branch_name,
                 offset = length(branches) + 1,
                 source = sc[:bus_by_name][dict["Source bus"]],
                 target = sc[:bus_by_name][dict["Target bus"]],
@@ -28,6 +28,11 @@ function read_json(
                     default = 0.0,
                 ),
                 reactance = to_scalar(dict["Reactance (p.u.)"]),
+                susceptance = begin
+                    x = to_scalar(dict["Reactance (p.u.)"])
+                    r = to_scalar(dict["Resistance (p.u.)"], default = 0.0)
+                    x / (r^2 + x^2)
+                end,
                 shunt_conductance = to_scalar(
                     dict["Shunt conductance (p.u.)"],
                     default = 0.0,
@@ -70,8 +75,8 @@ function read_json(
         end
     end
 
-    sc[:ac_branches] = branches
-    sc[:ac_branch_by_name] = Dict(b.name => b for b in branches)
+    sc[:branches] = branches
+    sc[:branch_by_name] = Dict(b.name => b for b in branches)
 
     # Read shunt devices
     shunts = ShuntDevice[]

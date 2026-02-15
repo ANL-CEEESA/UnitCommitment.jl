@@ -33,45 +33,45 @@ function _enforce_transmission(;
     overflow = model[:overflow]
     net_injection = model[:net_injection]
 
-    if violation.outage_line === nothing
-        limit = violation.monitored_line.normal_flow_limit[violation.time]
+    if violation.outage_branch === nothing
+        limit = violation.monitored_branch.normal_flow_limit[violation.time]
         if method.verbose
             @info @sprintf(
                 "    %8.3f MW overflow in %-5s time %3d (pre-contingency, scenario %s)",
                 violation.amount,
-                violation.monitored_line.name,
+                violation.monitored_branch.name,
                 violation.time,
                 sc.name,
             )
         end
     else
-        limit = violation.monitored_line.emergency_flow_limit[violation.time]
+        limit = violation.monitored_branch.emergency_flow_limit[violation.time]
         if method.verbose
             @info @sprintf(
-                "    %8.3f MW overflow in %-5s time %3d (outage: line %s, scenario %s)",
+                "    %8.3f MW overflow in %-5s time %3d (outage: branch %s, scenario %s)",
                 violation.amount,
-                violation.monitored_line.name,
+                violation.monitored_branch.name,
                 violation.time,
-                violation.outage_line.name,
+                violation.outage_branch.name,
                 sc.name,
             )
         end
     end
 
-    fm = violation.monitored_line.name
+    fm = violation.monitored_branch.name
     t = violation.time
     flow = @variable(model, base_name = "flow[$fm,$t]")
 
-    v = overflow[sc.name, violation.monitored_line.name, violation.time]
+    v = overflow[sc.name, violation.monitored_branch.name, violation.time]
     @constraint(model, flow <= limit + v)
     @constraint(model, -flow <= limit + v)
 
-    if violation.outage_line === nothing
+    if violation.outage_branch === nothing
         @constraint(
             model,
             flow == sum(
                 net_injection[sc.name, b.name, violation.time] *
-                isf[violation.monitored_line.offset, b.offset] for
+                isf[violation.monitored_branch.offset, b.offset] for
                 b in sc[:bus] if b.offset > 0
             )
         )
@@ -80,11 +80,11 @@ function _enforce_transmission(;
             model,
             flow == sum(
                 net_injection[sc.name, b.name, violation.time] * (
-                    isf[violation.monitored_line.offset, b.offset] + (
+                    isf[violation.monitored_branch.offset, b.offset] + (
                         lodf[
-                            violation.monitored_line.offset,
-                            violation.outage_line.offset,
-                        ] * isf[violation.outage_line.offset, b.offset]
+                            violation.monitored_branch.offset,
+                            violation.outage_branch.offset,
+                        ] * isf[violation.outage_branch.offset, b.offset]
                     )
                 ) for b in sc[:bus] if b.offset > 0
             )

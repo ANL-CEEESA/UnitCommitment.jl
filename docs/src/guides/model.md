@@ -54,7 +54,7 @@ Name |  Description | Unit | Stage
 :-----|:-------------|:------:| :------:
 `loads[sn,s,t]` | Amount of power served to price-sensitive load `s` at time `t` in scenario `sn`. | MW | 2
 
-### Transmission lines
+### Branches
 
 Name |  Description | Unit | Stage 
 :-----|:-------------|:------:| :------:

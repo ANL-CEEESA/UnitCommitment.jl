@@ -3,13 +3,13 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 function _offer(filter::_ViolationFilter, v::_Violation)::Nothing
-    if v.monitored_line.offset ∉ keys(filter.queues)
-        filter.queues[v.monitored_line.offset] =
+    if v.monitored_branch.offset ∉ keys(filter.queues)
+        filter.queues[v.monitored_branch.offset] =
             PriorityQueue{_Violation,Float64}()
     end
     q::PriorityQueue{_Violation,Float64} =
-        filter.queues[v.monitored_line.offset]
-    if length(q) < filter.max_per_line
+        filter.queues[v.monitored_branch.offset]
+    if length(q) < filter.max_per_branch
         enqueue!(q, v => v.amount)
     else
         if v.amount > peek(q)[1].amount
@@ -24,9 +24,9 @@ function _query(filter::_ViolationFilter)::Array{_Violation,1}
     violations = Array{_Violation,1}()
     time_queue = PriorityQueue{_Violation,Float64}()
     for l in keys(filter.queues)
-        line_queue = filter.queues[l]
-        while length(line_queue) > 0
-            v = dequeue!(line_queue)
+        branch_queue = filter.queues[l]
+        while length(branch_queue) > 0
+            v = dequeue!(branch_queue)
             if length(time_queue) < filter.max_total
                 enqueue!(time_queue, v => v.amount)
             else

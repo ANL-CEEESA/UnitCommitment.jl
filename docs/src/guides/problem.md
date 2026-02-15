@@ -734,7 +734,7 @@ y^\text{inj}_{sbt} =
 \sum_{b \in B} y^\text{inj}_{sbt} = 0
 ```
 
-## 7. Transmission lines
+## 7. Branches
 
 Transmission lines connect buses in the network and allow power to flow between
 them. The transmission network is represented as a graph $(B,L)$ where $B$ is

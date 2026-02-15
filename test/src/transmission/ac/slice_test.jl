@@ -13,19 +13,19 @@ using UnitCommitment
     sc = modified.scenarios[1]
 
     # Branch l1
-    l1 = sc[:ac_branch_by_name]["l1"]
+    l1 = sc[:branch_by_name]["l1"]
     @test l1.normal_flow_limit == [150.0]
     @test l1.emergency_flow_limit == [200.0]
     @test l1.flow_limit_penalty == [5000.0]
 
     # Branch l2
-    l2 = sc[:ac_branch_by_name]["l2"]
+    l2 = sc[:branch_by_name]["l2"]
     @test l2.normal_flow_limit == [100.0]
     @test l2.emergency_flow_limit == [130.0]
     @test l2.flow_limit_penalty == [5000.0]
 
     # Branch l3
-    l3 = sc[:ac_branch_by_name]["l3"]
+    l3 = sc[:branch_by_name]["l3"]
     @test l3.normal_flow_limit == [120.0]
     @test l3.emergency_flow_limit == [160.0]
     @test l3.flow_limit_penalty == [5000.0]

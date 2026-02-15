@@ -2,22 +2,31 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-Base.@kwdef mutable struct TransmissionLine
+Base.@kwdef mutable struct Branch
     name::String
     offset::Int
     source::Bus
     target::Bus
-    susceptance::Float64
+    resistance::Float64 = 0.0
+    reactance::Float64 = 0.0
+    susceptance::Float64 = 0.0
+    shunt_conductance::Float64 = 0.0
+    shunt_susceptance::Float64 = 0.0
+    tap_ratio::Float64 = 1.0
+    phase_shift::Float64 = 0.0
+    is_transformer::Bool = false
     normal_flow_limit::Vector{Float64}
     emergency_flow_limit::Vector{Float64}
     flow_limit_penalty::Vector{Float64}
-    invest::Vector{Float64}
-    max_copy::Int
+    angle_diff_min::Float64 = -Inf
+    angle_diff_max::Float64 = Inf
+    invest::Vector{Float64} = [0.0]
+    max_copy::Int = 1
 end
 
 Base.@kwdef mutable struct Contingency
     name::String
-    lines::Vector{TransmissionLine}
+    branches::Vector{Branch}
 end
 
 Base.@kwdef struct PhaseAngleTransmissionExt <: UnitCommitmentExtension

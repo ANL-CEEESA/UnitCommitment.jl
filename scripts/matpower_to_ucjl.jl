@@ -237,56 +237,56 @@ function _build_ucjl_json(
     end
     result["Generators"] = generators
 
-    # --- Transmission lines ---
-    lines = OrderedDict{String, Any}()
+    # --- Branches ---
+    branches = OrderedDict{String, Any}()
     for br_id in sort(collect(keys(data["branch"])); by = x -> parse(Int, x))
         branch = data["branch"][br_id]
         branch["br_status"] == 0 && continue
 
-        line_data = OrderedDict{String, Any}(
+        branch_data = OrderedDict{String, Any}(
             "Source bus" => "b$(branch["f_bus"])",
             "Target bus" => "b$(branch["t_bus"])",
             "Reactance (p.u.)" => branch["br_x"],
         )
 
         if branch["br_r"] != 0.0
-            line_data["Resistance (p.u.)"] = branch["br_r"]
+            branch_data["Resistance (p.u.)"] = branch["br_r"]
         end
 
         # Total line-charging shunt susceptance (b_fr + b_to)
         b_total = get(branch, "b_fr", 0.0) + get(branch, "b_to", 0.0)
         if b_total != 0.0
-            line_data["Shunt susceptance (p.u.)"] = b_total
+            branch_data["Shunt susceptance (p.u.)"] = b_total
         end
 
         # Total shunt conductance (usually zero)
         g_total = get(branch, "g_fr", 0.0) + get(branch, "g_to", 0.0)
         if g_total != 0.0
-            line_data["Shunt conductance (p.u.)"] = g_total
+            branch_data["Shunt conductance (p.u.)"] = g_total
         end
 
         # Transformer data
         if branch["transformer"]
-            line_data["Transformer"] = true
-            line_data["Tap ratio (p.u.)"] = branch["tap"]
-            line_data["Phase shift (rad)"] = deg2rad(branch["shift"])
+            branch_data["Transformer"] = true
+            branch_data["Tap ratio (p.u.)"] = branch["tap"]
+            branch_data["Phase shift (rad)"] = deg2rad(branch["shift"])
         end
 
         # Flow limits (rate_a = long-term, rate_c = emergency)
         if haskey(branch, "rate_a") && branch["rate_a"] > 0
-            line_data["Normal flow limit (MVA)"] = branch["rate_a"]
+            branch_data["Normal flow limit (MVA)"] = branch["rate_a"]
         end
         if haskey(branch, "rate_c") && branch["rate_c"] > 0
-            line_data["Emergency flow limit (MVA)"] = branch["rate_c"]
+            branch_data["Emergency flow limit (MVA)"] = branch["rate_c"]
         end
 
         # Angle difference limits (make_mixed_units! converts to degrees)
-        line_data["Angle difference min (rad)"] = deg2rad(branch["angmin"])
-        line_data["Angle difference max (rad)"] = deg2rad(branch["angmax"])
+        branch_data["Angle difference min (rad)"] = deg2rad(branch["angmin"])
+        branch_data["Angle difference max (rad)"] = deg2rad(branch["angmax"])
 
-        lines["l$br_id"] = line_data
+        branches["l$br_id"] = branch_data
     end
-    result["Transmission lines"] = lines
+    result["Branches"] = branches
 
     # --- Shunt devices ---
     shunts = OrderedDict{String, Any}()
@@ -348,7 +348,7 @@ function _build_ucjl_json(
 
     n_buses = length(buses)
     n_gens = length(generators)
-    n_lines = length(lines)
+    n_lines = length(branches)
     n_shunts = length(shunts)
     println("Converted: $n_buses buses, $n_gens generators, " *
             "$n_lines lines, $n_shunts shunts")

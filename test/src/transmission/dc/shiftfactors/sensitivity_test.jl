@@ -10,7 +10,7 @@ using UnitCommitment, Test, LinearAlgebra
         extensions = [UnitCommitment.ShiftFactorsTransmissionExt()],
     )
     sc = instance.scenarios[1]
-    actual = UnitCommitment._susceptance_matrix(sc[:lines])
+    actual = UnitCommitment._susceptance_matrix(sc[:branches])
     @test size(actual) == (20, 20)
     expected = Diagonal([
         29.5,
@@ -44,7 +44,7 @@ end
     )
     sc = instance.scenarios[1]
     actual = UnitCommitment._reduced_incidence_matrix(
-        lines = sc[:lines],
+        branches = sc[:branches],
         buses = sc[:bus],
     )
     @test size(actual) == (20, 13)
@@ -95,7 +95,7 @@ end
     )
     sc = instance.scenarios[1]
     actual = UnitCommitment._injection_shift_factors(
-        lines = sc[:lines],
+        branches = sc[:branches],
         buses = sc[:bus],
     )
     @test size(actual) == (20, 13)
@@ -130,24 +130,24 @@ end
     )
     sc = instance.scenarios[1]
     isf_before = UnitCommitment._injection_shift_factors(
-        lines = sc[:lines],
+        branches = sc[:branches],
         buses = sc[:bus],
     )
     lodf = UnitCommitment._line_outage_factors(
-        lines = sc[:lines],
+        branches = sc[:branches],
         buses = sc[:bus],
         isf = isf_before,
     )
     for contingency in sc[:contingencies]
-        for lc in contingency.lines
+        for lc in contingency.branches
             prev_susceptance = lc.susceptance
             lc.susceptance = 0.0
             isf_after = UnitCommitment._injection_shift_factors(
-                lines = sc[:lines],
+                branches = sc[:branches],
                 buses = sc[:bus],
             )
             lc.susceptance = prev_susceptance
-            for lm in sc[:lines]
+            for lm in sc[:branches]
                 expected = isf_after[lm.offset, :]
                 actual =
                     isf_before[lm.offset, :] +

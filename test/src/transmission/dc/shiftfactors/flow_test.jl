@@ -18,8 +18,8 @@ function _solve_dc_shiftfactors(fixture_path::String, lazy::Bool = false)
         optimize!(model)
     end
     sol = solution(model)
-    base_flow = sol["Line: Base Flow (MW)"]
-    cont_flows = get(sol, "Line: Contingency Flow (MW)", nothing)
+    base_flow = sol["Branch: Base flow (MW)"]
+    cont_flows = get(sol, "Branch: Contingency flow (MW)", nothing)
     return base_flow, cont_flows
 end
 

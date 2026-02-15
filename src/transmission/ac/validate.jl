@@ -13,17 +13,17 @@ function validate(
     err_count = 0
     for sc in instance.scenarios
         buses = sc[:bus]
-        branches = sc[:ac_branches]
+        branches = sc[:branches]
         shunts = sc[:shunts]
         base_mva = sc[:base_mva]
 
         vm = solution[sc.name]["Bus: Voltage magnitude (p.u.)"]
         va = solution[sc.name]["Bus: Voltage angle (rad)"]
-        pf_sol = solution[sc.name]["Line: Base Flow (MW)"]
-        qf_sol = solution[sc.name]["Line: Reactive flow (MVAr)"]
-        overflow_sol = solution[sc.name]["Line: Base Overflow (MW)"]
-        pt_sol = solution[sc.name]["Line: Base Flow to-end (MW)"]
-        qt_sol = solution[sc.name]["Line: Reactive flow to-end (MVAr)"]
+        pf_sol = solution[sc.name]["Branch: Base flow (MW)"]
+        qf_sol = solution[sc.name]["Branch: Reactive flow (MVAr)"]
+        overflow_sol = solution[sc.name]["Branch: Base overflow (MW)"]
+        pt_sol = solution[sc.name]["Branch: Base flow to-end (MW)"]
+        qt_sol = solution[sc.name]["Branch: Reactive flow to-end (MVAr)"]
 
         # --- Voltage magnitude bounds ---
         for b in buses, t in 1:instance.time

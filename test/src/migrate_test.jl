@@ -16,5 +16,5 @@ end
     sc = instance.scenarios[1]
     @test length(sc.data[:thermal]) == 6
     @test length(sc[:bus]) == 14
-    @test length(sc.data[:lines]) == 20
+    @test length(sc.data[:branches]) == 20
 end

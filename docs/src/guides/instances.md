@@ -20,7 +20,7 @@ Because most MATPOWER test cases were originally designed for power flow studies
 
 - **Minimum reserves** were set to a fixed proportion of the total demand.
 
-- **Contingencies** were set to include all N-1 transmission line contingencies that do not generate islands or isolated buses. More specifically, there is one contingency for each transmission line, as long as that transmission line is not a bridge in the network graph.
+- **Contingencies** were set to include all N-1 branch contingencies that do not generate islands or isolated buses. More specifically, there is one contingency for each branch, as long as that branch is not a bridge in the network graph.
 
 For each MATPOWER test case, UC.jl provides 365 variations (`2017-01-01` to `2017-12-31`) corresponding different days of the year.
 
@@ -266,7 +266,7 @@ Test cases used in [TeLuSa19]. These instances are similar to OR-LIB/UC, in the 
 
 ### Transmission and Expansion Planning Instances
 
-We curate a list of popular [MuSe21] transmission and expansion planning (TEP) instances used in academia paper. These TEP instances follow [UCJL format](format.md), with information on candidate transmission lines and investment costs.
+We curate a list of popular [MuSe21] transmission and expansion planning (TEP) instances used in academia paper. These TEP instances follow [UCJL format](format.md), with information on candidate branches and investment costs.
 
 | Name                   | Buses | Generators | Lines | Generator Expension? | Transmission Expension? | Power Balance Penalty | References |
 | ---------------------- | ----- | ---------- | ----- | -------------------- | ----------------------- | --------------------- | ---------- |

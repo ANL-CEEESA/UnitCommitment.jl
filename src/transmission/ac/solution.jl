@@ -12,27 +12,27 @@ function store_solution(
     T = instance.time
 
     for sc in instance.scenarios
-        branches = sc[:ac_branches]
+        branches = sc[:branches]
         buses = sc[:bus]
 
         # Shared extraction (formulation-agnostic flow variables)
-        sol[sc.name]["Line: Base Flow (MW)"] =
+        sol[sc.name]["Branch: Base flow (MW)"] =
             _timeseries(inner, :pf, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Line: Reactive flow (MVAr)"] =
+        sol[sc.name]["Branch: Reactive flow (MVAr)"] =
             _timeseries(inner, :qf, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Line: Base Flow to-end (MW)"] =
+        sol[sc.name]["Branch: Base flow to-end (MW)"] =
             _timeseries(inner, :pt, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Line: Reactive flow to-end (MVAr)"] =
+        sol[sc.name]["Branch: Reactive flow to-end (MVAr)"] =
             _timeseries(inner, :qt, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Line: Base Overflow (MW)"] =
+        sol[sc.name]["Branch: Base overflow (MW)"] =
             _timeseries(inner, :overflow, branches, T, sc = sc)
-        sol[sc.name]["Line: Base Overflow penalty (\$)"] = OrderedDict(
+        sol[sc.name]["Branch: Base overflow penalty (\$)"] = OrderedDict(
             l.name => [
                 value(inner[:overflow][sc.name, l.name, t]) *
                 l.flow_limit_penalty[t] for t in 1:T
             ] for l in branches
         )
-        sol[sc.name]["Line: Base Utilization (%)"] = OrderedDict(
+        sol[sc.name]["Branch: Base utilization (%)"] = OrderedDict(
             l.name => [
                 round(
                     100.0 * sqrt(

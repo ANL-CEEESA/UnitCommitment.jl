@@ -8,13 +8,13 @@ import UnitCommitment: _Violation, _offer, _query
 @testfunction methods_XavQiuWanThi19_filter_test begin
     instance = UnitCommitment.read(fixture("case14.json.gz"))
     sc = instance.scenarios[1]
-    filter = UnitCommitment._ViolationFilter(max_per_line = 1, max_total = 2)
+    filter = UnitCommitment._ViolationFilter(max_per_branch = 1, max_total = 2)
     _offer(
         filter,
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][1],
-            outage_line = nothing,
+            monitored_branch = sc[:branches][1],
+            outage_branch = nothing,
             amount = 100.0,
         ),
     )
@@ -22,8 +22,8 @@ import UnitCommitment: _Violation, _offer, _query
         filter,
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][1],
-            outage_line = sc[:lines][1],
+            monitored_branch = sc[:branches][1],
+            outage_branch = sc[:branches][1],
             amount = 300.0,
         ),
     )
@@ -31,8 +31,8 @@ import UnitCommitment: _Violation, _offer, _query
         filter,
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][1],
-            outage_line = sc[:lines][5],
+            monitored_branch = sc[:branches][1],
+            outage_branch = sc[:branches][5],
             amount = 500.0,
         ),
     )
@@ -40,8 +40,8 @@ import UnitCommitment: _Violation, _offer, _query
         filter,
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][1],
-            outage_line = sc[:lines][4],
+            monitored_branch = sc[:branches][1],
+            outage_branch = sc[:branches][4],
             amount = 400.0,
         ),
     )
@@ -49,8 +49,8 @@ import UnitCommitment: _Violation, _offer, _query
         filter,
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][2],
-            outage_line = sc[:lines][1],
+            monitored_branch = sc[:branches][2],
+            outage_branch = sc[:branches][1],
             amount = 200.0,
         ),
     )
@@ -58,8 +58,8 @@ import UnitCommitment: _Violation, _offer, _query
         filter,
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][2],
-            outage_line = sc[:lines][8],
+            monitored_branch = sc[:branches][2],
+            outage_branch = sc[:branches][8],
             amount = 100.0,
         ),
     )
@@ -68,14 +68,14 @@ import UnitCommitment: _Violation, _offer, _query
     expected = [
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][2],
-            outage_line = sc[:lines][1],
+            monitored_branch = sc[:branches][2],
+            outage_branch = sc[:branches][1],
             amount = 200.0,
         ),
         _Violation(
             time = 1,
-            monitored_line = sc[:lines][1],
-            outage_line = sc[:lines][5],
+            monitored_branch = sc[:branches][1],
+            outage_branch = sc[:branches][5],
             amount = 500.0,
         ),
     ]

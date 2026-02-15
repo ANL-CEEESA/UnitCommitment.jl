@@ -51,25 +51,48 @@ function _migrate_to_v04(json)
 end
 
 function _migrate_to_v05(json)
-    # Migrate transmission lines
+    # Default Base MVA in parameters
+    if json["Parameters"]["Base MVA"] === nothing
+        json["Parameters"]["Base MVA"] = 100
+    end
+
+    # Rename "Transmission lines" to "Branches"
     if haskey(json, "Transmission lines") &&
        json["Transmission lines"] !== nothing
-        for (line_name, line) in json["Transmission lines"]
+        json["Branches"] = json["Transmission lines"]
+        delete!(json, "Transmission lines")
+    end
+
+    # Migrate branches
+    if haskey(json, "Branches") && json["Branches"] !== nothing
+        for (branch_name, branch) in json["Branches"]
             # Rename flow limit fields from MW to MVA
-            if line["Normal flow limit (MW)"] !== nothing
-                line["Normal flow limit (MVA)"] = line["Normal flow limit (MW)"]
-                line["Normal flow limit (MW)"] = nothing
+            if branch["Normal flow limit (MW)"] !== nothing
+                branch["Normal flow limit (MVA)"] =
+                    branch["Normal flow limit (MW)"]
+                branch["Normal flow limit (MW)"] = nothing
             end
-            if line["Emergency flow limit (MW)"] !== nothing
-                line["Emergency flow limit (MVA)"] =
-                    line["Emergency flow limit (MW)"]
-                line["Emergency flow limit (MW)"] = nothing
+            if branch["Emergency flow limit (MW)"] !== nothing
+                branch["Emergency flow limit (MVA)"] =
+                    branch["Emergency flow limit (MW)"]
+                branch["Emergency flow limit (MW)"] = nothing
+            end
+
+            # Rename susceptance key
+            if branch["Susceptance (S)"] !== nothing
+                branch["Susceptance (p.u.)"] = branch["Susceptance (S)"]
+                branch["Susceptance (S)"] = nothing
             end
         end
     end
 
-    # Default Base MVA in parameters
-    if json["Parameters"]["Base MVA"] === nothing
-        json["Parameters"]["Base MVA"] = 100
+    # Rename "Affected lines" to "Affected branches" in contingencies
+    if haskey(json, "Contingencies") && json["Contingencies"] !== nothing
+        for (cont_name, cont) in json["Contingencies"]
+            if cont["Affected lines"] !== nothing
+                cont["Affected branches"] = cont["Affected lines"]
+                cont["Affected lines"] = nothing
+            end
+        end
     end
 end

@@ -158,7 +158,7 @@
       "Voltage set-point (p.u.)": 1.06907
     }
   },
-  "Transmission lines": {
+  "Branches": {
     "l1": {
       "Source bus": "b1",
       "Target bus": "b2",
