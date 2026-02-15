@@ -20,6 +20,10 @@ function store_solution(
             _timeseries(inner, :pf, branches, T, sc = sc, digits = 10)
         sol[sc.name]["Line: Reactive flow (MVAr)"] =
             _timeseries(inner, :qf, branches, T, sc = sc, digits = 10)
+        sol[sc.name]["Line: Base Flow to-end (MW)"] =
+            _timeseries(inner, :pt, branches, T, sc = sc, digits = 10)
+        sol[sc.name]["Line: Reactive flow to-end (MVAr)"] =
+            _timeseries(inner, :qt, branches, T, sc = sc, digits = 10)
         sol[sc.name]["Line: Base Overflow (MW)"] =
             _timeseries(inner, :overflow, branches, T, sc = sc)
         sol[sc.name]["Line: Base Overflow penalty (\$)"] = OrderedDict(

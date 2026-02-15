@@ -22,6 +22,8 @@ function validate(
         pf_sol = solution[sc.name]["Line: Base Flow (MW)"]
         qf_sol = solution[sc.name]["Line: Reactive flow (MVAr)"]
         overflow_sol = solution[sc.name]["Line: Base Overflow (MW)"]
+        pt_sol = solution[sc.name]["Line: Base Flow to-end (MW)"]
+        qt_sol = solution[sc.name]["Line: Reactive flow to-end (MVAr)"]
 
         # --- Voltage magnitude bounds ---
         for b in buses, t in 1:instance.time
@@ -116,6 +118,30 @@ function validate(
                     t,
                     qf_sol[l.name][t],
                     expected_qf,
+                )
+                err_count += 1
+            end
+
+            # Verify Ohm's law (to-end active power)
+            if abs(pt_sol[l.name][t] - expected_pt) > tol
+                @error @sprintf(
+                    "Line %s Ohm's law pt violated at time %d (%.4f should be %.4f)",
+                    l.name,
+                    t,
+                    pt_sol[l.name][t],
+                    expected_pt,
+                )
+                err_count += 1
+            end
+
+            # Verify Ohm's law (to-end reactive power)
+            if abs(qt_sol[l.name][t] - expected_qt) > tol
+                @error @sprintf(
+                    "Line %s Ohm's law qt violated at time %d (%.4f should be %.4f)",
+                    l.name,
+                    t,
+                    qt_sol[l.name][t],
+                    expected_qt,
                 )
                 err_count += 1
             end
