@@ -1,0 +1,38 @@
+Saved: test/fixtures/ac/case5_strg/original.m
+[info | PowerModels]: extending matpower format with constant data: time_elapsed
+[warn | PowerModels]: the voltage setpoint on generator 4 does not match the value at bus 4
+[warn | PowerModels]: the voltage setpoint on generator 1 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 5 does not match the value at bus 10
+[warn | PowerModels]: the voltage setpoint on generator 2 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 3 does not match the value at bus 3
+[info | PowerModels]: removing 1 cost terms from generator 4: [4000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 1: [1400.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 5: [1000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 2: [1500.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 3: [3000.0, 0.0]
+Converted: 5 buses, 5 generators, 7 lines, 0 shunts
+Saved: test/fixtures/ac/case5_strg/converted.json
+[info | PowerModels]: extending matpower format with constant data: time_elapsed
+[warn | PowerModels]: the voltage setpoint on generator 4 does not match the value at bus 4
+[warn | PowerModels]: the voltage setpoint on generator 1 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 5 does not match the value at bus 10
+[warn | PowerModels]: the voltage setpoint on generator 2 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 3 does not match the value at bus 3
+[info | PowerModels]: removing 1 cost terms from generator 4: [4000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 1: [1400.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 5: [1000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 2: [1500.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 3: [3000.0, 0.0]
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Saved: test/fixtures/ac/case5_strg/sol_ac_opf.json
+Saved: test/fixtures/ac/case5_strg/sol_ac_opf.json (AC OPF: LOCALLY_SOLVED, obj=17039.33316285038)
+Saved: test/fixtures/ac/case5_strg/sol_dc_opf.json
+Saved: test/fixtures/ac/case5_strg/sol_dc_opf.json (DC OPF: OPTIMAL, obj=16840.425769266523)
+Saved: test/fixtures/ac/case5_strg/sol_soc_opf.json
+Saved: test/fixtures/ac/case5_strg/sol_soc_opf.json (SOC OPF: LOCALLY_SOLVED, obj=13799.452164712866)

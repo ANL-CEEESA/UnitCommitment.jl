@@ -1,0 +1,112 @@
+Saved: test/fixtures/ac/case14/original.m
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 4 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 4 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 1 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 1 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 12 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 12 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 20 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 20 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 2 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 2 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 6 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 6 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 11 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 11 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 13 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 13 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 5 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 5 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 15 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 15 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 16 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 16 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 14 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 14 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 7 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 7 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 8 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 8 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 17 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 17 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 10 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 10 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 19 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 19 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 9 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 9 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 18 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 18 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 3 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 3 from 360.0 to 60.0 deg.
+[warn | PowerModels]: active generators found at bus 8, updating to bus type from 1 to 2
+[info | PowerModels]: removing 2 cost terms from generator 4: [100.0, 4000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 1: [430.292599, 2000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 5: [100.0, 4000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 2: [2500.0, 2000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 3: [100.0, 4000.0, 0.0]
+Converted: 14 buses, 5 generators, 20 lines, 1 shunts
+Saved: test/fixtures/ac/case14/converted.json
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 4 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 4 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 1 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 1 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 12 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 12 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 20 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 20 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 2 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 2 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 6 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 6 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 11 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 11 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 13 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 13 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 5 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 5 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 15 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 15 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 16 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 16 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 14 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 14 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 7 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 7 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 8 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 8 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 17 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 17 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 10 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 10 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 19 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 19 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 9 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 9 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 18 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 18 from 360.0 to 60.0 deg.
+[warn | PowerModels]: this code only supports angmin values in -90 deg. to 90 deg., tightening the value on branch 3 from -360.0 to -60.0 deg.
+[warn | PowerModels]: this code only supports angmax values in -90 deg. to 90 deg., tightening the value on branch 3 from 360.0 to 60.0 deg.
+[warn | PowerModels]: active generators found at bus 8, updating to bus type from 1 to 2
+[info | PowerModels]: removing 2 cost terms from generator 4: [100.0, 4000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 1: [430.292599, 2000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 5: [100.0, 4000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 2: [2500.0, 2000.0, 0.0]
+[info | PowerModels]: removing 2 cost terms from generator 3: [100.0, 4000.0, 0.0]
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Saved: test/fixtures/ac/case14/sol_ac_opf.json
+Saved: test/fixtures/ac/case14/sol_ac_opf.json (AC OPF: LOCALLY_SOLVED, obj=8081.524735301402)
+Saved: test/fixtures/ac/case14/sol_dc_opf.json
+Saved: test/fixtures/ac/case14/sol_dc_opf.json (DC OPF: OPTIMAL, obj=7642.591776958498)
+Saved: test/fixtures/ac/case14/sol_soc_opf.json
+Saved: test/fixtures/ac/case14/sol_soc_opf.json (SOC OPF: LOCALLY_SOLVED, obj=8075.121800139823)
+Saved: test/fixtures/ac/case14/sol_ac_pf.json
+Saved: test/fixtures/ac/case14/sol_ac_pf.json (AC PF: LOCALLY_SOLVED, obj=0.0)
+Saved: test/fixtures/ac/case14/sol_dc_pf.json
+Saved: test/fixtures/ac/case14/sol_dc_pf.json (DC PF: OPTIMAL, obj=0.0)

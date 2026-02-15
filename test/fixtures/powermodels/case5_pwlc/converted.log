@@ -1,0 +1,36 @@
+Saved: test/fixtures/ac/case5_pwlc/original.m
+[warn | PowerModels]: added zero cost function data for dclines
+[warn | PowerModels]: the from bus voltage setpoint on dc line 1 does not match the value at bus 1
+[warn | PowerModels]: the to bus voltage setpoint on dc line 1 does not match the value at bus 10
+[warn | PowerModels]: removing duplicate points from pwl cost on generator 4, [0.0, 10.0, 0.0, 10.0, 0.0, 10.0, 0.0, 10.0] -> [0.0, 10.0, 0.0, 10.0]
+[warn | PowerModels]: simplifying pwl cost on generator 1, [-0.001, 0.0, 0.0, 0.0, 0.001, 0.0, 0.002, 0.0] -> [-0.001, 0.0, 0.002, 0.0]
+[warn | PowerModels]: simplifying pwl cost on generator 2, [0.0, 841.0, 0.2, 841.0, 1.0, 841.0, 1.5, 841.0] -> [0.0, 841.0, 1.5, 841.0]
+[warn | PowerModels]: removing duplicate points from pwl cost on generator 6, [0.07, 897.0, 0.07, 897.0, 0.09, 1479.0, 0.1, 1791.0] -> [0.07, 897.0, 0.09, 1479.0, 0.1, 1791.0]
+Converted: 5 buses, 5 generators, 6 lines, 0 shunts
+Saved: test/fixtures/ac/case5_pwlc/converted.json
+[warn | PowerModels]: added zero cost function data for dclines
+[warn | PowerModels]: the from bus voltage setpoint on dc line 1 does not match the value at bus 1
+[warn | PowerModels]: the to bus voltage setpoint on dc line 1 does not match the value at bus 10
+[warn | PowerModels]: removing duplicate points from pwl cost on generator 4, [0.0, 10.0, 0.0, 10.0, 0.0, 10.0, 0.0, 10.0] -> [0.0, 10.0, 0.0, 10.0]
+[warn | PowerModels]: simplifying pwl cost on generator 1, [-0.001, 0.0, 0.0, 0.0, 0.001, 0.0, 0.002, 0.0] -> [-0.001, 0.0, 0.002, 0.0]
+[warn | PowerModels]: simplifying pwl cost on generator 2, [0.0, 841.0, 0.2, 841.0, 1.0, 841.0, 1.5, 841.0] -> [0.0, 841.0, 1.5, 841.0]
+[warn | PowerModels]: removing duplicate points from pwl cost on generator 6, [0.07, 897.0, 0.07, 897.0, 0.09, 1479.0, 0.1, 1791.0] -> [0.07, 897.0, 0.09, 1479.0, 0.1, 1791.0]
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+┌ Warning: Skipping 1 DC line(s); DC lines have no direct UC.jl equivalent.
+└ @ Main ~/Developer/UnitCommitment.jl/work/scripts/matpower_to_ucjl.jl:346
+Saved: test/fixtures/ac/case5_pwlc/sol_ac_opf.json
+Saved: test/fixtures/ac/case5_pwlc/sol_ac_opf.json (AC OPF: LOCALLY_SOLVED, obj=42905.1302029159)
+Saved: test/fixtures/ac/case5_pwlc/sol_dc_opf.json
+Saved: test/fixtures/ac/case5_pwlc/sol_dc_opf.json (DC OPF: OPTIMAL, obj=42575.75513196482)
+Saved: test/fixtures/ac/case5_pwlc/sol_soc_opf.json
+Saved: test/fixtures/ac/case5_pwlc/sol_soc_opf.json (SOC OPF: LOCALLY_SOLVED, obj=42905.12006111935)
+Saved: test/fixtures/ac/case5_pwlc/sol_ac_pf.json
+Saved: test/fixtures/ac/case5_pwlc/sol_ac_pf.json (AC PF: LOCALLY_SOLVED, obj=0.0)
+Saved: test/fixtures/ac/case5_pwlc/sol_dc_pf.json
+Saved: test/fixtures/ac/case5_pwlc/sol_dc_pf.json (DC PF: OPTIMAL, obj=0.0)

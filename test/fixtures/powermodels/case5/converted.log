@@ -1,0 +1,46 @@
+Saved: test/fixtures/ac/case5/original.m
+[warn | PowerModels]: The last 5 generator cost records will be ignored due to too few generator records.
+[warn | PowerModels]: reversing the orientation of branch 6 (4, 3) to be consistent with other parallel branches
+[warn | PowerModels]: bus 3 has an unrecongized bus_type 0, updating to bus_type 2
+[warn | PowerModels]: the voltage setpoint on generator 4 does not match the value at bus 4
+[warn | PowerModels]: the voltage setpoint on generator 1 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 5 does not match the value at bus 10
+[warn | PowerModels]: the voltage setpoint on generator 2 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 3 does not match the value at bus 3
+[info | PowerModels]: removing 1 cost terms from generator 4: [4000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 1: [1400.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 5: [1000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 2: [1500.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 3: [3000.0, 0.0]
+Converted: 5 buses, 5 generators, 7 lines, 0 shunts
+Saved: test/fixtures/ac/case5/converted.json
+[warn | PowerModels]: The last 5 generator cost records will be ignored due to too few generator records.
+[warn | PowerModels]: reversing the orientation of branch 6 (4, 3) to be consistent with other parallel branches
+[warn | PowerModels]: bus 3 has an unrecongized bus_type 0, updating to bus_type 2
+[warn | PowerModels]: the voltage setpoint on generator 4 does not match the value at bus 4
+[warn | PowerModels]: the voltage setpoint on generator 1 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 5 does not match the value at bus 10
+[warn | PowerModels]: the voltage setpoint on generator 2 does not match the value at bus 1
+[warn | PowerModels]: the voltage setpoint on generator 3 does not match the value at bus 3
+[info | PowerModels]: removing 1 cost terms from generator 4: [4000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 1: [1400.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 5: [1000.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 2: [1500.0, 0.0]
+[info | PowerModels]: removing 1 cost terms from generator 3: [3000.0, 0.0]
+
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Saved: test/fixtures/ac/case5/sol_ac_opf.json
+Saved: test/fixtures/ac/case5/sol_ac_opf.json (AC OPF: LOCALLY_SOLVED, obj=18269.102722788884)
+Saved: test/fixtures/ac/case5/sol_dc_opf.json
+Saved: test/fixtures/ac/case5/sol_dc_opf.json (DC OPF: OPTIMAL, obj=17613.215877956456)
+Saved: test/fixtures/ac/case5/sol_soc_opf.json
+Saved: test/fixtures/ac/case5/sol_soc_opf.json (SOC OPF: LOCALLY_SOLVED, obj=15051.445664370278)
+Saved: test/fixtures/ac/case5/sol_ac_pf.json
+Saved: test/fixtures/ac/case5/sol_ac_pf.json (AC PF: LOCALLY_SOLVED, obj=0.0)
+Saved: test/fixtures/ac/case5/sol_dc_pf.json
+Saved: test/fixtures/ac/case5/sol_dc_pf.json (DC PF: OPTIMAL, obj=0.0)

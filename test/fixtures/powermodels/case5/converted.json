@@ -1,0 +1,247 @@
+{
+  "Parameters": {
+    "Version": "0.5",
+    "Base MVA": 100.0,
+    "Time horizon (h)": 1,
+    "Time step (min)": 60,
+    "Power balance penalty ($/MW)": 1000.0
+  },
+  "Buses": {
+    "b1": {
+      "Load (MW)": 0.0,
+      "Minimum voltage (p.u.)": 0.9,
+      "Maximum voltage (p.u.)": 1.1,
+      "Voltage magnitude (p.u.)": 1.0,
+      "Voltage angle (rad)": 0.048935017968641414,
+      "Bus type": "PV"
+    },
+    "b2": {
+      "Load (MW)": 300.0,
+      "Load (MVAr)": 98.61,
+      "Minimum voltage (p.u.)": 0.9,
+      "Maximum voltage (p.u.)": 1.1,
+      "Voltage magnitude (p.u.)": 1.08407,
+      "Voltage angle (rad)": -0.012822061349776342,
+      "Bus type": "PQ"
+    },
+    "b3": {
+      "Load (MW)": 300.0,
+      "Load (MVAr)": 98.61,
+      "Minimum voltage (p.u.)": 0.9,
+      "Maximum voltage (p.u.)": 1.1,
+      "Voltage magnitude (p.u.)": 1.0,
+      "Voltage angle (rad)": -0.00976895688926266,
+      "Bus type": "PV"
+    },
+    "b4": {
+      "Load (MW)": 400.0,
+      "Load (MVAr)": 131.47,
+      "Minimum voltage (p.u.)": 0.9,
+      "Maximum voltage (p.u.)": 1.1,
+      "Voltage magnitude (p.u.)": 1.0,
+      "Voltage angle (rad)": 0.0,
+      "Bus type": "Slack"
+    },
+    "b10": {
+      "Load (MW)": 0.0,
+      "Minimum voltage (p.u.)": 0.9,
+      "Maximum voltage (p.u.)": 1.1,
+      "Voltage magnitude (p.u.)": 1.0,
+      "Voltage angle (rad)": 0.06266307973312801,
+      "Bus type": "PV"
+    }
+  },
+  "Generators": {
+    "g1": {
+      "Bus": "b1",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [
+        0.0,
+        13.333333333333334,
+        26.666666666666668,
+        40.0
+      ],
+      "Production cost curve ($)": [
+        0.0,
+        186.66666666666669,
+        373.33333333333337,
+        560.0
+      ],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 40.0,
+      "Reactive power min (MVAr)": -30.0,
+      "Reactive power max (MVAr)": 30.0,
+      "Voltage set-point (p.u.)": 1.07762
+    },
+    "g2": {
+      "Bus": "b1",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [
+        0.0,
+        56.666666666666664,
+        113.33333333333333,
+        170.0
+      ],
+      "Production cost curve ($)": [
+        0.0,
+        850.0,
+        1700.0,
+        2550.0
+      ],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 170.0,
+      "Reactive power min (MVAr)": -127.49999999999999,
+      "Reactive power max (MVAr)": 127.49999999999999,
+      "Voltage set-point (p.u.)": 1.07762
+    },
+    "g3": {
+      "Bus": "b3",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [
+        0.0,
+        173.33333333333334,
+        346.6666666666667,
+        520.0
+      ],
+      "Production cost curve ($)": [
+        0.0,
+        5200.0,
+        10400.0,
+        15600.0
+      ],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 324.498,
+      "Reactive power min (MVAr)": -390.0,
+      "Reactive power max (MVAr)": 390.0,
+      "Voltage set-point (p.u.)": 1.1
+    },
+    "g4": {
+      "Bus": "b4",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [
+        0.0,
+        66.66666666666667,
+        133.33333333333334,
+        200.0
+      ],
+      "Production cost curve ($)": [
+        0.0,
+        2666.666666666667,
+        5333.333333333334,
+        8000.0
+      ],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 0.0,
+      "Reactive power min (MVAr)": -150.0,
+      "Reactive power max (MVAr)": 150.0,
+      "Voltage set-point (p.u.)": 1.06414
+    },
+    "g5": {
+      "Bus": "b10",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [
+        0.0,
+        200.0,
+        400.0,
+        600.0
+      ],
+      "Production cost curve ($)": [
+        0.0,
+        2000.0,
+        4000.0,
+        6000.0
+      ],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 470.694,
+      "Reactive power min (MVAr)": -450.0,
+      "Reactive power max (MVAr)": 450.0,
+      "Voltage set-point (p.u.)": 1.06907
+    }
+  },
+  "Transmission lines": {
+    "l1": {
+      "Source bus": "b1",
+      "Target bus": "b2",
+      "Reactance (p.u.)": 0.0281,
+      "Resistance (p.u.)": 0.00281,
+      "Shunt susceptance (p.u.)": 0.00712,
+      "Normal flow limit (MVA)": 400.0,
+      "Emergency flow limit (MVA)": 400.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    },
+    "l2": {
+      "Source bus": "b1",
+      "Target bus": "b4",
+      "Reactance (p.u.)": 0.0304,
+      "Resistance (p.u.)": 0.00304,
+      "Shunt susceptance (p.u.)": 0.00658,
+      "Normal flow limit (MVA)": 426.0,
+      "Emergency flow limit (MVA)": 426.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    },
+    "l3": {
+      "Source bus": "b1",
+      "Target bus": "b10",
+      "Reactance (p.u.)": 0.0064,
+      "Resistance (p.u.)": 0.00064,
+      "Shunt susceptance (p.u.)": 0.03126,
+      "Normal flow limit (MVA)": 426.0,
+      "Emergency flow limit (MVA)": 426.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    },
+    "l4": {
+      "Source bus": "b2",
+      "Target bus": "b3",
+      "Reactance (p.u.)": 0.0108,
+      "Resistance (p.u.)": 0.00108,
+      "Shunt susceptance (p.u.)": 0.01852,
+      "Normal flow limit (MVA)": 426.0,
+      "Emergency flow limit (MVA)": 426.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    },
+    "l5": {
+      "Source bus": "b3",
+      "Target bus": "b4",
+      "Reactance (p.u.)": 0.0297,
+      "Resistance (p.u.)": 0.00297,
+      "Shunt susceptance (p.u.)": 0.00674,
+      "Transformer": true,
+      "Tap ratio (p.u.)": 1.05,
+      "Phase shift (rad)": 0.017453292519943295,
+      "Normal flow limit (MVA)": 426.0,
+      "Emergency flow limit (MVA)": 426.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    },
+    "l6": {
+      "Source bus": "b3",
+      "Target bus": "b4",
+      "Reactance (p.u.)": 0.03274425,
+      "Resistance (p.u.)": 0.003274425,
+      "Shunt susceptance (p.u.)": 0.006772114342403629,
+      "Transformer": true,
+      "Tap ratio (p.u.)": 0.9523809523809523,
+      "Phase shift (rad)": 0.017453292519943295,
+      "Normal flow limit (MVA)": 426.0,
+      "Emergency flow limit (MVA)": 426.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    },
+    "l7": {
+      "Source bus": "b4",
+      "Target bus": "b10",
+      "Reactance (p.u.)": 0.0297,
+      "Resistance (p.u.)": 0.00297,
+      "Shunt susceptance (p.u.)": 0.00674,
+      "Normal flow limit (MVA)": 240.0,
+      "Emergency flow limit (MVA)": 240.0,
+      "Angle difference min (rad)": -0.5235987755982988,
+      "Angle difference max (rad)": 0.5235987755982988
+    }
+  }
+}
+
