@@ -14,7 +14,6 @@ Base.@kwdef mutable struct Branch
     shunt_susceptance::Float64 = 0.0
     tap_ratio::Float64 = 1.0
     phase_shift::Float64 = 0.0
-    is_transformer::Bool = false
     normal_flow_limit::Vector{Float64}
     emergency_flow_limit::Vector{Float64}
     flow_limit_penalty::Vector{Float64}

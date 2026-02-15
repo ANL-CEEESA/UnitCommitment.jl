@@ -24,7 +24,6 @@ using UnitCommitment
     @test sc[:branches][1].shunt_conductance ≈ 0.0
     @test sc[:branches][1].tap_ratio ≈ 1.0
     @test sc[:branches][1].phase_shift ≈ 0.0
-    @test sc[:branches][1].is_transformer == false
     @test sc[:branches][1].normal_flow_limit == [150.0]
     @test sc[:branches][1].emergency_flow_limit == [200.0]
     @test sc[:branches][1].flow_limit_penalty == [5000.0]
@@ -39,7 +38,6 @@ using UnitCommitment
     @test sc[:branches][2].shunt_conductance ≈ 0.0
     @test sc[:branches][2].tap_ratio ≈ 1.05
     @test sc[:branches][2].phase_shift ≈ 0.0
-    @test sc[:branches][2].is_transformer == true
     @test sc[:branches][2].normal_flow_limit == [100.0]
     @test sc[:branches][2].emergency_flow_limit == [130.0]
     @test sc[:branches][2].flow_limit_penalty == [5000.0]
@@ -54,7 +52,6 @@ using UnitCommitment
     @test sc[:branches][3].shunt_conductance ≈ 0.0
     @test sc[:branches][3].tap_ratio ≈ 1.0
     @test sc[:branches][3].phase_shift ≈ 0.0
-    @test sc[:branches][3].is_transformer == false
     @test sc[:branches][3].normal_flow_limit == [120.0]
     @test sc[:branches][3].emergency_flow_limit == [160.0]
     @test sc[:branches][3].flow_limit_penalty == [5000.0]

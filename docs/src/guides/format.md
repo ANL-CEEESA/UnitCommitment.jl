@@ -365,7 +365,6 @@ its topology and the impedance of each transmission line or transformer.
 | `Shunt susceptance (p.u.)`         | Total line-charging shunt susceptance (in per unit). The full amount is split equally between the two ends of the line in the standard pi-model.                                                                                           |  `0.0`   |      No      |    Yes     |
 | `Tap ratio (p.u.)`                 | Off-nominal transformer turns ratio (in per unit). A value of `1.0` indicates no transformation.                                                                                                                                          |  `1.0`   |      No      |    Yes     |
 | `Phase shift (rad)`                | Transformer phase-shift angle (in radians).                                                                                                                                                                                                |  `0.0`   |      No      |    Yes     |
-| `Transformer`                      | Whether this branch is a transformer (boolean). When `true`, the tap ratio and phase shift parameters are active.                                                                                                                          | `false`  |      No      |     No     |
 | `Normal flow limit (MVA)`          | Maximum apparent power (in MVA) allowed to flow through the branch when the system is in its regular, fully-operational state. For candidate lines, this represents the limit per invested circuit.                                        | `+inf`   |     Yes      |    Yes     |
 | `Emergency flow limit (MVA)`       | Maximum apparent power (in MVA) allowed to flow through the branch when the system is in degraded state (for example, after the failure of another transmission line). For candidate lines, this represents the limit per invested circuit. | `+inf`   |     Yes      |    Yes     |
 | `Angle difference min (rad)`       | Minimum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `-inf`   |      No      |    Yes     |
@@ -396,7 +395,6 @@ its topology and the impedance of each transmission line or transformer.
       "Target bus": "b3",
       "Resistance (p.u.)": 0.0,
       "Reactance (p.u.)": 0.01335,
-      "Transformer": true,
       "Tap ratio (p.u.)": 1.05,
       "Phase shift (rad)": 0.0,
       "Normal flow limit (MVA)": 300.0

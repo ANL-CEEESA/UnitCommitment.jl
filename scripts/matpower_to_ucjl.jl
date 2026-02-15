@@ -267,7 +267,6 @@ function _build_ucjl_json(
 
         # Transformer data
         if branch["transformer"]
-            branch_data["Transformer"] = true
             branch_data["Tap ratio (p.u.)"] = branch["tap"]
             branch_data["Phase shift (rad)"] = deg2rad(branch["shift"])
         end

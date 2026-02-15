@@ -14,10 +14,6 @@ function read_json(
     if "Branches" in keys(json)
         for (branch_name, dict) in json["Branches"]
             tap = to_scalar(dict["Tap ratio (p.u.)"], default = 1.0)
-            is_transformer = to_scalar(dict["Transformer"], default = false)
-            if !is_transformer && tap != 1.0
-                is_transformer = true
-            end
             branch = Branch(
                 name = branch_name,
                 offset = length(branches) + 1,
@@ -46,7 +42,6 @@ function read_json(
                     dict["Phase shift (rad)"],
                     default = 0.0,
                 ),
-                is_transformer = is_transformer,
                 normal_flow_limit = to_timeseries(
                     dict["Normal flow limit (MVA)"],
                     T,
