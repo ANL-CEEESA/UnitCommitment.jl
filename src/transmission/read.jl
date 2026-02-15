@@ -2,12 +2,10 @@
 # Copyright (C) 2020-2026, UChicago Argonne, LLC. All rights reserved.
 # Released under the modified BSD license. See COPYING.md for more details.
 
-using SparseArrays
-
 function read_json(
     json::AbstractDict,
     sc::UnitCommitmentScenario,
-    ::PhaseAngleTransmissionExt,
+    ::TransmissionExtension,
 )
     T = sc[:time]
     branches = Branch[]
@@ -29,6 +27,19 @@ function read_json(
                 else
                     to_scalar(dict["Susceptance (p.u.)"])
                 end,
+                shunt_conductance = to_scalar(
+                    dict["Shunt conductance (p.u.)"],
+                    default = 0.0,
+                ),
+                shunt_susceptance = to_scalar(
+                    dict["Shunt susceptance (p.u.)"],
+                    default = 0.0,
+                ),
+                tap_ratio = to_scalar(dict["Tap ratio (p.u.)"], default = 1.0),
+                phase_shift = to_scalar(
+                    dict["Phase shift (rad)"],
+                    default = 0.0,
+                ),
                 normal_flow_limit = to_timeseries(
                     dict["Normal flow limit (MVA)"],
                     T,
@@ -43,6 +54,14 @@ function read_json(
                     dict["Flow limit penalty (\$/MW)"],
                     T,
                     default = [5000.0 for t in 1:T],
+                ),
+                angle_diff_min = to_scalar(
+                    dict["Angle difference min (rad)"],
+                    default = -Inf,
+                ),
+                angle_diff_max = to_scalar(
+                    dict["Angle difference max (rad)"],
+                    default = Inf,
                 ),
                 invest = to_timeseries(
                     to_scalar(dict["Investment cost (\$)"], default = 0.0),
@@ -76,8 +95,34 @@ function read_json(
             push!(contingencies, cont)
         end
     end
-    sc[:contingencies_by_name] = Dict(c.name => c for c in contingencies)
     sc[:contingencies] = contingencies
+    sc[:contingencies_by_name] = Dict(c.name => c for c in contingencies)
+
+    # Read shunt devices
+    shunts = ShuntDevice[]
+    if "Shunt devices" in keys(json)
+        for (shunt_name, dict) in json["Shunt devices"]
+            shunt = ShuntDevice(
+                name = shunt_name,
+                bus = sc[:bus_by_name][dict["Bus"]],
+                conductance = to_scalar(
+                    dict["Conductance (p.u.)"],
+                    default = 0.0,
+                ),
+                susceptance = to_scalar(
+                    dict["Susceptance (p.u.)"],
+                    default = 0.0,
+                ),
+                status = to_timeseries(
+                    dict["Status"],
+                    T,
+                    default = [true for t in 1:T],
+                ),
+            )
+            push!(shunts, shunt)
+        end
+    end
+    sc[:shunts] = shunts
 
     return
 end

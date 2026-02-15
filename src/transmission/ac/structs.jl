@@ -4,16 +4,6 @@
 
 abstract type ACFormulation end
 
-Base.@kwdef mutable struct ShuntDevice
-    name::String
-    bus::Bus
-    conductance::Float64
-    susceptance::Float64
-    status::Vector{Bool}
-end
-
-Base.@kwdef struct ACTransmissionExt <: UnitCommitmentExtension
+Base.@kwdef struct ACTransmissionExt <: TransmissionExtension
     formulation::ACFormulation = ACRectangular()
 end
-
-extension_slot(::ACTransmissionExt) = :transmission

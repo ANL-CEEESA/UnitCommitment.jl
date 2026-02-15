@@ -7,8 +7,7 @@ function read_json(
     sc::UnitCommitmentScenario,
     ext::ShiftFactorsTransmissionExt,
 )
-    # Reuse PhaseAngleTransmissionExt reader to read transmission data
-    read_json(json, sc, PhaseAngleTransmissionExt())
+    read_json(json, sc, CopperPlateTransmissionExt())
 
     # Check for investment branches (not supported)
     for branch in sc[:branches]

@@ -4,11 +4,16 @@
 
 function summarize(
     instance::UnitCommitmentInstance,
-    ::ACTransmissionExt,
+    ::TransmissionExtension,
     io::IO,
 )::Nothing
     sc = instance.scenarios[1]
     print(io, "$(length(sc[:branches])) branches, ")
-    print(io, "$(length(sc[:shunts])) shunt devices, ")
+    if !isempty(sc[:contingencies])
+        print(io, "$(length(sc[:contingencies])) contingencies, ")
+    end
+    if !isempty(sc[:shunts])
+        print(io, "$(length(sc[:shunts])) shunt devices, ")
+    end
     return
 end
