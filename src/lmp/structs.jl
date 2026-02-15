@@ -131,3 +131,13 @@ Base.@kwdef struct AELMP <: UnitCommitmentExtension
 end
 
 extension_slot(::AELMP) = :lmp
+
+"""
+    NoLMP()
+
+Disables LMP computation. Use this extension to replace the default
+`ConventionalLMP` when the optimizer does not support dual values.
+"""
+struct NoLMP <: UnitCommitmentExtension end
+
+extension_slot(::NoLMP) = :lmp
