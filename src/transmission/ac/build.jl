@@ -96,6 +96,48 @@ function _add_ac_flow_limits!(
     return
 end
 
+function _add_ac_line_flow_to_nodal_balance!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+)::Nothing
+    T = instance.time
+
+    pf = model[:pf]
+    pt = model[:pt]
+    qf = model[:qf]
+    qt = model[:qt]
+
+    net_injection = model[:net_injection]
+    net_reactive_injection = model[:net_reactive_injection]
+
+    for sc in instance.scenarios, l in sc[:branches], t in 1:T
+        # Active power: subtract flows leaving the bus
+        add_to_expression!(
+            net_injection[sc.name, l.source.name, t],
+            pf[sc.name, l.name, t],
+            -1.0,
+        )
+        add_to_expression!(
+            net_injection[sc.name, l.target.name, t],
+            pt[sc.name, l.name, t],
+            -1.0,
+        )
+
+        # Reactive power: subtract flows leaving the bus
+        add_to_expression!(
+            net_reactive_injection[sc.name, l.source.name, t],
+            qf[sc.name, l.name, t],
+            -1.0,
+        )
+        add_to_expression!(
+            net_reactive_injection[sc.name, l.target.name, t],
+            qt[sc.name, l.name, t],
+            -1.0,
+        )
+    end
+    return
+end
+
 function _add_ac_obj!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,

@@ -164,44 +164,15 @@ function _add_ac_nodal_balance!(
 )::Nothing
     T = instance.time
 
-    pf = model[:pf]
-    pt = model[:pt]
-    qf = model[:qf]
-    qt = model[:qt]
     vm = model[:vm]
 
     net_injection = model[:net_injection]
     net_reactive_injection = model[:net_reactive_injection]
 
+    _add_ac_line_flow_to_nodal_balance!(model, instance)
+
     for sc in instance.scenarios
         base_mva = sc[:base_mva]
-
-        # Add line flow contributions to net injection expressions
-        for l in sc[:branches], t in 1:T
-            # Active power: subtract flows leaving the bus
-            add_to_expression!(
-                net_injection[sc.name, l.source.name, t],
-                pf[sc.name, l.name, t],
-                -1.0,
-            )
-            add_to_expression!(
-                net_injection[sc.name, l.target.name, t],
-                pt[sc.name, l.name, t],
-                -1.0,
-            )
-
-            # Reactive power: subtract flows leaving the bus
-            add_to_expression!(
-                net_reactive_injection[sc.name, l.source.name, t],
-                qf[sc.name, l.name, t],
-                -1.0,
-            )
-            add_to_expression!(
-                net_reactive_injection[sc.name, l.target.name, t],
-                qt[sc.name, l.name, t],
-                -1.0,
-            )
-        end
 
         # Add shunt contributions (quadratic in voltage magnitude).
         # Use auxiliary variables to keep net_injection as AffExpr.

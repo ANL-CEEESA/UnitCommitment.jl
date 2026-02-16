@@ -77,7 +77,7 @@ function store_solution(
         # Base case results
         sol[sc.name]["Branch: Base flow (MW)"] = OrderedDict(
             b.name =>
-                [round(pre_flow[b.offset, t], digits = 5) for t in 1:T] for
+                [round(pre_flow[b.offset, t], digits = 10) for t in 1:T] for
             b in branches
         )
         sol[sc.name]["Branch: Base overflow (MW)"] = OrderedDict(
@@ -87,7 +87,7 @@ function store_solution(
                         0.0,
                         abs(pre_flow[b.offset, t]) - b.normal_flow_limit[t],
                     ),
-                    digits = 5,
+                    digits = 10,
                 ) for t in 1:T
             ] for b in branches
         )
@@ -98,7 +98,7 @@ function store_solution(
                         0.0,
                         abs(pre_flow[b.offset, t]) - b.normal_flow_limit[t],
                     ) * b.flow_limit_penalty[t],
-                    digits = 5,
+                    digits = 10,
                 ) for t in 1:T
             ] for b in branches
         )
@@ -118,7 +118,7 @@ function store_solution(
             pf = post_flow[only(cont.branches).offset]
 
             cont_flow[cont.name] = OrderedDict(
-                b.name => [round(pf[b.offset, t], digits = 5) for t in 1:T]
+                b.name => [round(pf[b.offset, t], digits = 10) for t in 1:T]
                 for b in branches
             )
             cont_overflow[cont.name] = OrderedDict(
@@ -128,7 +128,7 @@ function store_solution(
                             0.0,
                             abs(pf[b.offset, t]) - b.emergency_flow_limit[t],
                         ),
-                        digits = 5,
+                        digits = 10,
                     ) for t in 1:T
                 ] for b in branches
             )

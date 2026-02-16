@@ -16,7 +16,7 @@ function store_solution(
         flows = _timeseries(inner, :flow, branches, T, sc = sc)
         sol[sc.name]["Branch: Base flow (MW)"] = OrderedDict(
             branch.name =>
-                [round(flows[branch.name][t], digits = 5) for t in 1:T] for
+                [round(flows[branch.name][t], digits = 10) for t in 1:T] for
             branch in branches
         )
         sol[sc.name]["Branch: Base overflow (MW)"] =
