@@ -47,6 +47,7 @@ Base.@kwdef mutable struct ThermalUnit
     initial_status::Union{Int,Nothing}
     initial_power::Union{Float64,Nothing}
     startup_categories::Vector{StartupCategory}
+    shutdown_cost::Float64 = 0.0
     reserves::Vector{Reserve}
     non_spinning_capacity::Float64
     commitment_status::Vector{Union{Bool,Nothing}}

@@ -37,7 +37,6 @@ using HiGHS, JuMP, UnitCommitment
     # Objective function
     # -------------------------------------------------------------------------
     @test_obj_coef model[:switch_on]["g1", 1] 0.0
-    @test_obj_coef model[:switch_off]["g1", 1] 0.0
     @test_obj_coef model[:prod_above]["s1", "g1", 1] 0.0
     @test_obj_coef model[:reserve]["s1", "r1", "g2", 1] 0.0
     @test_obj_coef model[:is_on]["g1", 1] 1400.0
@@ -54,6 +53,12 @@ using HiGHS, JuMP, UnitCommitment
     @test_obj_coef model[:startup]["g1", 1, 3] 2000.0
     @test_obj_coef model[:startup]["g2", 1, 1] 3000.0
     @test_obj_coef model[:startup]["g2", 1, 2] 4000.0
+
+    # Shutdown costs
+    @test_obj_coef model[:switch_off]["g1", 1] 500.0
+    @test_obj_coef model[:switch_off]["g2", 1] 750.0
+    @test_obj_coef model[:switch_off]["g3", 1] 0.0
+
     @test_obj_coef model[:invest]["g2", 1] -100.0
     @test_obj_coef model[:invest]["g2", 2] -100.0
     @test_obj_coef model[:invest]["g2", 3] -100.0

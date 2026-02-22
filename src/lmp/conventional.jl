@@ -76,7 +76,8 @@ function _update_solution(
                 g.name => [
                     sol[sc.name]["Thermal: Gross revenue (\$)"][g.name][t] -
                     sol[sc.name]["Thermal: Production cost (\$)"][g.name][t] -
-                    sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t]
+                    sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t] -
+                    sol[sc.name]["Thermal: Shutdown cost (\$)"][g.name][t]
                     for t in 1:T
                 ] for g in thermal_units
             )

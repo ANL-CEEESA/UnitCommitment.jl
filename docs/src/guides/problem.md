@@ -50,15 +50,16 @@ and start-up and shutdown limits.
 
 ### Important concepts
 
-- **Commitment, power output and startup costs:** Thermal generators can either
-  be online (on) or offline (off). When a thermal generator is on, it can
-  produce between a minimum and a maximum amount of power; when it is off, it
+- **Commitment, power output and startup/shutdown costs:** Thermal generators
+  can either be online (on) or offline (off). When a thermal generator is on, it
+  can produce between a minimum and a maximum amount of power; when it is off, it
   cannot produce any power. Switching a generator on incurs a startup cost,
   which depends on how long the unit has been offline. More precisely, each
   thermal generator $g$ has a number $K^{start}_g$ of startup categories (e.g.,
   cold, warm and hot). Each category $k$ has a corresponding startup cost
   $Z^{\text{start}}_{gk}$, and is available only if the unit has spent at most
-  $M^{\text{delay}}_{gk}$ time steps offline.
+  $M^{\text{delay}}_{gk}$ time steps offline. Switching a generator off may also
+  incur a shutdown cost $Z^{\text{shut}}_{g}$.
 
 - **Piecewise-linear production cost curve:** Besides startup costs, thermal
   generators also incur production costs based on their power output. The
@@ -137,6 +138,7 @@ and start-up and shutdown limits.
 | $Z^{\text{res-short}}_{r}$      | \$/MW  | Penalty for reserve shortfall for reserve $r$.                                             |
 | $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
 | $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
+| $Z^{\text{shut}}_{g}$           | \$     | Cost to shut down unit $g$.                                                                |
 | $Z^{\text{invest}}_{gt}$        | \$     | Cost to invest unit $g$ at time $t$.                                                       |
 | $W^{\text{invest}}$             |        | Investment cost weight (multiplier applied to all investment costs).                       |
 | $G^\text{therm}$                |        | Set of thermal generators.                                                                 |
@@ -171,6 +173,12 @@ and start-up and shutdown limits.
 
 ```math
 \sum_{g \in G} \sum_{t \in T} \sum_{k=1}^{K^{start}_g} x^{\text{start}}_{gtk} Z^{\text{start}}_{gk}
+```
+
+- Shutdown costs:
+
+```math
+\sum_{g \in G^\text{therm}} \sum_{t \in T} x^{\text{switch-off}}_{gt} Z^{\text{shut}}_{g}
 ```
 
 - Spinning reserve shortfall penalty:

@@ -44,6 +44,8 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 solution[sc.name]["Thermal: Production cost (\$)"][unit.name]
             actual_startup_cost =
                 solution[sc.name]["Thermal: Startup cost (\$)"][unit.name]
+            actual_shutdown_cost =
+                solution[sc.name]["Thermal: Shutdown cost (\$)"][unit.name]
             is_on = bin(solution[sc.name]["Thermal: Is on"][unit.name])
 
             for t in 1:instance.time
@@ -63,7 +65,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 end
 
                 # Compute production costs
-                production_cost, startup_cost = 0, 0
+                production_cost, startup_cost, shutdown_cost = 0, 0, 0
                 if is_on[t]
                     production_cost += unit.min_power_cost[t]
                     residual = max(0, production[t] - unit.min_power[t])
@@ -260,6 +262,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
 
                 # Verify minimum uptime
                 if is_shutting_down
+                    shutdown_cost = unit.shutdown_cost
 
                     # Calculate how much time the unit has been online
                     time_up = 0
@@ -305,6 +308,18 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                         t,
                         actual_startup_cost[t],
                         startup_cost
+                    )
+                    err_count += 1
+                end
+
+                # Verify shutdown costs
+                if abs(actual_shutdown_cost[t] - shutdown_cost) > 1.00
+                    @error @sprintf(
+                        "Unit %s has unexpected shutdown cost at time %d (%.2f should be %.2f)",
+                        unit.name,
+                        t,
+                        actual_shutdown_cost[t],
+                        shutdown_cost
                     )
                     err_count += 1
                 end

@@ -105,6 +105,9 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                 )
             end
 
+            # Read shutdown cost
+            shutdown_cost = to_scalar(dict["Shutdown cost (\$)"], default = 0.0)
+
             # Read reserve eligibility
             unit_reserves = Reserve[]
             if "Reserve eligibility" in keys(dict)
@@ -181,6 +184,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                 initial_status = initial_status,
                 initial_power = initial_power,
                 startup_categories = startup_categories,
+                shutdown_cost = shutdown_cost,
                 reserves = unit_reserves,
                 non_spinning_capacity = to_scalar(
                     dict["Non-spinning reserve capacity (MW)"],

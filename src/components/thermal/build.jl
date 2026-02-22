@@ -109,6 +109,7 @@ function _add_thermal_obj!(
     instance::UnitCommitmentInstance,
 )::Nothing
     is_on = _init(model, :is_on)
+    switch_off = _init(model, :switch_off)
     startup = _init(model, :startup)
     invest = _init(model, :invest)
     segprod = _init(model, :segprod)
@@ -144,6 +145,19 @@ function _add_thermal_obj!(
                     model[:obj],
                     startup[g.name, t, s],
                     g.startup_categories[s].cost,
+                )
+            end
+        end
+    end
+
+    # Shutdown costs
+    for t in 1:instance.time
+        for g in instance.scenarios[1][:thermal]
+            if g.shutdown_cost > 0
+                add_to_expression!(
+                    model[:obj],
+                    switch_off[g.name, t],
+                    g.shutdown_cost,
                 )
             end
         end

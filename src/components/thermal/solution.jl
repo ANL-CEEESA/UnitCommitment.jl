@@ -41,6 +41,9 @@ function _store_thermal_solution!(
     sol["Thermal: Startup cost (\$)"] = OrderedDict(
         g.name => _thermal_startup_cost(model, g, T) for g in sc[:thermal]
     )
+    sol["Thermal: Shutdown cost (\$)"] = OrderedDict(
+        g.name => _thermal_shutdown_cost(model, g, T) for g in sc[:thermal]
+    )
     sol["Thermal: Is on"] = _timeseries(model, :is_on, sc[:thermal], T)
     sol["Thermal: Switch on"] = _timeseries(model, :switch_on, sc[:thermal], T)
     sol["Thermal: Switch off"] =
@@ -82,6 +85,10 @@ function _thermal_startup_cost(model::JuMP.Model, g, T::Int)
             for s in 1:S
         ) for t in 1:T
     ]
+end
+
+function _thermal_shutdown_cost(model::JuMP.Model, g, T::Int)
+    return [g.shutdown_cost * value(model[:switch_off][g.name, t]) for t in 1:T]
 end
 
 function _store_reserve_solution!(

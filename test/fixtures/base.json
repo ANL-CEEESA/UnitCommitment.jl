@@ -18,7 +18,8 @@
       "Ramp up limit (MW)": 70.0,
       "Ramp down limit (MW)": 60.0,
       "Startup limit (MW)": 105.0,
-      "Shutdown limit (MW)": 120.0
+      "Shutdown limit (MW)": 120.0,
+      "Shutdown cost ($)": 500.0
     },
     "g2": {
       "Bus": "b2",
@@ -30,6 +31,7 @@
       "Ramp down limit (MW)": 60.0,
       "Startup limit (MW)": 50.0,
       "Shutdown limit (MW)": 40.0,
+      "Shutdown cost ($)": 750.0,
       "Minimum uptime (h)": 3,
       "Minimum downtime (h)": 3,
       "Maximum daily energy (MWh)": null,
