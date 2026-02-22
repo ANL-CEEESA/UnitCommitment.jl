@@ -1,0 +1,58 @@
+{
+  "Parameters": {
+    "Version": "0.4",
+    "Time horizon (h)": 4
+  },
+  "Buses": {
+    "b1": { "Load (MW)": 400 }
+  },
+  "Generators": {
+    "g1": {
+      "Bus": "b1",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [100, 200],
+      "Production cost curve ($)": [1000, 3000],
+      "Initial status (h)": 10,
+      "Initial power (MW)": 150,
+      "Reserve eligibility": ["r1", "r3"]
+    },
+    "g2": {
+      "Bus": "b1",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [0, 100],
+      "Production cost curve ($)": [0, 5000],
+      "Initial status (h)": -10,
+      "Initial power (MW)": 0,
+      "Reserve eligibility": ["r1", "r2"],
+      "Non-spinning reserve capacity (MW)": 80
+    },
+    "g3": {
+      "Bus": "b1",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [50, 200],
+      "Production cost curve ($)": [500, 4000],
+      "Initial status (h)": 5,
+      "Initial power (MW)": 100,
+      "Reserve eligibility": ["r1", "r3"]
+    }
+  },
+  "Reserves": {
+    "r1": {
+      "Type": "spinning",
+      "Amount (MW)": 50,
+      "Shortfall penalty ($/MW)": 50,
+      "Parent": "r2"
+    },
+    "r2": {
+      "Type": "non-spinning",
+      "Amount (MW)": 100,
+      "Shortfall penalty ($/MW)": 1500,
+      "Parent": "r3"
+    },
+    "r3": {
+      "Type": "spinning",
+      "Amount (MW)": 200,
+      "Shortfall penalty ($/MW)": 1000
+    }
+  }
+}

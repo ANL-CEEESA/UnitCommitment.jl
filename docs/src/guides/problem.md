@@ -124,15 +124,17 @@ and start-up and shutdown limits.
 | $M^{\text{pmin}}_{gt}$          | MW     | Minimum power output at time $t$.                                                          |
 | $M^{\text{ramp-down}}_{g}$      | MW     | Ramp down limit.                                                                           |
 | $M^{\text{ramp-up}}_{g}$        | MW     | Ramp up limit.                                                                             |
-| $M^{\text{reserve-amount}}_{rt}$ | MW     | Required amount of spinning reserve $r$ at time $t$.                                       |
+| $M^{\text{ns-cap}}_{g}$         | MW     | Non-spinning reserve capacity of unit $g$.                                                 |
+| $M^{\text{reserve-amount}}_{rt}$ | MW     | Required amount of reserve $r$ at time $t$.                                                |
 | $M^{\text{seg-pmax}}_{gtks}$    | MW     | Maximum power output for piecewise-linear segment $k$ at time $t$ and scenario $s$.        |
 | $M^{\text{shutdown-limit}}_{g}$ | MW     | Maximum power unit $g$ produces immediately before shutting down                           |
 | $M^{\text{startup-limit}}_{g}$  | MW     | Maximum power unit $g$ produces immediately after starting up                              |
-| $R_g$                           |        | Set of spinning reserves that may be served by $g$.                                        |
-| $R$                             |        | Set of all spinning reserves.                                                              |
-| $R^+$                           |        | Set of spinning reserves that allow shortfall.                                             |
+| $D(r)$                          |        | Set of all descendant reserves of $r$ in the cascading hierarchy.                          |
+| $R_g$                           |        | Set of reserves that may be served by $g$.                                                 |
+| $R$                             |        | Set of all reserves (spinning and non-spinning).                                           |
+| $R^+$                           |        | Set of reserves that allow shortfall.                                                      |
 | $Z^{\text{pmin}}_{gt}$          | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
-| $Z^{\text{res-short}}_{r}$      | \$/MW  | Penalty for reserve shortfall for spinning reserve $r$.                                    |
+| $Z^{\text{res-short}}_{r}$      | \$/MW  | Penalty for reserve shortfall for reserve $r$.                                             |
 | $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
 | $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
 | $Z^{\text{invest}}_{gt}$        | \$     | Cost to invest unit $g$ at time $t$.                                                       |
@@ -150,8 +152,8 @@ and start-up and shutdown limits.
 | $x^{\text{invest}}_{gt}$      | `invest[g,t]`              | One if generator $g$ is invested at or before $t$.                                                                                | Binary | 1     |
 | $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.                                              | MW     | 2     |
 | $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$.                                     | MW     | 2     |
-| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of spinning reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                                                       | MW     | 2     |
-| $y^{\text{res-short}}_{srt}$  | `reserve_shortfall[s,r,t]` | Amount of spinning reserve shortfall for reserve $r$ at time $t$ in scenario $s$. Only defined for reserves that allow shortfall. | MW     | 2     |
+| $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                                                       | MW     | 2     |
+| $y^{\text{res-short}}_{srt}$  | `reserve_shortfall[s,r,t]` | Amount of reserve shortfall for reserve $r$ at time $t$ in scenario $s$. Only defined for reserves that allow shortfall. | MW     | 2     |
 
 ### Objective function terms
 
@@ -359,11 +361,21 @@ x^{\text{is-on}}_{gt} \leq x^{\text{invest}}_{gt}
 x^{\text{invest}}_{g,t-1} \leq x^{\text{invest}}_{gt}
 ```
 
-- The total spinning reserve provided by all thermal units must meet the minimum
-  requirement (`eq_min_spinning_reserve[s,r,t]`):
+- The total reserve (including cascading contributions from descendant reserves)
+  must meet the minimum requirement (`eq_min_reserve[s,r,t]`):
 
 ```math
-\sum_{g \in G^\text{therm} : r \in R_g} y^{\text{res}}_{grts} + y^{\text{res-short}}_{srt} \geq M^{\text{reserve-amount}}_{rt}
+\sum_{g : r \in R_g} y^{\text{res}}_{grts}
++ \sum_{d \in D(r)} \sum_{g : d \in R_g} y^{\text{res}}_{gdts}
++ y^{\text{res-short}}_{srt} \geq M^{\text{reserve-amount}}_{rt}
+```
+
+- Non-spinning reserve provision is bounded by offline capacity
+  (`eq_ns_reserve_capacity[s,r,g,t]`):
+
+```math
+y^{\text{res}}_{grts} \leq M^{\text{ns-cap}}_{g} \cdot (1 - x^{\text{is-on}}_{gt})
+\quad \forall r \in R_g : r \text{ is non-spinning}
 ```
 
 ## 3. Profiled generators

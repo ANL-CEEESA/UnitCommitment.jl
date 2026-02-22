@@ -11,7 +11,7 @@ function _add_thermal_constr_ramping!(
         # TODO: Move upper case constants to model[:instance]
         RESERVES_WHEN_SHUT_DOWN = true
         gn = g.name
-        reserve = _total_reserves(model, instance, g, sc)
+        reserve = _total_spinning_reserves(model, instance, g, sc)
         eq_str_prod_limit = _init(model, :eq_str_prod_limit)
         eq_prod_limit_ramp_up_extra_period =
             _init(model, :eq_prod_limit_ramp_up_extra_period)

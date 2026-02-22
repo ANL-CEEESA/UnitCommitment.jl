@@ -90,14 +90,14 @@ function _store_reserve_solution!(
     sc,
     T::Int,
 )
-    sol["Reserve: Spinning (MW)"] = OrderedDict(
+    sol["Reserve: Provided (MW)"] = OrderedDict(
         r.name => OrderedDict(
             g.name => [
                 value(model[:reserve][sc.name, r.name, g.name, t]) for t in 1:T
             ] for g in r.thermal_units
         ) for r in sc[:reserves]
     )
-    sol["Reserve: Spinning shortfall (MW)"] = OrderedDict(
+    sol["Reserve: Shortfall (MW)"] = OrderedDict(
         r.name => [
             value(model[:reserve_shortfall][sc.name, r.name, t]) for t in 1:T
         ] for r in sc[:reserves]

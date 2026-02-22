@@ -14,7 +14,7 @@ using UnitCommitment, DataStructures
             OrderedDict("g1" => [1.0, 0.0, 1.0, 1.0, 0.0, 1.0]),
         "Profiled: Production (MW)" =>
             OrderedDict("g1" => [199.0, 299.0, 399.0, 499.0, 599.0, 699.0]),
-        "Reserve: Spinning (MW)" => OrderedDict(
+        "Reserve: Provided (MW)" => OrderedDict(
             "r1" => OrderedDict("g1" => [31.0, 32.0, 33.0, 34.0, 35.0, 36.0]),
         ),
     )
@@ -30,7 +30,7 @@ using UnitCommitment, DataStructures
     @test psuedo_solution["Thermal: Is on"]["g1"] == [1.0, 0.0, 1.0, 1.0]
     @test psuedo_solution["Profiled: Production (MW)"]["g1"] ==
           [199.0, 299.0, 399.0, 499.0]
-    @test psuedo_solution["Reserve: Spinning (MW)"]["r1"]["g1"] ==
+    @test psuedo_solution["Reserve: Provided (MW)"]["r1"]["g1"] ==
           [31.0, 32.0, 33.0, 34.0]
 
     # second update should append the first 4 entries of sub solution
@@ -45,6 +45,6 @@ using UnitCommitment, DataStructures
           [1.0, 0.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0]
     @test psuedo_solution["Profiled: Production (MW)"]["g1"] ==
           [199.0, 299.0, 399.0, 499.0, 199.0, 299.0, 399.0, 499.0]
-    @test psuedo_solution["Reserve: Spinning (MW)"]["r1"]["g1"] ==
+    @test psuedo_solution["Reserve: Provided (MW)"]["r1"]["g1"] ==
           [31.0, 32.0, 33.0, 34.0, 31.0, 32.0, 33.0, 34.0]
 end

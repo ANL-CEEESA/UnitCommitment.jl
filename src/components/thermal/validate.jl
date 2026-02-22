@@ -20,13 +20,26 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
         for unit in sc[:thermal]
             production =
                 solution[sc.name]["Thermal: Production (MW)"][unit.name]
-            reserve = [0.0 for _ in 1:instance.time]
-            if !isempty(unit.reserves)
-                reserve += sum(
-                    solution[sc.name]["Reserve: Spinning (MW)"][r.name][unit.name]
-                    for r in unit.reserves
+            # Spinning reserve total (for online checks)
+            spinning = [r for r in unit.reserves if r.type == :spinning]
+            spinning_reserve = [0.0 for _ in 1:instance.time]
+            if !isempty(spinning)
+                spinning_reserve += sum(
+                    solution[sc.name]["Reserve: Provided (MW)"][r.name][unit.name]
+                    for r in spinning
                 )
             end
+
+            # Non-spinning reserve total (for offline checks)
+            non_spinning = [r for r in unit.reserves if r.type == :non_spinning]
+            ns_reserve = [0.0 for _ in 1:instance.time]
+            if !isempty(non_spinning)
+                ns_reserve += sum(
+                    solution[sc.name]["Reserve: Provided (MW)"][r.name][unit.name]
+                    for r in non_spinning
+                )
+            end
+            reserve = spinning_reserve
             actual_production_cost =
                 solution[sc.name]["Thermal: Production cost (\$)"][unit.name]
             actual_startup_cost =
@@ -86,7 +99,7 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                 for r in sc[:reserves]
                     if unit ∉ r.thermal_units && (
                         unit in keys(
-                            solution[sc.name]["Reserve: Spinning (MW)"][r.name],
+                            solution[sc.name]["Reserve: Provided (MW)"][r.name],
                         )
                     )
                         @error @sprintf(
@@ -132,6 +145,29 @@ function _validate_units(instance::UnitCommitmentInstance, solution; tol = 0.01)
                         t,
                         production[t],
                         reserve[t],
+                    )
+                    err_count += 1
+                end
+
+                # Online units must not provide non-spinning reserves
+                if is_on[t] && ns_reserve[t] > tol
+                    @error @sprintf(
+                        "Online unit %s provides non-spinning reserve at time %d (%.2f > 0)",
+                        unit.name,
+                        t,
+                        ns_reserve[t],
+                    )
+                    err_count += 1
+                end
+
+                # Offline non-spinning reserve bounded by capacity
+                if !is_on[t] && ns_reserve[t] > unit.non_spinning_capacity + tol
+                    @error @sprintf(
+                        "Unit %s exceeds non-spinning reserve capacity at time %d (%.2f > %.2f)",
+                        unit.name,
+                        t,
+                        ns_reserve[t],
+                        unit.non_spinning_capacity,
                     )
                     err_count += 1
                 end
@@ -283,12 +319,22 @@ function _validate_reserves(instance, solution, tol = 0.01)
     for sc in instance.scenarios
         for t in 1:instance.time
             for r in sc[:reserves]
+                # Direct provision
                 provided = sum(
-                    solution[sc.name]["Reserve: Spinning (MW)"][r.name][g.name][t]
-                    for g in r.thermal_units
+                    solution[sc.name]["Reserve: Provided (MW)"][r.name][g.name][t]
+                    for g in r.thermal_units;
+                    init = 0.0,
                 )
+                # Cascading provision from descendants
+                for d in r.descendants
+                    provided += sum(
+                        solution[sc.name]["Reserve: Provided (MW)"][d.name][g.name][t]
+                        for g in d.thermal_units;
+                        init = 0.0,
+                    )
+                end
                 shortfall =
-                    solution[sc.name]["Reserve: Spinning shortfall (MW)"][r.name][t]
+                    solution[sc.name]["Reserve: Shortfall (MW)"][r.name][t]
                 required = r.amount[t]
 
                 if provided + shortfall < required - tol

@@ -15,7 +15,7 @@ import UnitCommitment: TimeDecomposition
     )
     @test length(solution["Thermal: Production (MW)"]["g1"]) == 4
     @test length(solution["Thermal: Is on"]["g2"]) == 4
-    @test length(solution["Reserve: Spinning (MW)"]["r1"]["g2"]) == 4
+    @test length(solution["Reserve: Provided (MW)"]["r1"]["g2"]) == 4
 
     # read multiple scenarios
     instance = UnitCommitment.read([
@@ -37,6 +37,6 @@ import UnitCommitment: TimeDecomposition
         solution["case14-profiled"]["Profiled: Production (MW)"]["g7"],
     ) == 4
     @test length(
-        solution["case14-profiled"]["Reserve: Spinning (MW)"]["r1"]["g3"],
+        solution["case14-profiled"]["Reserve: Provided (MW)"]["r1"]["g3"],
     ) == 4
 end

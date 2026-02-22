@@ -107,7 +107,8 @@ specified:
 | `Initial status (h)`                                         | If set to a positive number, indicates the amount of time (in hours) the generator has been on at the beginning of the simulation, and if set to a negative number, the amount of time the generator has been off. For example, if `Initial status (h)` is `-2`, this means that the generator was off since `-02:00` (h:min). The simulation starts at time `00:00`. If `Initial status (h)` is `3`, this means that the generator was on since `-03:00`. A value of zero is not acceptable.                                                                                                                                                      | Required          |      No      |     No     |
 | `Initial power (MW)`                                         | Amount of power the generator at time step `-1`, immediately before the planning horizon starts.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Required          |      No      |     No     |
 | `Must run?`                                                  | If `true`, the generator should be committed, even if that is not economical (Boolean).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `false`           |     Yes      |    Yes     |
-| `Reserve eligibility`                                        | List of reserve products this generator is eligible to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `[]`              |      No      |    Yes     |
+| `Reserve eligibility`                                        | List of reserve products (spinning or non-spinning) this generator is eligible to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `[]`              |      No      |    Yes     |
+| `Non-spinning reserve capacity (MW)`                         | Maximum reserve contribution when the generator is offline (in MW).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `0.0`             |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be committed at that time period; if `false`, the generator must not be committed at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                       | `null`            |     Yes      |    Yes     |
 | `Investment cost ($)`                                        | Cost to build a candidate generation unit. Should be zero for existing units.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `0.0`             |      No      |     No     |
 
@@ -350,13 +351,18 @@ topology and the susceptance of each transmission line.
 
 ### Reserves
 
-This section describes the hourly amount of reserves required.
+This section describes the hourly amount of reserves required. Reserves may be
+`"spinning"` (provided by online generators) or `"non-spinning"` (provided by
+offline generators with fast-start capability). A reserve product may declare a
+`"Parent"` to form a cascading (nested) hierarchy, where contributions to a
+child reserve also count toward satisfying its parent.
 
 | Key                        | Description                                                                                                                                                             | Default  | Time series? | Uncertain? |
 | :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
-| `Type`                     | Type of reserve product. Must be "spinning".                                                                                                                            | Required |      No      |     No     |
+| `Type`                     | Type of reserve product. Must be `"spinning"` or `"non-spinning"`.                                                                                                      | Required |      No      |     No     |
 | `Amount (MW)`              | Amount of reserves required.                                                                                                                                            | Required |     Yes      |    Yes     |
 | `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1`     |     Yes      |    Yes     |
+| `Parent`                   | Name of parent reserve for cascading requirements. Contributions to this reserve also count toward satisfying the parent.                                              | `null`   |      No      |     No     |
 
 #### Example
 
@@ -365,8 +371,20 @@ This section describes the hourly amount of reserves required.
   "Reserves": {
     "r1": {
       "Type": "spinning",
-      "Amount (MW)": [57.30552, 53.88429, 51.31838, 50.46307],
-      "Shortfall penalty ($/MW)": 5.0
+      "Amount (MW)": 400,
+      "Shortfall penalty ($/MW)": 50,
+      "Parent": "r2"
+    },
+    "r2": {
+      "Type": "non-spinning",
+      "Amount (MW)": 1500,
+      "Shortfall penalty ($/MW)": 1500,
+      "Parent": "r3"
+    },
+    "r3": {
+      "Type": "spinning",
+      "Amount (MW)": 2000,
+      "Shortfall penalty ($/MW)": 1000
     }
   }
 }
@@ -743,22 +761,22 @@ removed for convenience:
 
 ### Reserves
 
-| Key                                      | Description                                                                                                                                                      | Unit |
-| :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
-| `Reserve: Spinning (MW)`                 | Amount of spinning reserve provided by each thermal generator for each spinning reserve product. Nested structure: `reserve_name -> generator_name -> [values]`. | MW   |
-| `Reserve: Spinning shortfall (MW)`       | Amount of spinning reserve requirement not met for each reserve product.                                                                                         | MW   |
+| Key                                      | Description                                                                                                                                                                                                | Unit |
+| :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Reserve: Provided (MW)`                 | Amount of reserve provided by each eligible thermal generator for each reserve product (both spinning and non-spinning). Nested structure: `reserve_name -> generator_name -> [values]`.                   | MW   |
+| `Reserve: Shortfall (MW)`                | Amount of reserve requirement not met for each reserve product.                                                                                                                                            | MW   |
 
 #### Example
 
 ```json
 {
-  "Reserve: Spinning (MW)": {
+  "Reserve: Provided (MW)": {
     "r1": {
       "g1": [15.0, 18.5, 16.2, 17.8],
       "g2": [0.0, 5.5, 6.8, 7.2]
     }
   },
-  "Reserve: Spinning shortfall (MW)": {
+  "Reserve: Shortfall (MW)": {
     "r1": [0.0, 0.0, 0.0, 0.0]
   }
 }
