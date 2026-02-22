@@ -15,7 +15,7 @@
 da_contents = """
 {
     "Parameters": {
-        "Version": "0.4",
+        "Version": "0.5",
         "Time horizon (h)": 2
     },
     "Buses": {
@@ -54,7 +54,7 @@ for i in 1:8
     rt_contents = """
     {
         "Parameters": {
-            "Version": "0.4",
+            "Version": "0.5",
             "Time horizon (min)": 15,
             "Time step (min)": 15
         },
@@ -116,33 +116,27 @@ solution = UnitCommitment.solve_market(
 
 @show solution["RT"][1]
 
-# ## Customizing the formulation and adding extensions
+# ## Customizing extensions
 
-# When using the `solve_market` function it is still possible to customize the problem formulation and to add extensions. Extensions handle additional computations such as LMP pricing automatically. In the next example, we use a custom formulation and add the `ConventionalLMP` extension through the `settings` keyword argument:
+# When using the `solve_market` function it is still possible to customize the extensions used for the market problem. Extensions handle additional modeling components and computations such as LMP pricing. In the next example, we provide a custom list of extensions through the `settings` keyword argument:
 
 UnitCommitment.solve_market(
     "da.json",
-    [
-        "rt_1.json",
-        "rt_2.json",
-        "rt_3.json",
-        "rt_4.json",
-        "rt_5.json",
-        "rt_6.json",
-        "rt_7.json",
-        "rt_8.json",
-    ],
+    ["rt_1.json", "rt_2.json", "rt_3.json", "rt_4.json",
+     "rt_5.json", "rt_6.json", "rt_7.json", "rt_8.json"],
     settings = UnitCommitment.MarketSettings(
-        extensions = [UnitCommitment.ConventionalLMP()],
-        formulation = UnitCommitment.Formulation(
-            pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
-            ramping = UnitCommitment.MorLatRam2013.Ramping(),
-            startup_costs = UnitCommitment.MorLatRam2013.StartupCosts(),
-            transmission = UnitCommitment.ShiftFactorsFormulation(
+        extensions = [
+            UnitCommitment.ConventionalLMP(),
+            UnitCommitment.ThermalExt(
+                pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
+                ramping = UnitCommitment.MorLatRam2013.Ramping(),
+                slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
+            ),
+            UnitCommitment.ShiftFactorsTransmissionExt(
                 isf_cutoff = 0.008,
                 lodf_cutoff = 0.003,
             ),
-        ),
+        ],
     ),
     optimizer = HiGHS.Optimizer,
 )

@@ -1,6 +1,6 @@
 name = "UnitCommitment"
 uuid = "64606440-39ea-11e9-0f29-3303a1d3d877"
-version = "0.4.2"
+version = "0.5"
 authors = ["Santos Xavier, Alinson <axavier@anl.gov>"]
 repo = "https://github.com/ANL-CEEESA/UnitCommitment.jl"
 

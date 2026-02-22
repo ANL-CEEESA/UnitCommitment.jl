@@ -18,7 +18,7 @@ literature may have significantly different definitions and assumptions.
 
 !!! note
 
-    UC.jl treats deterministic SCUC instances as a special case of the stochastic problem in which there is only one scenario, named `"s1"` by default. To access second-stage decisions, therefore, you must provide this scenario name as the value for `s`. For example, `model[:prod_above]["s1", g, t]`.
+    UC.jl treats deterministic SCUC instances as a special case of the stochastic problem in which there is only one scenario, named `"s1"` by default. To access second-stage decisions, therefore, you must provide this scenario name as the value for `s`. For example, `model.inner[:prod_above]["s1", g, t]`.
 
 !!! warning
 
@@ -763,12 +763,12 @@ of circuits cannot decrease.
 
 !!! warning
 
-    By default, UC.jl uses `ShiftFactorsFormulation` to compute power flows, which
+    By default, UC.jl uses `ShiftFactorsTransmissionExt` to compute power flows, which
     has better computational performance and supports N-1 line contingencies. Under
-    this formulation, power flow variables and constraints are generated on-the-fly
+    this extension, power flow variables and constraints are generated on-the-fly
     during `UnitCommitment.optimize!`; they are **not** added by
     `UnitCommitment.build_model`. When transmission expansion is enabled, UC.jl
-    must use `PhaseAngleFormulation` instead, since shift factors depend on the
+    uses `PhaseAngleTransmissionExt` instead, since shift factors depend on the
     network topology and would need to be recomputed for each investment decision.
 
 ### Sets and constants

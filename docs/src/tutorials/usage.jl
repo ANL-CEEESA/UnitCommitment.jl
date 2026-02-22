@@ -5,7 +5,7 @@
 # UnitCommitment.jl was tested and developed with [Julia 1.10](https://julialang.org/). To install Julia, please follow the [installation guide on the official Julia website](https://julialang.org/downloads/). To install UnitCommitment.jl, run the Julia interpreter, type `]` to open the package manager, then type:
 
 # ```text
-# pkg> add UnitCommitment@0.4
+# pkg> add UnitCommitment
 # ```
 
 # To solve the optimization models, a mixed-integer linear programming (MILP) solver is also required. Please see the [JuMP installation guide](https://jump.dev/JuMP.jl/stable/installation/) for more instructions on installing a solver. Typical open-source choices are [HiGHS](https://github.com/jump-dev/HiGHS.jl), [Cbc](https://github.com/JuliaOpt/Cbc.jl) and [GLPK](https://github.com/JuliaOpt/GLPK.jl). In the instructions below, HiGHS will be used, but any other MILP solver should also be compatible.
@@ -21,10 +21,9 @@ using UnitCommitment
 
 instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
 
-# Now that we have the instance loaded in memory, we build the JuMP optimization model using `UnitCommitment.build_model`:
+# Now that we have the instance loaded in memory, we build the optimization model using `UnitCommitment.build_model`:
 
-model =
-    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer);
 
 # Next, we run the optimization process, with `UnitCommitment.optimize!`:
 
@@ -49,7 +48,7 @@ UnitCommitment.write("solution.json", solution)
 json_contents = """
 {
     "Parameters": {
-        "Version": "0.4",
+        "Version": "0.5",
         "Time horizon (h)": 4
     },
     "Buses": {
@@ -87,8 +86,7 @@ end;
 # Now that we have the input file, we can proceed as before, but using `UnitCommitment.read` instead of `UnitCommitment.read_benchmark`:
 
 instance = UnitCommitment.read("example.json");
-model =
-    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)
 
 # Finally, we extract and display the solution:
@@ -114,7 +112,7 @@ solution = UnitCommitment.solution(model)
 json_contents_s1 = """
 {
     "Parameters": {
-        "Version": "0.4",
+        "Version": "0.5",
         "Time horizon (h)": 4,
         "Scenario name": "s1",
         "Scenario weight": 3.0
@@ -153,7 +151,7 @@ end;
 json_contents_s2 = """
 {
     "Parameters": {
-        "Version": "0.4",
+        "Version": "0.5",
         "Time horizon (h)": 4,
         "Scenario name": "s2",
         "Scenario weight": 1.0
@@ -198,8 +196,7 @@ instance = UnitCommitment.read(glob("example_s*.json"))
 
 # Finally, we build the model and optimize as before:
 
-model =
-    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)
 
 # The solution to stochastic instances follows a slightly different format, as shown below:

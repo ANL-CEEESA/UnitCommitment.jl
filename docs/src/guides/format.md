@@ -31,7 +31,7 @@ time.
 
 | Key                                        | Description                                                                                                                                                                                                                          | Default  | Time series? | Uncertain? |
 | :----------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
-| `Version`                                  | Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal `0.4`.    | Required |      No      |     No     |
+| `Version`                                  | Version of UnitCommitment.jl this file was written for. Required to ensure that the file remains readable in future versions of the package. If you are following this page to construct the file, this field should equal `0.5`.    | Required |      No      |     No     |
 | `Time horizon (min)` or `Time horizon (h)` | Length of the planning horizon (in minutes or hours). Either `Time horizon (min)` or `Time horizon (h)` is required, but not both.                                                                                                   | Required |      No      |     No     |
 | `Time step (min)`                          | Length of each time step (in minutes). Must be a divisor of 60 (e.g. 60, 30, 20, 15, etc).                                                                                                                                           |   `60`   |      No      |     No     |
 | `Power balance penalty ($/MW)`             | Penalty for system-wide shortage or surplus in production (in $/MW). This is charged per time step. For example, if there is a shortage of 1 MW for three time steps, three times this amount will be charged.                       | `1000.0` |      No      |    Yes     |
@@ -44,7 +44,7 @@ time.
 ```json
 {
   "Parameters": {
-    "Version": "0.4",
+    "Version": "0.5",
     "Time horizon (h)": 4,
     "Power balance penalty ($/MW)": 1000.0,
     "Scenario name": "s1",
@@ -354,11 +354,11 @@ This section describes the hourly amount of reserves required.
 
 | Key                        | Description                                                                                                                                                             | Default  | Time series? | Uncertain? |
 | :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
-| `Type`                     | Type of reserve product. Must be either "spinning" or "flexiramp".                                                                                                      | Required |      No      |     No     |
+| `Type`                     | Type of reserve product. Must be "spinning".                                                                                                                            | Required |      No      |     No     |
 | `Amount (MW)`              | Amount of reserves required.                                                                                                                                            | Required |     Yes      |    Yes     |
 | `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1`     |     Yes      |    Yes     |
 
-#### Example 1
+#### Example
 
 ```json
 {
@@ -367,10 +367,6 @@ This section describes the hourly amount of reserves required.
       "Type": "spinning",
       "Amount (MW)": [57.30552, 53.88429, 51.31838, 50.46307],
       "Shortfall penalty ($/MW)": 5.0
-    },
-    "r2": {
-      "Type": "flexiramp",
-      "Amount (MW)": [20.31042, 23.65273, 27.41784, 25.34057]
     }
   }
 }
@@ -379,11 +375,10 @@ This section describes the hourly amount of reserves required.
 ### Contingencies
 
 This section describes credible contingency scenarios in the optimization, such
-as the loss of a transmission line or generator.
+as the loss of a transmission line.
 
 | Key                   | Description                                                                                       | Default | Uncertain? |
 | :-------------------- | :------------------------------------------------------------------------------------------------ | :-----: | :--------: |
-| `Affected generators` | List of generators affected by this contingency. May be omitted if no generators are affected.    |  `[]`   |    Yes     |
 | `Affected lines`      | List of transmission lines affected by this contingency. May be omitted if no lines are affected. |  `[]`   |    Yes     |
 
 #### Example
@@ -392,8 +387,7 @@ as the loss of a transmission line or generator.
 {
   "Contingencies": {
     "c1": {
-      "Affected lines": ["l1", "l2", "l3"],
-      "Affected generators": ["g1"]
+      "Affected lines": ["l1", "l2", "l3"]
     },
     "c2": {
       "Affected lines": ["l4"]
@@ -434,12 +428,9 @@ table below illustrates.
 ### Current limitations
 
 - Network topology must remain the same for all time periods.
-- Only N-1 transmission contingencies are supported. Generator contingencies are
-  not currently supported.
+- Only N-1 transmission line contingencies are supported.
 - Time-varying minimum production amounts are not currently compatible with
   ramp/startup/shutdown limits.
-- Flexible ramping products can only be acquired under the `WanHob2016`
-  formulation, which does not support spinning reserves.
 - The set of generators must be the same in all scenarios.
 
 ## Output Format
@@ -756,10 +747,6 @@ removed for convenience:
 | :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
 | `Reserve: Spinning (MW)`                 | Amount of spinning reserve provided by each thermal generator for each spinning reserve product. Nested structure: `reserve_name -> generator_name -> [values]`. | MW   |
 | `Reserve: Spinning shortfall (MW)`       | Amount of spinning reserve requirement not met for each reserve product.                                                                                         | MW   |
-| `Reserve: Up-flexiramp (MW)`             | Amount of up-flexiramp reserve provided by each thermal generator for each flexiramp product. Nested structure: `reserve_name -> generator_name -> [values]`.    | MW   |
-| `Reserve: Up-flexiramp shortfall (MW)`   | Amount of up-flexiramp reserve requirement not met for each flexiramp product.                                                                                   | MW   |
-| `Reserve: Down-flexiramp (MW)`           | Amount of down-flexiramp reserve provided by each thermal generator for each flexiramp product. Nested structure: `reserve_name -> generator_name -> [values]`.  | MW   |
-| `Reserve: Down-flexiramp shortfall (MW)` | Amount of down-flexiramp reserve requirement not met for each flexiramp product.                                                                                 | MW   |
 
 #### Example
 
@@ -773,24 +760,6 @@ removed for convenience:
   },
   "Reserve: Spinning shortfall (MW)": {
     "r1": [0.0, 0.0, 0.0, 0.0]
-  },
-  "Reserve: Up-flexiramp (MW)": {
-    "r2": {
-      "g1": [8.0, 9.5, 8.5, 9.0],
-      "g2": [0.0, 3.5, 4.0, 3.8]
-    }
-  },
-  "Reserve: Up-flexiramp shortfall (MW)": {
-    "r2": [0.0, 0.0, 0.0, 0.0]
-  },
-  "Reserve: Down-flexiramp (MW)": {
-    "r2": {
-      "g1": [7.5, 8.0, 7.8, 8.2],
-      "g2": [0.0, 3.0, 3.5, 3.3]
-    }
-  },
-  "Reserve: Down-flexiramp shortfall (MW)": {
-    "r2": [0.0, 0.0, 0.0, 0.0]
   }
 }
 ```
