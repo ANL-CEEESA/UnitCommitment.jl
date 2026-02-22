@@ -40,11 +40,12 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
     # Resolve parent links
     if "Reserves" in keys(json)
         for (reserve_name, dict) in json["Reserves"]
-            if haskey(dict, "Parent") && haskey(sc[:reserves_by_name], reserve_name)
+            if haskey(dict, "Parent") &&
+               haskey(sc[:reserves_by_name], reserve_name)
                 parent_name = dict["Parent"]
                 haskey(sc[:reserves_by_name], parent_name) || error(
                     "Reserve $reserve_name declares parent $parent_name, " *
-                    "but no reserve with that name exists"
+                    "but no reserve with that name exists",
                 )
                 sc[:reserves_by_name][reserve_name].parent =
                     sc[:reserves_by_name][parent_name]
@@ -212,7 +213,7 @@ function _validate_no_cycles(reserves::Vector{Reserve})::Nothing
         curr = r
         while curr !== nothing
             curr.name in visited && error(
-                "Cycle detected in reserve parent chain involving $(curr.name)"
+                "Cycle detected in reserve parent chain involving $(curr.name)",
             )
             push!(visited, curr.name)
             curr = curr.parent

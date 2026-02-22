@@ -122,8 +122,16 @@ solution = UnitCommitment.solve_market(
 
 UnitCommitment.solve_market(
     "da.json",
-    ["rt_1.json", "rt_2.json", "rt_3.json", "rt_4.json",
-     "rt_5.json", "rt_6.json", "rt_7.json", "rt_8.json"],
+    [
+        "rt_1.json",
+        "rt_2.json",
+        "rt_3.json",
+        "rt_4.json",
+        "rt_5.json",
+        "rt_6.json",
+        "rt_7.json",
+        "rt_8.json",
+    ],
     settings = UnitCommitment.MarketSettings(
         extensions = [
             UnitCommitment.ConventionalLMP(),

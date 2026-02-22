@@ -42,11 +42,12 @@ using HiGHS, JuMP, UnitCommitment
     @test g1.non_spinning_capacity == 0.0
 
     # Build model and verify constraints
-    model = build_model(
-        instance,
-        optimizer = test_optimizer(),
-        variable_names = true,
-    ).inner
+    model =
+        build_model(
+            instance,
+            optimizer = test_optimizer(),
+            variable_names = true,
+        ).inner
 
     # Verify non-spinning reserve variables exist
     @test_continuous_var model[:reserve]["s1", "r2", "g2", 1] lb = 0

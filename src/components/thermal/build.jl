@@ -387,22 +387,21 @@ function _add_thermal_constr_reserves!(
     for sc in instance.scenarios, r in sc[:reserves], t in 1:T
         # Direct contributions from units eligible for this reserve
         direct = sum(
-            model[:reserve][sc.name, r.name, g.name, t]
-            for g in r.thermal_units;
+            model[:reserve][sc.name, r.name, g.name, t] for
+            g in r.thermal_units;
             init = 0.0,
         )
         # Cascading contributions from descendant reserves
         cascading = sum(
-            model[:reserve][sc.name, d.name, g.name, t]
-            for d in r.descendants
-            for g in d.thermal_units;
+            model[:reserve][sc.name, d.name, g.name, t] for
+            d in r.descendants for g in d.thermal_units;
             init = 0.0,
         )
         eq_min_reserve[sc.name, r.name, t] = @constraint(
             model,
-            direct + cascading +
-            model[:reserve_shortfall][sc.name, r.name, t] >=
-            r.amount[t]
+            direct +
+            cascading +
+            model[:reserve_shortfall][sc.name, r.name, t] >= r.amount[t]
         )
     end
     return
@@ -441,10 +440,7 @@ function _total_spinning_reserves(model, instance, g, sc)::Vector
     reserve = [0.0 for _ in 1:T]
     if !isempty(spinning)
         reserve += [
-            sum(
-                model[:reserve][sc.name, r.name, g.name, t]
-                for r in spinning
-            ) for t in 1:T
+            sum(model[:reserve][sc.name, r.name, g.name, t] for r in spinning) for t in 1:T
         ]
     end
     return reserve

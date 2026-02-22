@@ -67,11 +67,18 @@ JuMP.fix(model.inner[:is_on]["g1", 1], 1.0, force = true)
 
 # To modify the cost coefficient of a particular variable, we can use `JuMP.set_objective_coefficient`:
 
-JuMP.set_objective_coefficient(model.inner, model.inner[:switch_on]["g1", 1], 1000.0)
+JuMP.set_objective_coefficient(
+    model.inner,
+    model.inner[:switch_on]["g1", 1],
+    1000.0,
+)
 
 # It is also possible to make changes to the set of constraints. For example, we can add a custom constraint, using the `JuMP.@constraint` macro:
 
-@constraint(model.inner, model.inner[:is_on]["g3", 1] + model.inner[:is_on]["g4", 1] <= 1);
+@constraint(
+    model.inner,
+    model.inner[:is_on]["g3", 1] + model.inner[:is_on]["g4", 1] <= 1
+);
 
 # We can also remove an existing model constraint using `JuMP.delete`. See the [problem definition](../guides/problem.md) for a list of constraint names and indices. Constraints must be deleted from both model.inner and from the model.inner[:eq_name] dictionary.
 
@@ -200,8 +207,10 @@ function UnitCommitment.store_solution(
     for sc in instance.scenarios
         sol[sc.name]["Demand response: Curtailment (MW)"] = OrderedDict(
             dr.name => [
-                round(JuMP.value(inner[:curtail][sc.name, dr.name, t]), digits = 5)
-                for t in 1:T
+                round(
+                    JuMP.value(inner[:curtail][sc.name, dr.name, t]),
+                    digits = 5,
+                ) for t in 1:T
             ] for dr in sc[:demand_response]
         )
     end
