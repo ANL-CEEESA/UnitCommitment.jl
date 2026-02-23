@@ -16,6 +16,7 @@ series".
 - [Storage units](#Storage-units)
 - [Price-sensitive loads](#Price-sensitive-loads)
 - [Transmission lines](#Transmission-lines)
+- [Interfaces](#Interfaces)
 - [Reserves](#Reserves)
 - [Contingencies](#Contingencies)
 
@@ -351,6 +352,40 @@ topology and the susceptance of each transmission line.
 }
 ```
 
+### Interfaces
+
+This section describes named groups of transmission lines (corridors) whose
+aggregate weighted flow is bounded. Each interface specifies a set of lines
+with signed weight coefficients and upper/lower flow limits.
+
+| Key                              | Description                                                                                                                                                       |  Default  | Time series? | Uncertain? |
+| :------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :----------: | :--------: |
+| `Lines`                          | Dictionary mapping line names to their signed weight coefficients. Positive weights indicate outbound flow; negative weights indicate inbound flow.               |   `{}`    |      No      |    Yes     |
+| `Net flow upper limit (MW)`      | Upper bound on the aggregate weighted flow through the interface.                                                                                                 |  `+inf`   |     Yes      |    Yes     |
+| `Net flow lower limit (MW)`      | Lower bound on the aggregate weighted flow through the interface.                                                                                                 |  `-inf`   |     Yes      |    Yes     |
+| `Flow limit penalty ($/MW)`      | Penalty for violating the flow limits of the interface (in $/MW). This is charged per time step. For example, if there is a violation of 1 MW for three time steps, three times this amount will be charged. | `5000.0`  |     Yes      |    Yes     |
+
+#### Example
+
+```json
+{
+  "Interfaces": {
+    "ifc1": {
+      "Lines": {"l1": 1.0, "l2": 1.0},
+      "Net flow upper limit (MW)": 120,
+      "Net flow lower limit (MW)": -120,
+      "Flow limit penalty ($/MW)": 5000.0
+    },
+    "ifc2": {
+      "Lines": {"l3": 1.0, "l7": -1.0},
+      "Net flow upper limit (MW)": [50, 60, 60, 60],
+      "Net flow lower limit (MW)": -100,
+      "Flow limit penalty ($/MW)": 5000.0
+    }
+  }
+}
+```
+
 ### Reserves
 
 This section describes the hourly amount of reserves required. Reserves may be
@@ -649,6 +684,33 @@ removed for convenience:
   },
   "Line: Investment status": {
     "l3": [0.0, 1.0, 1.0, 2.0]
+  }
+}
+```
+
+### Interfaces
+
+| Key                                  | Description                                                                                                        | Unit |
+| :----------------------------------- | :----------------------------------------------------------------------------------------------------------------- | :--- |
+| `Interface: Flow (MW)`              | Net weighted flow through each interface.                                                                          | MW   |
+| `Interface: Overflow (MW)`          | Amount of flow exceeding the interface's flow limits.                                                              | MW   |
+| `Interface: Overflow penalty ($)`   | Penalty cost incurred for overflow violations on each interface (overflow amount times flow limit penalty).        | $    |
+
+#### Example
+
+```json
+{
+  "Interface: Flow (MW)": {
+    "ifc1": [85.3, 92.1, 88.7, 95.2],
+    "ifc2": [48.5, 55.2, 57.8, 53.1]
+  },
+  "Interface: Overflow (MW)": {
+    "ifc1": [0.0, 0.0, 0.0, 0.0],
+    "ifc2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Interface: Overflow penalty ($)": {
+    "ifc1": [0.0, 0.0, 0.0, 0.0],
+    "ifc2": [0.0, 0.0, 0.0, 0.0]
   }
 }
 ```

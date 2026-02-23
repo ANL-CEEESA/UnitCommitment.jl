@@ -891,3 +891,64 @@ y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\tex
 ```math
 -M^\text{limit}_{slt} x^{\text{invest}}_{lt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt} + y^\text{overflow}_{slt}
 ```
+
+## 8. Interfaces
+
+An _interface_ (or _corridor_) is a named group of transmission lines whose
+aggregate weighted flow is bounded. Interfaces are commonly used by ISOs to
+model key transmission bottlenecks (e.g., North–South transfer corridors). Each
+line in the interface carries a signed weight coefficient: positive weights
+indicate outbound flow contributions, and negative weights indicate inbound
+flow contributions.
+
+### Sets and constants
+
+| Symbol                            | Unit  | Description                                                          |
+| :-------------------------------- | :---- | :------------------------------------------------------------------- |
+| $\text{IF}$                       |       | Set of interfaces.                                                   |
+| $L_I$                             |       | Set of transmission lines belonging to interface $I$.                |
+| $w_{Il}$                          |       | Weight coefficient of line $l$ in interface $I$.                     |
+| $M^{\text{ifc-ub}}_{It}$         | MW    | Upper limit on net flow through interface $I$ at time $t$.           |
+| $M^{\text{ifc-lb}}_{It}$         | MW    | Lower limit on net flow through interface $I$ at time $t$.           |
+| $Z^{\text{ifc-penalty}}_{It}$    | \$/MW | Penalty for violating flow limits of interface $I$ at time $t$.      |
+
+### Decision variables
+
+| Symbol                            | JuMP name                    | Unit | Description                                                                    | Stage |
+| :-------------------------------- | :--------------------------- | :--- | :----------------------------------------------------------------------------- | :---- |
+| $y^{\text{ifc-flow}}_{sIt}$      | `interface_flow[s,I,t]`      | MW   | Net weighted flow through interface $I$ at time $t$ in scenario $s$.           | 2     |
+| $y^{\text{ifc-overflow}}_{sIt}$  | `interface_overflow[s,I,t]`  | MW   | Amount of flow limit violation for interface $I$ at time $t$ in scenario $s$.  | 2     |
+
+### Objective function terms
+
+- Interface flow limit penalty:
+
+```math
+\sum_{s \in S} p(s) \left[
+  \sum_{I \in \text{IF}} \sum_{t \in T}
+  y^{\text{ifc-overflow}}_{sIt} \, Z^{\text{ifc-penalty}}_{It}
+\right]
+```
+
+### Constraints
+
+- Interface flow definition (`eq_interface_flow_def[s,I,t]`). The net flow
+  through the interface is the weighted sum of individual line flows:
+
+```math
+y^{\text{ifc-flow}}_{sIt} = \sum_{l \in L_I} w_{Il} \cdot y^{\text{flow}}_{slt}
+```
+
+- Upper bound on interface flow (`eq_interface_flow_ub[s,I,t]`). Only enforced
+  when the upper limit is finite:
+
+```math
+y^{\text{ifc-flow}}_{sIt} \leq M^{\text{ifc-ub}}_{It} + y^{\text{ifc-overflow}}_{sIt}
+```
+
+- Lower bound on interface flow (`eq_interface_flow_lb[s,I,t]`). Only enforced
+  when the lower limit is finite:
+
+```math
+y^{\text{ifc-flow}}_{sIt} \geq M^{\text{ifc-lb}}_{It} - y^{\text{ifc-overflow}}_{sIt}
+```
