@@ -139,3 +139,22 @@ function store_solution(
 
     return
 end
+
+function _compute_interface_flows(
+    model::UnitCommitmentModel,
+    sc::UnitCommitmentScenario,
+    T::Int,
+    ::ShiftFactorsTransmissionExt,
+)
+    inner = model.inner
+    interfaces = sc[:interfaces]
+    I = length(interfaces)
+    isempty(interfaces) && return zeros(0, T)
+
+    ifc_isf = sc[:interface_isf]
+    buses = sc[:bus]
+    non_slack = [b for b in buses if b.offset > 0]
+    net_inj =
+        [value(inner[:ni][sc.name, b.name, t]) for b in non_slack, t in 1:T]
+    return ifc_isf * net_inj
+end

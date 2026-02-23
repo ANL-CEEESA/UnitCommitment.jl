@@ -52,3 +52,23 @@ function store_solution(
 
     return
 end
+
+function _compute_interface_flows(
+    model::UnitCommitmentModel,
+    sc::UnitCommitmentScenario,
+    T::Int,
+    ::PhaseAngleTransmissionExt,
+)
+    inner = model.inner
+    interfaces = sc[:interfaces]
+    I = length(interfaces)
+    result = zeros(I, T)
+    for ifc in interfaces, t in 1:T
+        for line in ifc.lines
+            w = ifc.weight_by_line[line]
+            result[ifc.offset, t] +=
+                w * value(inner[:flow][sc.name, line.name, t])
+        end
+    end
+    return result
+end
