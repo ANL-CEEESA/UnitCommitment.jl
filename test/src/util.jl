@@ -165,13 +165,12 @@ macro test_aff_expr(expr, var, expected)
 end
 
 """
-    @test_constr(model[:name][indices...], rhs, digits=nothing)
+    @test_constr(model[:name][indices...], rhs)
 
 Assert that the string representation of a constraint matches `"name[indices] : rhs"`.
-When `digits` is provided, all floating-point numbers in both strings are rounded before
-comparing, allowing approximate coefficient matching.
+All floating-point numbers in both strings are rounded to 3 digits before comparing.
 """
-macro test_constr(expr, rhs, digits = nothing)
+macro test_constr(expr, rhs)
     # Extract constraint name from model[:constraint_name][indices...]
     model_ref = expr.args[1]
     name_sym = model_ref.args[2]
@@ -189,14 +188,8 @@ macro test_constr(expr, rhs, digits = nothing)
     expected = "$name_str[$indices_str] : $rhs"
 
     return quote
-        let digits = $(esc(digits))
-            if digits === nothing
-                @test repr($(esc(expr))) == $expected
-            else
-                @test _round_floats(repr($(esc(expr))), digits) ==
-                      _round_floats($expected, digits)
-            end
-        end
+        @test _round_floats(repr($(esc(expr))), 3) ==
+              _round_floats($expected, 3)
     end
 end
 

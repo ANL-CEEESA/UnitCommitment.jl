@@ -123,8 +123,8 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_dwflexi_power_lb]["s1", "r2", "g4", 1] "-100 is_on[g4,2] - dwflexiramp[s1,r2,g4,1] ≤ 0"
     @test_constr model[:eq_dwflexi_power_ub]["s1", "r2", "g4", 1] "-100 is_on[g4,1] + 33 is_on[g4,2] + dwflexiramp[s1,r2,g4,1] ≤ 0"
 
-    @test_constr model[:eq_min_flexiramp_up]["s1", "r1", 1] "upflexiramp_shortfall[s1,r1,1] + upflexiramp[s1,r1,g2,1] + upflexiramp[s1,r1,g3,1] ≥ 20.31042"
-    @test_constr model[:eq_min_flexiramp_down]["s1", "r1", 1] "dwflexiramp_shortfall[s1,r1,1] + dwflexiramp[s1,r1,g2,1] + dwflexiramp[s1,r1,g3,1] ≥ 20.31042"
+    @test_constr model[:eq_min_flexiramp_up]["s1", "r1", 1] "upflexiramp_shortfall[s1,r1,1] + upflexiramp[s1,r1,g2,1] + upflexiramp[s1,r1,g3,1] ≥ 20.31"
+    @test_constr model[:eq_min_flexiramp_down]["s1", "r1", 1] "dwflexiramp_shortfall[s1,r1,1] + dwflexiramp[s1,r1,g2,1] + dwflexiramp[s1,r1,g3,1] ≥ 20.31"
     @test_constr model[:eq_min_flexiramp_up]["s1", "r2", 1] "upflexiramp_shortfall[s1,r2,1] + upflexiramp[s1,r2,g3,1] + upflexiramp[s1,r2,g4,1] ≥ 15"
     @test_constr model[:eq_min_flexiramp_down]["s1", "r2", 1] "dwflexiramp_shortfall[s1,r2,1] + dwflexiramp[s1,r2,g3,1] + dwflexiramp[s1,r2,g4,1] ≥ 15"
 

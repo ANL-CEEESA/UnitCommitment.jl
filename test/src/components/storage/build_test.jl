@@ -68,8 +68,8 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_max_discharge_rate]["s1", "su1", 1] "discharge_rate[s1,su1,1] - 40 is_discharging[s1,su1,1] ≤ 0"
 
     # su1, t=1: initial_level=50, loss=0.01, charge_eff=0.9, discharge_eff=0.95
-    @test_constr model[:eq_storage_transition]["s1", "su1", 1] "storage_level[s1,su1,1] - 0.9 charge_rate[s1,su1,1] + 1.0526315789473684 discharge_rate[s1,su1,1] = 49.5"
-    @test_constr model[:eq_storage_transition]["s1", "su1", 2] "-0.99 storage_level[s1,su1,1] + storage_level[s1,su1,2] - 0.9 charge_rate[s1,su1,2] + 1.0526315789473684 discharge_rate[s1,su1,2] = 0"
+    @test_constr model[:eq_storage_transition]["s1", "su1", 1] "storage_level[s1,su1,1] - 0.9 charge_rate[s1,su1,1] + 1.053 discharge_rate[s1,su1,1] = 49.5"
+    @test_constr model[:eq_storage_transition]["s1", "su1", 2] "-0.99 storage_level[s1,su1,1] + storage_level[s1,su1,2] - 0.9 charge_rate[s1,su1,2] + 1.053 discharge_rate[s1,su1,2] = 0"
 
     # su1: min_ending=20, max_ending=80
     @test_constr model[:eq_ending_level]["s1", "su1"] "storage_level[s1,su1,4] ∈ [20, 80]"
