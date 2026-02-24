@@ -52,8 +52,8 @@ and start-up and shutdown limits.
 
 - **Commitment, power output and startup/shutdown costs:** Thermal generators
   can either be online (on) or offline (off). When a thermal generator is on, it
-  can produce between a minimum and a maximum amount of power; when it is off, it
-  cannot produce any power. Switching a generator on incurs a startup cost,
+  can produce between a minimum and a maximum amount of power; when it is off,
+  it cannot produce any power. Switching a generator on incurs a startup cost,
   which depends on how long the unit has been offline. More precisely, each
   thermal generator $g$ has a number $K^{start}_g$ of startup categories (e.g.,
   cold, warm and hot). Each category $k$ has a corresponding startup cost
@@ -112,48 +112,48 @@ and start-up and shutdown limits.
 
 ### Sets and constants
 
-| Symbol                          | Unit   | Description                                                                                |
-| :------------------------------ | :----- | :----------------------------------------------------------------------------------------- |
-| $K^{cost}_g$                    |        | Number of piecewise linear segments in the production cost curve.                          |
-| $K^{start}_g$                   |        | Number of startup categories (e.g. cold, warm, hot).                                       |
-| $M^{\text{delay}}_{gk}$         |        | Delay for startup category $k$.                                                            |
-| $M^{\text{init-power}}_{g}$     | MW     | Initial power output of unit $g$.                                                          |
-| $M^{\text{init-status}}_{g}$    |        | Initial status of unit $g$.                                                                |
-| $M^{\text{min-up}}_{g}$         |        | Minimum amount of time $g$ must stay on after switching on.                                |
-| $M^{\text{must-run}}_{gt}$      | Binary | One if unit $g$ must be on at time $t$.                                                    |
-| $M^{\text{pmax}}_{gt}$          | MW     | Maximum power output at time $t$.                                                          |
-| $M^{\text{pmin}}_{gt}$          | MW     | Minimum power output at time $t$.                                                          |
-| $M^{\text{ramp-down}}_{g}$      | MW     | Ramp down limit.                                                                           |
-| $M^{\text{ramp-up}}_{g}$        | MW     | Ramp up limit.                                                                             |
-| $M^{\text{ns-cap}}_{g}$         | MW     | Non-spinning reserve capacity of unit $g$.                                                 |
+| Symbol                           | Unit   | Description                                                                                |
+| :------------------------------- | :----- | :----------------------------------------------------------------------------------------- |
+| $K^{cost}_g$                     |        | Number of piecewise linear segments in the production cost curve.                          |
+| $K^{start}_g$                    |        | Number of startup categories (e.g. cold, warm, hot).                                       |
+| $M^{\text{delay}}_{gk}$          |        | Delay for startup category $k$.                                                            |
+| $M^{\text{init-power}}_{g}$      | MW     | Initial power output of unit $g$.                                                          |
+| $M^{\text{init-status}}_{g}$     |        | Initial status of unit $g$.                                                                |
+| $M^{\text{min-up}}_{g}$          |        | Minimum amount of time $g$ must stay on after switching on.                                |
+| $M^{\text{must-run}}_{gt}$       | Binary | One if unit $g$ must be on at time $t$.                                                    |
+| $M^{\text{pmax}}_{gt}$           | MW     | Maximum power output at time $t$.                                                          |
+| $M^{\text{pmin}}_{gt}$           | MW     | Minimum power output at time $t$.                                                          |
+| $M^{\text{ramp-down}}_{g}$       | MW     | Ramp down limit.                                                                           |
+| $M^{\text{ramp-up}}_{g}$         | MW     | Ramp up limit.                                                                             |
+| $M^{\text{ns-cap}}_{g}$          | MW     | Non-spinning reserve capacity of unit $g$.                                                 |
 | $M^{\text{reserve-amount}}_{rt}$ | MW     | Required amount of reserve $r$ at time $t$.                                                |
-| $M^{\text{seg-pmax}}_{gtks}$    | MW     | Maximum power output for piecewise-linear segment $k$ at time $t$ and scenario $s$.        |
-| $M^{\text{shutdown-limit}}_{g}$ | MW     | Maximum power unit $g$ produces immediately before shutting down                           |
-| $M^{\text{startup-limit}}_{g}$  | MW     | Maximum power unit $g$ produces immediately after starting up                              |
-| $D(r)$                          |        | Set of all descendant reserves of $r$ in the cascading hierarchy.                          |
-| $R_g$                           |        | Set of reserves that may be served by $g$.                                                 |
-| $R$                             |        | Set of all reserves (spinning and non-spinning).                                           |
-| $R^+$                           |        | Set of reserves that allow shortfall.                                                      |
-| $Z^{\text{pmin}}_{gt}$          | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
-| $Z^{\text{res-short}}_{r}$      | \$/MW  | Penalty for reserve shortfall for reserve $r$.                                             |
-| $Z^{\text{pvar}}_{gtks}$        | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
-| $Z^{\text{start}}_{gk}$         | \$     | Cost to start unit $g$ at startup category $k$.                                            |
-| $Z^{\text{shut}}_{g}$           | \$     | Cost to shut down unit $g$.                                                                |
-| $Z^{\text{invest}}_{gt}$        | \$     | Cost to invest unit $g$ at time $t$.                                                       |
-| $W^{\text{invest}}$             |        | Investment cost weight (multiplier applied to all investment costs).                       |
-| $G^\text{therm}$                |        | Set of thermal generators.                                                                 |
+| $M^{\text{seg-pmax}}_{gtks}$     | MW     | Maximum power output for piecewise-linear segment $k$ at time $t$ and scenario $s$.        |
+| $M^{\text{shutdown-limit}}_{g}$  | MW     | Maximum power unit $g$ produces immediately before shutting down                           |
+| $M^{\text{startup-limit}}_{g}$   | MW     | Maximum power unit $g$ produces immediately after starting up                              |
+| $D(r)$                           |        | Set of all descendant reserves of $r$ in the cascading hierarchy.                          |
+| $R_g$                            |        | Set of reserves that may be served by $g$.                                                 |
+| $R$                              |        | Set of all reserves (spinning and non-spinning).                                           |
+| $R^+$                            |        | Set of reserves that allow shortfall.                                                      |
+| $Z^{\text{pmin}}_{gt}$           | \$     | Cost to keep $g$ operational at time $t$ generating at minimum power.                      |
+| $Z^{\text{res-short}}_{r}$       | \$/MW  | Penalty for reserve shortfall for reserve $r$.                                             |
+| $Z^{\text{pvar}}_{gtks}$         | \$/MW  | Cost for unit $g$ to produce 1 MW of power under piecewise-linear segment $k$ at time $t$. |
+| $Z^{\text{start}}_{gk}$          | \$     | Cost to start unit $g$ at startup category $k$.                                            |
+| $Z^{\text{shut}}_{g}$            | \$     | Cost to shut down unit $g$.                                                                |
+| $Z^{\text{invest}}_{gt}$         | \$     | Cost to invest unit $g$ at time $t$.                                                       |
+| $W^{\text{invest}}$              |        | Investment cost weight (multiplier applied to all investment costs).                       |
+| $G^\text{therm}$                 |        | Set of thermal generators.                                                                 |
 
 ### Decision variables
 
-| Symbol                        | JuMP name                  | Description                                                                                                                       | Unit   | Stage |
-| :---------------------------- | :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- | :----- | :---- |
-| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`               | One if generator $g$ is on at time $t$.                                                                                           | Binary | 1     |
-| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`           | One if generator $g$ switches on at time $t$.                                                                                     | Binary | 1     |
-| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`          | One if generator $g$ switches off at time $t$.                                                                                    | Binary | 1     |
-| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`           | One if generator $g$ starts up at time $t$ under startup category $k$.                                                            | Binary | 1     |
-| $x^{\text{invest}}_{gt}$      | `invest[g,t]`              | One if generator $g$ is invested at or before $t$.                                                                                | Binary | 1     |
-| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.                                              | MW     | 2     |
-| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$.                                     | MW     | 2     |
+| Symbol                        | JuMP name                  | Description                                                                                                              | Unit   | Stage |
+| :---------------------------- | :------------------------- | :----------------------------------------------------------------------------------------------------------------------- | :----- | :---- |
+| $x^{\text{is-on}}_{gt}$       | `is_on[g,t]`               | One if generator $g$ is on at time $t$.                                                                                  | Binary | 1     |
+| $x^{\text{switch-on}}_{gt}$   | `switch_on[g,t]`           | One if generator $g$ switches on at time $t$.                                                                            | Binary | 1     |
+| $x^{\text{switch-off}}_{gt}$  | `switch_off[g,t]`          | One if generator $g$ switches off at time $t$.                                                                           | Binary | 1     |
+| $x^{\text{start}}_{gtk}$      | `startup[g,t,s]`           | One if generator $g$ starts up at time $t$ under startup category $k$.                                                   | Binary | 1     |
+| $x^{\text{invest}}_{gt}$      | `invest[g,t]`              | One if generator $g$ is invested at or before $t$.                                                                       | Binary | 1     |
+| $y^{\text{prod-above}}_{gts}$ | `prod_above[s,g,t]`        | Amount of power produced by $g$ at time $t$ in scenario $s$ above the minimum power.                                     | MW     | 2     |
+| $y^{\text{seg-prod}}_{gtks}$  | `segprod[s,g,t,k]`         | Amount of power produced by $g$ at time $t$ in piecewise-linear segment $k$ and scenario $s$.                            | MW     | 2     |
 | $y^{\text{res}}_{grts}$       | `reserve[s,r,g,t]`         | Amount of reserve $r$ supplied by $g$ at time $t$ in scenario $s$.                                                       | MW     | 2     |
 | $y^{\text{res-short}}_{srt}$  | `reserve_shortfall[s,r,t]` | Amount of reserve shortfall for reserve $r$ at time $t$ in scenario $s$. Only defined for reserves that allow shortfall. | MW     | 2     |
 
@@ -661,23 +661,91 @@ y^\text{level}_{sut} =
 M^\text{min-end-level}_{su} \leq y^\text{level}_{su,|T|} \leq M^\text{max-end-level}_{su}
 ```
 
-- Storage is permanently built once invested
-  (`eq_invest_storage_nondec[u,t]`):
+- Storage is permanently built once invested (`eq_invest_storage_nondec[u,t]`):
 
 ```math
 x^{\text{invest}}_{u,t-1} \leq x^{\text{invest}}_{ut}
 ```
 
 - Storage level bounds depend on investment status
-  (`eq_invest_storage_level_ub[s,u,t]` and
-  `eq_invest_storage_level_lb[s,u,t]`). These constraints replace the
-  variable bounds above for units with investment decisions:
+  (`eq_invest_storage_level_ub[s,u,t]` and `eq_invest_storage_level_lb[s,u,t]`).
+  These constraints replace the variable bounds above for units with investment
+  decisions:
 
 ```math
 M^\text{min-level}_{sut} x^{\text{invest}}_{ut} \leq y^\text{level}_{sut} \leq M^\text{max-level}_{sut} x^{\text{invest}}_{ut}
 ```
 
-## 6. Buses
+## 6. Virtual transactions
+
+_Virtual transactions_ are financial instruments used in day-ahead electricity
+markets. They allow traders to buy or sell power at specific locations without
+physical delivery. Three types are supported:
+
+- **INC (Increment offer):** Offers to sell power at a bus. If cleared, injects
+  virtual supply and receives the LMP.
+- **DEC (Decrement bid):** Bids to buy power at a bus. If cleared, withdraws
+  virtual demand and pays the LMP.
+- **UTC (Up-to-congestion):** A paired injection at a source bus and withdrawal
+  at a sink bus. The trader profits from the spread between the two LMPs.
+
+### Sets and constants
+
+| Symbol                      | Unit  | Description                                                               |
+| :-------------------------- | :---- | :------------------------------------------------------------------------ |
+| $\text{VT}$                 |       | Set of virtual transactions.                                              |
+| $\text{VT}^{\text{inc}}$    |       | Subset of INC transactions.                                               |
+| $\text{VT}^{\text{dec}}$    |       | Subset of DEC transactions.                                               |
+| $\text{VT}^{\text{utc}}$    |       | Subset of UTC transactions.                                               |
+| $M^{\text{vt-qmax}}_{svt}$  | MW    | Maximum quantity for virtual transaction $v$ at time $t$ in scenario $s$. |
+| $Z^{\text{vt-price}}_{svt}$ | \$/MW | Offer/bid price for virtual transaction $v$ at time $t$ in scenario $s$.  |
+| $\text{VT}^{\text{inj}}_b$  |       | Set of virtual transactions injecting at bus $b$.                         |
+| $\text{VT}^{\text{wdr}}_b$  |       | Set of virtual transactions withdrawing from bus $b$.                     |
+
+### Decision variables
+
+| Symbol                | JuMP name           | Unit | Description                                                             | Stage |
+| :-------------------- | :------------------ | :--- | :---------------------------------------------------------------------- | :---- |
+| $y^{\text{vt}}_{svt}$ | `vt_cleared[s,v,t]` | MW   | Amount cleared for virtual transaction $v$ at time $t$ in scenario $s$. | 2     |
+
+### Objective function terms
+
+- INC offer cost (supply offers energy at a price):
+
+```math
+\sum_{s \in S} p(s) \left[
+  \sum_{v \in \text{VT}^{\text{inc}}} \sum_{t \in T}
+  y^{\text{vt}}_{svt} Z^{\text{vt-price}}_{svt}
+\right]
+```
+
+- DEC bid benefit (demand is willing to pay for energy):
+
+```math
+- \sum_{s \in S} p(s) \left[
+  \sum_{v \in \text{VT}^{\text{dec}}} \sum_{t \in T}
+  y^{\text{vt}}_{svt} Z^{\text{vt-price}}_{svt}
+\right]
+```
+
+- UTC spread bid (trader pays for congestion spread):
+
+```math
+- \sum_{s \in S} p(s) \left[
+  \sum_{v \in \text{VT}^{\text{utc}}} \sum_{t \in T}
+  y^{\text{vt}}_{svt} Z^{\text{vt-price}}_{svt}
+\right]
+```
+
+### Constraints
+
+- Variable bounds:
+
+```math
+0 \leq y^{\text{vt}}_{svt} \leq M^{\text{vt-qmax}}_{svt}
+```
+
+## 7. Buses
 
 Buses are connection points in the transmission network where generators, loads,
 and storage units are located. Each bus has an associated load profile
@@ -743,6 +811,7 @@ y^\text{inj}_{sbt} =
   & + \sum_{g \in G^{\text{prof}}_b} y^\text{prod}_{sgt} \\
   & + \sum_{u \in \text{SU}_b} \left( y^\text{discharge}_{sut} - y^\text{charge}_{sut} \right) \\
   & - \sum_{p \in \text{PSL}_b} y^\text{psl}_{spt} \\
+  & + \sum_{v \in \text{VT}^{\text{inj}}_b} y^{\text{vt}}_{svt} - \sum_{v \in \text{VT}^{\text{wdr}}_b} y^{\text{vt}}_{svt} \\
   & - M^\text{load}_{sbt} + y^\text{curtail}_{sbt}
 \end{align*}
 ```
@@ -754,7 +823,7 @@ y^\text{inj}_{sbt} =
 \sum_{b \in B} y^\text{inj}_{sbt} = 0
 ```
 
-## 7. Transmission lines
+## 8. Transmission lines
 
 Transmission lines connect buses in the network and allow power to flow between
 them. The transmission network is represented as a graph $(B,L)$ where $B$ is
@@ -808,12 +877,12 @@ of circuits cannot decrease.
 
 ### Decision variables
 
-| Symbol                    | JuMP name        | Unit    | Description                                                           | Stage |
-| :------------------------ | :--------------- | :------ | :-------------------------------------------------------------------- | :---- |
-| $x^{\text{invest}}_{lt}$  | `invest[l,t]`    | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
-| $y^\text{flow}_{slt}$     | `flow[s,l,t]`    | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
+| Symbol                    | JuMP name         | Unit    | Description                                                           | Stage |
+| :------------------------ | :---------------- | :------ | :-------------------------------------------------------------------- | :---- |
+| $x^{\text{invest}}_{lt}$  | `invest[l,t]`     | Integer | Number of circuits invested along corridor $l$ at or before $t$.      | 1     |
+| $y^\text{flow}_{slt}$     | `flow[s,l,t]`     | MW      | Flow on line $l$ at time $t$ and scenario $s$.                        | 2     |
 | $y^\text{overflow}_{slt}$ | `overflow[s,l,t]` | MW      | Amount of flow above limit for line $l$ at time $t$ and scenario $s$. | 2     |
-| $\theta_{sbt}$            | `theta[s,b,t]`   | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
+| $\theta_{sbt}$            | `theta[s,b,t]`    | rad     | Phase angle for bus $b$ at time $t$ and scenario $s$.                 | 2     |
 
 ### Objective function terms
 
@@ -866,8 +935,8 @@ y^\text{flow}_{slt} = x^{\text{invest}}_{lt} B_{l} (\theta_{sbt} - \theta_{sb't}
 ```
 
 - For candidate lines with $M^\text{max-circuits}_l = 1$, the DC power flow
-  constraint is linearized using a big-M formulation (`eq_dc_flow_bigm_ub[s,l,t]`
-  and `eq_dc_flow_bigm_lb[s,l,t]`):
+  constraint is linearized using a big-M formulation
+  (`eq_dc_flow_bigm_ub[s,l,t]` and `eq_dc_flow_bigm_lb[s,l,t]`):
 
 ```math
 \begin{align*}
@@ -892,32 +961,32 @@ y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\tex
 -M^\text{limit}_{slt} x^{\text{invest}}_{lt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt} + y^\text{overflow}_{slt}
 ```
 
-## 8. Interfaces
+## 9. Interfaces
 
 An _interface_ (or _corridor_) is a named group of transmission lines whose
 aggregate weighted flow is bounded. Interfaces are commonly used by ISOs to
 model key transmission bottlenecks (e.g., North–South transfer corridors). Each
 line in the interface carries a signed weight coefficient: positive weights
-indicate outbound flow contributions, and negative weights indicate inbound
-flow contributions.
+indicate outbound flow contributions, and negative weights indicate inbound flow
+contributions.
 
 ### Sets and constants
 
-| Symbol                            | Unit  | Description                                                          |
-| :-------------------------------- | :---- | :------------------------------------------------------------------- |
-| $\text{IF}$                       |       | Set of interfaces.                                                   |
-| $L_I$                             |       | Set of transmission lines belonging to interface $I$.                |
-| $w_{Il}$                          |       | Weight coefficient of line $l$ in interface $I$.                     |
-| $M^{\text{ifc-ub}}_{It}$         | MW    | Upper limit on net flow through interface $I$ at time $t$.           |
-| $M^{\text{ifc-lb}}_{It}$         | MW    | Lower limit on net flow through interface $I$ at time $t$.           |
-| $Z^{\text{ifc-penalty}}_{It}$    | \$/MW | Penalty for violating flow limits of interface $I$ at time $t$.      |
+| Symbol                        | Unit  | Description                                                     |
+| :---------------------------- | :---- | :-------------------------------------------------------------- |
+| $\text{IF}$                   |       | Set of interfaces.                                              |
+| $L_I$                         |       | Set of transmission lines belonging to interface $I$.           |
+| $w_{Il}$                      |       | Weight coefficient of line $l$ in interface $I$.                |
+| $M^{\text{ifc-ub}}_{It}$      | MW    | Upper limit on net flow through interface $I$ at time $t$.      |
+| $M^{\text{ifc-lb}}_{It}$      | MW    | Lower limit on net flow through interface $I$ at time $t$.      |
+| $Z^{\text{ifc-penalty}}_{It}$ | \$/MW | Penalty for violating flow limits of interface $I$ at time $t$. |
 
 ### Decision variables
 
-| Symbol                            | JuMP name                    | Unit | Description                                                                    | Stage |
-| :-------------------------------- | :--------------------------- | :--- | :----------------------------------------------------------------------------- | :---- |
-| $y^{\text{ifc-flow}}_{sIt}$      | `interface_flow[s,I,t]`      | MW   | Net weighted flow through interface $I$ at time $t$ in scenario $s$.           | 2     |
-| $y^{\text{ifc-overflow}}_{sIt}$  | `interface_overflow[s,I,t]`  | MW   | Amount of flow limit violation for interface $I$ at time $t$ in scenario $s$.  | 2     |
+| Symbol                          | JuMP name                   | Unit | Description                                                                   | Stage |
+| :------------------------------ | :-------------------------- | :--- | :---------------------------------------------------------------------------- | :---- |
+| $y^{\text{ifc-flow}}_{sIt}$     | `interface_flow[s,I,t]`     | MW   | Net weighted flow through interface $I$ at time $t$ in scenario $s$.          | 2     |
+| $y^{\text{ifc-overflow}}_{sIt}$ | `interface_overflow[s,I,t]` | MW   | Amount of flow limit violation for interface $I$ at time $t$ in scenario $s$. | 2     |
 
 ### Objective function terms
 

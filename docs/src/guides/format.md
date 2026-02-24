@@ -15,6 +15,7 @@ series".
 - [Generators](#Generators)
 - [Storage units](#Storage-units)
 - [Price-sensitive loads](#Price-sensitive-loads)
+- [Virtual transactions](#Virtual-transactions)
 - [Transmission lines](#Transmission-lines)
 - [Interfaces](#Interfaces)
 - [Reserves](#Reserves)
@@ -99,7 +100,7 @@ specified:
 | `Type`                                                       | Type of the generator (string). For thermal generators, this must be `Thermal`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Required          |      No      |     No     |
 | `Production cost curve (MW)` and `Production cost curve ($)` | Parameters describing the piecewise-linear production costs. See below for more details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Required          |     Yes      |    Yes     |
 | `Startup costs ($)` and `Startup delays (h)`                 | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `00:00` (h:min), then it costs \$300 to start up the generator at any time between `01:00` and `03:59`, and \$400 to start the generator at time `04:00` or any time after that. The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal `Minimum downtime (h)`. | `[0.0]` and `[1]` |      No      |    Yes     |
-| `Shutdown cost ($)`                                          | Cost incurred each time the generator shuts down.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `0.0`              |      No      |    Yes     |
+| `Shutdown cost ($)`                                          | Cost incurred each time the generator shuts down.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `0.0`             |      No      |    Yes     |
 | `Minimum uptime (h)`                                         | Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time `00:00` (h:min) and `Minimum uptime (h)` is set to 4, then the generator can only shut down at time `04:00`.                                                                                                                                                                                                                                                                                                                                                                                              | `1`               |      No      |    Yes     |
 | `Minimum downtime (h)`                                       | Minimum amount of time the generator must stay offline after shutting down (in hours). For example, if the generator shuts down at time `00:00` (h:min) and `Minimum downtime (h)` is set to 4, then the generator can only start producing power again at time `04:00`.                                                                                                                                                                                                                                                                                                                                                                           | `1`               |      No      |    Yes     |
 | `Ramp up limit (MW)`                                         | Maximum increase in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and if this parameter is set to 40 MW, then the generator will produce at most 140 MW at time step 2.                                                                                                                                                                                                                                                                                                                                                                                                      | `+inf`            |      No      |    Yes     |
@@ -317,6 +318,65 @@ economical to do so.
 }
 ```
 
+### Virtual transactions
+
+This section describes virtual bids and offers that participate in the day-ahead
+market clearing. Three types are supported:
+
+- **INC:** A virtual supply offer at a single bus. If cleared, the virtual
+  supply injects power at the specified bus.
+- **DEC:** A virtual demand bid at a single bus. If cleared, the virtual demand
+  withdraws power at the specified bus.
+- **UTC:** A paired injection/withdrawal between a source bus and a sink bus.
+
+#### INC / DEC fields
+
+| Key                     | Description                                                 | Default  | Time series? | Uncertain? |
+| :---------------------- | :---------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Type`                  | Type of virtual transaction. Must be `INC` or `DEC`.        | Required |      No      |     No     |
+| `Bus`                   | Bus where the virtual transaction is located.               | Required |      No      |    Yes     |
+| `Offer price ($/MW)`    | Price at which the INC offer is willing to sell (INC only). | Required |     Yes      |    Yes     |
+| `Bid price ($/MW)`      | Price at which the DEC bid is willing to buy (DEC only).    | Required |     Yes      |    Yes     |
+| `Maximum quantity (MW)` | Maximum amount of power that may be cleared.                | Required |     Yes      |    Yes     |
+
+#### UTC fields
+
+| Key                     | Description                                            | Default  | Time series? | Uncertain? |
+| :---------------------- | :----------------------------------------------------- | :------: | :----------: | :--------: |
+| `Type`                  | Type of virtual transaction. Must be `UTC`.            | Required |      No      |     No     |
+| `Source bus`            | Bus where the virtual injection occurs.                | Required |      No      |    Yes     |
+| `Sink bus`              | Bus where the virtual withdrawal occurs.               | Required |      No      |    Yes     |
+| `Bid price ($/MW)`      | Price the UTC trader is willing to pay for the spread. | Required |     Yes      |    Yes     |
+| `Maximum quantity (MW)` | Maximum amount of power that may be cleared.           | Required |     Yes      |    Yes     |
+
+#### Example
+
+```json
+{
+  "Virtual transactions": {
+    "vt_inc1": {
+      "Type": "INC",
+      "Bus": "b1",
+      "Offer price ($/MW)": 30.0,
+      "Maximum quantity (MW)": 50.0
+    },
+    "vt_dec1": {
+      "Type": "DEC",
+      "Bus": "b3",
+      "Bid price ($/MW)": 60.0,
+      "Maximum quantity (MW)": 40.0
+    },
+    "vt_utc1": {
+      "Type": "UTC",
+      "Source bus": "b1",
+      "Sink bus": "b3",
+      "Bid price ($/MW)": 10.0,
+      "Maximum quantity (MW)": 30.0
+    }
+  }
+}
+```
+
 ### Transmission lines
 
 This section describes the characteristics of transmission system, such as its
@@ -355,15 +415,15 @@ topology and the susceptance of each transmission line.
 ### Interfaces
 
 This section describes named groups of transmission lines (corridors) whose
-aggregate weighted flow is bounded. Each interface specifies a set of lines
-with signed weight coefficients and upper/lower flow limits.
+aggregate weighted flow is bounded. Each interface specifies a set of lines with
+signed weight coefficients and upper/lower flow limits.
 
-| Key                              | Description                                                                                                                                                       |  Default  | Time series? | Uncertain? |
-| :------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :----------: | :--------: |
-| `Lines`                          | Dictionary mapping line names to their signed weight coefficients. Positive weights indicate outbound flow; negative weights indicate inbound flow.               |   `{}`    |      No      |    Yes     |
-| `Net flow upper limit (MW)`      | Upper bound on the aggregate weighted flow through the interface.                                                                                                 |  `+inf`   |     Yes      |    Yes     |
-| `Net flow lower limit (MW)`      | Lower bound on the aggregate weighted flow through the interface.                                                                                                 |  `-inf`   |     Yes      |    Yes     |
-| `Flow limit penalty ($/MW)`      | Penalty for violating the flow limits of the interface (in $/MW). This is charged per time step. For example, if there is a violation of 1 MW for three time steps, three times this amount will be charged. | `5000.0`  |     Yes      |    Yes     |
+| Key                         | Description                                                                                                                                                                                                  | Default  | Time series? | Uncertain? |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Lines`                     | Dictionary mapping line names to their signed weight coefficients. Positive weights indicate outbound flow; negative weights indicate inbound flow.                                                          |   `{}`   |      No      |    Yes     |
+| `Net flow upper limit (MW)` | Upper bound on the aggregate weighted flow through the interface.                                                                                                                                            |  `+inf`  |     Yes      |    Yes     |
+| `Net flow lower limit (MW)` | Lower bound on the aggregate weighted flow through the interface.                                                                                                                                            |  `-inf`  |     Yes      |    Yes     |
+| `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the interface (in $/MW). This is charged per time step. For example, if there is a violation of 1 MW for three time steps, three times this amount will be charged. | `5000.0` |     Yes      |    Yes     |
 
 #### Example
 
@@ -371,13 +431,13 @@ with signed weight coefficients and upper/lower flow limits.
 {
   "Interfaces": {
     "ifc1": {
-      "Lines": {"l1": 1.0, "l2": 1.0},
+      "Lines": { "l1": 1.0, "l2": 1.0 },
       "Net flow upper limit (MW)": 120,
       "Net flow lower limit (MW)": -120,
       "Flow limit penalty ($/MW)": 5000.0
     },
     "ifc2": {
-      "Lines": {"l3": 1.0, "l7": -1.0},
+      "Lines": { "l3": 1.0, "l7": -1.0 },
       "Net flow upper limit (MW)": [50, 60, 60, 60],
       "Net flow lower limit (MW)": -100,
       "Flow limit penalty ($/MW)": 5000.0
@@ -399,7 +459,7 @@ child reserve also count toward satisfying its parent.
 | `Type`                     | Type of reserve product. Must be `"spinning"` or `"non-spinning"`.                                                                                                      | Required |      No      |     No     |
 | `Amount (MW)`              | Amount of reserves required.                                                                                                                                            | Required |     Yes      |    Yes     |
 | `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1`     |     Yes      |    Yes     |
-| `Parent`                   | Name of parent reserve for cascading requirements. Contributions to this reserve also count toward satisfying the parent.                                              | `null`   |      No      |     No     |
+| `Parent`                   | Name of parent reserve for cascading requirements. Contributions to this reserve also count toward satisfying the parent.                                               | `null`   |      No      |     No     |
 
 #### Example
 
@@ -432,9 +492,9 @@ child reserve also count toward satisfying its parent.
 This section describes credible contingency scenarios in the optimization, such
 as the loss of a transmission line.
 
-| Key                   | Description                                                                                       | Default | Uncertain? |
-| :-------------------- | :------------------------------------------------------------------------------------------------ | :-----: | :--------: |
-| `Affected lines`      | List of transmission lines affected by this contingency. May be omitted if no lines are affected. |  `[]`   |    Yes     |
+| Key              | Description                                                                                       | Default | Uncertain? |
+| :--------------- | :------------------------------------------------------------------------------------------------ | :-----: | :--------: |
+| `Affected lines` | List of transmission lines affected by this contingency. May be omitted if no lines are affected. |  `[]`   |    Yes     |
 
 #### Example
 
@@ -525,11 +585,11 @@ removed for convenience:
 
 ### Buses
 
-| Key                             | Description                                                                                   | Unit |
-| :------------------------------ | :-------------------------------------------------------------------------------------------- | :--- |
-| `Bus: Net injection (MW)`       | Net power injection at each bus.                                                              | MW   |
-| `Bus: Load curtail (MW)`        | Amount of conventional load curtailed at each bus due to insufficient capacity or congestion. | MW   |
-| `Bus: Fixed load expense ($)`   | Expense for serving fixed load at each bus (load times LMP). Only available if LMPs are computed. | $    |
+| Key                           | Description                                                                                       | Unit |
+| :---------------------------- | :------------------------------------------------------------------------------------------------ | :--- |
+| `Bus: Net injection (MW)`     | Net power injection at each bus.                                                                  | MW   |
+| `Bus: Load curtail (MW)`      | Amount of conventional load curtailed at each bus due to insufficient capacity or congestion.     | MW   |
+| `Bus: Fixed load expense ($)` | Expense for serving fixed load at each bus (load times LMP). Only available if LMPs are computed. | $    |
 
 #### Example
 
@@ -552,11 +612,11 @@ removed for convenience:
 
 ### Locational Marginal Prices
 
-| Key                         | Description                                                                                                                                                     | Unit    |
-| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
-| `LMP: Total ($/MWh)`        | Total locational marginal price at each bus. Only available if LMPs are computed.                                                                               | $/MWh   |
-| `LMP: Energy ($/MWh)`       | Energy component of LMP at each bus (minimum LMP across all buses at each time period). Only available if LMPs are computed.                                    | $/MWh   |
-| `LMP: Congestion ($/MWh)`   | Congestion component of LMP at each bus (total LMP minus energy component). Only available if LMPs are computed.                                                | $/MWh   |
+| Key                       | Description                                                                                                                  | Unit  |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------- | :---- |
+| `LMP: Total ($/MWh)`      | Total locational marginal price at each bus. Only available if LMPs are computed.                                            | $/MWh |
+| `LMP: Energy ($/MWh)`     | Energy component of LMP at each bus (minimum LMP across all buses at each time period). Only available if LMPs are computed. | $/MWh |
+| `LMP: Congestion ($/MWh)` | Congestion component of LMP at each bus (total LMP minus energy component). Only available if LMPs are computed.             | $/MWh |
 
 #### Example
 
@@ -650,14 +710,14 @@ removed for convenience:
 
 ### Transmission Lines
 
-| Key                           | Description                                                                                                                                       | Unit    |
-| :---------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
-| `Line: Flow (MW)`             | Pre-contingency power flow through each transmission line (calculated using injection shift factors).                                             | MW      |
-| `Line: Overflow (MW)`         | Amount of power flow exceeding the line's thermal limit.                                                                                          | MW      |
-| `Line: Overflow penalty ($)`  | Penalty cost incurred for overflow violations on each line (overflow amount times flow penalty cost).                                             | $       |
-| `Line: Utilization (%)`       | Percentage of line capacity being utilized (absolute flow divided by normal flow limit).                                                          | %       |
-| `Line: Investment cost ($)`   | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for lines with positive investment cost. | $       |
-| `Line: Investment status`     | Number of parallel circuits invested along each candidate line corridor by this time step. Only included for lines with positive investment cost. | Integer |
+| Key                          | Description                                                                                                                                                    | Unit    |
+| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `Line: Flow (MW)`            | Pre-contingency power flow through each transmission line (calculated using injection shift factors).                                                          | MW      |
+| `Line: Overflow (MW)`        | Amount of power flow exceeding the line's thermal limit.                                                                                                       | MW      |
+| `Line: Overflow penalty ($)` | Penalty cost incurred for overflow violations on each line (overflow amount times flow penalty cost).                                                          | $       |
+| `Line: Utilization (%)`      | Percentage of line capacity being utilized (absolute flow divided by normal flow limit).                                                                       | %       |
+| `Line: Investment cost ($)`  | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for lines with positive investment cost. | $       |
+| `Line: Investment status`    | Number of parallel circuits invested along each candidate line corridor by this time step. Only included for lines with positive investment cost.              | Integer |
 
 #### Example
 
@@ -690,11 +750,11 @@ removed for convenience:
 
 ### Interfaces
 
-| Key                                  | Description                                                                                                        | Unit |
-| :----------------------------------- | :----------------------------------------------------------------------------------------------------------------- | :--- |
-| `Interface: Flow (MW)`              | Net weighted flow through each interface.                                                                          | MW   |
-| `Interface: Overflow (MW)`          | Amount of flow exceeding the interface's flow limits.                                                              | MW   |
-| `Interface: Overflow penalty ($)`   | Penalty cost incurred for overflow violations on each interface (overflow amount times flow limit penalty).        | $    |
+| Key                               | Description                                                                                                 | Unit |
+| :-------------------------------- | :---------------------------------------------------------------------------------------------------------- | :--- |
+| `Interface: Flow (MW)`            | Net weighted flow through each interface.                                                                   | MW   |
+| `Interface: Overflow (MW)`        | Amount of flow exceeding the interface's flow limits.                                                       | MW   |
+| `Interface: Overflow penalty ($)` | Penalty cost incurred for overflow violations on each interface (overflow amount times flow limit penalty). | $    |
 
 #### Example
 
@@ -717,9 +777,9 @@ removed for convenience:
 
 ### Price-Sensitive Loads
 
-| Key                                        | Description                                                                                          | Unit |
-| :----------------------------------------- | :--------------------------------------------------------------------------------------------------- | :--- |
-| `Price-sensitive load: Demand served (MW)` | Amount of price-sensitive load demand served at each bus.                                            | MW   |
+| Key                                        | Description                                                                                                       | Unit |
+| :----------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :--- |
+| `Price-sensitive load: Demand served (MW)` | Amount of price-sensitive load demand served at each bus.                                                         | MW   |
 | `Price-sensitive load: Expense ($)`        | Expense incurred for serving price-sensitive load (demand served times LMP). Only available if LMPs are computed. | $    |
 
 #### Example
@@ -733,6 +793,30 @@ removed for convenience:
   "Price-sensitive load: Expense ($)": {
     "p1": [1137.5, 1205.0, 1250.0, 1195.0],
     "p2": [900.0, 900.0, 855.0, 900.0]
+  }
+}
+```
+
+### Virtual Transactions
+
+| Key                     | Description                                                                                                          | Unit |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Virtual: Cleared (MW)` | Amount of each virtual transaction cleared in the market.                                                            | MW   |
+| `Virtual: Revenue ($)`  | Revenue from each virtual transaction (positive for profit, negative for loss). Only available if LMPs are computed. | $    |
+
+#### Example
+
+```json
+{
+  "Virtual: Cleared (MW)": {
+    "vt_inc1": [50.0, 50.0, 50.0, 50.0],
+    "vt_dec1": [40.0, 40.0, 40.0, 40.0],
+    "vt_utc1": [30.0, 30.0, 30.0, 30.0]
+  },
+  "Virtual: Revenue ($)": {
+    "vt_inc1": [1250.0, 1250.0, 1250.0, 1250.0],
+    "vt_dec1": [-1200.0, -1200.0, -1200.0, -1200.0],
+    "vt_utc1": [150.0, 150.0, 150.0, 150.0]
   }
 }
 ```
@@ -830,10 +914,10 @@ removed for convenience:
 
 ### Reserves
 
-| Key                                      | Description                                                                                                                                                                                                | Unit |
-| :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
-| `Reserve: Provided (MW)`                 | Amount of reserve provided by each eligible thermal generator for each reserve product (both spinning and non-spinning). Nested structure: `reserve_name -> generator_name -> [values]`.                   | MW   |
-| `Reserve: Shortfall (MW)`                | Amount of reserve requirement not met for each reserve product.                                                                                                                                            | MW   |
+| Key                       | Description                                                                                                                                                                              | Unit |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Reserve: Provided (MW)`  | Amount of reserve provided by each eligible thermal generator for each reserve product (both spinning and non-spinning). Nested structure: `reserve_name -> generator_name -> [values]`. | MW   |
+| `Reserve: Shortfall (MW)` | Amount of reserve requirement not met for each reserve product.                                                                                                                          | MW   |
 
 #### Example
 
@@ -850,6 +934,7 @@ removed for convenience:
   }
 }
 ```
+
 ### Notes
 
 - Investment status variables show the cumulative investment decision (whether

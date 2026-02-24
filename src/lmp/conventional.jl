@@ -125,6 +125,30 @@ function _update_solution(
                 ] for ps in ps_loads
             )
         end
+
+        if "Virtual: Cleared (MW)" in keys(sol[sc.name])
+            virtuals = sc[:virtual]
+            sol[sc.name]["Virtual: Revenue (\$)"] = OrderedDict(
+                vt.name => begin
+                    cleared = sol[sc.name]["Virtual: Cleared (MW)"][vt.name]
+                    if vt.type == :inc
+                        [
+                            cleared[t] * lmp_total[vt.bus_source.name][t] for
+                            t in 1:T
+                        ]
+                    elseif vt.type == :dec
+                        [-cleared[t] * lmp_total[vt.bus_sink.name][t] for t in 1:T]
+                    else  # :utc
+                        [
+                            cleared[t] * (
+                                lmp_total[vt.bus_source.name][t] -
+                                lmp_total[vt.bus_sink.name][t]
+                            ) for t in 1:T
+                        ]
+                    end
+                end for vt in virtuals
+            )
+        end
     end
     return
 end
