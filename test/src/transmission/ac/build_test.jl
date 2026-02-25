@@ -67,12 +67,12 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_ac_qf]["s1", "l1", 1] "-1921.077 vr[s1,b1,1]² + 1923.077 vr[s1,b1,1]*vr[s1,b2,1] - 384.615 vr[s1,b1,1]*vi[s1,b2,1] - 1921.077 vi[s1,b1,1]² + 384.615 vi[s1,b1,1]*vr[s1,b2,1] + 1923.077 vi[s1,b1,1]*vi[s1,b2,1] + qf[s1,l1,1] = 0"
     @test_constr model[:eq_ac_qf]["s1", "l2", 1] "-1359.184 vr[s1,b1,1]² + 1428.571 vr[s1,b1,1]*vr[s1,b3,1] - 476.19 vr[s1,b1,1]*vi[s1,b3,1] - 1359.184 vi[s1,b1,1]² + 476.19 vi[s1,b1,1]*vr[s1,b3,1] + 1428.571 vi[s1,b1,1]*vi[s1,b3,1] + qf[s1,l2,1] = 0"
     @test_constr model[:eq_ac_qf]["s1", "l3", 1] "-2190.531 vr[s1,b2,1]² + 2191.781 vr[s1,b2,1]*vr[s1,b3,1] - 821.918 vr[s1,b2,1]*vi[s1,b3,1] - 2190.531 vi[s1,b2,1]² + 821.918 vi[s1,b2,1]*vr[s1,b3,1] + 2191.781 vi[s1,b2,1]*vi[s1,b3,1] + qf[s1,l3,1] = 0"
-    @test_constr model[:eq_ac_pt]["s1", "l1", 1] "384.615 vr[s1,b2,1]*vr[s1,b1,1] - 1923.077 vi[s1,b2,1]*vr[s1,b1,1] + 1923.077 vr[s1,b2,1]*vi[s1,b1,1] + 384.615 vi[s1,b2,1]*vi[s1,b1,1] - 384.615 vr[s1,b2,1]² - 384.615 vi[s1,b2,1]² + pt[s1,l1,1] = 0"
-    @test_constr model[:eq_ac_pt]["s1", "l2", 1] "476.19 vr[s1,b3,1]*vr[s1,b1,1] - 1428.571 vi[s1,b3,1]*vr[s1,b1,1] + 1428.571 vr[s1,b3,1]*vi[s1,b1,1] + 476.19 vi[s1,b3,1]*vi[s1,b1,1] - 500 vr[s1,b3,1]² - 500 vi[s1,b3,1]² + pt[s1,l2,1] = 0"
-    @test_constr model[:eq_ac_pt]["s1", "l3", 1] "821.918 vr[s1,b3,1]*vr[s1,b2,1] - 2191.781 vi[s1,b3,1]*vr[s1,b2,1] + 2191.781 vr[s1,b3,1]*vi[s1,b2,1] + 821.918 vi[s1,b3,1]*vi[s1,b2,1] - 821.918 vr[s1,b3,1]² - 821.918 vi[s1,b3,1]² + pt[s1,l3,1] = 0"
-    @test_constr model[:eq_ac_qt]["s1", "l1", 1] "1923.077 vr[s1,b2,1]*vr[s1,b1,1] + 384.615 vi[s1,b2,1]*vr[s1,b1,1] - 384.615 vr[s1,b2,1]*vi[s1,b1,1] + 1923.077 vi[s1,b2,1]*vi[s1,b1,1] - 1921.077 vr[s1,b2,1]² - 1921.077 vi[s1,b2,1]² + qt[s1,l1,1] = 0"
-    @test_constr model[:eq_ac_qt]["s1", "l2", 1] "1428.571 vr[s1,b3,1]*vr[s1,b1,1] + 476.19 vi[s1,b3,1]*vr[s1,b1,1] - 476.19 vr[s1,b3,1]*vi[s1,b1,1] + 1428.571 vi[s1,b3,1]*vi[s1,b1,1] - 1498.5 vr[s1,b3,1]² - 1498.5 vi[s1,b3,1]² + qt[s1,l2,1] = 0"
-    @test_constr model[:eq_ac_qt]["s1", "l3", 1] "2191.781 vr[s1,b3,1]*vr[s1,b2,1] + 821.918 vi[s1,b3,1]*vr[s1,b2,1] - 821.918 vr[s1,b3,1]*vi[s1,b2,1] + 2191.781 vi[s1,b3,1]*vi[s1,b2,1] - 2190.531 vr[s1,b3,1]² - 2190.531 vi[s1,b3,1]² + qt[s1,l3,1] = 0"
+    @test_constr model[:eq_ac_pt]["s1", "l1", 1] "384.615 vr[s1,b1,1]*vr[s1,b2,1] - 1923.077 vr[s1,b1,1]*vi[s1,b2,1] + 1923.077 vi[s1,b1,1]*vr[s1,b2,1] + 384.615 vi[s1,b1,1]*vi[s1,b2,1] - 384.615 vr[s1,b2,1]² - 384.615 vi[s1,b2,1]² + pt[s1,l1,1] = 0"
+    @test_constr model[:eq_ac_pt]["s1", "l2", 1] "476.19 vr[s1,b1,1]*vr[s1,b3,1] - 1428.571 vr[s1,b1,1]*vi[s1,b3,1] + 1428.571 vi[s1,b1,1]*vr[s1,b3,1] + 476.19 vi[s1,b1,1]*vi[s1,b3,1] - 500 vr[s1,b3,1]² - 500 vi[s1,b3,1]² + pt[s1,l2,1] = 0"
+    @test_constr model[:eq_ac_pt]["s1", "l3", 1] "821.918 vr[s1,b2,1]*vr[s1,b3,1] - 2191.781 vr[s1,b2,1]*vi[s1,b3,1] + 2191.781 vi[s1,b2,1]*vr[s1,b3,1] + 821.918 vi[s1,b2,1]*vi[s1,b3,1] - 821.918 vr[s1,b3,1]² - 821.918 vi[s1,b3,1]² + pt[s1,l3,1] = 0"
+    @test_constr model[:eq_ac_qt]["s1", "l1", 1] "1923.077 vr[s1,b1,1]*vr[s1,b2,1] + 384.615 vr[s1,b1,1]*vi[s1,b2,1] - 384.615 vi[s1,b1,1]*vr[s1,b2,1] + 1923.077 vi[s1,b1,1]*vi[s1,b2,1] - 1921.077 vr[s1,b2,1]² - 1921.077 vi[s1,b2,1]² + qt[s1,l1,1] = 0"
+    @test_constr model[:eq_ac_qt]["s1", "l2", 1] "1428.571 vr[s1,b1,1]*vr[s1,b3,1] + 476.19 vr[s1,b1,1]*vi[s1,b3,1] - 476.19 vi[s1,b1,1]*vr[s1,b3,1] + 1428.571 vi[s1,b1,1]*vi[s1,b3,1] - 1498.5 vr[s1,b3,1]² - 1498.5 vi[s1,b3,1]² + qt[s1,l2,1] = 0"
+    @test_constr model[:eq_ac_qt]["s1", "l3", 1] "2191.781 vr[s1,b2,1]*vr[s1,b3,1] + 821.918 vr[s1,b2,1]*vi[s1,b3,1] - 821.918 vi[s1,b2,1]*vr[s1,b3,1] + 2191.781 vi[s1,b2,1]*vi[s1,b3,1] - 2190.531 vr[s1,b3,1]² - 2190.531 vi[s1,b3,1]² + qt[s1,l3,1] = 0"
 
     # Flow limit constraints
     # -------------------------------------------------------------------------
@@ -91,6 +91,18 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_angle_diff_ub]["s1", "l1", 1] "-0.577 vr[s1,b1,1]*vr[s1,b2,1] - vr[s1,b1,1]*vi[s1,b2,1] + vi[s1,b1,1]*vr[s1,b2,1] - 0.577 vi[s1,b1,1]*vi[s1,b2,1] ≤ 0"
     @test_constr model[:eq_angle_diff_ub]["s1", "l2", 1] "-0.577 vr[s1,b1,1]*vr[s1,b3,1] - vr[s1,b1,1]*vi[s1,b3,1] + vi[s1,b1,1]*vr[s1,b3,1] - 0.577 vi[s1,b1,1]*vi[s1,b3,1] ≤ 0"
     @test_constr model[:eq_angle_diff_ub]["s1", "l3", 1] "-0.577 vr[s1,b2,1]*vr[s1,b3,1] - vr[s1,b2,1]*vi[s1,b3,1] + vi[s1,b2,1]*vr[s1,b3,1] - 0.577 vi[s1,b2,1]*vi[s1,b3,1] ≤ 0"
+
+    # Nodal balance constraints
+    # -------------------------------------------------------------------------
+    # b1: source of l1, l2
+    @test_constr model[:eq_nodal_balance]["s1", "b1", 1] "ni[s1,b1,1] - pf[s1,l1,1] - pf[s1,l2,1] = 0"
+    @test_constr model[:eq_reactive_nodal_balance]["s1", "b1", 1] "qi[s1,b1,1] - qf[s1,l1,1] - qf[s1,l2,1] = 0"
+    # b2: target of l1, source of l3, has shunt sh1
+    @test ("s1", "b2", 1) in keys(model[:eq_nodal_balance])
+    @test ("s1", "b2", 1) in keys(model[:eq_reactive_nodal_balance])
+    # b3: target of l2, l3
+    @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] - pt[s1,l2,1] - pt[s1,l3,1] = 0"
+    @test_constr model[:eq_reactive_nodal_balance]["s1", "b3", 1] "qi[s1,b3,1] - qt[s1,l2,1] - qt[s1,l3,1] = 0"
 
     # Power balance (delegated to CopperPlate)
     # -------------------------------------------------------------------------
@@ -160,12 +172,12 @@ end
     @test_constr model[:eq_ac_qf]["s1", "l1", 1] "qf[s1,l1,1] - (100 * (((19.211 vm[s1,b1,1]²) - (19.231 * ((vm[s1,b1,1]*vm[s1,b2,1]) * cos(va[s1,b1,1] - va[s1,b2,1])))) + (-3.846 * ((vm[s1,b1,1]*vm[s1,b2,1]) * sin(va[s1,b1,1] - va[s1,b2,1]))))) = 0"
     @test_constr model[:eq_ac_qf]["s1", "l2", 1] "qf[s1,l2,1] - (100 * (((13.592 vm[s1,b1,1]²) - (14.286 * ((vm[s1,b1,1]*vm[s1,b3,1]) * cos(va[s1,b1,1] - va[s1,b3,1])))) + (-4.762 * ((vm[s1,b1,1]*vm[s1,b3,1]) * sin(va[s1,b1,1] - va[s1,b3,1]))))) = 0"
     @test_constr model[:eq_ac_qf]["s1", "l3", 1] "qf[s1,l3,1] - (100 * (((21.905 vm[s1,b2,1]²) - (21.918 * ((vm[s1,b2,1]*vm[s1,b3,1]) * cos(va[s1,b2,1] - va[s1,b3,1])))) + (-8.219 * ((vm[s1,b2,1]*vm[s1,b3,1]) * sin(va[s1,b2,1] - va[s1,b3,1]))))) = 0"
-    @test_constr model[:eq_ac_pt]["s1", "l1", 1] "pt[s1,l1,1] - (100 * (((3.846 vm[s1,b2,1]²) + (-3.846 * ((vm[s1,b2,1]*vm[s1,b1,1]) * cos(-va[s1,b1,1] + va[s1,b2,1])))) + (19.231 * ((vm[s1,b2,1]*vm[s1,b1,1]) * sin(-va[s1,b1,1] + va[s1,b2,1]))))) = 0"
-    @test_constr model[:eq_ac_pt]["s1", "l2", 1] "pt[s1,l2,1] - (100 * (((5 vm[s1,b3,1]²) + (-4.762 * ((vm[s1,b3,1]*vm[s1,b1,1]) * cos(-va[s1,b1,1] + va[s1,b3,1])))) + (14.286 * ((vm[s1,b3,1]*vm[s1,b1,1]) * sin(-va[s1,b1,1] + va[s1,b3,1]))))) = 0"
-    @test_constr model[:eq_ac_pt]["s1", "l3", 1] "pt[s1,l3,1] - (100 * (((8.219 vm[s1,b3,1]²) + (-8.219 * ((vm[s1,b3,1]*vm[s1,b2,1]) * cos(-va[s1,b2,1] + va[s1,b3,1])))) + (21.918 * ((vm[s1,b3,1]*vm[s1,b2,1]) * sin(-va[s1,b2,1] + va[s1,b3,1]))))) = 0"
-    @test_constr model[:eq_ac_qt]["s1", "l1", 1] "qt[s1,l1,1] - (100 * (((19.211 vm[s1,b2,1]²) - (19.231 * ((vm[s1,b2,1]*vm[s1,b1,1]) * cos(-va[s1,b1,1] + va[s1,b2,1])))) + (-3.846 * ((vm[s1,b2,1]*vm[s1,b1,1]) * sin(-va[s1,b1,1] + va[s1,b2,1]))))) = 0"
-    @test_constr model[:eq_ac_qt]["s1", "l2", 1] "qt[s1,l2,1] - (100 * (((14.985 vm[s1,b3,1]²) - (14.286 * ((vm[s1,b3,1]*vm[s1,b1,1]) * cos(-va[s1,b1,1] + va[s1,b3,1])))) + (-4.762 * ((vm[s1,b3,1]*vm[s1,b1,1]) * sin(-va[s1,b1,1] + va[s1,b3,1]))))) = 0"
-    @test_constr model[:eq_ac_qt]["s1", "l3", 1] "qt[s1,l3,1] - (100 * (((21.905 vm[s1,b3,1]²) - (21.918 * ((vm[s1,b3,1]*vm[s1,b2,1]) * cos(-va[s1,b2,1] + va[s1,b3,1])))) + (-8.219 * ((vm[s1,b3,1]*vm[s1,b2,1]) * sin(-va[s1,b2,1] + va[s1,b3,1]))))) = 0"
+    @test_constr model[:eq_ac_pt]["s1", "l1", 1] "pt[s1,l1,1] - (100 * (((3.846 vm[s1,b2,1]²) + (-3.846 * ((vm[s1,b1,1]*vm[s1,b2,1]) * cos(va[s1,b1,1] - va[s1,b2,1])))) + (-19.231 * ((vm[s1,b1,1]*vm[s1,b2,1]) * sin(va[s1,b1,1] - va[s1,b2,1]))))) = 0"
+    @test_constr model[:eq_ac_pt]["s1", "l2", 1] "pt[s1,l2,1] - (100 * (((5 vm[s1,b3,1]²) + (-4.762 * ((vm[s1,b1,1]*vm[s1,b3,1]) * cos(va[s1,b1,1] - va[s1,b3,1])))) + (-14.286 * ((vm[s1,b1,1]*vm[s1,b3,1]) * sin(va[s1,b1,1] - va[s1,b3,1]))))) = 0"
+    @test_constr model[:eq_ac_pt]["s1", "l3", 1] "pt[s1,l3,1] - (100 * (((8.219 vm[s1,b3,1]²) + (-8.219 * ((vm[s1,b2,1]*vm[s1,b3,1]) * cos(va[s1,b2,1] - va[s1,b3,1])))) + (-21.918 * ((vm[s1,b2,1]*vm[s1,b3,1]) * sin(va[s1,b2,1] - va[s1,b3,1]))))) = 0"
+    @test_constr model[:eq_ac_qt]["s1", "l1", 1] "qt[s1,l1,1] - (100 * (((19.211 vm[s1,b2,1]²) - (19.231 * ((vm[s1,b1,1]*vm[s1,b2,1]) * cos(va[s1,b1,1] - va[s1,b2,1])))) + (3.846 * ((vm[s1,b1,1]*vm[s1,b2,1]) * sin(va[s1,b1,1] - va[s1,b2,1]))))) = 0"
+    @test_constr model[:eq_ac_qt]["s1", "l2", 1] "qt[s1,l2,1] - (100 * (((14.985 vm[s1,b3,1]²) - (14.286 * ((vm[s1,b1,1]*vm[s1,b3,1]) * cos(va[s1,b1,1] - va[s1,b3,1])))) + (4.762 * ((vm[s1,b1,1]*vm[s1,b3,1]) * sin(va[s1,b1,1] - va[s1,b3,1]))))) = 0"
+    @test_constr model[:eq_ac_qt]["s1", "l3", 1] "qt[s1,l3,1] - (100 * (((21.905 vm[s1,b3,1]²) - (21.918 * ((vm[s1,b2,1]*vm[s1,b3,1]) * cos(va[s1,b2,1] - va[s1,b3,1])))) + (8.219 * ((vm[s1,b2,1]*vm[s1,b3,1]) * sin(va[s1,b2,1] - va[s1,b3,1]))))) = 0"
 
     # Flow limit constraints
     # -------------------------------------------------------------------------
@@ -184,6 +196,18 @@ end
     @test_constr model[:eq_angle_diff_ub]["s1", "l1", 1] "va[s1,b1,1] - va[s1,b2,1] ≤ 0.524"
     @test_constr model[:eq_angle_diff_ub]["s1", "l2", 1] "va[s1,b1,1] - va[s1,b3,1] ≤ 0.524"
     @test_constr model[:eq_angle_diff_ub]["s1", "l3", 1] "va[s1,b2,1] - va[s1,b3,1] ≤ 0.524"
+
+    # Nodal balance constraints
+    # -------------------------------------------------------------------------
+    # b1: source of l1, l2
+    @test_constr model[:eq_nodal_balance]["s1", "b1", 1] "ni[s1,b1,1] - pf[s1,l1,1] - pf[s1,l2,1] = 0"
+    @test_constr model[:eq_reactive_nodal_balance]["s1", "b1", 1] "qi[s1,b1,1] - qf[s1,l1,1] - qf[s1,l2,1] = 0"
+    # b2: target of l1, source of l3, has shunt sh1
+    @test ("s1", "b2", 1) in keys(model[:eq_nodal_balance])
+    @test ("s1", "b2", 1) in keys(model[:eq_reactive_nodal_balance])
+    # b3: target of l2, l3
+    @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] - pt[s1,l2,1] - pt[s1,l3,1] = 0"
+    @test_constr model[:eq_reactive_nodal_balance]["s1", "b3", 1] "qi[s1,b3,1] - qt[s1,l2,1] - qt[s1,l3,1] = 0"
 
     # Power balance (delegated to CopperPlate)
     # -------------------------------------------------------------------------

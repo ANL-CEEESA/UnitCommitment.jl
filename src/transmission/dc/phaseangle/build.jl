@@ -11,15 +11,31 @@ function build_model(
 )::Nothing
     build_model(model, instance, CopperPlateTransmissionExt())
     _check(instance, ext)
-    _add_transmission_vars!(model, instance, ext)
-    _add_transmission_obj!(model, instance, ext)
-    _add_transmission_constr_flow!(model, instance, ext)
-    _add_transmission_constr_nodal_balance!(model, instance, ext)
-    _add_transmission_constr_invest!(model, instance, ext)
+    _add_dc_vars!(model, instance, ext)
+    _add_dc_obj!(model, instance, ext)
+    _add_dc_constr_flow!(model, instance, ext)
+    _add_dc_constr_nodal_balance!(model, instance, ext)
+    _add_dc_constr_invest!(model, instance, ext)
     return
 end
 
-function _add_transmission_vars!(
+function _check(
+    instance::UnitCommitmentInstance,
+    ::PhaseAngleTransmissionExt,
+)::Nothing
+    # Check for contingencies - this extension does not support them
+    for sc in instance.scenarios
+        if !isempty(sc[:contingencies])
+            error(
+                "PhaseAngleTransmissionExt does not support contingencies. " *
+                "Scenario '$(sc.name)' has $(length(sc[:contingencies])) contingency/contingencies.",
+            )
+        end
+    end
+    return
+end
+
+function _add_dc_vars!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ext::PhaseAngleTransmissionExt,
@@ -66,40 +82,7 @@ function _add_transmission_vars!(
     return
 end
 
-function _add_transmission_obj!(
-    model::JuMP.Model,
-    instance::UnitCommitmentInstance,
-    ext::PhaseAngleTransmissionExt,
-)::Nothing
-    T = instance.time
-    overflow = model[:overflow]
-    invest = model[:invest]
-
-    # Overflow penalty
-    for sc in instance.scenarios, branch in sc[:branches], t in 1:T
-        add_to_expression!(
-            model[:obj],
-            overflow[sc.name, branch.name, t],
-            branch.flow_limit_penalty[t] * sc[:probability],
-        )
-    end
-
-    # Investment cost
-    for branch in instance.scenarios[1][:branches]
-        branch.invest[1] > 0.0 || continue
-        for t in 1:T
-            add_to_expression!(
-                model[:obj],
-                invest[branch.name, t] - invest[branch.name, t-1],
-                branch.invest[t] *
-                instance.scenarios[1][:investment_cost_weight],
-            )
-        end
-    end
-    return
-end
-
-function _add_transmission_constr_flow!(
+function _add_dc_constr_flow!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ext::PhaseAngleTransmissionExt,
@@ -195,7 +178,7 @@ function _add_transmission_constr_flow!(
     return
 end
 
-function _add_transmission_constr_nodal_balance!(
+function _add_dc_constr_nodal_balance!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ext::PhaseAngleTransmissionExt,
@@ -224,7 +207,7 @@ function _add_transmission_constr_nodal_balance!(
     return
 end
 
-function _add_transmission_constr_invest!(
+function _add_dc_constr_invest!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ext::PhaseAngleTransmissionExt,
@@ -242,22 +225,6 @@ function _add_transmission_constr_invest!(
                     invest[branch.name, t-1] <= invest[branch.name, t],
                 )
             end
-        end
-    end
-    return
-end
-
-function _check(
-    instance::UnitCommitmentInstance,
-    ::PhaseAngleTransmissionExt,
-)::Nothing
-    # Check for contingencies - this extension does not support them
-    for sc in instance.scenarios
-        if !isempty(sc[:contingencies])
-            error(
-                "PhaseAngleTransmissionExt does not support contingencies. " *
-                "Scenario '$(sc.name)' has $(length(sc[:contingencies])) contingency/contingencies.",
-            )
         end
     end
     return

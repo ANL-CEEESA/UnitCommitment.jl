@@ -70,7 +70,11 @@ function _validate_pm_case(case_name::String)
 end
 
 function _minlp_optimizer()
-    ipopt = optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0)
+    ipopt = optimizer_with_attributes(
+        Ipopt.Optimizer,
+        "print_level" => 0,
+        "sb" => "yes",
+    )
     highs = optimizer_with_attributes(HiGHS.Optimizer, "output_flag" => false)
     return optimizer_with_attributes(
         Juniper.Optimizer,

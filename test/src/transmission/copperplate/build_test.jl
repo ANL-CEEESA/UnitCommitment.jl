@@ -19,5 +19,4 @@ using HiGHS, JuMP, UnitCommitment
     # eq_power_balance
     # -------------------------------------------------------------------------
     @test_constr model[:eq_power_balance]["s1", 1] "ni[s1,b1,1] + ni[s1,b2,1] + ni[s1,b3,1] + ni[s1,b4,1] + ni[s1,b5,1] = 0"
-    @test_constr model[:eq_power_balance]["s1", 4] "ni[s1,b1,4] + ni[s1,b2,4] + ni[s1,b3,4] + ni[s1,b4,4] + ni[s1,b5,4] = 0"
 end

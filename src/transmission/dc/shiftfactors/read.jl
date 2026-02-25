@@ -9,25 +9,6 @@ function read_json(
 )
     read_json(json, sc, CopperPlateTransmissionExt())
 
-    # Check for investment branches (not supported)
-    for branch in sc[:branches]
-        if branch.invest[1] > 0.0
-            error(
-                "ShiftFactorsTransmissionExt does not support branch investment. " *
-                "Branch '$(branch.name)' has investment cost $(branch.invest[1]). " *
-                "Use PhaseAngleTransmissionExt instead.",
-            )
-        end
-    end
-
-    # Only single-branch contingencies are supported
-    for cont in sc[:contingencies]
-        length(cont.branches) == 1 || error(
-            "ShiftFactorsTransmissionExt only supports contingencies with exactly one " *
-            "outage branch. Contingency '$(cont.name)' has $(length(cont.branches)) branches.",
-        )
-    end
-
     # Compute ISF and LODF matrices
     if length(sc[:branches]) > 0
         isf =

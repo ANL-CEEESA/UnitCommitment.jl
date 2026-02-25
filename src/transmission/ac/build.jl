@@ -12,11 +12,12 @@ function build_model(
     build_model(model, instance, CopperPlateTransmissionExt())
     _add_ac_voltage_vars!(model, instance, ext.formulation)
     _add_ac_flow_vars!(model, instance)
-    _add_ac_voltage_constraints!(model, instance, ext.formulation)
-    _add_ac_ohms!(model, instance, ext.formulation)
-    _add_ac_flow_limits!(model, instance)
-    _add_ac_angle_diff!(model, instance, ext.formulation)
-    _add_ac_nodal_balance!(model, instance, ext.formulation)
+    _add_ac_shunt_vars!(model, instance, ext.formulation)
+    _add_ac_constr_voltage!(model, instance, ext.formulation)
+    _add_ac_constr_ohms!(model, instance, ext.formulation)
+    _add_ac_constr_flow_limits!(model, instance)
+    _add_ac_constr_angle_diff!(model, instance, ext.formulation)
+    _add_ac_constr_nodal_balance!(model, instance, ext.formulation)
     _add_ac_obj!(model, instance)
     return
 end
@@ -65,7 +66,27 @@ function _add_ac_flow_vars!(
     return
 end
 
-function _add_ac_flow_limits!(
+function _add_ac_shunt_vars!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    formulation::ACFormulation,
+)::Nothing
+    T = instance.time
+
+    p_shunt = _init(model, :p_shunt)
+    q_shunt = _init(model, :q_shunt)
+
+    for sc in instance.scenarios
+        for sh in sc[:shunts], t in 1:T
+            sh.status[t] || continue
+            p_shunt[sc.name, sh.name, t] = @variable(model)
+            q_shunt[sc.name, sh.name, t] = @variable(model)
+        end
+    end
+    return
+end
+
+function _add_ac_constr_flow_limits!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
 )::Nothing
@@ -96,48 +117,6 @@ function _add_ac_flow_limits!(
     return
 end
 
-function _add_ac_line_flow_to_nodal_balance!(
-    model::JuMP.Model,
-    instance::UnitCommitmentInstance,
-)::Nothing
-    T = instance.time
-
-    pf = model[:pf]
-    pt = model[:pt]
-    qf = model[:qf]
-    qt = model[:qt]
-
-    net_injection = model[:net_injection]
-    net_reactive_injection = model[:net_reactive_injection]
-
-    for sc in instance.scenarios, l in sc[:branches], t in 1:T
-        # Active power: subtract flows leaving the bus
-        add_to_expression!(
-            net_injection[sc.name, l.source.name, t],
-            pf[sc.name, l.name, t],
-            -1.0,
-        )
-        add_to_expression!(
-            net_injection[sc.name, l.target.name, t],
-            pt[sc.name, l.name, t],
-            -1.0,
-        )
-
-        # Reactive power: subtract flows leaving the bus
-        add_to_expression!(
-            net_reactive_injection[sc.name, l.source.name, t],
-            qf[sc.name, l.name, t],
-            -1.0,
-        )
-        add_to_expression!(
-            net_reactive_injection[sc.name, l.target.name, t],
-            qt[sc.name, l.name, t],
-            -1.0,
-        )
-    end
-    return
-end
-
 function _add_ac_obj!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
@@ -151,6 +130,152 @@ function _add_ac_obj!(
             overflow[sc.name, l.name, t],
             l.flow_limit_penalty[t] * sc[:probability],
         )
+    end
+    return
+end
+
+function _add_ac_constr_ohms!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    formulation::ACFormulation,
+)::Nothing
+    T = instance.time
+
+    pf = model[:pf]
+    pt = model[:pt]
+    qf = model[:qf]
+    qt = model[:qt]
+
+    eq_ac_pf = _init(model, :eq_ac_pf)
+    eq_ac_qf = _init(model, :eq_ac_qf)
+    eq_ac_pt = _init(model, :eq_ac_pt)
+    eq_ac_qt = _init(model, :eq_ac_qt)
+
+    for sc in instance.scenarios
+        base_mva = sc[:base_mva]
+
+        for l in sc[:branches], t in 1:T
+            p = _ac_branch_params(l)
+            v = _ac_voltage_products(model, sc, l, t, formulation)
+
+            # From-end active power
+            eq_ac_pf[sc.name, l.name, t] = @constraint(
+                model,
+                pf[sc.name, l.name, t] ==
+                base_mva * (
+                    (p.g + p.g_fr) / p.tm2 * v.v_sq_fr +
+                    (-p.g * p.tr + p.b * p.ti) / p.tm2 * v.v_cos +
+                    (-p.b * p.tr - p.g * p.ti) / p.tm2 * v.v_sin
+                )
+            )
+
+            # From-end reactive power
+            eq_ac_qf[sc.name, l.name, t] = @constraint(
+                model,
+                qf[sc.name, l.name, t] ==
+                base_mva * (
+                    -(p.b + p.b_fr) / p.tm2 * v.v_sq_fr -
+                    (-p.b * p.tr - p.g * p.ti) / p.tm2 * v.v_cos +
+                    (-p.g * p.tr + p.b * p.ti) / p.tm2 * v.v_sin
+                )
+            )
+
+            # To-end active power
+            #   cos(va_to - va_fr) = cos(va_fr - va_to) = v.v_cos
+            #   sin(va_to - va_fr) = -sin(va_fr - va_to) = -v.v_sin
+            eq_ac_pt[sc.name, l.name, t] = @constraint(
+                model,
+                pt[sc.name, l.name, t] ==
+                base_mva * (
+                    (p.g + p.g_to) * v.v_sq_to +
+                    (-p.g * p.tr - p.b * p.ti) / p.tm2 * v.v_cos +
+                    -(-p.b * p.tr + p.g * p.ti) / p.tm2 * v.v_sin
+                )
+            )
+
+            # To-end reactive power
+            eq_ac_qt[sc.name, l.name, t] = @constraint(
+                model,
+                qt[sc.name, l.name, t] ==
+                base_mva * (
+                    -(p.b + p.b_to) * v.v_sq_to -
+                    (-p.b * p.tr + p.g * p.ti) / p.tm2 * v.v_cos +
+                    -(-p.g * p.tr - p.b * p.ti) / p.tm2 * v.v_sin
+                )
+            )
+        end
+    end
+    return
+end
+
+function _add_ac_constr_nodal_balance!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    formulation::ACFormulation,
+)::Nothing
+    T = instance.time
+
+    ni = model[:ni]
+    qi = model[:qi]
+    pf = model[:pf]
+    pt = model[:pt]
+    qf = model[:qf]
+    qt = model[:qt]
+
+    eq_nodal_balance = _init(model, :eq_nodal_balance)
+    eq_reactive_nodal_balance = _init(model, :eq_reactive_nodal_balance)
+    eq_p_shunt = _init(model, :eq_p_shunt)
+    eq_q_shunt = _init(model, :eq_q_shunt)
+
+    for sc in instance.scenarios
+        base_mva = sc[:base_mva]
+        shunts_by_bus = sc[:shunts_by_bus]
+        branches_by_source = sc[:branches_by_source_bus]
+        branches_by_target = sc[:branches_by_target_bus]
+
+        for t in 1:T, b in sc[:bus]
+            # Active power nodal balance:
+            #   ni == sum(pf for source lines) + sum(pt for target lines) + sum(p_shunt)
+            outflow = AffExpr()
+            for l in branches_by_source[b]
+                add_to_expression!(outflow, pf[sc.name, l.name, t])
+            end
+            for l in branches_by_target[b]
+                add_to_expression!(outflow, pt[sc.name, l.name, t])
+            end
+
+            # Reactive power nodal balance:
+            #   qi == sum(qf for source lines) + sum(qt for target lines) - sum(q_shunt)
+            reactive_outflow = AffExpr()
+            for l in branches_by_source[b]
+                add_to_expression!(reactive_outflow, qf[sc.name, l.name, t])
+            end
+            for l in branches_by_target[b]
+                add_to_expression!(reactive_outflow, qt[sc.name, l.name, t])
+            end
+
+            # Shunt contributions (quadratic in voltage magnitude).
+            # Use auxiliary variables to keep the balance constraints linear.
+            for sh in shunts_by_bus[b]
+                sh.status[t] || continue
+                vm2 = _ac_voltage_sq(model, sc.name, b.name, t, formulation)
+
+                ps = model[:p_shunt][sc.name, sh.name, t]
+                eq_p_shunt[sc.name, sh.name, t] =
+                    @constraint(model, ps == base_mva * sh.conductance * vm2)
+                add_to_expression!(outflow, ps)
+
+                qs = model[:q_shunt][sc.name, sh.name, t]
+                eq_q_shunt[sc.name, sh.name, t] =
+                    @constraint(model, qs == base_mva * sh.susceptance * vm2)
+                add_to_expression!(reactive_outflow, qs, -1.0)
+            end
+
+            eq_nodal_balance[sc.name, b.name, t] =
+                @constraint(model, ni[sc.name, b.name, t] == outflow)
+            eq_reactive_nodal_balance[sc.name, b.name, t] =
+                @constraint(model, qi[sc.name, b.name, t] == reactive_outflow)
+        end
     end
     return
 end

@@ -177,4 +177,3 @@ end
     @test !haskey(model, :eq_flow_cont_limit_ub)
     @test !haskey(model, :eq_flow_cont_limit_lb)
 end
-

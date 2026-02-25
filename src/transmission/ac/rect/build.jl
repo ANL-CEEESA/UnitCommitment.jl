@@ -23,7 +23,7 @@ function _add_ac_voltage_vars!(
     return
 end
 
-function _add_ac_voltage_constraints!(
+function _add_ac_constr_voltage!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ::ACRectangular,
@@ -54,93 +54,7 @@ function _add_ac_voltage_constraints!(
     return
 end
 
-function _add_ac_ohms!(
-    model::JuMP.Model,
-    instance::UnitCommitmentInstance,
-    ::ACRectangular,
-)::Nothing
-    T = instance.time
-
-    pf = model[:pf]
-    pt = model[:pt]
-    qf = model[:qf]
-    qt = model[:qt]
-    vr = model[:vr]
-    vi = model[:vi]
-
-    eq_ac_pf = _init(model, :eq_ac_pf)
-    eq_ac_qf = _init(model, :eq_ac_qf)
-    eq_ac_pt = _init(model, :eq_ac_pt)
-    eq_ac_qt = _init(model, :eq_ac_qt)
-
-    for sc in instance.scenarios
-        base_mva = sc[:base_mva]
-
-        for l in sc[:branches], t in 1:T
-            p = _ac_branch_params(l)
-
-            vr_fr = vr[sc.name, l.source.name, t]
-            vi_fr = vi[sc.name, l.source.name, t]
-            vr_to = vr[sc.name, l.target.name, t]
-            vi_to = vi[sc.name, l.target.name, t]
-
-            # From-end active power
-            eq_ac_pf[sc.name, l.name, t] = @constraint(
-                model,
-                pf[sc.name, l.name, t] ==
-                base_mva * (
-                    (p.g + p.g_fr) / p.tm2 * (vr_fr^2 + vi_fr^2) +
-                    (-p.g * p.tr + p.b * p.ti) / p.tm2 *
-                    (vr_fr * vr_to + vi_fr * vi_to) +
-                    (-p.b * p.tr - p.g * p.ti) / p.tm2 *
-                    (vi_fr * vr_to - vr_fr * vi_to)
-                )
-            )
-
-            # From-end reactive power
-            eq_ac_qf[sc.name, l.name, t] = @constraint(
-                model,
-                qf[sc.name, l.name, t] ==
-                base_mva * (
-                    -(p.b + p.b_fr) / p.tm2 * (vr_fr^2 + vi_fr^2) -
-                    (-p.b * p.tr - p.g * p.ti) / p.tm2 *
-                    (vr_fr * vr_to + vi_fr * vi_to) +
-                    (-p.g * p.tr + p.b * p.ti) / p.tm2 *
-                    (vi_fr * vr_to - vr_fr * vi_to)
-                )
-            )
-
-            # To-end active power
-            eq_ac_pt[sc.name, l.name, t] = @constraint(
-                model,
-                pt[sc.name, l.name, t] ==
-                base_mva * (
-                    (p.g + p.g_to) * (vr_to^2 + vi_to^2) +
-                    (-p.g * p.tr - p.b * p.ti) / p.tm2 *
-                    (vr_to * vr_fr + vi_to * vi_fr) +
-                    (-p.b * p.tr + p.g * p.ti) / p.tm2 *
-                    (vi_to * vr_fr - vr_to * vi_fr)
-                )
-            )
-
-            # To-end reactive power
-            eq_ac_qt[sc.name, l.name, t] = @constraint(
-                model,
-                qt[sc.name, l.name, t] ==
-                base_mva * (
-                    -(p.b + p.b_to) * (vr_to^2 + vi_to^2) -
-                    (-p.b * p.tr + p.g * p.ti) / p.tm2 *
-                    (vr_to * vr_fr + vi_to * vi_fr) +
-                    (-p.g * p.tr - p.b * p.ti) / p.tm2 *
-                    (vi_to * vr_fr - vr_to * vi_fr)
-                )
-            )
-        end
-    end
-    return
-end
-
-function _add_ac_angle_diff!(
+function _add_ac_constr_angle_diff!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ::ACRectangular,
@@ -178,50 +92,29 @@ function _add_ac_angle_diff!(
     return
 end
 
-function _add_ac_nodal_balance!(
-    model::JuMP.Model,
-    instance::UnitCommitmentInstance,
-    ::ACRectangular,
-)::Nothing
-    T = instance.time
-
+function _ac_voltage_products(model::JuMP.Model, sc, l, t, ::ACRectangular)
     vr = model[:vr]
     vi = model[:vi]
+    vr_fr = vr[sc.name, l.source.name, t]
+    vi_fr = vi[sc.name, l.source.name, t]
+    vr_to = vr[sc.name, l.target.name, t]
+    vi_to = vi[sc.name, l.target.name, t]
+    return (
+        v_sq_fr = vr_fr^2 + vi_fr^2,
+        v_sq_to = vr_to^2 + vi_to^2,
+        v_cos = vr_fr * vr_to + vi_fr * vi_to,
+        v_sin = vi_fr * vr_to - vr_fr * vi_to,
+    )
+end
 
-    net_injection = model[:net_injection]
-    net_reactive_injection = model[:net_reactive_injection]
-
-    _add_ac_line_flow_to_nodal_balance!(model, instance)
-
-    for sc in instance.scenarios
-        base_mva = sc[:base_mva]
-
-        # Add shunt contributions (quadratic in voltage).
-        # Use auxiliary variables to keep net_injection as AffExpr.
-        for sh in sc[:shunts], t in 1:T
-            b = sh.bus
-            if sh.status[t]
-                vm2 = vr[sc.name, b.name, t]^2 + vi[sc.name, b.name, t]^2
-
-                # Shunt active power consumed: gs * |V|^2 * base_mva
-                p_shunt = @variable(model)
-                @constraint(model, p_shunt == base_mva * sh.conductance * vm2,)
-                add_to_expression!(
-                    net_injection[sc.name, b.name, t],
-                    p_shunt,
-                    -1.0,
-                )
-
-                # Shunt reactive power injected: bs * |V|^2 * base_mva
-                q_shunt = @variable(model)
-                @constraint(model, q_shunt == base_mva * sh.susceptance * vm2,)
-                add_to_expression!(
-                    net_reactive_injection[sc.name, b.name, t],
-                    q_shunt,
-                    1.0,
-                )
-            end
-        end
-    end
-    return
+function _ac_voltage_sq(
+    model::JuMP.Model,
+    sc_name,
+    bus_name,
+    t,
+    ::ACRectangular,
+)
+    vr = model[:vr]
+    vi = model[:vi]
+    return vr[sc_name, bus_name, t]^2 + vi[sc_name, bus_name, t]^2
 end

@@ -4,19 +4,31 @@
 
 using JuMP
 
-function build_model(
-    model::JuMP.Model,
+function _check(
     instance::UnitCommitmentInstance,
-    ext::ShiftFactorsTransmissionExt,
+    ::ShiftFactorsTransmissionExt,
 )::Nothing
-    build_model(model, instance, CopperPlateTransmissionExt())
-    _add_transmission_vars!(model, instance, ext)
-    _add_transmission_obj!(model, instance, ext)
-    _add_transmission_constr_flow!(model, instance, ext)
+    for sc in instance.scenarios
+        for branch in sc[:branches]
+            if branch.invest[1] > 0.0
+                error(
+                    "ShiftFactorsTransmissionExt does not support branch investment. " *
+                    "Branch '$(branch.name)' has investment cost $(branch.invest[1]). " *
+                    "Use PhaseAngleTransmissionExt instead.",
+                )
+            end
+        end
+        for cont in sc[:contingencies]
+            length(cont.branches) == 1 || error(
+                "ShiftFactorsTransmissionExt only supports contingencies with exactly one " *
+                "outage branch. Contingency '$(cont.name)' has $(length(cont.branches)) branches.",
+            )
+        end
+    end
     return
 end
 
-function _add_transmission_vars!(
+function _add_dc_vars!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ext::ShiftFactorsTransmissionExt,
@@ -50,27 +62,7 @@ function _add_transmission_vars!(
     return
 end
 
-function _add_transmission_obj!(
-    model::JuMP.Model,
-    instance::UnitCommitmentInstance,
-    ext::ShiftFactorsTransmissionExt,
-)::Nothing
-    T = instance.time
-    overflow = model[:overflow]
-
-    # Overflow penalty (single penalty per branch, shared across base and contingency cases)
-    for sc in instance.scenarios, branch in sc[:branches], t in 1:T
-        add_to_expression!(
-            model[:obj],
-            overflow[sc.name, branch.name, t],
-            branch.flow_limit_penalty[t] * sc[:probability],
-        )
-    end
-
-    return
-end
-
-function _add_transmission_constr_flow!(
+function _add_dc_constr_flow!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
     ext::ShiftFactorsTransmissionExt,

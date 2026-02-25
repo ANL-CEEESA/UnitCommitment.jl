@@ -123,6 +123,23 @@ function read_json(
         end
     end
     sc[:shunts] = shunts
+    sc[:shunt_by_name] = Dict(s.name => s for s in shunts)
+
+    buses = sc[:bus]
+    shunts_by_bus = Dict(b => ShuntDevice[] for b in buses)
+    for s in shunts
+        push!(shunts_by_bus[s.bus], s)
+    end
+    sc[:shunts_by_bus] = shunts_by_bus
+
+    branches_by_source = Dict(b => Branch[] for b in buses)
+    branches_by_target = Dict(b => Branch[] for b in buses)
+    for l in branches
+        push!(branches_by_source[l.source], l)
+        push!(branches_by_target[l.target], l)
+    end
+    sc[:branches_by_source_bus] = branches_by_source
+    sc[:branches_by_target_bus] = branches_by_target
 
     return
 end
