@@ -16,17 +16,17 @@ function store_solution(
         buses = sc[:bus]
 
         # Shared extraction (formulation-agnostic flow variables)
-        sol[sc.name]["Branch: Base flow (MW)"] =
+        sol[sc.name]["Branch: Base active flow from-end (MW)"] =
             _timeseries(inner, :pf, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Branch: Reactive flow (MVAr)"] =
+        sol[sc.name]["Branch: Base reactive flow from-end (MVAr)"] =
             _timeseries(inner, :qf, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Branch: Base flow to-end (MW)"] =
+        sol[sc.name]["Branch: Base active flow to-end (MW)"] =
             _timeseries(inner, :pt, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Branch: Reactive flow to-end (MVAr)"] =
+        sol[sc.name]["Branch: Base reactive flow to-end (MVAr)"] =
             _timeseries(inner, :qt, branches, T, sc = sc, digits = 10)
-        sol[sc.name]["Branch: Base overflow (MW)"] =
+        sol[sc.name]["Branch: Overflow (MW)"] =
             _timeseries(inner, :overflow, branches, T, sc = sc)
-        sol[sc.name]["Branch: Base overflow penalty (\$)"] = OrderedDict(
+        sol[sc.name]["Branch: Overflow penalty (\$)"] = OrderedDict(
             l.name => [
                 value(inner[:overflow][sc.name, l.name, t]) *
                 l.flow_limit_penalty[t] for t in 1:T

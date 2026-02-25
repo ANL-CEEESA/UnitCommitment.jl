@@ -14,7 +14,7 @@ function validate(
     for sc in instance.scenarios
         branches = sc[:branches]
         flow_sol = solution[sc.name]["Branch: Base flow (MW)"]
-        overflow_sol = solution[sc.name]["Branch: Base overflow (MW)"]
+        overflow_sol = solution[sc.name]["Branch: Overflow (MW)"]
 
         for l in branches, t in 1:instance.time
             flow = flow_sol[l.name][t]

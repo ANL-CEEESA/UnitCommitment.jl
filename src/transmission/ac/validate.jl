@@ -19,11 +19,11 @@ function validate(
 
         vm = solution[sc.name]["Bus: Voltage magnitude (p.u.)"]
         va = solution[sc.name]["Bus: Voltage angle (rad)"]
-        pf_sol = solution[sc.name]["Branch: Base flow (MW)"]
-        qf_sol = solution[sc.name]["Branch: Reactive flow (MVAr)"]
-        overflow_sol = solution[sc.name]["Branch: Base overflow (MW)"]
-        pt_sol = solution[sc.name]["Branch: Base flow to-end (MW)"]
-        qt_sol = solution[sc.name]["Branch: Reactive flow to-end (MVAr)"]
+        pf_sol = solution[sc.name]["Branch: Base active flow from-end (MW)"]
+        qf_sol = solution[sc.name]["Branch: Base reactive flow from-end (MVAr)"]
+        overflow_sol = solution[sc.name]["Branch: Overflow (MW)"]
+        pt_sol = solution[sc.name]["Branch: Base active flow to-end (MW)"]
+        qt_sol = solution[sc.name]["Branch: Base reactive flow to-end (MVAr)"]
 
         # --- Voltage magnitude bounds ---
         for b in buses, t in 1:instance.time

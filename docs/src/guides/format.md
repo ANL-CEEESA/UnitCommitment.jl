@@ -825,17 +825,34 @@ from DC-based LMPs due to losses and reactive power constraints.
 
 ### Branches
 
-| Key                                  | Description                                                                                                                                       | Unit    |
-| :----------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :------ |
-| `Branch: Base flow (MW)`             | Pre-contingency active power flow through each branch.                                                                                            | MW      |
-| `Branch: Reactive flow (MVAr)`       | Reactive power flow through each branch. Only present when AC formulation is used.                                                                | MVAr    |
-| `Branch: Base overflow (MW)`         | Amount of power flow exceeding the branch's thermal limit.                                                                                        | MW      |
-| `Branch: Base overflow penalty ($)`  | Penalty cost incurred for overflow violations on each branch (overflow amount times flow penalty cost).                                           | $       |
-| `Branch: Utilization (%)`            | Percentage of branch capacity being utilized (absolute flow divided by normal flow limit).                                                        | %       |
-| `Branch: Investment cost ($)`        | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for branches with positive investment cost. | $       |
-| `Branch: Investment status`          | Number of parallel circuits invested along each candidate branch corridor by this time step. Only included for branches with positive investment cost. | Integer |
+#### Shared output keys
 
-#### Example
+| Key                                  | Description                                                                                                                                                                                           | Unit    |
+| :----------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `Branch: Overflow (MW)`              | Flow limit slack. This is a single variable shared across base-case and contingency constraints; the solver sets it to the minimum value that satisfies all flow limit constraints simultaneously.     | MW      |
+| `Branch: Overflow penalty ($)`       | Penalty cost for overflow (overflow times flow limit penalty per time step).                                                                                                                          | $       |
+| `Branch: Base utilization (%)`       | Percentage of normal flow limit utilized under base-case conditions. DC: `|flow| / normal limit`. AC: `apparent power / normal limit`.                                                               | %       |
+| `Branch: Investment cost ($)`        | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for branches with positive investment cost.                                      | $       |
+| `Branch: Investment status`          | Number of parallel circuits invested along each candidate branch corridor by this time step. Only included for branches with positive investment cost.                                                 | Integer |
+
+#### DC output keys
+
+| Key                                      | Description                                                                                                                                   | Unit |
+| :--------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Branch: Base flow (MW)`                 | Pre-contingency active power flow through each branch.                                                                                        | MW   |
+| `Branch: Contingency flow (MW)`          | Post-contingency active power flow. Nested structure: `contingency → branch → [values]`. Only present when the instance has contingencies.    | MW   |
+| `Branch: Contingency overflow (MW)`      | Amount by which post-contingency flow exceeds the emergency flow limit. Nested structure: `contingency → branch → [values]`. Only present when the instance has contingencies. | MW   |
+
+#### AC output keys
+
+| Key                                            | Description                                                                                   | Unit |
+| :--------------------------------------------- | :-------------------------------------------------------------------------------------------- | :--- |
+| `Branch: Base active flow from-end (MW)`       | Pre-contingency active power flow at the from-end (source bus) of each branch.                | MW   |
+| `Branch: Base reactive flow from-end (MVAr)`   | Pre-contingency reactive power flow at the from-end (source bus) of each branch.              | MVAr |
+| `Branch: Base active flow to-end (MW)`         | Pre-contingency active power flow at the to-end (target bus) of each branch.                  | MW   |
+| `Branch: Base reactive flow to-end (MVAr)`     | Pre-contingency reactive power flow at the to-end (target bus) of each branch.                | MVAr |
+
+#### DC example
 
 ```json
 {
@@ -843,27 +860,70 @@ from DC-based LMPs due to losses and reactive power constraints.
     "l1": [125.3, 130.8, 128.2, 135.5],
     "l2": [-85.7, -92.5, -91.3, -87.3]
   },
-  "Branch: Reactive flow (MVAr)": {
-    "l1": [18.2, 19.5, 18.8, 20.1],
-    "l2": [-12.3, -14.1, -13.5, -12.8]
-  },
-  "Branch: Base overflow (MW)": {
+  "Branch: Overflow (MW)": {
     "l1": [0.0, 0.0, 0.0, 0.0],
     "l2": [0.0, 2.5, 1.3, 0.0]
   },
-  "Branch: Base overflow penalty ($)": {
+  "Branch: Overflow penalty ($)": {
     "l1": [0.0, 0.0, 0.0, 0.0],
     "l2": [0.0, 12500.0, 6500.0, 0.0]
   },
-  "Branch: Utilization (%)": {
+  "Branch: Base utilization (%)": {
     "l1": [83.53, 87.2, 85.47, 90.33],
     "l2": [95.22, 102.78, 101.44, 97.0]
+  },
+  "Branch: Contingency flow (MW)": {
+    "outage l3": {
+      "l1": [128.1, 133.5, 131.0, 138.2],
+      "l2": [-88.4, -95.2, -94.0, -90.0]
+    }
+  },
+  "Branch: Contingency overflow (MW)": {
+    "outage l3": {
+      "l1": [0.0, 0.0, 0.0, 0.0],
+      "l2": [0.0, 5.2, 4.0, 0.0]
+    }
   },
   "Branch: Investment cost ($)": {
     "l3": [0.0, 3000000.0, 0.0, 3000000.0]
   },
   "Branch: Investment status": {
     "l3": [0.0, 1.0, 1.0, 2.0]
+  }
+}
+```
+
+#### AC example
+
+```json
+{
+  "Branch: Base active flow from-end (MW)": {
+    "l1": [125.3, 130.8, 128.2, 135.5],
+    "l2": [-85.7, -92.5, -91.3, -87.3]
+  },
+  "Branch: Base reactive flow from-end (MVAr)": {
+    "l1": [18.2, 19.5, 18.8, 20.1],
+    "l2": [-12.3, -14.1, -13.5, -12.8]
+  },
+  "Branch: Base active flow to-end (MW)": {
+    "l1": [-123.8, -129.2, -126.7, -133.9],
+    "l2": [86.1, 93.0, 91.8, 87.8]
+  },
+  "Branch: Base reactive flow to-end (MVAr)": {
+    "l1": [-16.5, -17.8, -17.1, -18.4],
+    "l2": [13.0, 14.8, 14.2, 13.5]
+  },
+  "Branch: Overflow (MW)": {
+    "l1": [0.0, 0.0, 0.0, 0.0],
+    "l2": [0.0, 2.5, 1.3, 0.0]
+  },
+  "Branch: Overflow penalty ($)": {
+    "l1": [0.0, 0.0, 0.0, 0.0],
+    "l2": [0.0, 12500.0, 6500.0, 0.0]
+  },
+  "Branch: Base utilization (%)": {
+    "l1": [83.53, 87.2, 85.47, 90.33],
+    "l2": [95.22, 102.78, 101.44, 97.0]
   }
 }
 ```

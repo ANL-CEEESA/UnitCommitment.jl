@@ -20,26 +20,12 @@ function store_solution(
                 [round(pre_flow[l.offset, t], digits = 10) for t in 1:T] for
             l in branches
         )
-        sol[sc.name]["Branch: Base overflow (MW)"] = OrderedDict(
+        sol[sc.name]["Branch: Overflow (MW)"] =
+            _timeseries(inner, :overflow, branches, T, sc = sc)
+        sol[sc.name]["Branch: Overflow penalty (\$)"] = OrderedDict(
             l.name => [
-                round(
-                    max(
-                        0.0,
-                        abs(pre_flow[l.offset, t]) - l.normal_flow_limit[t],
-                    ),
-                    digits = 10,
-                ) for t in 1:T
-            ] for l in branches
-        )
-        sol[sc.name]["Branch: Base overflow penalty (\$)"] = OrderedDict(
-            l.name => [
-                round(
-                    max(
-                        0.0,
-                        abs(pre_flow[l.offset, t]) - l.normal_flow_limit[t],
-                    ),
-                    digits = 10,
-                ) * l.flow_limit_penalty[t] for t in 1:T
+                value(inner[:overflow][sc.name, l.name, t]) *
+                l.flow_limit_penalty[t] for t in 1:T
             ] for l in branches
         )
         sol[sc.name]["Branch: Base utilization (%)"] = OrderedDict(
