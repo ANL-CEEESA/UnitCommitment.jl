@@ -76,7 +76,8 @@ function _update_solution(
                 g.name => [
                     sol[sc.name]["Thermal: Gross revenue (\$)"][g.name][t] -
                     sol[sc.name]["Thermal: Production cost (\$)"][g.name][t] -
-                    sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t]
+                    sol[sc.name]["Thermal: Startup cost (\$)"][g.name][t] -
+                    sol[sc.name]["Thermal: Shutdown cost (\$)"][g.name][t]
                     for t in 1:T
                 ] for g in thermal_units
             )
@@ -122,6 +123,30 @@ function _update_solution(
                     sol[sc.name]["Price-sensitive load: Demand served (MW)"][ps.name][t] *
                     lmp_total[ps.bus.name][t] for t in 1:T
                 ] for ps in ps_loads
+            )
+        end
+
+        if "Virtual: Cleared (MW)" in keys(sol[sc.name])
+            virtuals = sc[:virtual]
+            sol[sc.name]["Virtual: Revenue (\$)"] = OrderedDict(
+                vt.name => begin
+                    cleared = sol[sc.name]["Virtual: Cleared (MW)"][vt.name]
+                    if vt.type == :inc
+                        [
+                            cleared[t] * lmp_total[vt.bus_source.name][t] for
+                            t in 1:T
+                        ]
+                    elseif vt.type == :dec
+                        [-cleared[t] * lmp_total[vt.bus_sink.name][t] for t in 1:T]
+                    else  # :utc
+                        [
+                            cleared[t] * (
+                                lmp_total[vt.bus_source.name][t] -
+                                lmp_total[vt.bus_sink.name][t]
+                            ) for t in 1:T
+                        ]
+                    end
+                end for vt in virtuals
             )
         end
     end

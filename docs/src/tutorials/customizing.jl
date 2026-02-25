@@ -4,119 +4,229 @@
 
 # !!! warning
 
-#     This tutorial is not required for using UnitCommitment.jl, unless you plan to make changes to the problem formulation. In this page, we assume familiarity with the JuMP modeling language. Please see [JuMP's official documentation](https://jump.dev/JuMP.jl/stable/) for resources on getting started with JuMP. 
+#     This tutorial is not required for using UnitCommitment.jl, unless you plan to make changes to the problem formulation. In this page, we assume familiarity with the JuMP modeling language. Please see [JuMP's official documentation](https://jump.dev/JuMP.jl/stable/) for resources on getting started with JuMP.
 
 # ## Selecting modeling components
 
-# By default, `UnitCommitment.build_model` uses a formulation that combines modeling components from different publications, and that has been carefully tested, using our own benchmark scripts, to provide good performance across a wide variety of instances. This default formulation is expected to change over time, as new methods are proposed in the literature. You can, however, construct your own formulation, based on the modeling components that you choose, as shown in the next example.
+# UnitCommitment.jl uses an extension-based architecture. Each extension handles a specific modeling component (e.g., thermal units, transmission lines, storage). You configure the model by passing extensions to `read` or `read_benchmark` via the `extensions` keyword argument.
 
-# We start by importing the necessary packages and reading a benchmark instance:
+# By default, a carefully tested set of extensions is included automatically. When you provide your own extensions, they are merged with the defaults: if your extension occupies the same *slot* as a default one (e.g., `:transmission`), it replaces the default; otherwise, it is appended.
+
+# We start by importing the necessary packages:
 
 using HiGHS
 using JuMP
 using UnitCommitment
 
-instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
+# In the example below, we customize the thermal unit formulation by selecting specific modeling components from the literature, and we override the default transmission extension with custom shift-factor cutoffs:
 
-# Next, instead of calling `UnitCommitment.build_model` with default arguments, we can provide a `UnitCommitment.Formulation` object, which describes what modeling components to use, and how should they be configured. For a complete list of modeling components available in UnitCommitment.jl, see the [API docs](../api.md).
-
-# In the example below, we switch to piecewise-linear cost modeling as defined in [KnuOstWat2018](https://doi.org/10.1109/TPWRS.2017.2783850), as well as ramping and startup costs formulation as defined in [MorLatRam2013](https://doi.org/10.1109/TPWRS.2013.2251373). In addition, we specify custom cutoffs for the shift factors formulation.
-
-model = UnitCommitment.build_model(
-    instance = instance,
-    optimizer = HiGHS.Optimizer,
-    formulation = UnitCommitment.Formulation(
-        pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
-        ramping = UnitCommitment.MorLatRam2013.Ramping(),
-        startup_costs = UnitCommitment.MorLatRam2013.StartupCosts(),
-        transmission = UnitCommitment.ShiftFactorsFormulation(
+instance = UnitCommitment.read_benchmark(
+    "matpower/case14/2017-01-01",
+    extensions = [
+        UnitCommitment.ThermalExt(
+            pwl_costs = UnitCommitment.KnuOstWat2018.PwlCosts(),
+            ramping = UnitCommitment.MorLatRam2013.Ramping(),
+            slimits = UnitCommitment.MorLatRam2013.StartupShutdownLimits(),
+        ),
+        UnitCommitment.ShiftFactorsTransmissionExt(
             isf_cutoff = 0.008,
             lodf_cutoff = 0.003,
         ),
-    ),
-);
+    ],
+)
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer)
 
 # ## Accessing decision variables
 
 # In the previous tutorial, we saw how to access the optimal solution through `UnitCommitment.solution`. While this approach works well for basic usage, it is also possible to get a direct reference to the JuMP decision variables and query their values, as the next example illustrates.
 
-# First, we load a benchmark instance and solve it, as before.
+# First, we load a benchmark instance and solve it, as before. Note that `build_model` returns a `UnitCommitmentModel` wrapper. To access the underlying JuMP model directly (e.g., for querying variables or constraints), use `model.inner`.
 
 instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
-model =
-    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer);
 UnitCommitment.optimize!(model)
 
-# At this point, it is possible to obtain a reference to the decision variables by calling `model[:varname][index]`. For example, `model[:is_on]["g1",1]` returns a direct reference to the JuMP variable indicating whether generator named "g1" is on at time 1. For a complete list of decision variables available, and how are they indexed, see the [problem definition](../guides/problem.md).
+# At this point, it is possible to obtain a reference to the decision variables by calling `model.inner[:varname][index]`. For example, `model.inner[:is_on]["g1",1]` returns a direct reference to the JuMP variable indicating whether generator named "g1" is on at time 1. For a complete list of decision variables available, and how they are indexed, see the [problem definition](../guides/problem.md).
 
-@show JuMP.value(model[:is_on]["g1", 1])
+@show JuMP.value(model.inner[:is_on]["g1", 1])
 
 # To access second-stage decisions, it is necessary to specify the scenario name. UnitCommitment.jl models deterministic instances as a particular case in which there is a single scenario named "s1", so we need to use this key.
 
-@show JuMP.value(model[:prod_above]["s1", "g1", 1])
+@show JuMP.value(model.inner[:prod_above]["s1", "g1", 1])
 
 # ## Modifying variables and constraints
 
 # When testing variations of the unit commitment problem, it is often necessary to modify the objective function, variables and constraints of the formulation. UnitCommitment.jl makes this process relatively easy. The first step is to construct the standard model using `UnitCommitment.build_model`:
 
 instance = UnitCommitment.read_benchmark("matpower/case14/2017-01-01");
-model =
-    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer);
 
-# Now, before calling `UnitCommitment.optimize`, we can make any desired changes to the formulation. In the previous section, we saw how to obtain a direct reference to the decision variables. It is possible to modify them by using standard JuMP methods. For example, to fix the commitment status of a particular generator, we can use `JuMP.fix`:
+# Now, before calling `UnitCommitment.optimize!`, we can make any desired changes to the formulation. In the previous section, we saw how to obtain a direct reference to the decision variables. It is possible to modify them by using standard JuMP methods. For example, to fix the commitment status of a particular generator, we can use `JuMP.fix`:
 
-JuMP.fix(model[:is_on]["g1", 1], 1.0, force = true)
+JuMP.fix(model.inner[:is_on]["g1", 1], 1.0, force = true)
 
 # To modify the cost coefficient of a particular variable, we can use `JuMP.set_objective_coefficient`:
 
-JuMP.set_objective_coefficient(model, model[:switch_on]["g1", 1], 1000.0)
+JuMP.set_objective_coefficient(
+    model.inner,
+    model.inner[:switch_on]["g1", 1],
+    1000.0,
+)
 
 # It is also possible to make changes to the set of constraints. For example, we can add a custom constraint, using the `JuMP.@constraint` macro:
 
-@constraint(model, model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,);
+@constraint(
+    model.inner,
+    model.inner[:is_on]["g3", 1] + model.inner[:is_on]["g4", 1] <= 1
+);
 
-# We can also remove an existing model constraint using `JuMP.delete`. See the [problem definition](../guides/problem.md) for a list of constraint names and indices.
+# We can also remove an existing model constraint using `JuMP.delete`. See the [problem definition](../guides/problem.md) for a list of constraint names and indices. Constraints must be deleted from both model.inner and from the model.inner[:eq_name] dictionary.
 
-JuMP.delete(model, model[:eq_min_uptime]["g1", 1])
+JuMP.delete(model.inner, model.inner[:eq_min_uptime]["g1", 1])
+delete!(model.inner[:eq_min_uptime], ("g1", 1))
 
-# After we are done with all changes, we can call `UnitCommitment.optimize` and extract the optimal solution:
+# After we are done with all changes, we can call `UnitCommitment.optimize!` and extract the optimal solution:
 
 UnitCommitment.optimize!(model)
 @show UnitCommitment.solution(model)
 
-# ## Modeling new grid components
+# ## Writing a custom extension
 
-# In this section we demonstrate how to add a new grid component to a particular bus in the network. This is useful, for example, when developing formulations for a new type of generator, energy storage, or any other grid device. We start by reading the instance data and buliding a standard model:
+# In this section we demonstrate how to write a custom extension that adds a new grid component to the model. Extensions are the recommended way to incorporate new types of generators, loads, storage devices, or any other grid equipment. The extension lifecycle has three core hooks:
+#
+# 1. **`read_json`** — parse custom data from a JSON instance file.
+# 2. **`build_model`** — add variables, constraints, and objective terms to the JuMP model.
+# 3. **`store_solution`** — extract results from the solved model into the solution dictionary.
+#
+# We will build a simple "demand response" extension as a worked example. Each demand-response device can curtail up to a specified amount of load at a given bus, earning a payment for each MW curtailed.
 
-instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
-model =
-    UnitCommitment.build_model(instance = instance, optimizer = HiGHS.Optimizer);
+# ### Step 1: Define the extension struct
 
-# Next, we create decision variables for the new grid component. In this example, we assume that the new component can inject up to 10 MW of power at each time step, so we create new continuous variables $0 \leq x_t \leq 10$.
+# Every extension inherits from `UnitCommitmentExtension`. The extension struct itself can be empty or hold configuration parameters.
 
-T = instance.time
-@variable(model, x[1:T], lower_bound = 0.0, upper_bound = 10.0);
+struct DemandResponseExt <: UnitCommitment.UnitCommitmentExtension end
 
-# Next, we add the production costs to the objective function. In this example, we assume a generation cost of \$5/MW:
+# We also define a data struct to hold per-device parameters:
 
-for t in 1:T
-    set_objective_coefficient(model, x[t], 5.0)
+Base.@kwdef mutable struct DemandResponseDevice
+    name::String
+    bus_name::String
+    max_curtailment::Vector{Float64}   ## MW, per time step
+    payment::Vector{Float64}           ## $/MW, per time step
 end
 
-# We then attach the new component to bus `b1` by modifying the net injection constraint (`eq_net_injection`):
+# ### Step 2: Implement `read_json`
 
-for t in 1:T
-    set_normalized_coefficient(
-        model[:eq_net_injection]["s1", "b1", t],
-        x[t],
-        1.0,
-    )
+# The `read_json` hook is called once per scenario when reading an instance. It receives the raw JSON dictionary, the scenario being populated, and the extension instance. We parse our custom data and store it in `sc[:key]`.
+
+function UnitCommitment.read_json(
+    json::AbstractDict,
+    sc::UnitCommitment.UnitCommitmentScenario,
+    ::DemandResponseExt,
+)
+    T = sc[:time]
+    devices = DemandResponseDevice[]
+    if "Demand response" in keys(json)
+        for (name, dict) in json["Demand response"]
+            push!(
+                devices,
+                DemandResponseDevice(
+                    name = name,
+                    bus_name = dict["Bus"],
+                    max_curtailment = UnitCommitment.to_timeseries(
+                        dict["Max curtailment (MW)"],
+                        T,
+                    ),
+                    payment = UnitCommitment.to_timeseries(
+                        dict["Payment (\$/MW)"],
+                        T,
+                    ),
+                ),
+            )
+        end
+    end
+    sc[:demand_response] = devices
+    return
 end
 
-# Next, we solve the model:
+# ### Step 3: Implement `build_model`
 
-UnitCommitment.optimize!(model)
+# The `build_model` hook receives a raw `JuMP.Model` (not a `UnitCommitmentModel`), the instance, and the extension. Here we create decision variables, contribute to bus net injection via `model[:net_injection]`, and add costs to `model[:obj]`.
 
-# We then finally extract the optimal value of the $x$ variables:
+function UnitCommitment.build_model(
+    model::JuMP.Model,
+    instance::UnitCommitment.UnitCommitmentInstance,
+    ::DemandResponseExt,
+)::Nothing
+    T = instance.time
 
-@show value.(x)
+    ## Initialize an OrderedDict to store our variables in the model.
+    ## The _init helper creates model[:curtail] as an OrderedDict if it
+    ## does not already exist, or returns the existing one.
+    curtail = UnitCommitment._init(model, :curtail)
+
+    for sc in instance.scenarios, dr in sc[:demand_response], t in 1:T
+        ## Create a bounded variable for each device, scenario, and time step.
+        curtail[sc.name, dr.name, t] = @variable(
+            model,
+            lower_bound = 0,
+            upper_bound = dr.max_curtailment[t],
+        )
+
+        ## Curtailment reduces net load at the bus, so it acts like
+        ## positive injection. We add it to the net_injection expression.
+        JuMP.add_to_expression!(
+            model[:net_injection][sc.name, dr.bus_name, t],
+            curtail[sc.name, dr.name, t],
+            1.0,
+        )
+
+        ## Subtract the payment from the objective (minimization problem,
+        ## so payments are negative costs).
+        JuMP.add_to_expression!(
+            model[:obj],
+            curtail[sc.name, dr.name, t],
+            -dr.payment[t],
+        )
+    end
+    return
+end
+
+# ### Step 4: Implement `store_solution`
+
+# The `store_solution` hook is called after optimization. Here, `model` is a `UnitCommitmentModel`, so we access the JuMP model via `model.inner` to retrieve variable values.
+
+function UnitCommitment.store_solution(
+    sol::AbstractDict,
+    model::UnitCommitment.UnitCommitmentModel,
+    ::DemandResponseExt,
+)::Nothing
+    instance = model.instance
+    inner = model.inner
+    T = instance.time
+    for sc in instance.scenarios
+        sol[sc.name]["Demand response: Curtailment (MW)"] = OrderedDict(
+            dr.name => [
+                round(
+                    JuMP.value(inner[:curtail][sc.name, dr.name, t]),
+                    digits = 5,
+                ) for t in 1:T
+            ] for dr in sc[:demand_response]
+        )
+    end
+    return
+end
+
+# ### Step 5: Use the extension
+
+# To activate the extension, pass it to `read` or `read_benchmark` via the `extensions` keyword:
+
+## instance = UnitCommitment.read(
+##     "my_instance.json",
+##     extensions = [DemandResponseExt()],
+## )
+## model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer)
+## UnitCommitment.optimize!(model)
+## sol = UnitCommitment.solution(model)
+
+# The extension is merged with the default set of extensions, so thermal units, storage, transmission, and all other built-in components are still included automatically. If your instance JSON file contains a `"Demand response"` section, the extension will parse it and incorporate the devices into the optimization model.

@@ -10,7 +10,7 @@ function _add_thermal_constr_ramping!(
     for sc in instance.scenarios, g in sc[:thermal]
         gn = g.name
         prod_above = model[:prod_above]
-        reserve = _total_reserves(model, instance, g, sc)
+        reserve = _total_spinning_reserves(model, instance, g, sc)
 
         eq_ramp_down = _init(model, :eq_ramp_down)
         eq_ramp_up = _init(model, :eq_ramp_up)

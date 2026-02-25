@@ -19,7 +19,7 @@ function _add_thermal_constr_slimits!(
     T = instance.time
 
     for sc in instance.scenarios, g in sc[:thermal]
-        reserve = _total_reserves(model, instance, g, sc)
+        reserve = _total_spinning_reserves(model, instance, g, sc)
         if g.min_uptime > 1
             # Equation (20) in Kneuven et al. (2020)
             for t in 1:T

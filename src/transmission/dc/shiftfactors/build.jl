@@ -204,3 +204,23 @@ function _add_dc_constr_flow!(
     end
     return
 end
+
+function _interface_flow_expr(
+    model::JuMP.Model,
+    sc::UnitCommitmentScenario,
+    ifc::Interface,
+    t::Int,
+    ::ShiftFactorsTransmissionExt,
+)
+    ni = model[:ni]
+    ifc_isf = sc[:interface_isf]
+    buses = sc[:bus]
+    expr = AffExpr(0.0)
+    for bus in buses
+        bus.offset > 0 || continue
+        coef = ifc_isf[ifc.offset, bus.offset]
+        coef == 0.0 && continue
+        add_to_expression!(expr, ni[sc.name, bus.name, t], coef)
+    end
+    return expr
+end

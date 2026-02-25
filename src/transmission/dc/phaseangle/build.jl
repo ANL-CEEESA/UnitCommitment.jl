@@ -19,6 +19,22 @@ function build_model(
     return
 end
 
+function _interface_flow_expr(
+    model::JuMP.Model,
+    sc::UnitCommitmentScenario,
+    ifc::Interface,
+    t::Int,
+    ::PhaseAngleTransmissionExt,
+)
+    flow = model[:flow]
+    expr = AffExpr(0.0)
+    for branch in ifc.branches
+        w = ifc.weight_by_branch[branch]
+        add_to_expression!(expr, flow[sc.name, branch.name, t], w)
+    end
+    return expr
+end
+
 function _check(
     instance::UnitCommitmentInstance,
     ::PhaseAngleTransmissionExt,

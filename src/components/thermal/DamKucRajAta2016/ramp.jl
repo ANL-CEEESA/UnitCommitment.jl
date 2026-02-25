@@ -22,7 +22,7 @@ function _add_thermal_constr_ramping!(
         gn = g.name
         eq_str_ramp_down = _init(model, :eq_str_ramp_down)
         eq_str_ramp_up = _init(model, :eq_str_ramp_up)
-        reserve = _total_reserves(model, instance, g, sc)
+        reserve = _total_spinning_reserves(model, instance, g, sc)
 
         # Gar1962.ProdVars
         prod_above = model[:prod_above]

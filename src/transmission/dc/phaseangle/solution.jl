@@ -26,3 +26,23 @@ function _compute_contingency_flow(
 )
     return error("PhaseAngleTransmissionExt does not support contingencies")
 end
+
+function _compute_interface_flows(
+    model::UnitCommitmentModel,
+    sc::UnitCommitmentScenario,
+    T::Int,
+    ::PhaseAngleTransmissionExt,
+)
+    inner = model.inner
+    interfaces = sc[:interfaces]
+    I = length(interfaces)
+    result = zeros(I, T)
+    for ifc in interfaces, t in 1:T
+        for branch in ifc.branches
+            w = ifc.weight_by_branch[branch]
+            result[ifc.offset, t] +=
+                w * value(inner[:flow][sc.name, branch.name, t])
+        end
+    end
+    return result
+end

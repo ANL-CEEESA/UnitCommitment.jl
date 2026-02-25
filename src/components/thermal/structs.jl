@@ -20,11 +20,14 @@ Base.@kwdef mutable struct StartupCategory
     cost::Float64
 end
 
-Base.@kwdef mutable struct SpinningReserve
+Base.@kwdef mutable struct Reserve
     name::String
+    type::Symbol                                # :spinning or :non_spinning
     amount::Vector{Float64}
     thermal_units::Vector
     shortfall_penalty::Float64
+    parent::Union{Nothing,Reserve} = nothing    # cascading link
+    descendants::Vector{Reserve} = Reserve[]    # precomputed during reading
 end
 
 Base.@kwdef mutable struct ThermalUnit
@@ -44,7 +47,9 @@ Base.@kwdef mutable struct ThermalUnit
     initial_status::Union{Int,Nothing}
     initial_power::Union{Float64,Nothing}
     startup_categories::Vector{StartupCategory}
-    reserves::Vector{SpinningReserve}
+    shutdown_cost::Float64 = 0.0
+    reserves::Vector{Reserve}
+    non_spinning_capacity::Float64
     commitment_status::Vector{Union{Bool,Nothing}}
     invest::Vector{Float64}
     qmin::Float64 = 0.0

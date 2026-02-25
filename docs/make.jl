@@ -9,7 +9,6 @@ function make()
     literate_sources = [
         "src/tutorials/usage.jl",
         "src/tutorials/customizing.jl",
-        "src/tutorials/lmp.jl",
         "src/tutorials/market.jl",
     ]
     for src in literate_sources
@@ -27,7 +26,6 @@ function make()
             "Tutorials" => [
                 "tutorials/usage.md",
                 "tutorials/customizing.md",
-                "tutorials/lmp.md",
                 "tutorials/market.md",
                 "tutorials/decomposition.md",
             ],
@@ -36,7 +34,10 @@ function make()
                 "guides/format.md",
                 "guides/instances.md",
             ],
-            "api.md",
+            "Experimental extensions" => [
+                "guides/experimental/aelmp.md",
+                "guides/experimental/flexiramp.md",
+            ],
         ],
         format = Documenter.HTML(assets = ["assets/custom.css"]),
     )

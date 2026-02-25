@@ -201,7 +201,7 @@ function store_solution(
     return
 end
 
-function validate!(
+function validate(
     instance::UnitCommitmentInstance,
     solution::AbstractDict,
     ::ProfiledUnitsExt;

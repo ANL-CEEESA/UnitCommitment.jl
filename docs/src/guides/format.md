@@ -20,8 +20,10 @@ unit (p.u.) on the system `Base MVA`.
 - [Generators](#Generators)
 - [Storage units](#Storage-units)
 - [Price-sensitive loads](#Price-sensitive-loads)
+- [Virtual transactions](#Virtual-transactions)
 - [Branches](#Branches)
 - [Shunt devices](#Shunt-devices)
+- [Interfaces](#Interfaces)
 - [Reserves](#Reserves)
 - [Contingencies](#Contingencies)
 
@@ -119,6 +121,7 @@ specified:
 | `Type`                                                       | Type of the generator (string). For thermal generators, this must be `Thermal`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Required          |      No      |     No     |
 | `Production cost curve (MW)` and `Production cost curve ($)` | Parameters describing the piecewise-linear production costs. See below for more details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Required          |     Yes      |    Yes     |
 | `Startup costs ($)` and `Startup delays (h)`                 | Parameters describing how much it costs to start the generator after it has been shut down for a certain amount of time. If `Startup costs ($)` and `Startup delays (h)` are set to `[300.0, 400.0]` and `[1, 4]`, for example, and the generator is shut down at time `00:00` (h:min), then it costs \$300 to start up the generator at any time between `01:00` and `03:59`, and \$400 to start the generator at time `04:00` or any time after that. The number of startup cost points is unlimited, and may be different for each generator. Startup delays must be strictly increasing and the first entry must equal `Minimum downtime (h)`. | `[0.0]` and `[1]` |      No      |    Yes     |
+| `Shutdown cost ($)`                                          | Cost incurred each time the generator shuts down.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | `0.0`             |      No      |    Yes     |
 | `Minimum uptime (h)`                                         | Minimum amount of time the generator must stay operational after starting up (in hours). For example, if the generator starts up at time `00:00` (h:min) and `Minimum uptime (h)` is set to 4, then the generator can only shut down at time `04:00`.                                                                                                                                                                                                                                                                                                                                                                                              | `1`               |      No      |    Yes     |
 | `Minimum downtime (h)`                                       | Minimum amount of time the generator must stay offline after shutting down (in hours). For example, if the generator shuts down at time `00:00` (h:min) and `Minimum downtime (h)` is set to 4, then the generator can only start producing power again at time `04:00`.                                                                                                                                                                                                                                                                                                                                                                           | `1`               |      No      |    Yes     |
 | `Ramp up limit (MW)`                                         | Maximum increase in production from one time step to the next (in MW). For example, if the generator is producing 100 MW at time step 1 and if this parameter is set to 40 MW, then the generator will produce at most 140 MW at time step 2.                                                                                                                                                                                                                                                                                                                                                                                                      | `+inf`            |      No      |    Yes     |
@@ -128,7 +131,8 @@ specified:
 | `Initial status (h)`                                         | If set to a positive number, indicates the amount of time (in hours) the generator has been on at the beginning of the simulation, and if set to a negative number, the amount of time the generator has been off. For example, if `Initial status (h)` is `-2`, this means that the generator was off since `-02:00` (h:min). The simulation starts at time `00:00`. If `Initial status (h)` is `3`, this means that the generator was on since `-03:00`. A value of zero is not acceptable.                                                                                                                                                      | Required          |      No      |     No     |
 | `Initial power (MW)`                                         | Amount of power the generator at time step `-1`, immediately before the planning horizon starts.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Required          |      No      |     No     |
 | `Must run?`                                                  | If `true`, the generator should be committed, even if that is not economical (Boolean).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | `false`           |     Yes      |    Yes     |
-| `Reserve eligibility`                                        | List of reserve products this generator is eligible to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | `[]`              |      No      |    Yes     |
+| `Reserve eligibility`                                        | List of reserve products (spinning or non-spinning) this generator is eligible to provide. By default, the generator is not eligible to provide any reserves.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `[]`              |      No      |    Yes     |
+| `Non-spinning reserve capacity (MW)`                         | Maximum reserve contribution when the generator is offline (in MW).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `0.0`             |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be committed at that time period; if `false`, the generator must not be committed at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                       | `null`            |     Yes      |    Yes     |
 | `Investment cost ($)`                                        | Cost to build a candidate generation unit. Should be zero for existing units.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `0.0`             |      No      |     No     |
 | `Reactive power min (MVAr)`                                  | Minimum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `-inf`            |      No      |    Yes     |
@@ -201,6 +205,7 @@ output.
       "Ramp down limit (MW)": 232.68,
       "Startup limit (MW)": 232.68,
       "Shutdown limit (MW)": 232.68,
+      "Shutdown cost ($)": 150.0,
       "Minimum downtime (h)": 4,
       "Minimum uptime (h)": 4,
       "Initial status (h)": 12,
@@ -350,6 +355,65 @@ economical to do so.
 }
 ```
 
+### Virtual transactions
+
+This section describes virtual bids and offers that participate in the day-ahead
+market clearing. Three types are supported:
+
+- **INC:** A virtual supply offer at a single bus. If cleared, the virtual
+  supply injects power at the specified bus.
+- **DEC:** A virtual demand bid at a single bus. If cleared, the virtual demand
+  withdraws power at the specified bus.
+- **UTC:** A paired injection/withdrawal between a source bus and a sink bus.
+
+#### INC / DEC fields
+
+| Key                     | Description                                                 | Default  | Time series? | Uncertain? |
+| :---------------------- | :---------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Type`                  | Type of virtual transaction. Must be `INC` or `DEC`.        | Required |      No      |     No     |
+| `Bus`                   | Bus where the virtual transaction is located.               | Required |      No      |    Yes     |
+| `Offer price ($/MW)`    | Price at which the INC offer is willing to sell (INC only). | Required |     Yes      |    Yes     |
+| `Bid price ($/MW)`      | Price at which the DEC bid is willing to buy (DEC only).    | Required |     Yes      |    Yes     |
+| `Maximum quantity (MW)` | Maximum amount of power that may be cleared.                | Required |     Yes      |    Yes     |
+
+#### UTC fields
+
+| Key                     | Description                                            | Default  | Time series? | Uncertain? |
+| :---------------------- | :----------------------------------------------------- | :------: | :----------: | :--------: |
+| `Type`                  | Type of virtual transaction. Must be `UTC`.            | Required |      No      |     No     |
+| `Source bus`            | Bus where the virtual injection occurs.                | Required |      No      |    Yes     |
+| `Sink bus`              | Bus where the virtual withdrawal occurs.               | Required |      No      |    Yes     |
+| `Bid price ($/MW)`      | Price the UTC trader is willing to pay for the spread. | Required |     Yes      |    Yes     |
+| `Maximum quantity (MW)` | Maximum amount of power that may be cleared.           | Required |     Yes      |    Yes     |
+
+#### Example
+
+```json
+{
+  "Virtual transactions": {
+    "vt_inc1": {
+      "Type": "INC",
+      "Bus": "b1",
+      "Offer price ($/MW)": 30.0,
+      "Maximum quantity (MW)": 50.0
+    },
+    "vt_dec1": {
+      "Type": "DEC",
+      "Bus": "b3",
+      "Bid price ($/MW)": 60.0,
+      "Maximum quantity (MW)": 40.0
+    },
+    "vt_utc1": {
+      "Type": "UTC",
+      "Source bus": "b1",
+      "Sink bus": "b3",
+      "Bid price ($/MW)": 10.0,
+      "Maximum quantity (MW)": 30.0
+    }
+  }
+}
+```
+
 ### Branches
 
 This section describes the characteristics of the transmission system, such as
@@ -436,29 +500,76 @@ constant-impedance elements.
 }
 ```
 
+### Interfaces
+
+This section describes named groups of branches (corridors) whose
+aggregate weighted flow is bounded. Each interface specifies a set of branches with
+signed weight coefficients and upper/lower flow limits.
+
+| Key                         | Description                                                                                                                                                                                                  | Default  | Time series? | Uncertain? |
+| :-------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
+| `Branches`                  | Dictionary mapping branch names to their signed weight coefficients. Positive weights indicate outbound flow; negative weights indicate inbound flow.                                                        |   `{}`   |      No      |    Yes     |
+| `Net flow upper limit (MW)` | Upper bound on the aggregate weighted flow through the interface.                                                                                                                                            |  `+inf`  |     Yes      |    Yes     |
+| `Net flow lower limit (MW)` | Lower bound on the aggregate weighted flow through the interface.                                                                                                                                            |  `-inf`  |     Yes      |    Yes     |
+| `Flow limit penalty ($/MW)` | Penalty for violating the flow limits of the interface (in $/MW). This is charged per time step. For example, if there is a violation of 1 MW for three time steps, three times this amount will be charged. | `5000.0` |     Yes      |    Yes     |
+
+#### Example
+
+```json
+{
+  "Interfaces": {
+    "ifc1": {
+      "Branches": { "l1": 1.0, "l2": 1.0 },
+      "Net flow upper limit (MW)": 120,
+      "Net flow lower limit (MW)": -120,
+      "Flow limit penalty ($/MW)": 5000.0
+    },
+    "ifc2": {
+      "Branches": { "l3": 1.0, "l7": -1.0 },
+      "Net flow upper limit (MW)": [50, 60, 60, 60],
+      "Net flow lower limit (MW)": -100,
+      "Flow limit penalty ($/MW)": 5000.0
+    }
+  }
+}
+```
+
 ### Reserves
 
-This section describes the hourly amount of reserves required.
+This section describes the hourly amount of reserves required. Reserves may be
+`"spinning"` (provided by online generators) or `"non-spinning"` (provided by
+offline generators with fast-start capability). A reserve product may declare a
+`"Parent"` to form a cascading (nested) hierarchy, where contributions to a
+child reserve also count toward satisfying its parent.
 
 | Key                        | Description                                                                                                                                                             | Default  | Time series? | Uncertain? |
 | :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
-| `Type`                     | Type of reserve product. Must be either "spinning" or "flexiramp".                                                                                                      | Required |      No      |     No     |
+| `Type`                     | Type of reserve product. Must be `"spinning"` or `"non-spinning"`.                                                                                                      | Required |      No      |     No     |
 | `Amount (MW)`              | Amount of reserves required.                                                                                                                                            | Required |     Yes      |    Yes     |
 | `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1`     |     Yes      |    Yes     |
+| `Parent`                   | Name of parent reserve for cascading requirements. Contributions to this reserve also count toward satisfying the parent.                                               | `null`   |      No      |     No     |
 
-#### Example 1
+#### Example
 
 ```json
 {
   "Reserves": {
     "r1": {
       "Type": "spinning",
-      "Amount (MW)": [57.30552, 53.88429, 51.31838, 50.46307],
-      "Shortfall penalty ($/MW)": 5.0
+      "Amount (MW)": 400,
+      "Shortfall penalty ($/MW)": 50,
+      "Parent": "r2"
     },
     "r2": {
-      "Type": "flexiramp",
-      "Amount (MW)": [20.31042, 23.65273, 27.41784, 25.34057]
+      "Type": "non-spinning",
+      "Amount (MW)": 1500,
+      "Shortfall penalty ($/MW)": 1500,
+      "Parent": "r3"
+    },
+    "r3": {
+      "Type": "spinning",
+      "Amount (MW)": 2000,
+      "Shortfall penalty ($/MW)": 1000
     }
   }
 }
@@ -467,7 +578,7 @@ This section describes the hourly amount of reserves required.
 ### Contingencies
 
 This section describes credible contingency scenarios in the optimization, such
-as the loss of a transmission line or generator.
+as the loss of a transmission line.
 
 | Key                   | Description                                                                                       | Default | Uncertain? |
 | :-------------------- | :------------------------------------------------------------------------------------------------ | :-----: | :--------: |
@@ -522,8 +633,7 @@ table below illustrates.
 ### Current limitations
 
 - Network topology must remain the same for all time periods.
-- Only N-1 transmission contingencies are supported. Generator contingencies are
-  not currently supported.
+- Only N-1 transmission line contingencies are supported.
 - Time-varying minimum production amounts are not currently compatible with
   ramp/startup/shutdown limits.
 - The set of generators must be the same in all scenarios.
@@ -609,11 +719,11 @@ removed for convenience:
 
 ### Locational Marginal Prices
 
-| Key                         | Description                                                                                                                                                     | Unit    |
-| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------ |
-| `LMP: Total ($/MWh)`        | Total locational marginal price at each bus. Only available if LMPs are computed.                                                                               | $/MWh   |
-| `LMP: Energy ($/MWh)`       | Energy component of LMP at each bus (minimum LMP across all buses at each time period). Only available if LMPs are computed.                                    | $/MWh   |
-| `LMP: Congestion ($/MWh)`   | Congestion component of LMP at each bus (total LMP minus energy component). Only available if LMPs are computed.                                                | $/MWh   |
+| Key                       | Description                                                                                                                  | Unit  |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------- | :---- |
+| `LMP: Total ($/MWh)`      | Total locational marginal price at each bus. Only available if LMPs are computed.                                            | $/MWh |
+| `LMP: Energy ($/MWh)`     | Energy component of LMP at each bus (minimum LMP across all buses at each time period). Only available if LMPs are computed. | $/MWh |
+| `LMP: Congestion ($/MWh)` | Congestion component of LMP at each bus (total LMP minus energy component). Only available if LMPs are computed.             | $/MWh |
 
 When an AC formulation is used, LMPs reflect AC marginal pricing and may differ
 from DC-based LMPs due to losses and reactive power constraints.
@@ -648,11 +758,12 @@ from DC-based LMPs due to losses and reactive power constraints.
 | `Thermal: Utilization (%)`     | Percentage of maximum capacity being utilized (actual production divided by maximum power).                                                          | %      |
 | `Thermal: Production cost ($)` | Total production cost for each thermal generator (minimum power cost plus variable costs).                                                           | $      |
 | `Thermal: Startup cost ($)`    | Startup cost incurred by each thermal generator at each time period.                                                                                 | $      |
+| `Thermal: Shutdown cost ($)`   | Shutdown cost incurred by each thermal generator at each time period.                                                                                | $      |
 | `Thermal: Is on`               | Commitment status (1 if generator is on, 0 if off).                                                                                                  | Binary |
 | `Thermal: Switch on`           | Switch-on indicator (1 if generator starts up at this time step, 0 otherwise).                                                                       | Binary |
 | `Thermal: Switch off`          | Switch-off indicator (1 if generator shuts down at this time step, 0 otherwise).                                                                     | Binary |
 | `Thermal: Gross revenue ($)`   | Revenue obtained from selling power at LMP (production times LMP). Only available if LMPs are computed.                                              | $      |
-| `Thermal: Net revenue ($)`     | Net revenue after subtracting production and startup costs from gross revenue. Only available if LMPs are computed.                                  | $      |
+| `Thermal: Net revenue ($)`     | Net revenue after subtracting production, startup and shutdown costs from gross revenue. Only available if LMPs are computed.                        | $      |
 | `Thermal: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                      | $      |
 | `Thermal: Reactive power (MVAr)` | Reactive power output from each thermal generator. Only present when AC formulation is used.                                                       | MVAr   |
 | `Thermal: Investment status`   | Investment status for candidate thermal units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
@@ -676,6 +787,10 @@ from DC-based LMPs due to losses and reactive power constraints.
   "Thermal: Startup cost ($)": {
     "g1": [0.0, 0.0, 0.0, 0.0],
     "g2": [0.0, 300.0, 0.0, 0.0]
+  },
+  "Thermal: Shutdown cost ($)": {
+    "g1": [0.0, 0.0, 0.0, 0.0],
+    "g2": [0.0, 0.0, 0.0, 0.0]
   },
   "Thermal: Is on": {
     "g1": [1.0, 1.0, 1.0, 1.0],
@@ -753,11 +868,38 @@ from DC-based LMPs due to losses and reactive power constraints.
 }
 ```
 
+### Interfaces
+
+| Key                               | Description                                                                                                 | Unit |
+| :-------------------------------- | :---------------------------------------------------------------------------------------------------------- | :--- |
+| `Interface: Flow (MW)`            | Net weighted flow through each interface.                                                                   | MW   |
+| `Interface: Overflow (MW)`        | Amount of flow exceeding the interface's flow limits.                                                       | MW   |
+| `Interface: Overflow penalty ($)` | Penalty cost incurred for overflow violations on each interface (overflow amount times flow limit penalty). | $    |
+
+#### Example
+
+```json
+{
+  "Interface: Flow (MW)": {
+    "ifc1": [85.3, 92.1, 88.7, 95.2],
+    "ifc2": [48.5, 55.2, 57.8, 53.1]
+  },
+  "Interface: Overflow (MW)": {
+    "ifc1": [0.0, 0.0, 0.0, 0.0],
+    "ifc2": [0.0, 0.0, 0.0, 0.0]
+  },
+  "Interface: Overflow penalty ($)": {
+    "ifc1": [0.0, 0.0, 0.0, 0.0],
+    "ifc2": [0.0, 0.0, 0.0, 0.0]
+  }
+}
+```
+
 ### Price-Sensitive Loads
 
-| Key                                        | Description                                                                                          | Unit |
-| :----------------------------------------- | :--------------------------------------------------------------------------------------------------- | :--- |
-| `Price-sensitive load: Demand served (MW)` | Amount of price-sensitive load demand served at each bus.                                            | MW   |
+| Key                                        | Description                                                                                                       | Unit |
+| :----------------------------------------- | :---------------------------------------------------------------------------------------------------------------- | :--- |
+| `Price-sensitive load: Demand served (MW)` | Amount of price-sensitive load demand served at each bus.                                                         | MW   |
 | `Price-sensitive load: Expense ($)`        | Expense incurred for serving price-sensitive load (demand served times LMP). Only available if LMPs are computed. | $    |
 
 #### Example
@@ -771,6 +913,30 @@ from DC-based LMPs due to losses and reactive power constraints.
   "Price-sensitive load: Expense ($)": {
     "p1": [1137.5, 1205.0, 1250.0, 1195.0],
     "p2": [900.0, 900.0, 855.0, 900.0]
+  }
+}
+```
+
+### Virtual Transactions
+
+| Key                     | Description                                                                                                          | Unit |
+| :---------------------- | :------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Virtual: Cleared (MW)` | Amount of each virtual transaction cleared in the market.                                                            | MW   |
+| `Virtual: Revenue ($)`  | Revenue from each virtual transaction (positive for profit, negative for loss). Only available if LMPs are computed. | $    |
+
+#### Example
+
+```json
+{
+  "Virtual: Cleared (MW)": {
+    "vt_inc1": [50.0, 50.0, 50.0, 50.0],
+    "vt_dec1": [40.0, 40.0, 40.0, 40.0],
+    "vt_utc1": [30.0, 30.0, 30.0, 30.0]
+  },
+  "Virtual: Revenue ($)": {
+    "vt_inc1": [1250.0, 1250.0, 1250.0, 1250.0],
+    "vt_dec1": [-1200.0, -1200.0, -1200.0, -1200.0],
+    "vt_utc1": [150.0, 150.0, 150.0, 150.0]
   }
 }
 ```
@@ -878,48 +1044,27 @@ from DC-based LMPs due to losses and reactive power constraints.
 
 ### Reserves
 
-| Key                                      | Description                                                                                                                                                      | Unit |
-| :--------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
-| `Reserve: Spinning (MW)`                 | Amount of spinning reserve provided by each thermal generator for each spinning reserve product. Nested structure: `reserve_name -> generator_name -> [values]`. | MW   |
-| `Reserve: Spinning shortfall (MW)`       | Amount of spinning reserve requirement not met for each reserve product.                                                                                         | MW   |
-| `Reserve: Up-flexiramp (MW)`             | Amount of up-flexiramp reserve provided by each thermal generator for each flexiramp product. Nested structure: `reserve_name -> generator_name -> [values]`.    | MW   |
-| `Reserve: Up-flexiramp shortfall (MW)`   | Amount of up-flexiramp reserve requirement not met for each flexiramp product.                                                                                   | MW   |
-| `Reserve: Down-flexiramp (MW)`           | Amount of down-flexiramp reserve provided by each thermal generator for each flexiramp product. Nested structure: `reserve_name -> generator_name -> [values]`.  | MW   |
-| `Reserve: Down-flexiramp shortfall (MW)` | Amount of down-flexiramp reserve requirement not met for each flexiramp product.                                                                                 | MW   |
+| Key                       | Description                                                                                                                                                                              | Unit |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :--- |
+| `Reserve: Provided (MW)`  | Amount of reserve provided by each eligible thermal generator for each reserve product (both spinning and non-spinning). Nested structure: `reserve_name -> generator_name -> [values]`. | MW   |
+| `Reserve: Shortfall (MW)` | Amount of reserve requirement not met for each reserve product.                                                                                                                          | MW   |
 
 #### Example
 
 ```json
 {
-  "Reserve: Spinning (MW)": {
+  "Reserve: Provided (MW)": {
     "r1": {
       "g1": [15.0, 18.5, 16.2, 17.8],
       "g2": [0.0, 5.5, 6.8, 7.2]
     }
   },
-  "Reserve: Spinning shortfall (MW)": {
+  "Reserve: Shortfall (MW)": {
     "r1": [0.0, 0.0, 0.0, 0.0]
-  },
-  "Reserve: Up-flexiramp (MW)": {
-    "r2": {
-      "g1": [8.0, 9.5, 8.5, 9.0],
-      "g2": [0.0, 3.5, 4.0, 3.8]
-    }
-  },
-  "Reserve: Up-flexiramp shortfall (MW)": {
-    "r2": [0.0, 0.0, 0.0, 0.0]
-  },
-  "Reserve: Down-flexiramp (MW)": {
-    "r2": {
-      "g1": [7.5, 8.0, 7.8, 8.2],
-      "g2": [0.0, 3.0, 3.5, 3.3]
-    }
-  },
-  "Reserve: Down-flexiramp shortfall (MW)": {
-    "r2": [0.0, 0.0, 0.0, 0.0]
   }
 }
 ```
+
 ### Notes
 
 - Investment status variables show the cumulative investment decision (whether

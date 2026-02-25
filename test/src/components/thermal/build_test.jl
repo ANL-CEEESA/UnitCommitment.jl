@@ -37,7 +37,6 @@ using HiGHS, JuMP, UnitCommitment
     # Objective function
     # -------------------------------------------------------------------------
     @test_obj_coef model[:switch_on]["g1", 1] 0.0
-    @test_obj_coef model[:switch_off]["g1", 1] 0.0
     @test_obj_coef model[:prod_above]["s1", "g1", 1] 0.0
     @test_obj_coef model[:reserve]["s1", "r1", "g2", 1] 0.0
     @test_obj_coef model[:is_on]["g1", 1] 1400.0
@@ -54,6 +53,12 @@ using HiGHS, JuMP, UnitCommitment
     @test_obj_coef model[:startup]["g1", 1, 3] 2000.0
     @test_obj_coef model[:startup]["g2", 1, 1] 3000.0
     @test_obj_coef model[:startup]["g2", 1, 2] 4000.0
+
+    # Shutdown costs
+    @test_obj_coef model[:switch_off]["g1", 1] 500.0
+    @test_obj_coef model[:switch_off]["g2", 1] 750.0
+    @test_obj_coef model[:switch_off]["g3", 1] 0.0
+
     @test_obj_coef model[:invest]["g2", 1] -100.0
     @test_obj_coef model[:invest]["g2", 2] -100.0
     @test_obj_coef model[:invest]["g2", 3] -100.0
@@ -234,19 +239,19 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_invest_nondec]["g2", 3] "invest[g2,2] - invest[g2,3] ≤ 0"
     @test_constr model[:eq_invest_nondec]["g2", 4] "invest[g2,3] - invest[g2,4] ≤ 0"
 
-    # eq_min_spinning_reserve
+    # eq_min_reserve
     # -------------------------------------------------------------------------
     # r1: amount=100, eligible generators: g2, g3, g4, g5, g6, g7, g8
-    @test_constr model[:eq_min_spinning_reserve]["s1", "r1", 1] "reserve_shortfall[s1,r1,1] + reserve[s1,r1,g2,1] + reserve[s1,r1,g3,1] + reserve[s1,r1,g4,1] + reserve[s1,r1,g5,1] + reserve[s1,r1,g6,1] + reserve[s1,r1,g7,1] + reserve[s1,r1,g8,1] ≥ 100"
-    @test_constr model[:eq_min_spinning_reserve]["s1", "r1", 2] "reserve_shortfall[s1,r1,2] + reserve[s1,r1,g2,2] + reserve[s1,r1,g3,2] + reserve[s1,r1,g4,2] + reserve[s1,r1,g5,2] + reserve[s1,r1,g6,2] + reserve[s1,r1,g7,2] + reserve[s1,r1,g8,2] ≥ 100"
+    @test_constr model[:eq_min_reserve]["s1", "r1", 1] "reserve_shortfall[s1,r1,1] + reserve[s1,r1,g2,1] + reserve[s1,r1,g3,1] + reserve[s1,r1,g4,1] + reserve[s1,r1,g5,1] + reserve[s1,r1,g6,1] + reserve[s1,r1,g7,1] + reserve[s1,r1,g8,1] ≥ 100"
+    @test_constr model[:eq_min_reserve]["s1", "r1", 2] "reserve_shortfall[s1,r1,2] + reserve[s1,r1,g2,2] + reserve[s1,r1,g3,2] + reserve[s1,r1,g4,2] + reserve[s1,r1,g5,2] + reserve[s1,r1,g6,2] + reserve[s1,r1,g7,2] + reserve[s1,r1,g8,2] ≥ 100"
 
     # r2: amount=100, eligible generators: g2 only
-    @test_constr model[:eq_min_spinning_reserve]["s1", "r2", 1] "reserve_shortfall[s1,r2,1] + reserve[s1,r2,g2,1] ≥ 100"
-    @test_constr model[:eq_min_spinning_reserve]["s1", "r2", 2] "reserve_shortfall[s1,r2,2] + reserve[s1,r2,g2,2] ≥ 100"
+    @test_constr model[:eq_min_reserve]["s1", "r2", 1] "reserve_shortfall[s1,r2,1] + reserve[s1,r2,g2,1] ≥ 100"
+    @test_constr model[:eq_min_reserve]["s1", "r2", 2] "reserve_shortfall[s1,r2,2] + reserve[s1,r2,g2,2] ≥ 100"
 
     # r3: amount=50, no eligible generators
-    @test_constr model[:eq_min_spinning_reserve]["s1", "r3", 1] "reserve_shortfall[s1,r3,1] ≥ 50"
-    @test_constr model[:eq_min_spinning_reserve]["s1", "r3", 2] "reserve_shortfall[s1,r3,2] ≥ 50"
+    @test_constr model[:eq_min_reserve]["s1", "r3", 1] "reserve_shortfall[s1,r3,1] ≥ 50"
+    @test_constr model[:eq_min_reserve]["s1", "r3", 2] "reserve_shortfall[s1,r3,2] ≥ 50"
 
     # net_injection
     # -------------------------------------------------------------------------

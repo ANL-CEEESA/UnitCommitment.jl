@@ -6,7 +6,7 @@ Solving unit commitment instances that have long time horizons (for example, yea
 
 When solving a unit commitment instance with a dense time slot structure, computational complexity can become a significant challenge. For instance, if the instance contains hourly data for an entire year (8760 hours), solving such a model can require a substantial amount of computational power. To address this issue, UC.jl provides a time_decomposition method within the `optimize!` function. This method decomposes the problem into multiple sub-problems, solving them sequentially.
 
-The `optimize!` function takes 3 parameters: a unit commitment instance, a `TimeDecomposition` method, and an optimizer. It returns a solution dictionary. The `TimeDecomposition` method itself requires four arguments: `time_window`, `time_increment`, `inner_method` (optional), and `formulation` (optional). These arguments define the time window for each sub-problem, the time increment to move to the next sub-problem, the method used to solve each sub-problem, and the formulation employed, respectively.
+The `optimize!` function takes 3 parameters: a unit commitment instance, a `TimeDecomposition` method, and an optimizer. It returns a solution dictionary. The `TimeDecomposition` method itself requires three arguments: `time_window`, `time_increment`, and `inner_method` (optional). These arguments define the time window for each sub-problem, the time increment to move to the next sub-problem, and the method used to solve each sub-problem, respectively.
 
 The code snippet below illustrates an example of solving an instance by decomposing the model into multiple 36-hour sub-problems using the `XavQiuWanThi2019` method. Each sub-problem advances 24 hours at a time. The first sub-problem covers time steps 1 to 36, the second covers time steps 25 to 60, the third covers time steps 49 to 84, and so on. The initial power levels and statuses of the second and subsequent sub-problems are set based on the results of the first 24 hours from each of their immediate prior sub-problems. In essence, this approach addresses the complexity of solving a large problem by tackling it in 24-hour intervals, while incorporating an additional 12-hour buffer to mitigate the closing window effect for each sub-problem.
 
@@ -18,8 +18,7 @@ using UnitCommitment, JuMP, HiGHS
 
 import UnitCommitment:
     TimeDecomposition,
-    XavQiuWanThi2019,
-    Formulation
+    XavQiuWanThi2019
 
 # assume the instance is given as a 120h problem
 instance = UnitCommitment.read("instance.json")
@@ -30,7 +29,6 @@ solution = UnitCommitment.optimize!(
         time_window = 36,  # solve 36h problems
         time_increment = 24,  # advance by 24h each time
         inner_method = XavQiuWanThi2019.Method(),
-        formulation = Formulation(),
     ),
     optimizer = HiGHS.Optimizer,
 )
@@ -61,7 +59,7 @@ instance = UnitCommitment.read(["example/s1.json", "example/s2.json"], ph)
 
 # 4. Build JuMP model
 model = UnitCommitment.build_model(
-    instance = instance,
+    instance,
     optimizer = HiGHS.Optimizer,
 )
 
@@ -75,7 +73,7 @@ solution = UnitCommitment.solution(model, ph)
 MPI.Finalize()
 ```
 
-When using PH, the model can be customized as usual, with different formulations or additional user-provided constraints. Note that `read`, in this case, takes `ph` as an argument. This allows each Julia process to read only the instance files that are relevant to it. Similarly, the `solution` function gathers the optimal solution of each processes and returns a combined dictionary.
+When using PH, the model can be customized as usual, with different extensions or additional user-provided constraints. Note that `read`, in this case, takes `ph` as an argument. This allows each Julia process to read only the instance files that are relevant to it. Similarly, the `solution` function gathers the optimal solution of each processes and returns a combined dictionary.
 
 Each process solves a sub-problem with $\frac{s}{p}$ scenarios, where $s$ is the total number of scenarios and $p$ is the number of MPI processes. For instance, if we have 15 scenario files and 5 processes, then each process will solve a JuMP model that contains data for 3 scenarios. If the total number of scenarios is not divisible by the number of processes, then an error will be thrown.
 

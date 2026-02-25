@@ -19,6 +19,7 @@ function build_model(
     _add_thermal_constr_slimits!(model, instance, ext.slimits)
     _add_thermal_constr_invest!(model, instance)
     _add_thermal_constr_reserves!(model, instance)
+    _add_thermal_constr_ns_reserves!(model, instance)
     return
 end
 
@@ -93,7 +94,7 @@ function _add_thermal_vars!(
                     g.min_power[t],
                 )
 
-                # Spinning reserves
+                # Reserves
                 for r in g.reserves
                     reserve[sc.name, r.name, g.name, t] =
                         @variable(model, lower_bound = 0)
@@ -148,6 +149,7 @@ function _add_thermal_obj!(
     instance::UnitCommitmentInstance,
 )::Nothing
     is_on = _init(model, :is_on)
+    switch_off = _init(model, :switch_off)
     startup = _init(model, :startup)
     invest = _init(model, :invest)
     segprod = _init(model, :segprod)
@@ -183,6 +185,19 @@ function _add_thermal_obj!(
                     model[:obj],
                     startup[g.name, t, s],
                     g.startup_categories[s].cost,
+                )
+            end
+        end
+    end
+
+    # Shutdown costs
+    for t in 1:instance.time
+        for g in instance.scenarios[1][:thermal]
+            if g.shutdown_cost > 0
+                add_to_expression!(
+                    model[:obj],
+                    switch_off[g.name, t],
+                    g.shutdown_cost,
                 )
             end
         end
@@ -367,7 +382,7 @@ function _add_thermal_constr_pwl_costs!(
     for sc in instance.scenarios
         for g in sc[:thermal]
             K = length(g.cost_segments)
-            reserve = _total_reserves(model, instance, g, sc)
+            reserve = _total_spinning_reserves(model, instance, g, sc)
             for t in 1:T
                 # Production limits
                 eq_prod_limit[sc.name, g.name, t] = @constraint(
@@ -421,25 +436,46 @@ function _add_thermal_constr_reserves!(
     instance::UnitCommitmentInstance,
 )::Nothing
     T = instance.time
-    eq_min_spinning_reserve = _init(model, :eq_min_spinning_reserve)
+    eq_min_reserve = _init(model, :eq_min_reserve)
 
-    for sc in instance.scenarios
-        for r in sc[:reserves]
-            for t in 1:T
-                # Equation (68) in Kneuven et al. (2020)
-                # As in Morales-España et al. (2013a)
-                # Akin to the alternative formulation with max_power_avail
-                # from Carrión and Arroyo (2006) and Ostrowski et al. (2012)
-                eq_min_spinning_reserve[sc.name, r.name, t] = @constraint(
-                    model,
-                    sum(
-                        model[:reserve][sc.name, r.name, g.name, t] for
-                        g in r.thermal_units
-                    ) + model[:reserve_shortfall][sc.name, r.name, t] >=
-                    r.amount[t]
-                )
-            end
-        end
+    for sc in instance.scenarios, r in sc[:reserves], t in 1:T
+        # Direct contributions from units eligible for this reserve
+        direct = sum(
+            model[:reserve][sc.name, r.name, g.name, t] for
+            g in r.thermal_units;
+            init = 0.0,
+        )
+        # Cascading contributions from descendant reserves
+        cascading = sum(
+            model[:reserve][sc.name, d.name, g.name, t] for
+            d in r.descendants for g in d.thermal_units;
+            init = 0.0,
+        )
+        eq_min_reserve[sc.name, r.name, t] = @constraint(
+            model,
+            direct +
+            cascading +
+            model[:reserve_shortfall][sc.name, r.name, t] >= r.amount[t]
+        )
+    end
+    return
+end
+
+function _add_thermal_constr_ns_reserves!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+)::Nothing
+    T = instance.time
+    is_on = model[:is_on]
+    eq_ns_reserve_capacity = _init(model, :eq_ns_reserve_capacity)
+
+    for sc in instance.scenarios, g in sc[:thermal], r in g.reserves, t in 1:T
+        r.type == :non_spinning || continue
+        eq_ns_reserve_capacity[sc.name, r.name, g.name, t] = @constraint(
+            model,
+            model[:reserve][sc.name, r.name, g.name, t] <=
+            g.non_spinning_capacity * (1 - is_on[g.name, t])
+        )
     end
     return
 end
@@ -452,14 +488,13 @@ function _add_thermal_constr_ramping!(
     return
 end
 
-function _total_reserves(model, instance, g, sc)::Vector
+function _total_spinning_reserves(model, instance, g, sc)::Vector
     T = instance.time
+    spinning = [r for r in g.reserves if r.type == :spinning]
     reserve = [0.0 for _ in 1:T]
-    if !isempty(g.reserves)
+    if !isempty(spinning)
         reserve += [
-            sum(
-                model[:reserve][sc.name, r.name, g.name, t] for r in g.reserves
-            ) for t in 1:T
+            sum(model[:reserve][sc.name, r.name, g.name, t] for r in spinning) for t in 1:T
         ]
     end
     return reserve

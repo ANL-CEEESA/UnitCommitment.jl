@@ -3,6 +3,7 @@
 *.gz
 *.ipynb
 *.lastrun
+*.md
 *.mps
 *.so
 */Manifest.toml

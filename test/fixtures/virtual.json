@@ -1,0 +1,82 @@
+{
+  "Parameters": {
+    "Version": "0.5",
+    "Time horizon (h)": 4
+  },
+  "Buses": {
+    "b1": {
+      "Load (MW)": [50.0, 50.0, 50.0, 50.0]
+    },
+    "b2": {
+      "Load (MW)": [30.0, 30.0, 30.0, 30.0]
+    },
+    "b3": {
+      "Load (MW)": [80.0, 80.0, 80.0, 80.0]
+    }
+  },
+  "Generators": {
+    "g1": {
+      "Bus": "b1",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [0, 200],
+      "Production cost curve ($)": [0, 2000],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 100
+    },
+    "g2": {
+      "Bus": "b3",
+      "Type": "Thermal",
+      "Production cost curve (MW)": [0, 200],
+      "Production cost curve ($)": [0, 4000],
+      "Initial status (h)": 24,
+      "Initial power (MW)": 80
+    }
+  },
+  "Transmission lines": {
+    "l1": {
+      "Source bus": "b1",
+      "Target bus": "b2",
+      "Susceptance (S)": 10.0,
+      "Normal flow limit (MW)": 500.0
+    },
+    "l2": {
+      "Source bus": "b2",
+      "Target bus": "b3",
+      "Susceptance (S)": 10.0,
+      "Normal flow limit (MW)": 500.0
+    },
+    "l3": {
+      "Source bus": "b1",
+      "Target bus": "b3",
+      "Susceptance (S)": 10.0,
+      "Normal flow limit (MW)": 500.0
+    }
+  },
+  "Virtual transactions": {
+    "vt_inc1": {
+      "Type": "INC",
+      "Bus": "b1",
+      "Offer price ($/MW)": 30.0,
+      "Maximum quantity (MW)": 50.0
+    },
+    "vt_dec1": {
+      "Type": "DEC",
+      "Bus": "b3",
+      "Bid price ($/MW)": 60.0,
+      "Maximum quantity (MW)": 40.0
+    },
+    "vt_dec2": {
+      "Type": "DEC",
+      "Bus": "b3",
+      "Bid price ($/MW)": [50.0, 55.0, 45.0, 52.0],
+      "Maximum quantity (MW)": [30.0, 40.0, 20.0, 35.0]
+    },
+    "vt_utc1": {
+      "Type": "UTC",
+      "Source bus": "b1",
+      "Sink bus": "b3",
+      "Bid price ($/MW)": 10.0,
+      "Maximum quantity (MW)": 30.0
+    }
+  }
+}

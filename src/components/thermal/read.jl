@@ -6,17 +6,25 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
     T = sc[:time]
     time_multiplier = 60 ÷ sc[:time_step]
     thermal_units = ThermalUnit[]
-    reserves = SpinningReserve[]
+    reserves = Reserve[]
 
     name_to_unit = Dict{String,ThermalUnit}()
-    name_to_reserve = Dict{String,SpinningReserve}()
+    sc[:reserves_by_name] = Dict{String,Reserve}()
 
-    # Read reserves (only spinning reserves are supported)
+    # Read reserves (spinning and non-spinning)
     if "Reserves" in keys(json)
         for (reserve_name, dict) in json["Reserves"]
-            lowercase(dict["Type"]) == "spinning" || continue
-            r = SpinningReserve(
+            rtype = lowercase(dict["Type"])
+            if rtype == "spinning"
+                rsym = :spinning
+            elseif rtype == "non-spinning"
+                rsym = :non_spinning
+            else
+                continue   # skip unknown types (e.g., flexiramp)
+            end
+            r = Reserve(
                 name = reserve_name,
+                type = rsym,
                 amount = to_timeseries(dict["Amount (MW)"], T),
                 thermal_units = [],
                 shortfall_penalty = to_scalar(
@@ -24,10 +32,29 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                     default = -1,
                 ),
             )
-            name_to_reserve[reserve_name] = r
+            sc[:reserves_by_name][reserve_name] = r
             push!(reserves, r)
         end
     end
+
+    # Resolve parent links
+    if "Reserves" in keys(json)
+        for (reserve_name, dict) in json["Reserves"]
+            if haskey(dict, "Parent") &&
+               haskey(sc[:reserves_by_name], reserve_name)
+                parent_name = dict["Parent"]
+                haskey(sc[:reserves_by_name], parent_name) || error(
+                    "Reserve $reserve_name declares parent $parent_name, " *
+                    "but no reserve with that name exists",
+                )
+                sc[:reserves_by_name][reserve_name].parent =
+                    sc[:reserves_by_name][parent_name]
+            end
+        end
+    end
+
+    _validate_no_cycles(reserves)
+    _compute_descendants!(reserves)
 
     # Read units
     for (unit_name, dict) in json["Generators"]
@@ -78,13 +105,16 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                 )
             end
 
+            # Read shutdown cost
+            shutdown_cost = to_scalar(dict["Shutdown cost (\$)"], default = 0.0)
+
             # Read reserve eligibility
-            unit_reserves = SpinningReserve[]
+            unit_reserves = Reserve[]
             if "Reserve eligibility" in keys(dict)
                 unit_reserves = [
-                    name_to_reserve[n] for
+                    sc[:reserves_by_name][n] for
                     n in dict["Reserve eligibility"] if
-                    haskey(name_to_reserve, n)
+                    haskey(sc[:reserves_by_name], n)
                 ]
             end
 
@@ -154,7 +184,12 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                 initial_status = initial_status,
                 initial_power = initial_power,
                 startup_categories = startup_categories,
+                shutdown_cost = shutdown_cost,
                 reserves = unit_reserves,
+                non_spinning_capacity = to_scalar(
+                    dict["Non-spinning reserve capacity (MW)"],
+                    default = 0.0,
+                ),
                 commitment_status = commitment_status,
                 invest = to_timeseries(
                     to_scalar(dict["Investment cost (\$)"], default = 0.0),
@@ -184,6 +219,38 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
     sc[:thermal] = thermal_units
     sc[:thermal_by_name] = Dict(g.name => g for g in thermal_units)
     sc[:reserves] = reserves
-    sc[:reserves_by_name] = name_to_reserve
+
     return nothing
+end
+
+function _validate_no_cycles(reserves::Vector{Reserve})::Nothing
+    for r in reserves
+        visited = Set{String}()
+        curr = r
+        while curr !== nothing
+            curr.name in visited && error(
+                "Cycle detected in reserve parent chain involving $(curr.name)",
+            )
+            push!(visited, curr.name)
+            curr = curr.parent
+        end
+    end
+    return
+end
+
+function _compute_descendants!(reserves::Vector{Reserve})::Nothing
+    for r in reserves
+        for other in reserves
+            other === r && continue
+            curr = other.parent
+            while curr !== nothing
+                if curr === r
+                    push!(r.descendants, other)
+                    break
+                end
+                curr = curr.parent
+            end
+        end
+    end
+    return
 end

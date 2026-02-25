@@ -14,8 +14,10 @@ const DEFAULT_EXTENSIONS = [
     ThermalExt(),
     ProfiledUnitsExt(),
     PriceSensitiveLoadsExt(),
+    VirtualTransactionsExt(),
     StorageExt(),
     ShiftFactorsTransmissionExt(),
+    InterfaceLimitsExt(),
     ConventionalLMP(),
 ]
 

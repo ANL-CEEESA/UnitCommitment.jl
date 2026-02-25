@@ -21,7 +21,7 @@ function validate(
     instance::UnitCommitmentInstance,
     solution::Union{Dict,OrderedDict},
 )::Bool
-    if "Reserve: Spinning (MW)" ∈ keys(solution)
+    if "Reserve: Provided (MW)" ∈ keys(solution)
         solution = Dict("s1" => solution)
     end
     err_count = 0
