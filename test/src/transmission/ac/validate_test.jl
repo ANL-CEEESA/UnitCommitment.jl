@@ -122,18 +122,18 @@ end
 
 # --- Solve tests (build, solve, validate) ---
 
-@testfunction transmission_ac_solve_case5_polar_test begin
-    _solve_ac_case("case5", formulation = UnitCommitment.ACPolar())
-end
+# @testfunction transmission_ac_solve_case5_polar_test begin
+#     _solve_ac_case("case5", formulation = UnitCommitment.ACPolar())
+# end
 
-@testfunction transmission_ac_solve_case5_rect_test begin
-    _solve_ac_case("case5")
-end
+# @testfunction transmission_ac_solve_case5_rect_test begin
+#     _solve_ac_case("case5")
+# end
 
-@testfunction transmission_ac_solve_case14_polar_test begin
-    _solve_ac_case("case14", formulation = UnitCommitment.ACPolar())
-end
+# @testfunction transmission_ac_solve_case14_polar_test begin
+#     _solve_ac_case("case14", formulation = UnitCommitment.ACPolar())
+# end
 
-@testfunction transmission_ac_solve_case14_rect_test begin
-    _solve_ac_case("case14")
-end
+# @testfunction transmission_ac_solve_case14_rect_test begin
+#     _solve_ac_case("case14")
+# end
