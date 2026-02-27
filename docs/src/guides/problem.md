@@ -745,7 +745,30 @@ physical delivery. Three types are supported:
 0 \leq y^{\text{vt}}_{svt} \leq M^{\text{vt-qmax}}_{svt}
 ```
 
-## 7. Buses
+## 7. Shunt devices
+
+Shunt devices are fixed impedance elements connected between a bus and ground,
+typically used to model reactive power compensation equipment (e.g., capacitor
+banks, reactors) or constant-impedance loads. Each shunt device has a
+conductance and susceptance (in per-unit), and a time-varying on/off status.
+Under the DC approximation (where voltage magnitudes are assumed to be 1.0
+p.u.), the active power consumed by a shunt device is
+$M^{\text{sh-cond}}_{sk} \cdot M^\text{base}_s$ MW, where
+$M^{\text{sh-cond}}_{sk}$ is its conductance and $M^\text{base}_s$ is the system
+base MVA. This power consumption appears as a loss in the power balance
+constraints.
+
+### Sets and constants
+
+| Symbol                       | Unit | Description                                                      |
+| :--------------------------- | :--- | :--------------------------------------------------------------- |
+| $M^{\text{sh-cond}}_{sk}$    | p.u. | Conductance of shunt device $k$ in scenario $s$.                 |
+| $M^\text{base}_{s}$          | MVA  | System base MVA in scenario $s$.                                 |
+| $M^{\text{sh-status}}_{skt}$ |      | Status (on/off) of shunt device $k$ at time $t$ in scenario $s$. |
+| $\text{SH}$                  |      | Set of all shunt devices.                                        |
+| $\text{SH}_b$                |      | Set of shunt devices at bus $b$.                                 |
+
+## 8. Buses
 
 Buses are connection points in the transmission network where generators, loads,
 and storage units are located. Each bus has an associated load profile
@@ -817,18 +840,18 @@ y^\text{inj}_{sbt} =
 ```
 
 - System-wide power balance (`eq_power_balance[s,t]`). The sum of net injections
-  across all buses must equal zero:
+  across all buses must equal total shunt losses:
 
 ```math
-\sum_{b \in B} y^\text{inj}_{sbt} = 0
+\sum_{b \in B} y^\text{inj}_{sbt} = \sum_{k \in \text{SH}} M^{\text{sh-status}}_{skt} \, M^{\text{sh-cond}}_{sk} \, M^\text{base}_{s}
 ```
 
-## 8. Branches
+## 9. Branches
 
 Transmission lines connect buses in the network and allow power to flow between
 them. The transmission network is represented as a graph $(B,L)$ where $B$ is
 the set of buses and $L$ is the set of transmission lines. Besides enforcing
-power balance at each bus (as described in Section 6), we must also enforce flow
+power balance at each bus (as described in Section 8), we must also enforce flow
 limits on the transmission lines. Unlike flows in other optimization problems,
 power flows are directly determined by voltage phase angles and transmission
 line parameters, and must follow physical laws. UC.jl uses the DC linearization
@@ -868,6 +891,8 @@ of circuits cannot decrease.
 | $B_l$                       | S     | Susceptance of line $l$.                                             |
 | $L$                         |       | Set of transmission lines.                                           |
 | $M$                         | MW    | Big-M constant used in linearization of flow constraints.            |
+| $M^\text{angle-max}_{l}$    | rad   | Maximum phase angle difference across line $l$ (default $+\infty$).  |
+| $M^\text{angle-min}_{l}$    | rad   | Minimum phase angle difference across line $l$ (default $-\infty$).  |
 | $M^\text{limit}_{slt}$      | MW    | Flow limit per circuit for line $l$ at time $t$ and scenario $s$.    |
 | $M^\text{max-circuits}_{l}$ |       | Maximum number of circuits that can be invested along corridor $l$.  |
 | $M^\text{phase-limit}$      | rad   | Maximum absolute value of phase angles.                              |
@@ -902,8 +927,8 @@ W^{\text{invest}} \sum_{l \in L} \sum_{t \in T} Z^{\text{invest}}_{lt} \left(x^{
 
 ### Constraints
 
-- Phase angle bounds. The first bus is the reference bus, with its phase angle
-  fixed to zero:
+- Phase angle bounds. The reference (slack) bus has its phase angle fixed to
+  zero:
 
 ```math
 \begin{align*}
@@ -961,7 +986,30 @@ y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\tex
 -M^\text{limit}_{slt} x^{\text{invest}}_{lt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt} + y^\text{overflow}_{slt}
 ```
 
-## 9. Interfaces
+- Nodal power balance (`eq_nodal_balance[s,b,t]`). At each bus, the net
+  injection minus shunt losses must equal net incoming flow. Under the DC
+  approximation, shunt conductance losses are
+  $M^{\text{sh-cond}}_{sk} M^\text{base}_s$ per device (assuming $V_m = 1.0$
+  p.u.):
+
+```math
+y^\text{inj}_{sbt} - \sum_{k \in \text{SH}_b} M^{\text{sh-status}}_{skt} \, M^{\text{sh-cond}}_{sk} \, M^\text{base}_s
++ \sum_{\substack{l \in L \\ \text{target}(l)=b}} y^\text{flow}_{slt}
+= \sum_{\substack{l \in L \\ \text{source}(l)=b}} y^\text{flow}_{slt}
+```
+
+- Phase angle difference limits (`eq_angle_diff_ub[s,l,t]` and
+  `eq_angle_diff_lb[s,l,t]`). Only enforced when the corresponding bound is
+  finite:
+
+```math
+\begin{align*}
+\theta_{sbt} - \theta_{sb't} & \leq M^\text{angle-max}_{l} \\
+\theta_{sbt} - \theta_{sb't} & \geq M^\text{angle-min}_{l}
+\end{align*}
+```
+
+## 10. Interfaces
 
 An _interface_ (or _corridor_) is a named group of transmission lines whose
 aggregate weighted flow is bounded. Interfaces are commonly used by ISOs to
@@ -976,7 +1024,7 @@ contributions.
 | :---------------------------- | :---- | :-------------------------------------------------------------- |
 | $\text{IF}$                   |       | Set of interfaces.                                              |
 | $L_I$                         |       | Set of transmission lines belonging to interface $I$.           |
-| $w_{Il}$                      |       | Weight coefficient of line $l$ in interface $I$.                |
+| $M^{\text{ifc-weight}}_{Il}$  |       | Weight coefficient of line $l$ in interface $I$.                |
 | $M^{\text{ifc-ub}}_{It}$      | MW    | Upper limit on net flow through interface $I$ at time $t$.      |
 | $M^{\text{ifc-lb}}_{It}$      | MW    | Lower limit on net flow through interface $I$ at time $t$.      |
 | $Z^{\text{ifc-penalty}}_{It}$ | \$/MW | Penalty for violating flow limits of interface $I$ at time $t$. |
@@ -1005,7 +1053,7 @@ contributions.
   through the interface is the weighted sum of individual line flows:
 
 ```math
-y^{\text{ifc-flow}}_{sIt} = \sum_{l \in L_I} w_{Il} \cdot y^{\text{flow}}_{slt}
+y^{\text{ifc-flow}}_{sIt} = \sum_{l \in L_I} M^{\text{ifc-weight}}_{Il} \cdot y^{\text{flow}}_{slt}
 ```
 
 - Upper bound on interface flow (`eq_interface_flow_ub[s,I,t]`). Only enforced
