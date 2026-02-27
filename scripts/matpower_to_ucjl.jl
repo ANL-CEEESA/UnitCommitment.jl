@@ -27,8 +27,11 @@ function matpower_to_ucjl(
     mkpath(output_dir)
 
     # --- Copy original .m file ---
-    cp(input_file, joinpath(output_dir, "original.m"); force = true)
-    println("Saved: $(joinpath(output_dir, "original.m"))")
+    dst = joinpath(output_dir, "original.m")
+    if abspath(input_file) != abspath(dst)
+        cp(input_file, dst; force = true)
+        println("Saved: $dst")
+    end
 
     # --- Build and save converted.json ---
     data = PowerModels.parse_file(input_file)
@@ -184,6 +187,8 @@ function _build_ucjl_json(
     generators = OrderedDict{String, Any}()
     for gen_id in sort(collect(keys(data["gen"])); by = x -> parse(Int, x))
         gen = data["gen"][gen_id]
+        gen["gen_status"] == 0 && continue
+
         bus_id = gen["gen_bus"]
         pmin = max(gen["pmin"], 0.0)
         pmax = gen["pmax"]
@@ -218,13 +223,8 @@ function _build_ucjl_json(
         end
 
         # Initial status and power
-        if gen["gen_status"] == 1
-            gen_data["Initial status (h)"] = 24
-            gen_data["Initial power (MW)"] = clamp(gen["pg"], pmin, pmax)
-        else
-            gen_data["Initial status (h)"] = -24
-            gen_data["Initial power (MW)"] = 0.0
-        end
+        gen_data["Initial status (h)"] = 24
+        gen_data["Initial power (MW)"] = clamp(gen["pg"], pmin, pmax)
 
         # Reactive power limits
         gen_data["Reactive power min (MVAr)"] = gen["qmin"]
@@ -232,6 +232,8 @@ function _build_ucjl_json(
 
         # Voltage setpoint
         gen_data["Voltage set-point (p.u.)"] = gen["vg"]
+
+        gen_data["Must run?"] = [true]
 
         generators["g$gen_id"] = gen_data
     end

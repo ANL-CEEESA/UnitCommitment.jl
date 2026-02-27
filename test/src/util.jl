@@ -13,13 +13,23 @@ function fixture(path::String)::String
     return "$basedir/../fixtures/$path"
 end
 
-"""
-    test_optimizer()
-
-Return a HiGHS optimizer with console logging disabled.
-"""
 function test_optimizer()
     return optimizer_with_attributes(HiGHS.Optimizer, "log_to_console" => false)
+end
+
+function _minlp_optimizer()
+    ipopt = optimizer_with_attributes(
+        Ipopt.Optimizer,
+        "print_level" => 0,
+        "sb" => "yes",
+    )
+    highs = optimizer_with_attributes(HiGHS.Optimizer, "output_flag" => false)
+    return optimizer_with_attributes(
+        Juniper.Optimizer,
+        "nl_solver" => ipopt,
+        "mip_solver" => highs,
+        "log_levels" => [],
+    )
 end
 
 """

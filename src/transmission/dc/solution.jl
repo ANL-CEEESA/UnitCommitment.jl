@@ -20,6 +20,17 @@ function store_solution(
                 [round(pre_flow[l.offset, t], digits = 10) for t in 1:T] for
             l in branches
         )
+
+        if haskey(inner, :theta)
+            sol[sc.name]["Bus: Voltage angle (rad)"] = OrderedDict(
+                b.name => [
+                    round(
+                        value(inner[:theta][sc.name, b.name, t]),
+                        digits = 10,
+                    ) for t in 1:T
+                ] for b in sc[:bus]
+            )
+        end
         sol[sc.name]["Branch: Overflow (MW)"] =
             _timeseries(inner, :overflow, branches, T, sc = sc)
         sol[sc.name]["Branch: Overflow penalty (\$)"] = OrderedDict(

@@ -234,11 +234,11 @@
     "l6": {
       "Source bus": "b3",
       "Target bus": "b4",
-      "Reactance (p.u.)": 0.0297,
-      "Resistance (p.u.)": 0.00297,
-      "Shunt susceptance (p.u.)": 0.00674,
-      "Tap ratio (p.u.)": 1.05,
-      "Phase shift (rad)": -0.017453292519943295,
+      "Reactance (p.u.)": 0.03274425,
+      "Resistance (p.u.)": 0.003274425,
+      "Shunt susceptance (p.u.)": 0.006772114342403629,
+      "Tap ratio (p.u.)": 0.9523809523809523,
+      "Phase shift (rad)": 0.017453292519943295,
       "Normal flow limit (MVA)": 426.0,
       "Emergency flow limit (MVA)": 426.0,
       "Angle difference min (rad)": -0.5235987755982988,
@@ -256,34 +256,11 @@
       "Angle difference max (rad)": 0.5235987755982988
     }
   },
-  "Storage units": {
-    "su1": {
-      "Bus": "b3",
-      "Maximum level (MWh)": 100.0,
-      "Charge cost ($/MW)": 0.0,
-      "Discharge cost ($/MW)": 0.0,
-      "Maximum charge rate (MW)": 50.0,
-      "Maximum discharge rate (MW)": 70.0,
-      "Charge efficiency": 0.8,
-      "Discharge efficiency": 0.9,
-      "Initial level (MWh)": 20.0,
-      "Reactive power min (MVAr)": -50.0,
-      "Reactive power max (MVAr)": 70.0,
-      "Apparent power limit (MVA)": 100.0
-    },
-    "su2": {
-      "Bus": "b10",
-      "Maximum level (MWh)": 100.0,
-      "Charge cost ($/MW)": 0.0,
-      "Discharge cost ($/MW)": 0.0,
-      "Maximum charge rate (MW)": 50.0,
-      "Maximum discharge rate (MW)": 70.0,
-      "Charge efficiency": 0.9,
-      "Discharge efficiency": 0.8,
-      "Initial level (MWh)": 30.0,
-      "Reactive power min (MVAr)": -50.0,
-      "Reactive power max (MVAr)": 70.0,
-      "Apparent power limit (MVA)": 100.0
+  "Shunt devices": {
+    "sh1": {
+      "Bus": "b2",
+      "Susceptance (p.u.)": 0.0,
+      "Conductance (p.u.)": 0.05
     }
   }
 }

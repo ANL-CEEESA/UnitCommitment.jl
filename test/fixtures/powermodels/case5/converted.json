@@ -71,7 +71,10 @@
       "Initial power (MW)": 40.0,
       "Reactive power min (MVAr)": -30.0,
       "Reactive power max (MVAr)": 30.0,
-      "Voltage set-point (p.u.)": 1.07762
+      "Voltage set-point (p.u.)": 1.07762,
+      "Must run?": [
+        true
+      ]
     },
     "g2": {
       "Bus": "b1",
@@ -92,7 +95,10 @@
       "Initial power (MW)": 170.0,
       "Reactive power min (MVAr)": -127.49999999999999,
       "Reactive power max (MVAr)": 127.49999999999999,
-      "Voltage set-point (p.u.)": 1.07762
+      "Voltage set-point (p.u.)": 1.07762,
+      "Must run?": [
+        true
+      ]
     },
     "g3": {
       "Bus": "b3",
@@ -113,7 +119,10 @@
       "Initial power (MW)": 324.498,
       "Reactive power min (MVAr)": -390.0,
       "Reactive power max (MVAr)": 390.0,
-      "Voltage set-point (p.u.)": 1.1
+      "Voltage set-point (p.u.)": 1.1,
+      "Must run?": [
+        true
+      ]
     },
     "g4": {
       "Bus": "b4",
@@ -134,7 +143,10 @@
       "Initial power (MW)": 0.0,
       "Reactive power min (MVAr)": -150.0,
       "Reactive power max (MVAr)": 150.0,
-      "Voltage set-point (p.u.)": 1.06414
+      "Voltage set-point (p.u.)": 1.06414,
+      "Must run?": [
+        true
+      ]
     },
     "g5": {
       "Bus": "b10",
@@ -155,7 +167,10 @@
       "Initial power (MW)": 470.694,
       "Reactive power min (MVAr)": -450.0,
       "Reactive power max (MVAr)": 450.0,
-      "Voltage set-point (p.u.)": 1.06907
+      "Voltage set-point (p.u.)": 1.06907,
+      "Must run?": [
+        true
+      ]
     }
   },
   "Branches": {

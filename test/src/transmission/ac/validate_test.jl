@@ -69,21 +69,6 @@ function _validate_pm_case(case_name::String)
     ) == 0
 end
 
-function _minlp_optimizer()
-    ipopt = optimizer_with_attributes(
-        Ipopt.Optimizer,
-        "print_level" => 0,
-        "sb" => "yes",
-    )
-    highs = optimizer_with_attributes(HiGHS.Optimizer, "output_flag" => false)
-    return optimizer_with_attributes(
-        Juniper.Optimizer,
-        "nl_solver" => ipopt,
-        "mip_solver" => highs,
-        "log_levels" => [],
-    )
-end
-
 function _warm_start!(model, case_name, ::UnitCommitment.ACPolar)
     pm_sol = JSON.parsefile(fixture("powermodels/$case_name/sol_ac_opf.json"))
     for (bus_id, bus_data) in pm_sol["solution"]["bus"]

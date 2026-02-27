@@ -16,6 +16,7 @@ function build_model(
     _add_dc_constr_flow!(model, instance, ext)
     _add_dc_constr_nodal_balance!(model, instance, ext)
     _add_dc_constr_invest!(model, instance, ext)
+    _add_dc_constr_angle_diff!(model, instance, ext)
     return
 end
 
@@ -77,15 +78,23 @@ function _add_dc_vars!(
     end
 
     # Phase angle variables
-    for sc in instance.scenarios, t in 1:T
-        for b in sc[:bus]
-            theta[sc.name, b.name, t] = @variable(
-                model,
-                lower_bound = -ext.phase_angle_limit,
-                upper_bound = ext.phase_angle_limit
-            )
+    for sc in instance.scenarios
+        ref_buses = [b for b in sc[:bus] if b.bus_type == "Slack"]
+        if isempty(ref_buses)
+            ref_buses = [sc[:bus][1]]
         end
-        fix(theta[sc.name, sc[:bus][1].name, t], 0.0; force = true)
+        for t in 1:T
+            for b in sc[:bus]
+                theta[sc.name, b.name, t] = @variable(
+                    model,
+                    lower_bound = -ext.phase_angle_limit,
+                    upper_bound = ext.phase_angle_limit
+                )
+            end
+            for b in ref_buses
+                fix(theta[sc.name, b.name, t], 0.0; force = true)
+            end
+        end
     end
 
     for sc in instance.scenarios, branch in sc[:branches], t in 1:T
@@ -207,9 +216,21 @@ function _add_dc_constr_nodal_balance!(
         branches = sc[:branches]
         for t in 1:T
             for b in sc[:bus]
+                # Shunt conductance losses: gs * Vm^2 * baseMVA [MW]
+                # Under DC approximation, Vm = 1.0 p.u.
+                shunt_loss = AffExpr(0.0)
+                for sh in sc[:shunts_by_bus][b]
+                    if sh.status[t]
+                        add_to_expression!(
+                            shunt_loss,
+                            sh.conductance * sc[:base_mva],
+                        )
+                    end
+                end
+
                 eq_nodal_balance[sc.name, b.name, t] = @constraint(
                     model,
-                    model[:ni][sc.name, b.name, t] + sum(
+                    model[:ni][sc.name, b.name, t] - shunt_loss + sum(
                         flow[sc.name, lm.name, t] for
                         lm in branches if lm.target == b
                     ) == sum(
@@ -241,6 +262,34 @@ function _add_dc_constr_invest!(
                     invest[branch.name, t-1] <= invest[branch.name, t],
                 )
             end
+        end
+    end
+    return
+end
+
+function _add_dc_constr_angle_diff!(
+    model::JuMP.Model,
+    instance::UnitCommitmentInstance,
+    ext::PhaseAngleTransmissionExt,
+)::Nothing
+    T = instance.time
+    theta = model[:theta]
+
+    eq_angle_diff_ub = _init(model, :eq_angle_diff_ub)
+    eq_angle_diff_lb = _init(model, :eq_angle_diff_lb)
+
+    for sc in instance.scenarios, branch in sc[:branches], t in 1:T
+        angle_diff =
+            theta[sc.name, branch.source.name, t] -
+            theta[sc.name, branch.target.name, t]
+
+        if isfinite(branch.angle_diff_max)
+            eq_angle_diff_ub[sc.name, branch.name, t] =
+                @constraint(model, angle_diff <= branch.angle_diff_max)
+        end
+        if isfinite(branch.angle_diff_min)
+            eq_angle_diff_lb[sc.name, branch.name, t] =
+                @constraint(model, angle_diff >= branch.angle_diff_min)
         end
     end
     return

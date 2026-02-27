@@ -115,6 +115,11 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_nodal_balance]["s1", "b2", 1] "ni[s1,b2,1] + flow[s1,l1,1] - flow[s1,l3,1] - flow[s1,l4,1] - flow[s1,l5,1] - flow[s1,l22,1] = 0"
     @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] + flow[s1,l3,1] - flow[s1,l6,1] + flow[s1,l21,1] = 0"
 
+    # eq_angle_diff (base fixture has no angle limits → empty)
+    # -------------------------------------------------------------------------
+    @test isempty(model[:eq_angle_diff_ub])
+    @test isempty(model[:eq_angle_diff_lb])
+
     # eq_power_balance (delegated to CopperPlate)
     @test ("s1", 1) in keys(model[:eq_power_balance])
 end

@@ -11,9 +11,15 @@ function build_model(
     for sc in instance.scenarios
         ni = model[:ni]
         for t in 1:instance.time
+            total_shunt_loss = sum(
+                sh.conductance * sc[:base_mva] for
+                sh in sc[:shunts] if sh.status[t];
+                init = 0.0,
+            )
             eq_power_balance[sc.name, t] = @constraint(
                 model,
-                sum(ni[sc.name, b.name, t] for b in sc[:bus]) == 0,
+                sum(ni[sc.name, b.name, t] for b in sc[:bus]) ==
+                total_shunt_loss,
             )
         end
     end
