@@ -6,14 +6,29 @@ using JuMP
 
 function _check(
     instance::UnitCommitmentInstance,
-    ::ShiftFactorsTransmissionExt,
+    ext::ShiftFactorsTransmissionExt,
 )::Nothing
+    if ext.lazy && any(!isempty(sc[:shunts]) for sc in instance.scenarios)
+        error(
+            "ShiftFactorsTransmissionExt with lazy=true is not supported " *
+            "when the instance has shunt devices. Use lazy=false or " *
+            "PhaseAngleTransmissionExt instead.",
+        )
+    end
     for sc in instance.scenarios
         for branch in sc[:branches]
             if branch.invest[1] > 0.0
                 error(
                     "ShiftFactorsTransmissionExt does not support branch investment. " *
                     "Branch '$(branch.name)' has investment cost $(branch.invest[1]). " *
+                    "Use PhaseAngleTransmissionExt instead.",
+                )
+            end
+            if isfinite(branch.angle_diff_min) ||
+               isfinite(branch.angle_diff_max)
+                error(
+                    "Branch '$(branch.name)' has finite angle difference limits, " *
+                    "which are not supported by ShiftFactorsTransmissionExt. " *
                     "Use PhaseAngleTransmissionExt instead.",
                 )
             end
@@ -89,9 +104,12 @@ function _add_dc_constr_flow!(
         branches = sc[:branches]
         buses = sc[:bus]
 
+        shunt_loss = _shunt_loss_matrix(sc, T)
+        branch_shunt_corr = isf * shunt_loss
+
         # Base case constraints
         for branch in branches, t in 1:T
-            # Flow definition using ISF: flow = sum(net_injection[bus] * isf[branch, bus])
+            # Flow definition using ISF: flow = sum(ISF[l,b] * (ni[b] - shunt_loss[b]))
             flow_expr = AffExpr(0.0)
             for bus in buses
                 bus.offset > 0 || continue
@@ -100,8 +118,11 @@ function _add_dc_constr_flow!(
                 add_to_expression!(flow_expr, ni[sc.name, bus.name, t], coef)
             end
 
-            eq_flow_def[sc.name, branch.name, t] =
-                @constraint(model, flow[sc.name, branch.name, t] == flow_expr)
+            eq_flow_def[sc.name, branch.name, t] = @constraint(
+                model,
+                flow[sc.name, branch.name, t] ==
+                flow_expr - branch_shunt_corr[branch.offset, t]
+            )
 
             # Flow limits (base case uses normal_flow_limit)
             eq_flow_limit_ub[sc.name, branch.name, t] = @constraint(
@@ -122,7 +143,7 @@ function _add_dc_constr_flow!(
             for outage_branch in cont.branches
                 for monitored_branch in branches, t in 1:T
                     # Flow definition using ISF + LODF
-                    # flow = sum(net_injection[bus] * (isf[monitored, bus] + lodf[monitored, outage] * isf[outage, bus]))
+                    # flow = sum((ISF[m,b] + LODF[m,o]*ISF[o,b]) * (ni[b] - shunt_loss[b]))
                     flow_expr = AffExpr(0.0)
                     lodf_coef =
                         lodf[monitored_branch.offset, outage_branch.offset]
@@ -150,6 +171,10 @@ function _add_dc_constr_flow!(
                         )
                     end
 
+                    shunt_corr =
+                        branch_shunt_corr[monitored_branch.offset, t] +
+                        lodf_coef * branch_shunt_corr[outage_branch.offset, t]
+
                     eq_flow_cont_def[
                         sc.name,
                         cont.name,
@@ -162,7 +187,7 @@ function _add_dc_constr_flow!(
                             cont.name,
                             monitored_branch.name,
                             t,
-                        ] == flow_expr
+                        ] == flow_expr - shunt_corr
                     )
 
                     # Emergency flow limits (contingency uses emergency_flow_limit, same overflow variable)
@@ -216,11 +241,13 @@ function _interface_flow_expr(
     ifc_isf = sc[:interface_isf]
     buses = sc[:bus]
     expr = AffExpr(0.0)
+    shunt_correction = 0.0
     for bus in buses
         bus.offset > 0 || continue
         coef = ifc_isf[ifc.offset, bus.offset]
         coef == 0.0 && continue
         add_to_expression!(expr, ni[sc.name, bus.name, t], coef)
+        shunt_correction += coef * _bus_shunt_loss(sc, bus, t)
     end
-    return expr
+    return expr - shunt_correction
 end

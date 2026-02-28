@@ -216,17 +216,7 @@ function _add_dc_constr_nodal_balance!(
         branches = sc[:branches]
         for t in 1:T
             for b in sc[:bus]
-                # Shunt conductance losses: gs * Vm^2 * baseMVA [MW]
-                # Under DC approximation, Vm = 1.0 p.u.
-                shunt_loss = AffExpr(0.0)
-                for sh in sc[:shunts_by_bus][b]
-                    if sh.status[t]
-                        add_to_expression!(
-                            shunt_loss,
-                            sh.conductance * sc[:base_mva],
-                        )
-                    end
-                end
+                shunt_loss = _bus_shunt_loss(sc, b, t)
 
                 eq_nodal_balance[sc.name, b.name, t] = @constraint(
                     model,

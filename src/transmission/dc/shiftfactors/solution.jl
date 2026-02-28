@@ -18,7 +18,8 @@ function _compute_base_flow(
 
     non_slack = [b for b in buses if b.offset > 0]
     net_inj = [value(ni[sc.name, b.name, t]) for b in non_slack, t in 1:T]
-    return isf * net_inj
+    shunt_loss = _shunt_loss_matrix(sc, T)
+    return isf * (net_inj - shunt_loss)
 end
 
 function _compute_contingency_flow(
@@ -59,5 +60,6 @@ function _compute_interface_flows(
     non_slack = [b for b in buses if b.offset > 0]
     net_inj =
         [value(inner[:ni][sc.name, b.name, t]) for b in non_slack, t in 1:T]
-    return ifc_isf * net_inj
+    shunt_loss = _shunt_loss_matrix(sc, T)
+    return ifc_isf * (net_inj - shunt_loss)
 end

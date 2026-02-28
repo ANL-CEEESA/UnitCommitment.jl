@@ -421,6 +421,12 @@
             "Shortfall penalty ($/MW)": 1000.0
         }
     },
+    "Shunt devices": {
+        "sh1": {
+            "Bus": "b9",
+            "Conductance (p.u.)": 0.05
+        }
+    },
     "Interfaces": {
         "ifc1": {
             "Branches": {"l1": 1.0, "l2": 1.0},
@@ -430,7 +436,7 @@
         },
         "ifc2": {
             "Branches": {"l3": 1.0, "l7": -1.0},
-            "Net flow upper limit (MW)": [50, 60, 60, 60],
+            "Net flow upper limit (MW)": [55, 60, 60, 60],
             "Net flow lower limit (MW)": -100,
             "Flow limit penalty ($/MW)": 5000.0
         }

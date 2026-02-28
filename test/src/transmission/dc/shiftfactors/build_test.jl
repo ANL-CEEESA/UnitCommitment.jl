@@ -125,6 +125,41 @@ using HiGHS, JuMP, UnitCommitment
     @test ("s1", 1) in keys(model[:eq_power_balance])
 end
 
+@testfunction transmission_dc_shiftfactors_angle_diff_error_test begin
+    instance = UnitCommitment.read(
+        fixture("case5/base.json"),
+        extensions = [
+            UnitCommitment.ShiftFactorsTransmissionExt(
+                isf_cutoff = 0.0,
+                lodf_cutoff = 0.0,
+            ),
+        ],
+    )
+    sc = instance.scenarios[1]
+    sc[:branches][1].angle_diff_max = 0.5
+    @test_throws ErrorException build_model(
+        instance,
+        optimizer = test_optimizer(),
+    )
+end
+
+@testfunction transmission_dc_shiftfactors_lazy_shunt_error_test begin
+    instance = UnitCommitment.read(
+        fixture("powermodels/case5_gs/converted.json"),
+        extensions = [
+            UnitCommitment.ShiftFactorsTransmissionExt(
+                isf_cutoff = 0.0,
+                lodf_cutoff = 0.0,
+                lazy = true,
+            ),
+        ],
+    )
+    @test_throws ErrorException build_model(
+        instance,
+        optimizer = test_optimizer(),
+    )
+end
+
 @testfunction transmission_dc_shiftfactors_build_lazy_test begin
     model =
         build_model(

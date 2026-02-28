@@ -20,7 +20,7 @@
     ifc2 = sc[:interface_by_name]["ifc2"]
     @test ifc2.offset == 2
     # Time-varying upper limit
-    @test ifc2.net_flow_ub == [50.0, 60.0, 60.0, 60.0]
+    @test ifc2.net_flow_ub == [55.0, 60.0, 60.0, 60.0]
 
     # Interface ISF matrix should exist (shift factors is default)
     @test haskey(sc, :interface_isf)
