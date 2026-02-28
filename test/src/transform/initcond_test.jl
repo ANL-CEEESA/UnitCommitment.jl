@@ -37,13 +37,13 @@ end
     sc = instance.scenarios[1]
     by_name = Dict(g.name => g for g in sc[:thermal])
 
-    @test by_name["g1"].initial_power ≈ 135.0
+    @test by_name["g1"].initial_power ≈ 127.505
     @test by_name["g1"].initial_status == 24
     @test by_name["g2"].initial_power ≈ 0.0
     @test by_name["g2"].initial_status == 24
-    @test by_name["g3"].initial_power ≈ 25.505
+    @test by_name["g3"].initial_power ≈ 100.0
     @test by_name["g3"].initial_status == 24
-    @test by_name["g4"].initial_power ≈ 100.0
+    @test by_name["g4"].initial_power ≈ 33.0
     @test by_name["g4"].initial_status == 24
     @test by_name["g5"].initial_power ≈ 0.0
     @test by_name["g5"].initial_status == -24

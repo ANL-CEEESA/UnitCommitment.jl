@@ -66,20 +66,6 @@ using HiGHS, JuMP, UnitCommitment
     @test_obj_coef model[:reserve_shortfall]["s1", "r1", 1] 1000.0
     @test_obj_coef model[:reserve_shortfall]["s1", "r2", 1] 0.0
 
-    # eq_must_run
-    # -------------------------------------------------------------------------
-    @test_constr model[:eq_must_run]["g1", 1] "is_on[g1,1] ≥ 1"
-    @test_constr model[:eq_must_run]["g1", 2] "is_on[g1,2] ≥ 1"
-    @test ("g2", 1) ∉ keys(model[:eq_must_run])
-
-    # eq_commitment_status
-    # -------------------------------------------------------------------------
-    @test_constr model[:eq_commitment_status]["g4", 1] "is_on[g4,1] = 1"
-    @test_constr model[:eq_commitment_status]["g4", 2] "is_on[g4,2] = 0"
-    @test ("g4", 3) ∉ keys(model[:eq_commitment_status])
-    @test_constr model[:eq_commitment_status]["g4", 4] "is_on[g4,4] = 1"
-    @test ("g1", 1) ∉ keys(model[:eq_commitment_status])
-
     # eq_min_uptime
     # -------------------------------------------------------------------------
     # min_uptime=1, initial_status=-100
@@ -270,4 +256,32 @@ using HiGHS, JuMP, UnitCommitment
     # g3: bus=b3, min_power=0
     @test_aff_expr ni["s1", "b3", 1] model[:prod_above]["s1", "g3", 1] 1.0
     @test_aff_expr ni["s1", "b3", 1] model[:is_on]["g3", 1] 0.0
+end
+
+@testfunction components_thermal_build_fixed_status_test begin
+    model =
+        build_model(
+            UnitCommitment.read(
+                fixture("case14/fixed.json"),
+                extensions = [UnitCommitment.PhaseAngleTransmissionExt()],
+            ),
+            optimizer = test_optimizer(),
+            variable_names = true,
+        ).inner
+
+    # eq_must_run: g3 has must_run=true
+    @test_constr model[:eq_must_run]["g3", 1] "is_on[g3,1] ≥ 1"
+    @test_constr model[:eq_must_run]["g3", 2] "is_on[g3,2] ≥ 1"
+    @test ("g1", 1) ∉ keys(model[:eq_must_run])
+
+    # eq_commitment_status: g2=[true,true,true,true], g4=[false,...], g6=[false,null,true,null]
+    @test_constr model[:eq_commitment_status]["g2", 1] "is_on[g2,1] = 1"
+    @test_constr model[:eq_commitment_status]["g2", 4] "is_on[g2,4] = 1"
+    @test_constr model[:eq_commitment_status]["g4", 1] "is_on[g4,1] = 0"
+    @test_constr model[:eq_commitment_status]["g4", 4] "is_on[g4,4] = 0"
+    @test_constr model[:eq_commitment_status]["g6", 1] "is_on[g6,1] = 0"
+    @test ("g6", 2) ∉ keys(model[:eq_commitment_status])
+    @test_constr model[:eq_commitment_status]["g6", 3] "is_on[g6,3] = 1"
+    @test ("g6", 4) ∉ keys(model[:eq_commitment_status])
+    @test ("g1", 1) ∉ keys(model[:eq_commitment_status])
 end

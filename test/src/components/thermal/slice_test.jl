@@ -22,9 +22,9 @@ using UnitCommitment
     @test g1.cost_segments[3].mw == [5.0, 5.0]
     @test g1.cost_segments[3].cost == [40.0, 40.0]
 
-    # g3: must_run=true
+    # g3
     g3 = sc[:thermal_by_name]["g3"]
-    @test g3.must_run == [true, true]
+    @test g3.must_run == [false, false]
     @test g3.min_power == [0.0, 0.0]
     @test g3.max_power == [100.0, 100.0]
 

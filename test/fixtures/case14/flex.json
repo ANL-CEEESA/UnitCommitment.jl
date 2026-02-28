@@ -42,7 +42,6 @@
             "Ramp down limit (MW)": 70.0,
             "Startup limit (MW)": 70.0,
             "Shutdown limit (MW)": 70.0,
-            "Must run?": true,
             "Minimum uptime (h)": 1,
             "Minimum downtime (h)": 1,
             "Maximum daily energy (MWh)": null,

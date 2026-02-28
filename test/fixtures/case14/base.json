@@ -81,9 +81,9 @@
             ],
             "Production cost curve ($)": [
                 0,
-                1113.75,
-                2369.07,
-                3891.54
+                1.0,
+                4.0,
+                8.0
             ],
             "Startup delays (h)": [
                 1,
@@ -91,15 +91,14 @@
                 8
             ],
             "Startup costs ($)": [
-                1000.0,
-                2000.0,
-                3000.0
+                100.0,
+                200.0,
+                300.0
             ],
             "Ramp up limit (MW)": 70.0,
             "Ramp down limit (MW)": 70.0,
             "Startup limit (MW)": 70.0,
             "Shutdown limit (MW)": 70.0,
-            "Must run?": true,
             "Minimum uptime (h)": 1,
             "Minimum downtime (h)": 1,
             "Maximum daily energy (MWh)": null,

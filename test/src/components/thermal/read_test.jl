@@ -60,7 +60,7 @@ using UnitCommitment
     @test unit.ramp_down_limit == 70.0
     @test unit.startup_limit == 70.0
     @test unit.shutdown_limit == 70.0
-    @test unit.must_run == [true for t in 1:4]
+    @test unit.must_run == [false for t in 1:4]
     @test unit.min_power_cost == [0.0 for t in 1:4]
     @test unit.min_uptime == 1
     @test unit.min_downtime == 1
@@ -68,9 +68,9 @@ using UnitCommitment
         @test unit.cost_segments[1].mw[t] ≈ 33
         @test unit.cost_segments[2].mw[t] ≈ 33
         @test unit.cost_segments[3].mw[t] ≈ 34
-        @test unit.cost_segments[1].cost[t] ≈ 33.75
-        @test unit.cost_segments[2].cost[t] ≈ 38.04
-        @test unit.cost_segments[3].cost[t] ≈ 44.77853
+        @test unit.cost_segments[1].cost[t] ≈ 1 / 33 atol = 1e-6
+        @test unit.cost_segments[2].cost[t] ≈ 1 / 11 atol = 1e-6
+        @test unit.cost_segments[3].cost[t] ≈ 2 / 17 atol = 1e-6
     end
     @test length(unit.reserves) == 1
     @test unit.reserves[1].name == "r1"
@@ -89,12 +89,18 @@ end
     @test unit.initial_status == -200
 end
 
-@testfunction components_thermal_read_commitment_status_test begin
-    instance = UnitCommitment.read(fixture("case14-fixed-status.json.gz"))
+@testfunction components_thermal_read_fixed_status_test begin
+    instance = UnitCommitment.read(fixture("case14/fixed.json"))
     sc = instance.scenarios[1]
 
-    @test sc[:thermal][1].commitment_status == [nothing for t in 1:4]
-    @test sc[:thermal][2].commitment_status == [true for t in 1:4]
-    @test sc[:thermal][4].commitment_status == [false for t in 1:4]
-    @test sc[:thermal][6].commitment_status == [false, nothing, true, nothing]
+    # Must run
+    @test sc[:thermal_by_name]["g1"].must_run == [false for t in 1:4]
+    @test sc[:thermal_by_name]["g3"].must_run == [true for t in 1:4]
+
+    # Commitment status
+    @test sc[:thermal_by_name]["g1"].commitment_status == [nothing for t in 1:4]
+    @test sc[:thermal_by_name]["g2"].commitment_status == [true for t in 1:4]
+    @test sc[:thermal_by_name]["g4"].commitment_status == [false for t in 1:4]
+    @test sc[:thermal_by_name]["g6"].commitment_status ==
+          [false, nothing, true, nothing]
 end
