@@ -14,86 +14,101 @@
   </a>
 </p>
 
-**UnitCommitment.jl** (UC.jl) is an optimization package for the Security-Constrained Unit Commitment Problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear the day-ahead electricity markets. The package provides benchmark instances for the problem and Julia/JuMP implementations of state-of-the-art mixed-integer programming formulations.
+**UnitCommitment.jl** (UC.jl) is an extensible Julia/JuMP optimization package for the Security-Constrained Unit Commitment problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear day-ahead electricity markets. The package provides a standardized data format, benchmark instances, state-of-the-art MIP formulations, and a modular architecture in which every grid component is an independent, swappable extension.
 
 ## Package Components
 
-* **Data Format:** The package proposes an extensible and fully-documented JSON-based data format for SCUC, developed in collaboration with Independent System Operators (ISOs), which describes the most important aspects of the problem. The format supports the most common generator characteristics (including ramping, piecewise-linear production cost curves and time-dependent startup costs), as well as operating reserves, price-sensitive loads, transmission networks and contingencies.
-* **Benchmark Instances:** The package provides a diverse collection of large-scale benchmark instances collected from the literature, converted into a common data format, and extended using data-driven methods to make them more challenging and realistic.
-* **Model Implementation**: The package provides Julia/JuMP implementations of state-of-the-art formulations and solution methods for SCUC, including multiple ramping formulations ([ArrCon2000][ArrCon2000], [MorLatRam2013][MorLatRam2013], [DamKucRajAta2016][DamKucRajAta2016], [PanGua2016][PanGua2016]), multiple piecewise-linear costs formulations ([Gar1962][Gar1962], [CarArr2006][CarArr2006], [KnuOstWat2018][KnuOstWat2018]) and contingency screening methods ([XavQiuWanThi2019][XavQiuWanThi2019]). Our goal is to keep these implementations up-to-date as new methods are proposed in the literature.
-* **Benchmark Tools:** The package provides automated benchmark scripts to accurately evaluate the performance impact of proposed code changes.
+* **Data Format.** An extensible, fully-documented JSON-based data format for SCUC, developed in collaboration with Independent System Operators (ISOs). The format covers thermal generators, battery storage, profiled generators, price-sensitive loads, virtual transactions, transmission branches (including contingencies), shunt devices, interface limits, and reserves (spinning, non-spinning, flexiramp). A built-in migration system upgrades instances from older format versions automatically.
+
+* **Benchmark Instances.** Over 19,000 instances spanning 14 to 13,659 buses and 12 to 4,092 generators, collected from the literature and converted into the common format. The ML-augmented MATPOWER instances provide 365 daily variations per network, generated using data-driven methods to make them more challenging and realistic.
+
+* **Modular Architecture.** Every grid component is an independent extension that implements a common lifecycle: data reading, model building, solution extraction, and validation. Eight extensions ship by default; users can replace any of them (e.g., swap DC shift factors for AC power flow) or add new ones (e.g., flexiramp reserves) at read time, without modifying source code.
+
+* **Formulations.** State-of-the-art MIP formulations are provided, including multiple ramping formulations ([ArrCon2000], [MorLatRam2013], [DamKucRajAta2016], [PanGua2016]), piecewise-linear cost formulations ([KnuOstWat2018]), and four transmission models: copperplate, DC shift factors with lazy N-1 contingency screening ([XavQiuWanThi2019]), DC phase angles, and full nonlinear AC power flow in rectangular or polar form.
+
+* **Solution Methods.** Problems can be solved as a single MILP, decomposed over a sliding time window for long horizons, or solved under uncertainty via two-stage stochastic programming with progressive hedging and MPI parallelization.
+
+* **Market Clearing and Pricing.** Day-ahead and real-time two-settlement market simulation is supported, with commitment status mapping, sub-hourly time alignment, and chained initial conditions across real-time periods. Locational marginal prices are computed automatically and decomposed into energy and congestion components.
+
+* **Validation.** An independent feasibility checker recomputes every operational constraint — production limits, ramp rates, minimum up/downtime, reserve requirements, energy balance, branch flows — from the instance data alone, without inspecting the optimization model. This catches formulation bugs and can verify solutions produced by external solvers. Both DC and AC implementations are cross-validated against [PowerModels.jl](https://github.com/lanl-ansi/PowerModels.jl) on standard IEEE test systems.
 
 [ArrCon2000]: https://doi.org/10.1109/59.871739
-[CarArr2006]: https://doi.org/10.1109/TPWRS.2006.876672
 [DamKucRajAta2016]: https://doi.org/10.1007/s10107-015-0919-9
-[Gar1962]: https://doi.org/10.1109/AIEEPAS.1962.4501405
 [KnuOstWat2018]: https://doi.org/10.1109/TPWRS.2017.2783850
 [MorLatRam2013]: https://doi.org/10.1109/TPWRS.2013.2251373
 [PanGua2016]: https://doi.org/10.1287/opre.2016.1520
 [XavQiuWanThi2019]: https://doi.org/10.1109/TPWRS.2019.2892620
 
-## Sample Usage
+## Quick Start
 
 ```julia
-using HiGHS
-using JuMP
-using UnitCommitment
+using UnitCommitment, HiGHS
 
+# Read a benchmark instance (automatically downloaded and cached)
+instance = UnitCommitment.read_benchmark("matpower/case118/2017-02-01")
+
+# Build and solve the optimization model
+model = build_model(instance, optimizer = HiGHS.Optimizer)
+optimize!(model)
+
+# Extract and export the solution
+sol = solution(model)
+UnitCommitment.write("sol.json", solution)
+```
+
+## Customization
+
+Extensions are passed at read time to replace defaults or add new components:
+
+```julia
 import UnitCommitment:
-    Formulation,
-    KnuOstWat2018,
-    MorLatRam2013,
-    ShiftFactorsFormulation
+    ACTransmissionExt,
+    ACRectangular,
+    ThermalExt,
+    DamKucRajAta2016,
+    WanHob2016
 
-# Read benchmark instance
+# Use AC power flow instead of the default DC shift factors
 instance = UnitCommitment.read_benchmark(
     "matpower/case118/2017-02-01",
+    extensions = [ACTransmissionExt(formulation = ACRectangular())],
 )
 
-# Construct model (using state-of-the-art defaults)
-model = UnitCommitment.build_model(
-    instance = instance,
-    optimizer = HiGHS.Optimizer,
+# Customize thermal formulations and add flexiramp reserves
+instance = UnitCommitment.read(
+    "my_instance.json",
+    extensions = [
+        ThermalExt(ramping = DamKucRajAta2016.Ramping()),
+        WanHob2016.FlexirampExt(),
+    ],
 )
+```
 
-# Construct model (using customized formulation)
-model = UnitCommitment.build_model(
-    instance = instance,
-    optimizer = HiGHS.Optimizer,
-    formulation = Formulation(
-        pwl_costs = KnuOstWat2018.PwlCosts(),
-        ramping = MorLatRam2013.Ramping(),
-        startup_costs = MorLatRam2013.StartupCosts(),
-        transmission = ShiftFactorsFormulation(
-            isf_cutoff = 0.005,
-            lodf_cutoff = 0.001,
-        ),
-    ),
-)
+The underlying JuMP model can also be modified directly before solving:
 
-# Modify the model (e.g. add custom constraints)
+```julia
+using JuMP
+
+model = UnitCommitment.build_model(instance, optimizer = HiGHS.Optimizer)
+
 @constraint(
-    model,
-    model[:is_on]["g3", 1] + model[:is_on]["g4", 1] <= 1,
+    model.inner,
+    model.inner[:is_on]["g3", 1] + model.inner[:is_on]["g4", 1] <= 1,
 )
 
-# Solve model
 UnitCommitment.optimize!(model)
-
-# Extract solution
-solution = UnitCommitment.solution(model)
-UnitCommitment.write("/tmp/output.json", solution)
 ```
 
 ## Documentation
 
-See official documentation at: https://anl-ceeesa.github.io/UnitCommitment.jl/
+Full documentation: https://anl-ceeesa.github.io/UnitCommitment.jl/
 
 ## Authors
 * **Alinson S. Xavier** (Argonne National Laboratory)
 * **Aleksandr M. Kazachkov** (University of Florida)
 * **Ogün Yurdakul** (Technische Universität Berlin)
 * **Jun He** (Purdue University)
+* **Weihang Ren** (University of Florida)
 * **Feng Qiu** (Argonne National Laboratory)
 
 ## Acknowledgments
@@ -116,7 +131,7 @@ If you use the instances, we additionally request that you cite the original sou
 
 ```text
 UnitCommitment.jl: A Julia/JuMP Optimization Package for Security-Constrained Unit Commitment
-Copyright © 2020-2024, UChicago Argonne, LLC. All Rights Reserved.
+Copyright © 2020-2026, UChicago Argonne, LLC. All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted
 provided that the following conditions are met:
@@ -140,4 +155,3 @@ THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING N
 OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ```
-
