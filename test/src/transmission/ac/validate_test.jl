@@ -69,27 +69,60 @@ function _validate_pm_case(case_name::String)
     ) == 0
 end
 
-function _warm_start!(model, case_name, ::UnitCommitment.ACPolar)
-    pm_sol = JSON.parsefile(fixture("powermodels/$case_name/sol_ac_opf.json"))
-    for (bus_id, bus_data) in pm_sol["solution"]["bus"]
+function _warm_start!(model, pm_sol, ::UnitCommitment.ACPolar)
+    for (bus_id, bus_data) in pm_sol["bus"]
         set_start_value(model.inner[:vm]["s1", "b$bus_id", 1], bus_data["vm"])
         set_start_value(model.inner[:va]["s1", "b$bus_id", 1], bus_data["va"])
     end
+    return _warm_start_flows!(model, pm_sol)
 end
 
-function _warm_start!(model, case_name, ::UnitCommitment.ACRectangular)
-    pm_sol = JSON.parsefile(fixture("powermodels/$case_name/sol_ac_opf.json"))
-    for (bus_id, bus_data) in pm_sol["solution"]["bus"]
+function _warm_start!(model, pm_sol, ::UnitCommitment.ACRectangular)
+    for (bus_id, bus_data) in pm_sol["bus"]
         vm, va = bus_data["vm"], bus_data["va"]
         set_start_value(model.inner[:vr]["s1", "b$bus_id", 1], vm * cos(va))
         set_start_value(model.inner[:vi]["s1", "b$bus_id", 1], vm * sin(va))
     end
+    return _warm_start_flows!(model, pm_sol)
 end
 
-function _solve_ac_case(
+function _warm_start_flows!(model, pm_sol)
+    baseMVA = pm_sol["baseMVA"]
+    for (br_id, br_data) in pm_sol["branch"]
+        name = "l$br_id"
+        set_start_value(
+            model.inner[:pf]["s1", name, 1],
+            br_data["pf"] * baseMVA,
+        )
+        set_start_value(
+            model.inner[:qf]["s1", name, 1],
+            br_data["qf"] * baseMVA,
+        )
+        set_start_value(
+            model.inner[:pt]["s1", name, 1],
+            br_data["pt"] * baseMVA,
+        )
+        set_start_value(
+            model.inner[:qt]["s1", name, 1],
+            br_data["qt"] * baseMVA,
+        )
+    end
+end
+
+function _validate_ac_opf(
     case_name::String;
     formulation = UnitCommitment.ACRectangular(),
+    multinetwork = false,
+    atol_obj = 10.0,
+    atol_mw = 1.0,
+    atol_mvar = 1.0,
+    atol_vm = 0.005,
+    atol_rad = 0.005,
 )
+    pm = JSON.parsefile(fixture("powermodels/$case_name/sol_ac_opf.json"))
+    pm_sol = multinetwork ? pm["solution"]["nw"]["1"] : pm["solution"]
+    baseMVA = pm_sol["baseMVA"]
+
     instance = UnitCommitment.read(
         fixture("powermodels/$case_name/converted.json"),
         extensions = [
@@ -98,8 +131,62 @@ function _solve_ac_case(
         ],
     )
     model = build_model(instance, optimizer = _nlp_optimizer())
-    _warm_start!(model, case_name, formulation)
-    return UnitCommitment.optimize!(model)
+    _warm_start!(model, pm_sol, formulation)
+    UnitCommitment.optimize!(model)
+    sol = solution(model)
+
+    # Objective
+    @test abs(objective_value(model.inner) - pm["objective"]) < atol_obj
+
+    # Generator active dispatch
+    for (gen_id, gen_data) in pm_sol["gen"]
+        uc_name = "g$gen_id"
+        pm_pg_mw = gen_data["pg"] * baseMVA
+        uc_pg_mw = sol["Thermal: Production (MW)"][uc_name][1]
+        @test abs(uc_pg_mw - pm_pg_mw) < atol_mw
+    end
+
+    # Branch flows (active and reactive, from and to)
+    for (br_id, br_data) in pm_sol["branch"]
+        uc_name = "l$br_id"
+        @test abs(
+            sol["Branch: Base active flow from-end (MW)"][uc_name][1] -
+            br_data["pf"] * baseMVA,
+        ) < atol_mw
+        @test abs(
+            sol["Branch: Base reactive flow from-end (MVAr)"][uc_name][1] -
+            br_data["qf"] * baseMVA,
+        ) < atol_mvar
+        @test abs(
+            sol["Branch: Base active flow to-end (MW)"][uc_name][1] -
+            br_data["pt"] * baseMVA,
+        ) < atol_mw
+        @test abs(
+            sol["Branch: Base reactive flow to-end (MVAr)"][uc_name][1] -
+            br_data["qt"] * baseMVA,
+        ) < atol_mvar
+    end
+
+    # Bus voltages (magnitude and angle)
+    for (bus_id, bus_data) in pm_sol["bus"]
+        uc_name = "b$bus_id"
+        @test abs(
+            sol["Bus: Voltage magnitude (p.u.)"][uc_name][1] - bus_data["vm"],
+        ) < atol_vm
+        @test abs(
+            sol["Bus: Voltage angle (rad)"][uc_name][1] - bus_data["va"],
+        ) < atol_rad
+    end
+
+    # Zero overflow
+    for (_, overflow_ts) in sol["Branch: Overflow (MW)"]
+        @test all(v -> abs(v) < atol_mw, overflow_ts)
+    end
+
+    # Zero curtailment
+    for (_, curtail_ts) in sol["Bus: Load curtail (MW)"]
+        @test all(v -> abs(v) < atol_mw, curtail_ts)
+    end
 end
 
 # --- Validation tests (PowerModels reference solutions) ---
@@ -120,20 +207,20 @@ end
     _validate_pm_case("case5_strg")
 end
 
-# --- Solve tests (build, solve, validate) ---
+# --- Solve + compare tests (against PowerModels AC-OPF) ---
 
 @testfunction transmission_ac_solve_case5_polar_test begin
-    _solve_ac_case("case5", formulation = UnitCommitment.ACPolar())
+    _validate_ac_opf("case5", formulation = UnitCommitment.ACPolar())
 end
 
 @testfunction transmission_ac_solve_case5_rect_test begin
-    _solve_ac_case("case5")
+    _validate_ac_opf("case5")
 end
 
-@testfunction transmission_ac_solve_case14_polar_test begin
-    _solve_ac_case("case14", formulation = UnitCommitment.ACPolar())
+@testfunction transmission_ac_solve_case14_pwl_polar_test begin
+    _validate_ac_opf("case14_pwl", formulation = UnitCommitment.ACPolar())
 end
 
-@testfunction transmission_ac_solve_case14_rect_test begin
-    _solve_ac_case("case14")
+@testfunction transmission_ac_solve_case14_pwl_rect_test begin
+    _validate_ac_opf("case14_pwl")
 end
