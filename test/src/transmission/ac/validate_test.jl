@@ -97,7 +97,7 @@ function _solve_ac_case(
             UnitCommitment.NoLMP(),
         ],
     )
-    model = build_model(instance, optimizer = _minlp_optimizer())
+    model = build_model(instance, optimizer = _nlp_optimizer())
     _warm_start!(model, case_name, formulation)
     return UnitCommitment.optimize!(model)
 end
@@ -122,18 +122,18 @@ end
 
 # --- Solve tests (build, solve, validate) ---
 
-# @testfunction transmission_ac_solve_case5_polar_test begin
-#     _solve_ac_case("case5", formulation = UnitCommitment.ACPolar())
-# end
+@testfunction transmission_ac_solve_case5_polar_test begin
+    _solve_ac_case("case5", formulation = UnitCommitment.ACPolar())
+end
 
-# @testfunction transmission_ac_solve_case5_rect_test begin
-#     _solve_ac_case("case5")
-# end
+@testfunction transmission_ac_solve_case5_rect_test begin
+    _solve_ac_case("case5")
+end
 
-# @testfunction transmission_ac_solve_case14_polar_test begin
-#     _solve_ac_case("case14", formulation = UnitCommitment.ACPolar())
-# end
+@testfunction transmission_ac_solve_case14_polar_test begin
+    _solve_ac_case("case14", formulation = UnitCommitment.ACPolar())
+end
 
-# @testfunction transmission_ac_solve_case14_rect_test begin
-#     _solve_ac_case("case14")
-# end
+@testfunction transmission_ac_solve_case14_rect_test begin
+    _solve_ac_case("case14")
+end

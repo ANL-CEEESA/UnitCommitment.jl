@@ -32,6 +32,14 @@ function _minlp_optimizer()
     )
 end
 
+function _nlp_optimizer()
+    return optimizer_with_attributes(
+        Ipopt.Optimizer,
+        "print_level" => 0,
+        "sb" => "yes",
+    )
+end
+
 """
     @testfunction name begin ... end
 

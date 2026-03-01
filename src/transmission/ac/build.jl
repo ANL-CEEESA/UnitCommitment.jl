@@ -9,7 +9,6 @@ function build_model(
     instance::UnitCommitmentInstance,
     ext::ACTransmissionExt,
 )::Nothing
-    build_model(model, instance, CopperPlateTransmissionExt())
     _add_ac_voltage_vars!(model, instance, ext.formulation)
     _add_ac_flow_vars!(model, instance)
     _add_ac_shunt_vars!(model, instance, ext.formulation)

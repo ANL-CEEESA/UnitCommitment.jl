@@ -103,10 +103,6 @@ using HiGHS, JuMP, UnitCommitment
     # b3: target of l2, l3
     @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] - pt[s1,l2,1] - pt[s1,l3,1] = 0"
     @test_constr model[:eq_reactive_nodal_balance]["s1", "b3", 1] "qi[s1,b3,1] - qt[s1,l2,1] - qt[s1,l3,1] = 0"
-
-    # Power balance (delegated to CopperPlate)
-    # -------------------------------------------------------------------------
-    @test ("s1", 1) in keys(model[:eq_power_balance])
 end
 
 @testfunction transmission_ac_polar_build_test begin
@@ -208,8 +204,4 @@ end
     # b3: target of l2, l3
     @test_constr model[:eq_nodal_balance]["s1", "b3", 1] "ni[s1,b3,1] - pt[s1,l2,1] - pt[s1,l3,1] = 0"
     @test_constr model[:eq_reactive_nodal_balance]["s1", "b3", 1] "qi[s1,b3,1] - qt[s1,l2,1] - qt[s1,l3,1] = 0"
-
-    # Power balance (delegated to CopperPlate)
-    # -------------------------------------------------------------------------
-    @test ("s1", 1) in keys(model[:eq_power_balance])
 end
