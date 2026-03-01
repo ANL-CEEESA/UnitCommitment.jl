@@ -23,6 +23,65 @@ function build_model(
     return
 end
 
+function _is_commitment_fixed(g::ThermalUnit, T::Int)::Bool
+    all(g.must_run) && return true
+    all(cs !== nothing for cs in g.commitment_status) && return true
+    return false
+end
+
+function _compute_fixed_commitment(g::ThermalUnit, T::Int)
+    # 1. Compute is_on values
+    is_on_vals = Vector{Float64}(undef, T)
+    for t in 1:T
+        if g.commitment_status[t] !== nothing
+            is_on_vals[t] = g.commitment_status[t] ? 1.0 : 0.0
+        else
+            is_on_vals[t] = 1.0   # must_run case
+        end
+    end
+
+    # 2. Compute switch_on and switch_off from transitions
+    switch_on_vals = zeros(T)
+    switch_off_vals = zeros(T + 1)
+    prev = _is_initially_on(g)
+    for t in 1:T
+        if is_on_vals[t] == 1.0 && prev == 0.0
+            switch_on_vals[t] = 1.0
+        elseif is_on_vals[t] == 0.0 && prev == 1.0
+            switch_off_vals[t] = 1.0
+        end
+        prev = is_on_vals[t]
+    end
+
+    # 3. Compute startup categories
+    S = length(g.startup_categories)
+    startup_vals = Dict{Tuple{Int,Int},Float64}()
+    for t in 1:T, s in 1:S
+        startup_vals[(t, s)] = 0.0
+    end
+    for t in 1:T
+        switch_on_vals[t] == 1.0 || continue
+        downtime = 0
+        for k in (t-1):-1:1
+            is_on_vals[k] == 0.0 || break
+            downtime += 1
+        end
+        if downtime == t - 1 && g.initial_status < 0
+            downtime -= g.initial_status
+        end
+        chosen = S
+        for s in 1:(S-1)
+            if downtime < g.startup_categories[s+1].delay
+                chosen = s
+                break
+            end
+        end
+        startup_vals[(t, chosen)] = 1.0
+    end
+
+    return is_on_vals, switch_on_vals, switch_off_vals, startup_vals
+end
+
 function _add_thermal_vars!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
@@ -38,18 +97,35 @@ function _add_thermal_vars!(
     reserve = _init(model, :reserve)
     reserve_shortfall = _init(model, :reserve_shortfall)
 
+    # Precompute fixed commitment values
+    fixed = Dict{String,Tuple}()
+    for g in instance.scenarios[1][:thermal]
+        if _is_commitment_fixed(g, T)
+            fixed[g.name] = _compute_fixed_commitment(g, T)
+        end
+    end
+
     for t in 1:T
         # First stage
         for g in instance.scenarios[1][:thermal]
-            # Status variables
-            is_on[g.name, t] = @variable(model, binary = true)
-            switch_on[g.name, t] = @variable(model, binary = true)
-            switch_off[g.name, t] = @variable(model, binary = true)
-            switch_off[g.name, T+1] = 0.0
-
-            # Startup
-            for s in 1:length(g.startup_categories)
-                startup[g.name, t, s] = @variable(model, binary = true)
+            if haskey(fixed, g.name)
+                is_on_v, switch_on_v, switch_off_v, startup_v = fixed[g.name]
+                is_on[g.name, t] = is_on_v[t]
+                switch_on[g.name, t] = switch_on_v[t]
+                switch_off[g.name, t] = switch_off_v[t]
+                switch_off[g.name, T+1] = 0.0
+                for s in 1:length(g.startup_categories)
+                    startup[g.name, t, s] = startup_v[(t, s)]
+                end
+            else
+                # Status variables
+                is_on[g.name, t] = @variable(model, binary = true)
+                switch_on[g.name, t] = @variable(model, binary = true)
+                switch_off[g.name, t] = @variable(model, binary = true)
+                switch_off[g.name, T+1] = 0.0
+                for s in 1:length(g.startup_categories)
+                    startup[g.name, t, s] = @variable(model, binary = true)
+                end
             end
 
             # Investment

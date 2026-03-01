@@ -263,25 +263,67 @@ end
         build_model(
             UnitCommitment.read(
                 fixture("case14/fixed.json"),
-                extensions = [UnitCommitment.PhaseAngleTransmissionExt()],
+                extensions = [UnitCommitment.ShiftFactorsTransmissionExt()],
             ),
             optimizer = test_optimizer(),
             variable_names = true,
         ).inner
 
-    # eq_must_run: g3 has must_run=true
-    @test_constr model[:eq_must_run]["g3", 1] "is_on[g3,1] ≥ 1"
-    @test_constr model[:eq_must_run]["g3", 2] "is_on[g3,2] ≥ 1"
-    @test ("g1", 1) ∉ keys(model[:eq_must_run])
+    # Fixed generators: Float64 constants
+    # ---------------------------------------------------------------------
+    # g2: commitment_status=[1,1,1,1], initial_status=-8
+    @test model[:is_on]["g2", 1] === 1.0
+    @test model[:is_on]["g2", 4] === 1.0
+    @test model[:switch_on]["g2", 1] === 1.0
+    @test model[:switch_on]["g2", 2] === 0.0
+    @test model[:switch_off]["g2", 1] === 0.0
+    @test model[:switch_off]["g2", 5] === 0.0
+    @test model[:startup]["g2", 1, 1] === 0.0
+    @test model[:startup]["g2", 1, 2] === 1.0
 
-    # eq_commitment_status: g2=[true,true,true,true], g4=[false,...], g6=[false,null,true,null]
-    @test_constr model[:eq_commitment_status]["g2", 1] "is_on[g2,1] = 1"
-    @test_constr model[:eq_commitment_status]["g2", 4] "is_on[g2,4] = 1"
-    @test_constr model[:eq_commitment_status]["g4", 1] "is_on[g4,1] = 0"
-    @test_constr model[:eq_commitment_status]["g4", 4] "is_on[g4,4] = 0"
-    @test_constr model[:eq_commitment_status]["g6", 1] "is_on[g6,1] = 0"
-    @test ("g6", 2) ∉ keys(model[:eq_commitment_status])
-    @test_constr model[:eq_commitment_status]["g6", 3] "is_on[g6,3] = 1"
-    @test ("g6", 4) ∉ keys(model[:eq_commitment_status])
-    @test ("g1", 1) ∉ keys(model[:eq_commitment_status])
+    # g3: must_run=true, initial_status=-6
+    @test model[:is_on]["g3", 1] === 1.0
+    @test model[:switch_on]["g3", 1] === 1.0
+    @test model[:startup]["g3", 1, 1] === 0.0
+    @test model[:startup]["g3", 1, 2] === 1.0
+    @test model[:startup]["g3", 1, 3] === 0.0
+
+    # g4: commitment_status=[0,0,0,0], initial_status=-100
+    @test model[:is_on]["g4", 1] === 0.0
+    @test model[:is_on]["g4", 4] === 0.0
+    @test model[:switch_on]["g4", 1] === 0.0
+    @test model[:switch_off]["g4", 1] === 0.0
+
+    # g5: commitment_status=[1,1,0,0], initial_status=-100
+    @test model[:is_on]["g5", 1] === 1.0
+    @test model[:is_on]["g5", 2] === 1.0
+    @test model[:is_on]["g5", 3] === 0.0
+    @test model[:is_on]["g5", 4] === 0.0
+    @test model[:switch_on]["g5", 1] === 1.0
+    @test model[:switch_on]["g5", 3] === 0.0
+    @test model[:switch_off]["g5", 3] === 1.0
+    @test model[:switch_off]["g5", 1] === 0.0
+
+    # Non-fixed generators: binary variables
+    # ---------------------------------------------------------------------
+    # g1: no must_run, no commitment_status
+    @test_binary_var model[:is_on]["g1", 1]
+    @test_binary_var model[:switch_on]["g1", 1]
+    @test_binary_var model[:switch_off]["g1", 1]
+    @test_binary_var model[:startup]["g1", 1, 1]
+
+    # g6: partial commitment_status
+    @test_binary_var model[:is_on]["g6", 1]
+    @test_binary_var model[:is_on]["g6", 2]
+
+    # eq_prod_limit
+    # ---------------------------------------------------------------------
+    # g2: is_on=1, capacity=140
+    @test_constr model[:eq_prod_limit]["s1", "g2", 1] "prod_above[s1,g2,1] + reserve[s1,r1,g2,1] ≤ 140"
+
+    # g4: is_on=0, capacity=67
+    @test_constr model[:eq_prod_limit]["s1", "g4", 1] "prod_above[s1,g4,1] + reserve[s1,r1,g4,1] ≤ 0"
+
+    # g6: not fixed
+    @test_constr model[:eq_prod_limit]["s1", "g6", 1] "prod_above[s1,g6,1] + reserve[s1,r1,g6,1] ≤ 0"
 end

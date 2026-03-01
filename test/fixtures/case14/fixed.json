@@ -148,7 +148,8 @@
             "Initial power (MW)": 0,
             "Reserve eligibility": [
                 "r1"
-            ]
+            ],
+            "Commitment status": [true, true, false, false]
         },
         "g6": {
             "Bus": "b8",
