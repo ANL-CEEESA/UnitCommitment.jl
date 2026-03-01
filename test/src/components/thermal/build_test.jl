@@ -316,6 +316,43 @@ end
     @test_binary_var model[:is_on]["g6", 1]
     @test_binary_var model[:is_on]["g6", 2]
 
+    # Status constraints skipped for fixed generators (g2, g3, g4, g5)
+    # ---------------------------------------------------------------------
+    for gn in ["g2", "g3", "g4", "g5"]
+        for t in 1:4
+            @test (gn, t) ∉ keys(model[:eq_binary_link])
+            @test (gn, t) ∉ keys(model[:eq_min_uptime])
+            @test (gn, t) ∉ keys(model[:eq_min_downtime])
+            @test (gn, t) ∉ keys(model[:eq_switch_on_off])
+            @test (gn, t) ∉ keys(model[:eq_must_run])
+            @test (gn, t) ∉ keys(model[:eq_commitment_status])
+        end
+        @test (gn, 0) ∉ keys(model[:eq_min_uptime])
+        @test (gn, 0) ∉ keys(model[:eq_min_downtime])
+    end
+
+    # Status constraints still present for non-fixed generators (g1, g6)
+    # ---------------------------------------------------------------------
+    for gn in ["g1", "g6"]
+        @test (gn, 1) ∈ keys(model[:eq_binary_link])
+        @test (gn, 1) ∈ keys(model[:eq_min_uptime])
+        @test (gn, 1) ∈ keys(model[:eq_min_downtime])
+        @test (gn, 1) ∈ keys(model[:eq_switch_on_off])
+    end
+
+    # Startup constraints skipped for fixed generators (g2, g3, g4, g5)
+    # ---------------------------------------------------------------------
+    for gn in ["g2", "g3", "g4", "g5"]
+        for t in 1:4
+            @test (gn, t) ∉ keys(model[:eq_startup_choose])
+        end
+    end
+
+    # Startup constraints still present for non-fixed generators (g1, g6)
+    # ---------------------------------------------------------------------
+    @test ("g1", 1) ∈ keys(model[:eq_startup_choose])
+    @test ("g6", 1) ∈ keys(model[:eq_startup_choose])
+
     # eq_prod_limit
     # ---------------------------------------------------------------------
     # g2: is_on=1, capacity=140
@@ -326,4 +363,39 @@ end
 
     # g6: not fixed
     @test_constr model[:eq_prod_limit]["s1", "g6", 1] "prod_above[s1,g6,1] + reserve[s1,r1,g6,1] ≤ 0"
+
+    # Slimits skipped for no-transition generators (g4: always off)
+    # ---------------------------------------------------------------------
+    for t in 1:4
+        @test ("s1", "g4", t) ∉ keys(model[:eq_slimit_b])
+        @test ("s1", "g4", t) ∉ keys(model[:eq_slimit_c])
+    end
+    @test ("s1", "g4") ∉ keys(model[:eq_slimit_init])
+
+    # Slimits present for fixed generators with transitions
+    # ---------------------------------------------------------------------
+    # g2: min_uptime=4 > 1, uses eq_slimit_a
+    @test ("s1", "g2", 1) ∈ keys(model[:eq_slimit_a])
+
+    # g5: min_uptime=1, uses eq_slimit_b/c
+    @test ("s1", "g5", 1) ∈ keys(model[:eq_slimit_b])
+    @test ("s1", "g5", 1) ∈ keys(model[:eq_slimit_c])
+
+    # KnuOstWat2018 PWL tightening skipped for no-transition generators
+    # ---------------------------------------------------------------------
+    for t in 1:4, k in 1:2
+        @test ("s1", "g4", t, k) ∉ keys(model[:eq_segprod_limit_b])
+    end
+    for t in 1:3, k in 1:2
+        @test ("s1", "g4", t, k) ∉ keys(model[:eq_segprod_limit_c])
+    end
+
+    # KnuOstWat2018 PWL tightening present for fixed generators with transitions
+    # ---------------------------------------------------------------------
+    # g2: min_uptime=4 > 1, uses eq_segprod_limit_a
+    @test ("s1", "g2", 1, 1) ∈ keys(model[:eq_segprod_limit_a])
+
+    # g5: min_uptime=1, uses eq_segprod_limit_b/c
+    @test ("s1", "g5", 1, 1) ∈ keys(model[:eq_segprod_limit_b])
+    @test ("s1", "g5", 1, 1) ∈ keys(model[:eq_segprod_limit_c])
 end

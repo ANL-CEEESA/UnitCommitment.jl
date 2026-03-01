@@ -22,6 +22,7 @@ function _add_thermal_constr_pwl_costs!(
 
     # Tighten bounds on segprod based on startup/shutdown limits
     for sc in instance.scenarios, g in sc[:thermal]
+        _has_no_commitment_transitions(g) && continue
         gn = g.name
         K = length(g.cost_segments)
         for t in 1:T, k in 1:K

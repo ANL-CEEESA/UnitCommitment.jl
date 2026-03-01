@@ -23,10 +23,17 @@ function build_model(
     return
 end
 
-function _is_commitment_fixed(g::ThermalUnit, T::Int)::Bool
+function _is_commitment_fixed(g::ThermalUnit)::Bool
     all(g.must_run) && return true
     all(cs !== nothing for cs in g.commitment_status) && return true
     return false
+end
+
+function _has_no_commitment_transitions(g::ThermalUnit)::Bool
+    _is_commitment_fixed(g) || return false
+    T = length(g.must_run)
+    _, sw_on, sw_off, _ = _compute_fixed_commitment(g, T)
+    return all(==(0.0), sw_on) && all(==(0.0), sw_off)
 end
 
 function _compute_fixed_commitment(g::ThermalUnit, T::Int)
@@ -100,7 +107,7 @@ function _add_thermal_vars!(
     # Precompute fixed commitment values
     fixed = Dict{String,Tuple}()
     for g in instance.scenarios[1][:thermal]
-        if _is_commitment_fixed(g, T)
+        if _is_commitment_fixed(g)
             fixed[g.name] = _compute_fixed_commitment(g, T)
         end
     end
@@ -325,6 +332,7 @@ function _add_thermal_constr_status!(
     eq_switch_on_off = _init(model, :eq_switch_on_off)
 
     for t in 1:T, g in instance.scenarios[1][:thermal]
+        _is_commitment_fixed(g) && continue
         # Must-run
         if g.must_run[t]
             eq_must_run[g.name, t] = @constraint(model, is_on[g.name, t] >= 1)
@@ -411,6 +419,7 @@ function _add_thermal_constr_startup!(
 
     for t in 1:T
         for g in instance.scenarios[1][:thermal]
+            _is_commitment_fixed(g) && continue
             # If unit is switching on, we must choose a startup category
             S = length(g.startup_categories)
             eq_startup_choose[g.name, t] = @constraint(
