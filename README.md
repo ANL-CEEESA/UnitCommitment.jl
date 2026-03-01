@@ -1,8 +1,5 @@
 <h1 align="center">UnitCommitment.jl</h1>
 <p align="center">
-  <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/actions?query=workflow%3ATest+branch%3Adev">
-    <img src="https://github.com/iSoron/UnitCommitment.jl/workflows/Tests/badge.svg"></img>
-  </a>
   <a href="https://doi.org/10.5281/zenodo.4269874">
     <img src="https://zenodo.org/badge/doi/10.5281/zenodo.4269874.svg" alt="DOI"></img>
   </a>
