@@ -60,7 +60,11 @@ function _add_ac_flow_vars!(
         pt[sc.name, l.name, t] = @variable(model)
         qf[sc.name, l.name, t] = @variable(model)
         qt[sc.name, l.name, t] = @variable(model)
-        overflow[sc.name, l.name, t] = @variable(model, lower_bound = 0)
+        if l.flow_limit_penalty[t] < 0
+            overflow[sc.name, l.name, t] = 0.0
+        else
+            overflow[sc.name, l.name, t] = @variable(model, lower_bound = 0)
+        end
     end
     return
 end
@@ -124,6 +128,7 @@ function _add_ac_obj!(
     overflow = model[:overflow]
 
     for sc in instance.scenarios, l in sc[:branches], t in 1:T
+        l.flow_limit_penalty[t] < 0 && continue
         add_to_expression!(
             model[:obj],
             overflow[sc.name, l.name, t],

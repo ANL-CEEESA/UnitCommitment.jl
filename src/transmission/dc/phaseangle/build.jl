@@ -99,7 +99,12 @@ function _add_dc_vars!(
 
     for sc in instance.scenarios, branch in sc[:branches], t in 1:T
         # Overflow variable for soft flow limit constraints
-        overflow[sc.name, branch.name, t] = @variable(model, lower_bound = 0)
+        if branch.flow_limit_penalty[t] < 0
+            overflow[sc.name, branch.name, t] = 0.0
+        else
+            overflow[sc.name, branch.name, t] =
+                @variable(model, lower_bound = 0)
+        end
 
         # Flow variable
         flow[sc.name, branch.name, t] = @variable(model)

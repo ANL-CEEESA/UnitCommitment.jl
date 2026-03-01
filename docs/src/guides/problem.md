@@ -824,6 +824,10 @@ feasibility when there is insufficient generation or transmission capacity.
 \min(0, M^\text{load}_{sbt}) \leq y^\text{curtail}_{sbt} \leq \max(0, M^\text{load}_{sbt})
 ```
 
+!!! note
+
+    When the power balance penalty $Z^\text{curtail}_{st}$ is negative, the curtailment variable is eliminated ($y^\text{curtail}_{sbt} = 0$), making the net injection constraint a hard constraint.
+
 - Net injection definition (`eq_net_injection[s,b,t]`). The net injection
   variable equals the sum of all component contributions to the bus:
 
@@ -986,6 +990,10 @@ y^\text{flow}_{slt} & \geq B_{l} (\theta_{sbt} - \theta_{sb't}) - M (1 - x^{\tex
 -M^\text{limit}_{slt} x^{\text{invest}}_{lt} - y^\text{overflow}_{slt} \leq y^\text{flow}_{slt} \leq M^\text{limit}_{slt} x^{\text{invest}}_{lt} + y^\text{overflow}_{slt}
 ```
 
+!!! note
+
+    When the overflow penalty $Z^\text{overflow}_{slt}$ is negative, the overflow variable is eliminated ($y^\text{overflow}_{slt} = 0$), making the flow limit constraints hard constraints.
+
 - Nodal power balance (`eq_nodal_balance[s,b,t]`). At each bus, the net
   injection minus shunt losses must equal net incoming flow. Under the DC
   approximation, shunt conductance losses are
@@ -1069,3 +1077,7 @@ y^{\text{ifc-flow}}_{sIt} \leq M^{\text{ifc-ub}}_{It} + y^{\text{ifc-overflow}}_
 ```math
 y^{\text{ifc-flow}}_{sIt} \geq M^{\text{ifc-lb}}_{It} - y^{\text{ifc-overflow}}_{sIt}
 ```
+
+!!! note
+
+    When the interface penalty $Z^{\text{ifc-penalty}}_{It}$ is negative, the overflow variable is eliminated ($y^{\text{ifc-overflow}}_{sIt} = 0$), making the interface flow limit constraints hard constraints.

@@ -146,10 +146,11 @@ function _add_thermal_vars!(
         for sc in instance.scenarios
             # Spinning reserve shortfall
             for r in sc[:reserves]
-                reserve_shortfall[sc.name, r.name, t] =
-                    @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
-                    set_upper_bound(reserve_shortfall[sc.name, r.name, t], 0.0)
+                    reserve_shortfall[sc.name, r.name, t] = 0.0
+                else
+                    reserve_shortfall[sc.name, r.name, t] =
+                        @variable(model, lower_bound = 0)
                 end
             end
 

@@ -29,6 +29,7 @@ function _add_dc_obj!(
 
     # Overflow penalty
     for sc in instance.scenarios, branch in sc[:branches], t in 1:T
+        branch.flow_limit_penalty[t] < 0 && continue
         add_to_expression!(
             model[:obj],
             overflow[sc.name, branch.name, t],

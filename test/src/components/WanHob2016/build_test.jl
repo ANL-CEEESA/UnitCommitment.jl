@@ -41,18 +41,13 @@ using HiGHS, JuMP, UnitCommitment
 
     @test_continuous_var model[:upflexiramp_shortfall]["s1", "r1", 1] lb = 0
     @test_continuous_var model[:dwflexiramp_shortfall]["s1", "r1", 1] lb = 0
-    @test_continuous_var model[:upflexiramp_shortfall]["s1", "r2", 1] lb = 0 ub =
-        0
-    @test_continuous_var model[:dwflexiramp_shortfall]["s1", "r2", 1] lb = 0 ub =
-        0
+    @test model[:upflexiramp_shortfall]["s1", "r2", 1] === 0.0
+    @test model[:dwflexiramp_shortfall]["s1", "r2", 1] === 0.0
 
     # Objective coefficients
     # -------------------------------------------------------------------------
     @test_obj_coef model[:upflexiramp_shortfall]["s1", "r1", 1] 5000.0
     @test_obj_coef model[:dwflexiramp_shortfall]["s1", "r1", 1] 5000.0
-    @test_obj_coef model[:upflexiramp_shortfall]["s1", "r2", 1] 0.0
-    @test_obj_coef model[:dwflexiramp_shortfall]["s1", "r2", 1] 0.0
-
     # Constraints
     # -------------------------------------------------------------------------
     @test_constr model[:eq_mfg_lb]["s1", "g2", 1] "prod_above[s1,g2,1] - mfg[s1,g2,1] ≤ 0"
@@ -125,8 +120,8 @@ using HiGHS, JuMP, UnitCommitment
 
     @test_constr model[:eq_min_flexiramp_up]["s1", "r1", 1] "upflexiramp_shortfall[s1,r1,1] + upflexiramp[s1,r1,g2,1] + upflexiramp[s1,r1,g3,1] ≥ 20.31"
     @test_constr model[:eq_min_flexiramp_down]["s1", "r1", 1] "dwflexiramp_shortfall[s1,r1,1] + dwflexiramp[s1,r1,g2,1] + dwflexiramp[s1,r1,g3,1] ≥ 20.31"
-    @test_constr model[:eq_min_flexiramp_up]["s1", "r2", 1] "upflexiramp_shortfall[s1,r2,1] + upflexiramp[s1,r2,g3,1] + upflexiramp[s1,r2,g4,1] ≥ 15"
-    @test_constr model[:eq_min_flexiramp_down]["s1", "r2", 1] "dwflexiramp_shortfall[s1,r2,1] + dwflexiramp[s1,r2,g3,1] + dwflexiramp[s1,r2,g4,1] ≥ 15"
+    @test_constr model[:eq_min_flexiramp_up]["s1", "r2", 1] "upflexiramp[s1,r2,g3,1] + upflexiramp[s1,r2,g4,1] ≥ 15"
+    @test_constr model[:eq_min_flexiramp_down]["s1", "r2", 1] "dwflexiramp[s1,r2,g3,1] + dwflexiramp[s1,r2,g4,1] ≥ 15"
 
     @test_constr model[:eq_dwflexi_lb]["s1", "r2", "g3", 1] "-prod_above[s1,g3,1] + 15 is_on[g3,2] + dwflexiramp[s1,r2,g3,1] ≤ 15"
     @test_constr model[:eq_upflexi_lb]["s1", "r2", "g3", 1] "-prod_above[s1,g3,1] + 15 is_on[g3,2] - upflexiramp[s1,r2,g3,1] ≤ 15"

@@ -22,16 +22,21 @@ function _add_bus_vars!(
 
     for sc in instance.scenarios, b in sc[:bus]
         for t in 1:T
-            curtail[sc.name, b.name, t] = @variable(
-                model,
-                lower_bound = min(0, b.load[t]),
-                upper_bound = max(0, b.load[t]),
-            )
-            reactive_curtail[sc.name, b.name, t] = @variable(
-                model,
-                lower_bound = min(0, b.reactive_load[t]),
-                upper_bound = max(0, b.reactive_load[t]),
-            )
+            if sc[:power_balance_penalty][t] < 0
+                curtail[sc.name, b.name, t] = 0.0
+                reactive_curtail[sc.name, b.name, t] = 0.0
+            else
+                curtail[sc.name, b.name, t] = @variable(
+                    model,
+                    lower_bound = min(0, b.load[t]),
+                    upper_bound = max(0, b.load[t]),
+                )
+                reactive_curtail[sc.name, b.name, t] = @variable(
+                    model,
+                    lower_bound = min(0, b.reactive_load[t]),
+                    upper_bound = max(0, b.reactive_load[t]),
+                )
+            end
         end
     end
     return
@@ -46,6 +51,7 @@ function _add_bus_obj!(
     reactive_curtail = model[:reactive_curtail]
 
     for t in 1:T, sc in instance.scenarios, b in sc[:bus]
+        sc[:power_balance_penalty][t] < 0 && continue
         sign_adjustment = b.load[t] < 0 ? -1 : 1
         add_to_expression!(
             model[:obj],

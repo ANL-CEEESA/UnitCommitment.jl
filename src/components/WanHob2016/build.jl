@@ -97,19 +97,14 @@ function build_model(
         # Paper omits these at the last interval (no t+1 exists).
         for r in sc[:flexiramp_reserves]
             for t in 1:(T-1)
-                upflexiramp_shortfall[sc.name, r.name, t] =
-                    @variable(model, lower_bound = 0)
-                dwflexiramp_shortfall[sc.name, r.name, t] =
-                    @variable(model, lower_bound = 0)
                 if r.shortfall_penalty < 0
-                    set_upper_bound(
-                        upflexiramp_shortfall[sc.name, r.name, t],
-                        0.0,
-                    )
-                    set_upper_bound(
-                        dwflexiramp_shortfall[sc.name, r.name, t],
-                        0.0,
-                    )
+                    upflexiramp_shortfall[sc.name, r.name, t] = 0.0
+                    dwflexiramp_shortfall[sc.name, r.name, t] = 0.0
+                else
+                    upflexiramp_shortfall[sc.name, r.name, t] =
+                        @variable(model, lower_bound = 0)
+                    dwflexiramp_shortfall[sc.name, r.name, t] =
+                        @variable(model, lower_bound = 0)
                 end
                 for g in r.thermal_units
                     upflexiramp[sc.name, r.name, g.name, t] = @variable(model)

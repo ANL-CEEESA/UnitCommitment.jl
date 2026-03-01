@@ -42,8 +42,12 @@ function _add_interface_vars!(
 
     for sc in instance.scenarios, ifc in sc[:interfaces], t in 1:T
         interface_flow[sc.name, ifc.name, t] = @variable(model)
-        interface_overflow[sc.name, ifc.name, t] =
-            @variable(model, lower_bound = 0)
+        if ifc.flow_limit_penalty[t] < 0
+            interface_overflow[sc.name, ifc.name, t] = 0.0
+        else
+            interface_overflow[sc.name, ifc.name, t] =
+                @variable(model, lower_bound = 0)
+        end
     end
     return nothing
 end
@@ -56,6 +60,7 @@ function _add_interface_obj!(
     interface_overflow = model[:interface_overflow]
 
     for sc in instance.scenarios, ifc in sc[:interfaces], t in 1:T
+        ifc.flow_limit_penalty[t] < 0 && continue
         add_to_expression!(
             model[:obj],
             interface_overflow[sc.name, ifc.name, t],
