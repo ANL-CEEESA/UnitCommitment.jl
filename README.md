@@ -15,7 +15,7 @@
 
 ## Package Components
 
-* **Data Format.** An extensible, fully-documented JSON-based data format for SCUC, developed in collaboration with Independent System Operators (ISOs). The format covers generators (thermal, profiled), battery storage, price-sensitive loads, virtual transactions, transmission (branches, interfaces, shunts) and reserves (spinning, non-spinning, flexiramp). A built-in migration system upgrades instances from older format versions automatically.
+* **Data Format.** An extensible, fully-documented JSON-based data format for SCUC, developed in collaboration with Independent System Operators (ISOs). The format covers generators (thermal, profiled), battery storage, price-sensitive loads, virtual transactions, transmission (branches, contingencies, interfaces, shunts) and reserves (spinning, non-spinning, flexiramp). A built-in migration system upgrades instances from older format versions automatically.
 
 * **Benchmark Instances.** A large collection of benchmark instances spanning 14 to 13,659 buses and 12 to 4,092 generators. The collection includes well-known instances from the literature, converted into the proposed JSON-based data format, as well as new instances derived from standard OPF test cases and augmented with data-driven unit commitment parameters, each with 365 daily variations.
 
@@ -52,7 +52,7 @@ optimize!(model)
 
 # Extract and export the solution
 sol = solution(model)
-UnitCommitment.write("sol.json", solution)
+UnitCommitment.write("sol.json", sol)
 ```
 
 ## Customization
@@ -112,9 +112,9 @@ Full documentation: https://anl-ceeesa.github.io/UnitCommitment.jl/
 
 ## Acknowledgments
 
-* We would like to thank **Yonghong Chen** (Midcontinent Independent System Operator), **Feng Pan** (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.
+* We would like to thank **Yonghong Chen** (Midcontinent Independent System Operator) and **Feng Pan** (Pacific Northwest National Laboratory) for valuable feedback on early versions of this package.
 
-* Based upon work supported by **Laboratory Directed Research and Development** (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357
+* Based upon work supported by **Laboratory Directed Research and Development** (LDRD) funding from Argonne National Laboratory, provided by the Director, Office of Science, of the U.S. Department of Energy under Contract No. DE-AC02-06CH11357.
 
 * Based upon work supported by the **U.S. Department of Energy Advanced Grid Modeling Program** under Grant DE-OE0000875.
 
