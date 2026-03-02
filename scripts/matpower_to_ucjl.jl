@@ -15,6 +15,7 @@ using DataStructures: OrderedDict
 using Ipopt
 using HiGHS
 using Juniper
+using JuMP
 
 function matpower_to_ucjl(
     input_file::String,
@@ -23,6 +24,8 @@ function matpower_to_ucjl(
     time_step_min::Int = 60,
     num_cost_segments::Int = 3,
     power_balance_penalty::Float64 = 1000.0,
+    flow_limit_penalty::Float64 = 5000.0,
+    relax_angle_diffs::Bool = false,
 )
     mkpath(output_dir)
 
@@ -35,6 +38,9 @@ function matpower_to_ucjl(
 
     # --- Build and save converted.json ---
     data = PowerModels.parse_file(input_file)
+    if relax_angle_diffs
+        _relax_angle_diffs!(data)
+    end
     if data["per_unit"]
         PowerModels.make_mixed_units!(data)
     end
@@ -44,83 +50,178 @@ function matpower_to_ucjl(
         time_step_min,
         num_cost_segments,
         power_balance_penalty,
+        flow_limit_penalty,
     )
     _write_json(joinpath(output_dir, "converted.json"), result)
 
     # --- Solve OPF/PF problems and save solutions ---
-    _solve_and_save(input_file, output_dir)
+    _solve_and_save(
+        input_file,
+        output_dir;
+        relax_angle_diffs = relax_angle_diffs,
+        num_cost_segments = num_cost_segments,
+    )
 end
 
-function _solve_and_save(input_file::String, output_dir::String)
-    data = PowerModels.parse_file(input_file)
+function _solve_and_save(
+    input_file::String,
+    output_dir::String;
+    relax_angle_diffs::Bool = false,
+    num_cost_segments::Int = 0,
+)
+    t_parse = @elapsed begin
+        data = PowerModels.parse_file(input_file)
+    end
+    if relax_angle_diffs
+        _relax_angle_diffs!(data)
+    end
+    if num_cost_segments > 0
+        _convert_costs_to_pwl!(data; num_segments = num_cost_segments)
+    end
 
-    ipopt = optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0)
-    highs = optimizer_with_attributes(HiGHS.Optimizer, "output_flag" => false)
+    logs_dir = joinpath(output_dir, "logs")
+    mkpath(logs_dir)
+
+    ipopt_silent =
+        optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0)
+    highs_silent =
+        optimizer_with_attributes(HiGHS.Optimizer, "output_flag" => false)
     juniper = optimizer_with_attributes(
         Juniper.Optimizer,
-        "nl_solver" => ipopt,
-        "mip_solver" => highs,
+        "nl_solver" => ipopt_silent,
+        "mip_solver" => highs_silent,
         "log_levels" => [],
     )
 
     has_strg = haskey(data, "storage") && !isempty(data["storage"])
 
     # Use storage-aware multi-network OPF when storage is present
-    # (requires MINLP solver due to binary storage complementarity variables)
+    # (requires MINLP solver due to binary storage complementarity
+    # variables). Stats collection is not supported for this path.
     if has_strg
         mn_data = PowerModels.replicate(data, 1)
         problems = [
             (
                 "sol_ac_opf.json",
                 "AC OPF",
-                () -> solve_mn_opf_strg(mn_data, ACPPowerModel, juniper),
+                () -> solve_mn_opf_strg(
+                    mn_data,
+                    ACPPowerModel,
+                    juniper,
+                ),
             ),
             (
                 "sol_dc_opf.json",
                 "DC OPF",
-                () -> solve_mn_opf_strg(mn_data, DCPPowerModel, highs),
+                () -> solve_mn_opf_strg(
+                    mn_data,
+                    DCPPowerModel,
+                    highs_silent,
+                ),
             ),
             (
                 "sol_soc_opf.json",
                 "SOC OPF",
-                () -> solve_mn_opf_strg(mn_data, SOCWRPowerModel, juniper),
+                () -> solve_mn_opf_strg(
+                    mn_data,
+                    SOCWRPowerModel,
+                    juniper,
+                ),
             ),
         ]
-    else
-        problems = [
-            ("sol_ac_opf.json", "AC OPF", () -> solve_ac_opf(data, ipopt)),
-            ("sol_dc_opf.json", "DC OPF", () -> solve_dc_opf(data, highs)),
-            (
-                "sol_soc_opf.json",
-                "SOC OPF",
-                () -> solve_opf(data, SOCWRPowerModel, ipopt),
-            ),
-            ("sol_ac_pf.json", "AC PF", () -> solve_ac_pf(data, ipopt)),
-            ("sol_dc_pf.json", "DC PF", () -> solve_dc_pf(data, highs)),
-        ]
+        for (filename, label, solve_fn) in problems
+            path = joinpath(output_dir, filename)
+            try
+                sol = solve_fn()
+                _save_solution(path, sol)
+                status = sol["termination_status"]
+                obj = get(sol, "objective", nothing)
+                println("  $label: $status, obj=$obj")
+            catch e
+                @warn "Failed: $label" exception =
+                    (e, catch_backtrace())
+            end
+        end
+        return nothing
     end
 
-    for (filename, label, solve_fn) in problems
+    # Non-storage cases: timed pipeline with stats
+    problems = [
+        ("sol_ac_opf.json", "AC OPF", ACPPowerModel, :ipopt, PowerModels.build_opf),
+        ("sol_dc_opf.json", "DC OPF", DCPPowerModel, :highs, PowerModels.build_opf),
+        ("sol_soc_opf.json", "SOC OPF", SOCWRPowerModel, :ipopt, PowerModels.build_opf),
+        ("sol_ac_pf.json", "AC PF", ACPPowerModel, :ipopt, PowerModels.build_pf),
+        ("sol_dc_pf.json", "DC PF", DCPPowerModel, :highs, PowerModels.build_pf),
+    ]
+    for (filename, label, model_type, solver_key, build_fn) in problems
         path = joinpath(output_dir, filename)
+        log_file = joinpath(
+            logs_dir,
+            replace(filename, ".json" => ".log"),
+        )
+        solver = if solver_key == :ipopt
+            optimizer_with_attributes(
+                Ipopt.Optimizer,
+                "print_level" => 5,
+                "output_file" => log_file,
+            )
+        else
+            optimizer_with_attributes(
+                HiGHS.Optimizer,
+                "output_flag" => true,
+                "log_file" => log_file,
+            )
+        end
         try
-            sol = solve_fn()
-            _save_solution(path, sol)
+            t_build = @elapsed begin
+                pm = PowerModels.instantiate_model(
+                    data,
+                    model_type,
+                    build_fn,
+                )
+            end
+            n_vars = JuMP.num_variables(pm.model)
+            n_constrs = _count_constraints(pm.model)
+            t_optimize = @elapsed begin
+                sol = PowerModels.optimize_model!(
+                    pm;
+                    optimizer = solver,
+                )
+            end
+            stats = OrderedDict{String,Any}(
+                "parse_time" => round(t_parse; digits = 6),
+                "build_time" => round(t_build; digits = 6),
+                "optimize_time" => round(t_optimize; digits = 6),
+                "num_variables" => n_vars,
+                "num_constraints" => n_constrs,
+            )
+            _save_solution(path, sol; stats = stats)
             status = sol["termination_status"]
             obj = get(sol, "objective", nothing)
-            println("Saved: $path ($label: $status, obj=$obj)")
+            println("  $label: $status, obj=$obj")
         catch e
-            @warn "Failed: $label" exception = (e, catch_backtrace())
+            @warn "Failed: $label" exception =
+                (e, catch_backtrace())
         end
     end
+    return nothing
 end
 
-function _save_solution(path::String, sol::Dict)
+function _save_solution(
+    path::String,
+    sol::Dict;
+    stats::Union{Nothing,OrderedDict} = nothing,
+)
     out = OrderedDict{String,Any}(
         "termination_status" => string(sol["termination_status"]),
         "objective" => get(sol, "objective", nothing),
         "solution" => get(sol, "solution", Dict()),
     )
+    if stats !== nothing
+        out["stats"] = stats
+    end
     _write_json(path, out)
+    return nothing
 end
 
 function _write_json(path::String, data)
@@ -131,12 +232,59 @@ function _write_json(path::String, data)
     println("Saved: $path")
 end
 
+function _count_constraints(m::JuMP.Model)
+    return sum(
+        JuMP.num_constraints(m, F, S)
+        for (F, S) in JuMP.list_of_constraint_types(m);
+        init = 0,
+    )
+end
+
+function _relax_angle_diffs!(data::Dict)
+    for (_, branch) in data["branch"]
+        branch["angmin"] = -Inf
+        branch["angmax"] = Inf
+    end
+    return nothing
+end
+
+function _convert_costs_to_pwl!(data::Dict; num_segments::Int = 3)
+    for (_, gen) in data["gen"]
+        model = get(gen, "model", 2)
+        model == 1 && continue
+        cost = get(gen, "cost", Float64[])
+        isempty(cost) && continue
+
+        pmin = max(gen["pmin"], 0.0)
+        pmax = gen["pmax"]
+        pmax <= pmin && continue
+
+        coeffs = reverse(cost)
+        eval_poly(p) =
+            sum(coeffs[i] * p^(i - 1) for i in eachindex(coeffs))
+
+        n_points = num_segments + 1
+        points = collect(range(pmin, pmax; length = n_points))
+        pwl = Float64[]
+        for p in points
+            push!(pwl, p)
+            push!(pwl, eval_poly(p))
+        end
+
+        gen["model"] = 1
+        gen["ncost"] = n_points
+        gen["cost"] = pwl
+    end
+    return nothing
+end
+
 function _build_ucjl_json(
     data::Dict,
     time_horizon_h::Int,
     time_step_min::Int,
     num_cost_segments::Int,
     power_balance_penalty::Float64,
+    flow_limit_penalty::Float64,
 )
     baseMVA = data["baseMVA"]
     result = OrderedDict{String, Any}()
@@ -193,8 +341,12 @@ function _build_ucjl_json(
         pmin = max(gen["pmin"], 0.0)
         pmax = gen["pmax"]
 
-        # Skip generators that cannot produce any power
-        pmax <= 0 && continue
+        # Skip generators with no active or reactive capability.
+        # Keep synchronous condensers (pmax=0 but qmin/qmax != 0)
+        # since they provide reactive power for AC power flow.
+        has_reactive = gen["qmin"] != 0.0 || gen["qmax"] != 0.0
+        pmax <= 0 && !has_reactive && continue
+        pmax = max(pmax, 0.0)
 
         # Build production cost curve
         mw_points, cost_points = _build_cost_curve(gen, pmin, pmax, num_cost_segments)
@@ -282,8 +434,19 @@ function _build_ucjl_json(
         end
 
         # Angle difference limits (make_mixed_units! converts to degrees)
-        branch_data["Angle difference min (rad)"] = deg2rad(branch["angmin"])
-        branch_data["Angle difference max (rad)"] = deg2rad(branch["angmax"])
+        # Skip infinite values; UC.jl defaults to ±Inf when absent.
+        angmin = deg2rad(branch["angmin"])
+        angmax = deg2rad(branch["angmax"])
+        if isfinite(angmin)
+            branch_data["Angle difference min (rad)"] = angmin
+        end
+        if isfinite(angmax)
+            branch_data["Angle difference max (rad)"] = angmax
+        end
+
+        if flow_limit_penalty < 0
+            branch_data["Flow limit penalty (\$/MW)"] = flow_limit_penalty
+        end
 
         branches["l$br_id"] = branch_data
     end
