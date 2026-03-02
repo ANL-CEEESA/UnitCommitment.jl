@@ -27,6 +27,7 @@ using HiGHS, JuMP, UnitCommitment
 
     # Flow variables (pf, pt, qf, qt, overflow)
     # -------------------------------------------------------------------------
+    # Soft flow limits (penalty > 0): flow vars are unbounded, overflow is free
     @test_continuous_var model[:pf]["s1", "l1", 1]
     @test_continuous_var model[:pt]["s1", "l1", 1]
     @test_continuous_var model[:qf]["s1", "l1", 1]
@@ -42,6 +43,13 @@ using HiGHS, JuMP, UnitCommitment
     @test_continuous_var model[:overflow]["s1", "l1", 1] lb = 0
     @test_continuous_var model[:overflow]["s1", "l2", 1] lb = 0
     @test_continuous_var model[:overflow]["s1", "l3", 1] lb = 0
+
+    # Shunt variables (p_shunt, q_shunt)
+    # -------------------------------------------------------------------------
+    # sh1: bus=b2, conductance=0.0, susceptance=0.05
+    # base_mva=100, vmin=0.95, vmax=1.05
+    @test_continuous_var model[:p_shunt]["s1", "sh1", 1] lb = 0 ub = 0
+    @test_continuous_var model[:q_shunt]["s1", "sh1", 1] lb = 4.5125 ub = 5.5125
 
     # Voltage magnitude constraints (ACR only)
     # -------------------------------------------------------------------------
@@ -132,6 +140,7 @@ end
 
     # Flow variables (pf, pt, qf, qt, overflow)
     # -------------------------------------------------------------------------
+    # Soft flow limits (penalty > 0): flow vars are unbounded, overflow is free
     @test_continuous_var model[:pf]["s1", "l1", 1]
     @test_continuous_var model[:pt]["s1", "l1", 1]
     @test_continuous_var model[:qf]["s1", "l1", 1]
@@ -147,6 +156,13 @@ end
     @test_continuous_var model[:overflow]["s1", "l1", 1] lb = 0
     @test_continuous_var model[:overflow]["s1", "l2", 1] lb = 0
     @test_continuous_var model[:overflow]["s1", "l3", 1] lb = 0
+
+    # Shunt variables (p_shunt, q_shunt)
+    # -------------------------------------------------------------------------
+    # sh1: bus=b2, conductance=0.0, susceptance=0.05
+    # base_mva=100, vmin=0.95, vmax=1.05
+    @test_continuous_var model[:p_shunt]["s1", "sh1", 1] lb = 0 ub = 0
+    @test_continuous_var model[:q_shunt]["s1", "sh1", 1] lb = 4.5125 ub = 5.5125
 
     # No voltage magnitude constraints (ACP uses bounds on vm instead)
     # -------------------------------------------------------------------------

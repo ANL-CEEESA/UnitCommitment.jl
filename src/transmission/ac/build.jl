@@ -56,14 +56,29 @@ function _add_ac_flow_vars!(
     overflow = _init(model, :overflow)
 
     for sc in instance.scenarios, l in sc[:branches], t in 1:T
-        pf[sc.name, l.name, t] = @variable(model)
-        pt[sc.name, l.name, t] = @variable(model)
-        qf[sc.name, l.name, t] = @variable(model)
-        qt[sc.name, l.name, t] = @variable(model)
+        limit = l.normal_flow_limit[t]
         if l.flow_limit_penalty[t] < 0
+            # Hard flow limit: overflow is zero, so |pf| ≤ limit is
+            # implied by pf² + qf² ≤ limit². Adding box bounds helps
+            # Ipopt's barrier method with scaling and step sizing.
+            pf[sc.name, l.name, t] =
+                @variable(model, lower_bound = -limit, upper_bound = limit)
+            pt[sc.name, l.name, t] =
+                @variable(model, lower_bound = -limit, upper_bound = limit)
+            qf[sc.name, l.name, t] =
+                @variable(model, lower_bound = -limit, upper_bound = limit)
+            qt[sc.name, l.name, t] =
+                @variable(model, lower_bound = -limit, upper_bound = limit)
             overflow[sc.name, l.name, t] = 0.0
         else
-            overflow[sc.name, l.name, t] = @variable(model, lower_bound = 0)
+            # Soft flow limit: overflow can push the effective limit
+            # beyond normal_flow_limit, so we cannot bound tightly.
+            pf[sc.name, l.name, t] = @variable(model)
+            pt[sc.name, l.name, t] = @variable(model)
+            qf[sc.name, l.name, t] = @variable(model)
+            qt[sc.name, l.name, t] = @variable(model)
+            overflow[sc.name, l.name, t] =
+                @variable(model, lower_bound = 0)
         end
     end
     return
@@ -80,10 +95,27 @@ function _add_ac_shunt_vars!(
     q_shunt = _init(model, :q_shunt)
 
     for sc in instance.scenarios
+        base_mva = sc[:base_mva]
         for sh in sc[:shunts], t in 1:T
             sh.status[t] || continue
-            p_shunt[sc.name, sh.name, t] = @variable(model)
-            q_shunt[sc.name, sh.name, t] = @variable(model)
+            vm2_min = sh.bus.vmin^2
+            vm2_max = sh.bus.vmax^2
+
+            ps_lo = base_mva * sh.conductance * vm2_min
+            ps_hi = base_mva * sh.conductance * vm2_max
+            p_shunt[sc.name, sh.name, t] = @variable(
+                model,
+                lower_bound = min(ps_lo, ps_hi),
+                upper_bound = max(ps_lo, ps_hi),
+            )
+
+            qs_lo = base_mva * sh.susceptance * vm2_min
+            qs_hi = base_mva * sh.susceptance * vm2_max
+            q_shunt[sc.name, sh.name, t] = @variable(
+                model,
+                lower_bound = min(qs_lo, qs_hi),
+                upper_bound = max(qs_lo, qs_hi),
+            )
         end
     end
     return
