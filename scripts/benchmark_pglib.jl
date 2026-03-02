@@ -27,8 +27,8 @@ const CASES = [
     "pglib_opf_case57_ieee",
     "pglib_opf_case118_ieee",
     "pglib_opf_case300_ieee",
-    # "pglib_opf_case1354_pegase",
-    # "pglib_opf_case2869_pegase",
+    "pglib_opf_case1354_pegase",
+    "pglib_opf_case2869_pegase",
 ]
 
 const ROOT = joinpath(@__DIR__, "..")

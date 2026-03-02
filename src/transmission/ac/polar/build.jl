@@ -15,9 +15,13 @@ function _add_ac_voltage_vars!(
     va = _init(model, :va)
 
     for sc in instance.scenarios, b in sc[:bus], t in 1:T
-        vm[sc.name, b.name, t] =
-            @variable(model, lower_bound = b.vmin, upper_bound = b.vmax,)
-        va[sc.name, b.name, t] = @variable(model)
+        vm[sc.name, b.name, t] = @variable(
+            model,
+            lower_bound = b.vmin,
+            upper_bound = b.vmax,
+            start = 1.0,
+        )
+        va[sc.name, b.name, t] = @variable(model, start = 0.0)
     end
     return
 end

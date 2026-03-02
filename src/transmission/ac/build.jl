@@ -43,6 +43,22 @@ function _ac_branch_params(branch::Branch)
     return (; g, b, g_fr, b_fr, g_to, b_to, tr, ti, tm2)
 end
 
+"""
+    _flat_start_flows(p, base_mva)
+
+Compute flat-start power flow values for a branch. At flat start (vm=1,
+va=0 everywhere), the voltage products simplify to v_sq_fr=1, v_sq_to=1,
+v_cos=1, v_sin=0. The returned values exactly satisfy the Ohm's law
+constraints at these voltage values.
+"""
+function _flat_start_flows(p::NamedTuple, base_mva::Real)::NTuple{4,Float64}
+    pf = base_mva * (p.g * (1 - p.tr) + p.g_fr + p.b * p.ti) / p.tm2
+    qf = base_mva * (-p.b * (1 - p.tr) - p.b_fr + p.g * p.ti) / p.tm2
+    pt = base_mva * ((p.g + p.g_to) * p.tm2 - p.g * p.tr - p.b * p.ti) / p.tm2
+    qt = base_mva * (-(p.b + p.b_to) * p.tm2 + p.b * p.tr - p.g * p.ti) / p.tm2
+    return (pf, qf, pt, qt)
+end
+
 function _add_ac_flow_vars!(
     model::JuMP.Model,
     instance::UnitCommitmentInstance,
@@ -55,30 +71,53 @@ function _add_ac_flow_vars!(
     qt = _init(model, :qt)
     overflow = _init(model, :overflow)
 
-    for sc in instance.scenarios, l in sc[:branches], t in 1:T
-        limit = l.normal_flow_limit[t]
-        if l.flow_limit_penalty[t] < 0
-            # Hard flow limit: overflow is zero, so |pf| ≤ limit is
-            # implied by pf² + qf² ≤ limit². Adding box bounds helps
-            # Ipopt's barrier method with scaling and step sizing.
-            pf[sc.name, l.name, t] =
-                @variable(model, lower_bound = -limit, upper_bound = limit)
-            pt[sc.name, l.name, t] =
-                @variable(model, lower_bound = -limit, upper_bound = limit)
-            qf[sc.name, l.name, t] =
-                @variable(model, lower_bound = -limit, upper_bound = limit)
-            qt[sc.name, l.name, t] =
-                @variable(model, lower_bound = -limit, upper_bound = limit)
-            overflow[sc.name, l.name, t] = 0.0
-        else
-            # Soft flow limit: overflow can push the effective limit
-            # beyond normal_flow_limit, so we cannot bound tightly.
-            pf[sc.name, l.name, t] = @variable(model)
-            pt[sc.name, l.name, t] = @variable(model)
-            qf[sc.name, l.name, t] = @variable(model)
-            qt[sc.name, l.name, t] = @variable(model)
-            overflow[sc.name, l.name, t] =
-                @variable(model, lower_bound = 0)
+    for sc in instance.scenarios
+        base_mva = sc[:base_mva]
+        for l in sc[:branches], t in 1:T
+            bp = _ac_branch_params(l)
+            s = _flat_start_flows(bp, base_mva)
+            limit = l.normal_flow_limit[t]
+            if l.flow_limit_penalty[t] < 0
+                # Hard flow limit: overflow is zero, so |pf| ≤ limit
+                # is implied by pf² + qf² ≤ limit². Adding box bounds
+                # helps Ipopt's barrier method with scaling and step
+                # sizing.
+                pf[sc.name, l.name, t] = @variable(
+                    model,
+                    lower_bound = -limit,
+                    upper_bound = limit,
+                    start = s[1],
+                )
+                pt[sc.name, l.name, t] = @variable(
+                    model,
+                    lower_bound = -limit,
+                    upper_bound = limit,
+                    start = s[3],
+                )
+                qf[sc.name, l.name, t] = @variable(
+                    model,
+                    lower_bound = -limit,
+                    upper_bound = limit,
+                    start = s[2],
+                )
+                qt[sc.name, l.name, t] = @variable(
+                    model,
+                    lower_bound = -limit,
+                    upper_bound = limit,
+                    start = s[4],
+                )
+                overflow[sc.name, l.name, t] = 0.0
+            else
+                # Soft flow limit: overflow can push the effective
+                # limit beyond normal_flow_limit, so we cannot bound
+                # tightly.
+                pf[sc.name, l.name, t] = @variable(model, start = s[1])
+                pt[sc.name, l.name, t] = @variable(model, start = s[3])
+                qf[sc.name, l.name, t] = @variable(model, start = s[2])
+                qt[sc.name, l.name, t] = @variable(model, start = s[4])
+                overflow[sc.name, l.name, t] =
+                    @variable(model, lower_bound = 0, start = 0.0)
+            end
         end
     end
     return
@@ -107,6 +146,7 @@ function _add_ac_shunt_vars!(
                 model,
                 lower_bound = min(ps_lo, ps_hi),
                 upper_bound = max(ps_lo, ps_hi),
+                start = base_mva * sh.conductance,
             )
 
             qs_lo = base_mva * sh.susceptance * vm2_min
@@ -115,6 +155,7 @@ function _add_ac_shunt_vars!(
                 model,
                 lower_bound = min(qs_lo, qs_hi),
                 upper_bound = max(qs_lo, qs_hi),
+                start = base_mva * sh.susceptance,
             )
         end
     end
@@ -273,21 +314,35 @@ function _add_ac_constr_nodal_balance!(
             # Active power nodal balance:
             #   ni == sum(pf for source lines) + sum(pt for target lines) + sum(p_shunt)
             outflow = AffExpr()
+            ni_start = 0.0
             for l in branches_by_source[b]
                 add_to_expression!(outflow, pf[sc.name, l.name, t])
+                bp = _ac_branch_params(l)
+                s = _flat_start_flows(bp, base_mva)
+                ni_start += s[1]
             end
             for l in branches_by_target[b]
                 add_to_expression!(outflow, pt[sc.name, l.name, t])
+                bp = _ac_branch_params(l)
+                s = _flat_start_flows(bp, base_mva)
+                ni_start += s[3]
             end
 
             # Reactive power nodal balance:
             #   qi == sum(qf for source lines) + sum(qt for target lines) - sum(q_shunt)
             reactive_outflow = AffExpr()
+            qi_start = 0.0
             for l in branches_by_source[b]
                 add_to_expression!(reactive_outflow, qf[sc.name, l.name, t])
+                bp = _ac_branch_params(l)
+                s = _flat_start_flows(bp, base_mva)
+                qi_start += s[2]
             end
             for l in branches_by_target[b]
                 add_to_expression!(reactive_outflow, qt[sc.name, l.name, t])
+                bp = _ac_branch_params(l)
+                s = _flat_start_flows(bp, base_mva)
+                qi_start += s[4]
             end
 
             # Shunt contributions (quadratic in voltage magnitude).
@@ -300,13 +355,17 @@ function _add_ac_constr_nodal_balance!(
                 eq_p_shunt[sc.name, sh.name, t] =
                     @constraint(model, ps == base_mva * sh.conductance * vm2)
                 add_to_expression!(outflow, ps)
+                ni_start += base_mva * sh.conductance
 
                 qs = model[:q_shunt][sc.name, sh.name, t]
                 eq_q_shunt[sc.name, sh.name, t] =
                     @constraint(model, qs == base_mva * sh.susceptance * vm2)
                 add_to_expression!(reactive_outflow, qs, -1.0)
+                qi_start -= base_mva * sh.susceptance
             end
 
+            set_start_value(ni[sc.name, b.name, t], ni_start)
+            set_start_value(qi[sc.name, b.name, t], qi_start)
             eq_nodal_balance[sc.name, b.name, t] =
                 @constraint(model, ni[sc.name, b.name, t] == outflow)
             eq_reactive_nodal_balance[sc.name, b.name, t] =
