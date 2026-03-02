@@ -11,13 +11,13 @@
   </a>
 </p>
 
-**UnitCommitment.jl** (UC.jl) is an extensible Julia/JuMP optimization package for the Security-Constrained Unit Commitment problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear day-ahead electricity markets. The package provides a standardized data format, benchmark instances, state-of-the-art MIP formulations, and a modular architecture in which every grid component is an independent, swappable extension.
+**UnitCommitment.jl** (UC.jl) is an extensible Julia/JuMP optimization package for the Security-Constrained Unit Commitment problem (SCUC), a fundamental optimization problem in power systems used, for example, to clear day-ahead electricity markets. The package provides a fully-documented data format for SCUC, benchmark instances, state-of-the-art MIP formulations, and a modular architecture in which every grid component is an independent, swappable extension.
 
 ## Package Components
 
-* **Data Format.** An extensible, fully-documented JSON-based data format for SCUC, developed in collaboration with Independent System Operators (ISOs). The format covers thermal generators, battery storage, profiled generators, price-sensitive loads, virtual transactions, transmission branches (including contingencies), shunt devices, interface limits, and reserves (spinning, non-spinning, flexiramp). A built-in migration system upgrades instances from older format versions automatically.
+* **Data Format.** An extensible, fully-documented JSON-based data format for SCUC, developed in collaboration with Independent System Operators (ISOs). The format covers generators (thermal, profiled), battery storage, price-sensitive loads, virtual transactions, transmission (branches, interfaces, shunts) and reserves (spinning, non-spinning, flexiramp). A built-in migration system upgrades instances from older format versions automatically.
 
-* **Benchmark Instances.** Over 19,000 instances spanning 14 to 13,659 buses and 12 to 4,092 generators, collected from the literature and converted into the common format. The ML-augmented MATPOWER instances provide 365 daily variations per network, generated using data-driven methods to make them more challenging and realistic.
+* **Benchmark Instances.** A large collection of benchmark instances spanning 14 to 13,659 buses and 12 to 4,092 generators. The collection includes well-known instances from the literature, converted into the proposed JSON-based data format, as well as new instances derived from standard OPF test cases and augmented with data-driven unit commitment parameters, each with 365 daily variations.
 
 * **Modular Architecture.** Every grid component is an independent extension that implements a common lifecycle: data reading, model building, solution extraction, and validation. Eight extensions ship by default; users can replace any of them (e.g., swap DC shift factors for AC power flow) or add new ones (e.g., flexiramp reserves) at read time, without modifying source code.
 
@@ -25,9 +25,11 @@
 
 * **Solution Methods.** Problems can be solved as a single MILP, decomposed over a sliding time window for long horizons, or solved under uncertainty via two-stage stochastic programming with progressive hedging and MPI parallelization.
 
-* **Market Clearing and Pricing.** Day-ahead and real-time two-settlement market simulation is supported, with commitment status mapping, sub-hourly time alignment, and chained initial conditions across real-time periods. Locational marginal prices are computed automatically and decomposed into energy and congestion components.
+* **Market Clearing and Pricing.** Day-ahead and real-time two-settlement market simulation is supported, with commitment status mapping, sub-hourly time alignment, and chained initial conditions across real-time periods. Locational marginal prices are computed automatically and decomposed into energy and congestion components. Standard settlement metrics (gross and net revenues, production costs, uplift payments, and load expenses) are reported.
 
 * **Validation.** An independent feasibility checker recomputes every operational constraint — production limits, ramp rates, minimum up/downtime, reserve requirements, energy balance, branch flows — from the instance data alone, without inspecting the optimization model. This catches formulation bugs and can verify solutions produced by external solvers. Both DC and AC implementations are cross-validated against [PowerModels.jl](https://github.com/lanl-ansi/PowerModels.jl) on standard IEEE test systems.
+
+* **Web Interface.** A [browser-based interface](https://ucjl.axavier.org/) that allows users to build, visualize, modify, and solve SCUC cases without programming knowledge or software installation.
 
 [ArrCon2000]: https://doi.org/10.1109/59.871739
 [DamKucRajAta2016]: https://doi.org/10.1007/s10107-015-0919-9
