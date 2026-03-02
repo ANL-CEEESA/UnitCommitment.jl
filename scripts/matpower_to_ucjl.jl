@@ -79,8 +79,6 @@ function _solve_and_save(
         _convert_costs_to_pwl!(data; num_segments = num_cost_segments)
     end
 
-    logs_dir = joinpath(output_dir, "logs")
-    mkpath(logs_dir)
 
     ipopt_silent =
         optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0)
@@ -156,7 +154,7 @@ function _solve_and_save(
     for (filename, label, model_type, solver_key, build_fn) in problems
         path = joinpath(output_dir, filename)
         log_file = joinpath(
-            logs_dir,
+            output_dir,
             replace(filename, ".json" => ".log"),
         )
         solver = if solver_key == :ipopt
@@ -172,6 +170,10 @@ function _solve_and_save(
                 "log_file" => log_file,
             )
         end
+        model_file = joinpath(
+            output_dir,
+            replace(filename, ".json" => ".mof.json"),
+        )
         try
             t_build = @elapsed begin
                 pm = PowerModels.instantiate_model(
@@ -182,6 +184,8 @@ function _solve_and_save(
             end
             n_vars = JuMP.num_variables(pm.model)
             n_constrs = _count_constraints(pm.model)
+            JuMP.write_to_file(pm.model, model_file)
+            println("  Saved model: $model_file")
             t_optimize = @elapsed begin
                 sol = PowerModels.optimize_model!(
                     pm;

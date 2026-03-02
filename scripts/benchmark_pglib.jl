@@ -27,8 +27,8 @@ const CASES = [
     "pglib_opf_case57_ieee",
     "pglib_opf_case118_ieee",
     "pglib_opf_case300_ieee",
-    "pglib_opf_case1354_pegase",
-    "pglib_opf_case2869_pegase",
+    # "pglib_opf_case1354_pegase",
+    # "pglib_opf_case2869_pegase",
 ]
 
 const ROOT = joinpath(@__DIR__, "..")
@@ -103,146 +103,6 @@ function _make_formulations()
             "sol_dc_opf.json",
         ),
     ]
-end
-
-# ── Warm-start ─────────────────────────────────────────────────────────
-
-function _load_pm_sol_data(case_dir, pm_sol_file)
-    pm_sol_path = joinpath(case_dir, pm_sol_file)
-    if !isfile(pm_sol_path)
-        return nothing
-    end
-    sol = JSON.parsefile(pm_sol_path)
-    sol_data = get(sol, "solution", nothing)
-    sol_data === nothing && return nothing
-    isempty(sol_data) && return nothing
-    return sol_data
-end
-
-function _warm_start!(model, instance, pm_sol_data, spec)
-    pm_sol_data === nothing && return nothing
-    name = spec.name
-    if name == "ac_polar"
-        _warm_start_ac_polar!(model, pm_sol_data)
-    elseif name == "ac_rect"
-        _warm_start_ac_rect!(model, pm_sol_data)
-    elseif name == "dc_phase"
-        _warm_start_dc_phase!(model, pm_sol_data)
-    elseif name == "dc_shift"
-        _warm_start_dc_shift!(model, pm_sol_data, spec)
-    end
-    _warm_start_generators!(model, instance, pm_sol_data)
-    return nothing
-end
-
-function _warm_start_ac_polar!(model, pm_sol)
-    for (bus_id, bus_data) in get(pm_sol, "bus", Dict())
-        JuMP.set_start_value(
-            model.inner[:vm]["s1", "b$bus_id", 1],
-            bus_data["vm"],
-        )
-        JuMP.set_start_value(
-            model.inner[:va]["s1", "b$bus_id", 1],
-            bus_data["va"],
-        )
-    end
-    _warm_start_ac_flows!(model, pm_sol)
-    return nothing
-end
-
-function _warm_start_ac_rect!(model, pm_sol)
-    for (bus_id, bus_data) in get(pm_sol, "bus", Dict())
-        vm, va = bus_data["vm"], bus_data["va"]
-        JuMP.set_start_value(
-            model.inner[:vr]["s1", "b$bus_id", 1],
-            vm * cos(va),
-        )
-        JuMP.set_start_value(
-            model.inner[:vi]["s1", "b$bus_id", 1],
-            vm * sin(va),
-        )
-    end
-    _warm_start_ac_flows!(model, pm_sol)
-    return nothing
-end
-
-function _warm_start_ac_flows!(model, pm_sol)
-    baseMVA = pm_sol["baseMVA"]
-    for (br_id, br_data) in get(pm_sol, "branch", Dict())
-        name = "l$br_id"
-        JuMP.set_start_value(
-            model.inner[:pf]["s1", name, 1],
-            br_data["pf"] * baseMVA,
-        )
-        JuMP.set_start_value(
-            model.inner[:qf]["s1", name, 1],
-            br_data["qf"] * baseMVA,
-        )
-        JuMP.set_start_value(
-            model.inner[:pt]["s1", name, 1],
-            br_data["pt"] * baseMVA,
-        )
-        JuMP.set_start_value(
-            model.inner[:qt]["s1", name, 1],
-            br_data["qt"] * baseMVA,
-        )
-    end
-    return nothing
-end
-
-function _warm_start_dc_phase!(model, pm_sol)
-    for (bus_id, bus_data) in get(pm_sol, "bus", Dict())
-        JuMP.set_start_value(
-            model.inner[:theta]["s1", "b$bus_id", 1],
-            bus_data["va"],
-        )
-    end
-    baseMVA = pm_sol["baseMVA"]
-    for (br_id, br_data) in get(pm_sol, "branch", Dict())
-        JuMP.set_start_value(
-            model.inner[:flow]["s1", "l$br_id", 1],
-            br_data["pf"] * baseMVA,
-        )
-    end
-    return nothing
-end
-
-function _warm_start_dc_shift!(model, pm_sol, spec)
-    # Flow variables only exist when lazy=false
-    ext = first(
-        e for e in spec.extensions
-        if e isa UnitCommitment.ShiftFactorsTransmissionExt
-    )
-    ext.lazy && return nothing
-    baseMVA = pm_sol["baseMVA"]
-    for (br_id, br_data) in get(pm_sol, "branch", Dict())
-        JuMP.set_start_value(
-            model.inner[:flow]["s1", "l$br_id", 1],
-            br_data["pf"] * baseMVA,
-        )
-    end
-    return nothing
-end
-
-function _warm_start_generators!(model, instance, pm_sol)
-    baseMVA = pm_sol["baseMVA"]
-    sc = instance.scenarios[1]
-    gen_pmin = Dict{String,Float64}()
-    for g in sc[:thermal]
-        gen_pmin[g.name] = g.min_power[1]
-    end
-    for (gen_id, gen_data) in get(pm_sol, "gen", Dict())
-        name = "g$gen_id"
-        haskey(gen_pmin, name) || continue
-        pg_mw = gen_data["pg"] * baseMVA
-        pmin = gen_pmin[name]
-        prod_above = max(pg_mw - pmin, 0.0)
-        JuMP.set_start_value(
-            model.inner[:prod_above]["s1", name, 1],
-            prod_above,
-        )
-    end
-    return nothing
 end
 
 # ── Helpers ────────────────────────────────────────────────────────────
@@ -412,7 +272,7 @@ function _solve_uc(
     json_path,
     spec;
     log_file = nothing,
-    pm_sol_data = nothing,
+    model_file = nothing,
 )
     opt = _make_optimizer(spec; log_file = log_file)
     uc = Dict{String,Any}(
@@ -434,11 +294,15 @@ function _solve_uc(
         model = UnitCommitment.build_model(
             instance;
             optimizer = opt,
+            variable_names = true,
         )
     end
-    _warm_start!(model, instance, pm_sol_data, spec)
     uc["vars"] = JuMP.num_variables(model.inner)
     uc["constrs"] = _count_constraints(model.inner)
+    if model_file !== nothing
+        JuMP.write_to_file(model.inner, model_file)
+        println("  Saved model: $model_file")
+    end
     t_optimize = @elapsed begin
         UnitCommitment.optimize!(model)
     end
@@ -483,20 +347,21 @@ function _run_benchmarks(cases, formulations)
                 "build_time" => NaN,
                 "optimize_time" => NaN,
             )
-            logs_dir = joinpath(case_dir, "logs")
-            mkpath(logs_dir)
-            log_file = joinpath(
-                logs_dir,
-                "uc_$(spec.name).log",
+            result_dir = joinpath(
+                RESULTS_DIR,
+                case_name,
+                spec.name,
             )
-            pm_sol_data =
-                _load_pm_sol_data(case_dir, spec.pm_sol_file)
+            mkpath(result_dir)
+            log_file = joinpath(result_dir, "solve.log")
+            model_file =
+                joinpath(result_dir, "model.mof.json")
             try
                 uc = _solve_uc(
                     json_path,
                     spec;
                     log_file = log_file,
-                    pm_sol_data = pm_sol_data,
+                    model_file = model_file,
                 )
             catch e
                 @warn "UC.jl solve failed" case = case_name formulation =
@@ -539,6 +404,11 @@ function _run_benchmarks(cases, formulations)
                 "obj_gap_abs" => obj_gap_abs,
             )
             push!(results, row)
+
+            open(joinpath(result_dir, "result.json"), "w") do f
+                JSON.print(f, row, 2)
+                println(f)
+            end
 
             pm_obj_str = pm_solved ? @sprintf("%.2f", pm["obj"]) : "N/A ($(pm["status"]))"
             uc_obj_str = uc_solved ? @sprintf("%.2f", uc["obj"]) : "N/A ($(uc["status"]))"
