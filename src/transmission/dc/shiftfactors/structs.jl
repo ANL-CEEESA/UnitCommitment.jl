@@ -5,5 +5,5 @@
 Base.@kwdef struct ShiftFactorsTransmissionExt <: DCTransmissionExt
     isf_cutoff::Float64 = 0.005
     lodf_cutoff::Float64 = 0.001
-    lazy::Bool = false
+    lazy::Bool = true
 end
