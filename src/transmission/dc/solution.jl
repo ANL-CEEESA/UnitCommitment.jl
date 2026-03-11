@@ -75,8 +75,11 @@ function store_solution(
                     ] for l in branches
                 )
             end
-            sol[sc.name]["Branch: Contingency flow (MW)"] = cont_flows
-            sol[sc.name]["Branch: Contingency overflow (MW)"] = cont_overflow
+            if length(sc[:bus]) < 100
+                sol[sc.name]["Branch: Contingency flow (MW)"] = cont_flows
+                sol[sc.name]["Branch: Contingency overflow (MW)"] =
+                    cont_overflow
+            end
         end
 
         # Investment results

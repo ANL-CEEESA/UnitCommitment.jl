@@ -8,6 +8,7 @@ const _SF_EXTENSIONS = [
     UnitCommitment.ShiftFactorsTransmissionExt(
         isf_cutoff = 0.0,
         lodf_cutoff = 0.0,
+        lazy = false,
     ),
     UnitCommitment.NoLMP(),
 ]

@@ -7,7 +7,12 @@ using HiGHS, JuMP, UnitCommitment
 @testfunction components_interface_build_sf_test begin
     model =
         build_model(
-            UnitCommitment.read(fixture("case14/interface.json")),
+            UnitCommitment.read(
+                fixture("case14/interface.json"),
+                extensions = [
+                    UnitCommitment.ShiftFactorsTransmissionExt(lazy = false),
+                ],
+            ),
             optimizer = test_optimizer(),
             variable_names = true,
         ).inner

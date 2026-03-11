@@ -1,6 +1,9 @@
 @testfunction components_interface_flow_test begin
     # Shift factors
-    instance = UnitCommitment.read(fixture("case14/interface.json"))
+    instance = UnitCommitment.read(
+        fixture("case14/interface.json"),
+        extensions = [UnitCommitment.ShiftFactorsTransmissionExt(lazy = false)],
+    )
     model = build_model(instance, optimizer = test_optimizer())
     optimize!(model)
     sol = solution(model)

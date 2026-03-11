@@ -34,11 +34,11 @@ end
 
     # Lazy
     base_flow, _ = _solve_dc_shiftfactors("case14/base.json", true)
-    @test round.(base_flow["l1"], digits = 1) == [100.0, 95.4, 93.9, 94.4]
-    @test round.(base_flow["l2"], digits = 1) == [31.7, 34.6, 36.1, 35.6]
-    @test round.(base_flow["l7"], digits = 1) == [-41.0, -43.9, -32.6, -43.7]
-    @test round.(base_flow["l14"], digits = 1) == [-92.8, -46.0, -65.1, -33.0]
-    @test round.(base_flow["l20"], digits = 1) == [7.5, 10.6, 4.4, 10.5]
+    @test round.(base_flow["l1"], digits = 1) == [100.0, 95.4, 93.9, 93.7]
+    @test round.(base_flow["l2"], digits = 1) == [31.7, 34.6, 36.1, 36.3]
+    @test round.(base_flow["l7"], digits = 1) == [-41.0, -43.9, -32.6, -33.1]
+    @test round.(base_flow["l14"], digits = 1) == [-92.8, -46.0, -65.1, -60.4]
+    @test round.(base_flow["l20"], digits = 1) == [7.5, 10.6, 4.4, 4.6]
 end
 
 @testfunction transmission_dc_shiftfactors_contingency_flow_test begin

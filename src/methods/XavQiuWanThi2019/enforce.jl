@@ -31,7 +31,7 @@ function _enforce_transmission(;
 )::Nothing
     limit::Float64 = 0.0
     overflow = model[:overflow]
-    net_injection = model[:net_injection]
+    net_injection = model[:ni]
 
     if violation.outage_branch === nothing
         limit = violation.monitored_branch.normal_flow_limit[violation.time]

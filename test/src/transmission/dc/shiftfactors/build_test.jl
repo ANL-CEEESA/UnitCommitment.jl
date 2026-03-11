@@ -13,6 +13,7 @@ using HiGHS, JuMP, UnitCommitment
                     UnitCommitment.ShiftFactorsTransmissionExt(
                         isf_cutoff = 0.0,
                         lodf_cutoff = 0.0,
+                        lazy = false,
                     ),
                 ],
             ),
