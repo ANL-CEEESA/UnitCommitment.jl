@@ -126,6 +126,37 @@ function _update_solution(
             )
         end
 
+        s = sol[sc.name]
+        summary = get!(OrderedDict, s, "Summary")
+
+        # LMP summary
+        bus_loads = [b.load for b in sc[:bus]]
+        total_load = sum(sum(bl) for bl in bus_loads)
+
+        # Load-weighted average LMP
+        if total_load > 0
+            weighted_lmp = sum(
+                lmp_total[b.name][t] * b.load[t]
+                for b in sc[:bus] for t in 1:T
+            )
+            summary["LMP: Average (\$/MWh)"] = weighted_lmp / total_load
+        end
+
+        # Peak and minimum LMP
+        all_lmps = [lmp_total[b.name][t] for b in sc[:bus] for t in 1:T]
+        summary["LMP: Peak (\$/MWh)"] = maximum(all_lmps)
+        summary["LMP: Minimum (\$/MWh)"] = minimum(all_lmps)
+
+        # Load expense summary
+        summary["Bus: Total fixed load expense (\$)"] =
+            _total(sol[sc.name]["Bus: Fixed load expense (\$)"])
+
+        # PS load expense summary
+        if haskey(s, "Price-sensitive load: Expense (\$)")
+            summary["Price-sensitive load: Total expense (\$)"] =
+                _total(s["Price-sensitive load: Expense (\$)"])
+        end
+
         if "Virtual: Cleared (MW)" in keys(sol[sc.name])
             virtuals = sc[:virtual]
             sol[sc.name]["Virtual: Revenue (\$)"] = OrderedDict(
@@ -148,6 +179,16 @@ function _update_solution(
                     end
                 end for vt in virtuals
             )
+
+            # Virtual revenue summary
+            summary["Virtual: Total revenue (\$)"] =
+                _total(sol[sc.name]["Virtual: Revenue (\$)"])
+        end
+
+        # Round all floating-point LMP summary values
+        for (k, v) in summary
+            v isa AbstractFloat || continue
+            summary[k] = round(v, digits = 2)
         end
     end
     return

@@ -12,6 +12,64 @@ function store_solution(
     for sc in instance.scenarios
         _store_thermal_solution!(sol[sc.name], model.inner, sc, T)
         _store_reserve_solution!(sol[sc.name], model.inner, sc, T)
+        _store_thermal_summary!(sol[sc.name], sc, T)
+    end
+    return
+end
+
+function _store_thermal_summary!(sol::OrderedDict, sc, T::Int)
+    thermal_units = sc[:thermal]
+    summary = get!(OrderedDict, sol, "Summary")
+
+    prod_cost = sol["Thermal: Production cost (\$)"]
+    startup_cost = sol["Thermal: Startup cost (\$)"]
+    shutdown_cost = sol["Thermal: Shutdown cost (\$)"]
+    production = sol["Thermal: Production (MW)"]
+    is_on = sol["Thermal: Is on"]
+    switch_on = sol["Thermal: Switch on"]
+    switch_off = sol["Thermal: Switch off"]
+
+    # Costs
+    summary["Thermal: Total production cost (\$)"] = _total(prod_cost)
+    summary["Thermal: Total startup cost (\$)"] = _total(startup_cost)
+    summary["Thermal: Total shutdown cost (\$)"] = _total(shutdown_cost)
+
+    # Peak production
+    prod_per_t = _per_t(production, T)
+    summary["Thermal: Peak production (MW)"] = maximum(prod_per_t)
+
+    # Peak capacity online
+    cap_per_t = [
+        sum(is_on[g.name][t] * g.max_power[t] for g in thermal_units)
+        for t in 1:T
+    ]
+    summary["Thermal: Peak capacity online (MW)"] = maximum(cap_per_t)
+
+    # Average utilization (production / online capacity)
+    total_prod = sum(prod_per_t)
+    total_cap = sum(cap_per_t)
+    if total_cap > 0
+        summary["Thermal: Average utilization (%)"] =
+            100.0 * total_prod / total_cap
+    end
+
+    # Startups & shutdowns
+    summary["Thermal: Total startups"] = round(Int, _total(switch_on))
+    summary["Thermal: Total shutdowns"] = round(Int, _total(switch_off))
+
+    # Investment (only if any candidates exist)
+    if haskey(sol, "Thermal: Investment status")
+        invest_status = sol["Thermal: Investment status"]
+        invest_units = [g for g in thermal_units if g.invest > 0.0]
+        if !isempty(invest_units)
+            summary["Thermal: Total investment cost (\$)"] = sum(
+                invest_status[g.name] * g.invest for g in invest_units
+            )
+            summary["Thermal: Units invested"] = count(
+                g -> invest_status[g.name] > 0.5,
+                invest_units,
+            )
+        end
     end
     return
 end

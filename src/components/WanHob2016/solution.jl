@@ -69,6 +69,18 @@ function store_solution(
                 ) for t in 1:(T-1)
             ] for r in sc[:flexiramp_reserves]
         )
+        summary = sol[sc.name]["Summary"]
+        peak_up = maximum(
+            maximum(ts) for
+            ts in values(sol[sc.name]["Flexiramp: Up shortfall (MW)"])
+        )
+        peak_dw = maximum(
+            maximum(ts) for
+            ts in values(sol[sc.name]["Flexiramp: Down shortfall (MW)"])
+        )
+        summary["Flexiramp: Peak up shortfall (MW)"] = peak_up
+        summary["Flexiramp: Peak down shortfall (MW)"] = peak_dw
+        summary["Flexiramp: Has shortfall?"] = peak_up > 1e-3 || peak_dw > 1e-3
     end
     return
 end

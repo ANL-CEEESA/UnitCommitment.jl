@@ -133,7 +133,43 @@ function store_solution(
     for sc in instance.scenarios
         sol[sc.name]["Virtual: Cleared (MW)"] =
             _timeseries(inner, :vt_cleared, sc[:virtual], T, sc = sc)
+
+        _store_virtual_summary!(sol[sc.name], sc, T)
     end
+    return
+end
+
+function _store_virtual_summary!(sol::OrderedDict, sc, T::Int)
+    summary = sol["Summary"]
+
+    cleared = sol["Virtual: Cleared (MW)"]
+    virtuals = sc[:virtual]
+
+    inc_total = sum(
+        sum(cleared[vt.name]) for vt in virtuals if vt.type == :inc;
+        init = 0.0,
+    )
+    dec_total = sum(
+        sum(cleared[vt.name]) for vt in virtuals if vt.type == :dec;
+        init = 0.0,
+    )
+    utc_total = sum(
+        sum(cleared[vt.name]) for vt in virtuals if vt.type == :utc;
+        init = 0.0,
+    )
+
+    summary["Virtual: Total INC cleared (MW)"] = inc_total
+    summary["Virtual: Total DEC cleared (MW)"] = dec_total
+    summary["Virtual: Total UTC cleared (MW)"] = utc_total
+
+    # Net objective cost
+    summary["Virtual: Net objective cost (\$)"] = sum(
+        begin
+            sign = vt.type == :inc ? 1.0 : -1.0
+            sum(sign * vt.price[t] * cleared[vt.name][t] for t in 1:T)
+        end for vt in virtuals;
+        init = 0.0,
+    )
     return
 end
 

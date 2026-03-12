@@ -16,26 +16,28 @@ function store_solution(
         interfaces = sc[:interfaces]
         isempty(interfaces) && continue
 
-        # Compute interface flows via dispatch
         flow_values = _compute_interface_flows(model, sc, T, transmission_ext)
+        overflow = _timeseries(inner, :interface_overflow, interfaces, T, sc = sc)
+        overflow_penalty = OrderedDict(
+            ifc.name => [
+                round(
+                    overflow[ifc.name][t] * ifc.flow_limit_penalty[t],
+                    digits = 5,
+                ) for t in 1:T
+            ] for ifc in interfaces
+        )
 
         sol[sc.name]["Interface: Flow (MW)"] = OrderedDict(
             ifc.name => [
                 round(flow_values[ifc.offset, t], digits = 5) for t in 1:T
             ] for ifc in interfaces
         )
-
-        sol[sc.name]["Interface: Overflow (MW)"] =
-            _timeseries(inner, :interface_overflow, interfaces, T, sc = sc)
-
-        sol[sc.name]["Interface: Overflow penalty (\$)"] = OrderedDict(
-            ifc.name => [
-                round(
-                    value(inner[:interface_overflow][sc.name, ifc.name, t]) * ifc.flow_limit_penalty[t],
-                    digits = 5,
-                ) for t in 1:T
-            ] for ifc in interfaces
-        )
+        sol[sc.name]["Interface: Overflow (MW)"] = overflow
+        sol[sc.name]["Interface: Overflow penalty (\$)"] = overflow_penalty
+        
+        summary = sol[sc.name]["Summary"]
+        summary["Interface: Peak total overflow (MW)"] = maximum(_per_t(overflow, T))
+        summary["Total penalty: Interface overflow (\$)"] = _total(overflow_penalty)
     end
     return nothing
 end

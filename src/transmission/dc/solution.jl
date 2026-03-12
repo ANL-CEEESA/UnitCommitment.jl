@@ -95,7 +95,44 @@ function store_solution(
                 branch in invest_branches
             )
         end
+
+        _store_transmission_summary!(sol[sc.name], sc, T)
     end
 
+    return
+end
+
+function _store_transmission_summary!(sol::OrderedDict, sc, T::Int; ε=1e-4)
+    summary = sol["Summary"]
+
+    overflow = sol["Branch: Overflow (MW)"]
+    utilization = sol["Branch: Base utilization (%)"]
+    overflow_penalty = sol["Branch: Overflow penalty (\$)"]
+
+    # Branches with overflow
+    summary["Branch: Branches with overflow"] =
+        count(ts -> any(v > ε for v in ts), values(overflow))
+
+    # Congested branches (utilization >= 100%)
+    summary["Branch: Congested branches"] =
+        count(ts -> any(v >= 100.0 for v in ts), values(utilization))
+
+    # Peak total overflow
+    overflow_per_t = _per_t(overflow, T)
+    summary["Branch: Peak total overflow (MW)"] = maximum(overflow_per_t)
+
+    # Total overflow penalty
+    summary["Total penalty: Branch overflow (\$)"] = _total(overflow_penalty)
+
+    # Investment
+    if haskey(sol, "Branch: Investment cost (\$)")
+        invest_cost = sol["Branch: Investment cost (\$)"]
+        summary["Branch: Total investment cost (\$)"] = _total(invest_cost)
+        if haskey(sol, "Branch: Investment status")
+            invest_status = sol["Branch: Investment status"]
+            summary["Branch: Circuits invested"] =
+                count(ts -> ts[end] > 0.5, values(invest_status))
+        end
+    end
     return
 end

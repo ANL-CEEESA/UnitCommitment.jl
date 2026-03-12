@@ -148,12 +148,13 @@ function store_solution(
     inner = model.inner
     T = instance.time
     for sc in instance.scenarios
+        sc_sol = sol[sc.name]
         profiled_units = sc[:profiled]
 
-        sol[sc.name]["Profiled: Production (MW)"] =
-            _timeseries(inner, :prod, profiled_units, T, sc = sc)
+        production = _timeseries(inner, :prod, profiled_units, T, sc = sc)
+        sc_sol["Profiled: Production (MW)"] = production
 
-        sol[sc.name]["Profiled: Utilization (%)"] = OrderedDict(
+        utilization = OrderedDict(
             pu.name => [
                 round(
                     100.0 * value(inner[:prod][sc.name, pu.name, t]) /
@@ -162,21 +163,50 @@ function store_solution(
                 ) for t in 1:T
             ] for pu in profiled_units
         )
+        sc_sol["Profiled: Utilization (%)"] = utilization
 
-        sol[sc.name]["Profiled: Production cost (\$)"] = OrderedDict(
+        prod_cost = OrderedDict(
             pu.name => [
                 value(inner[:prod][sc.name, pu.name, t]) * pu.cost[t]
                 for t in 1:T
             ] for pu in profiled_units
         )
+        sc_sol["Profiled: Production cost (\$)"] = prod_cost
 
-        sol[sc.name]["Profiled: Investment status"] = OrderedDict(
+        invest_status = OrderedDict(
             pu.name => value(inner[:invest][pu.name]) for
             pu in profiled_units if pu.invest > 0.0
         )
+        sc_sol["Profiled: Investment status"] = invest_status
 
-        sol[sc.name]["Profiled: Reactive power (MVAr)"] =
-            _timeseries(inner, :qg_profiled, profiled_units, T, sc = sc)
+        qg = _timeseries(inner, :qg_profiled, profiled_units, T, sc = sc)
+        sc_sol["Profiled: Reactive power (MVAr)"] = qg
+
+        summary = sc_sol["Summary"]
+        summary["Profiled: Total production cost (\$)"] = _total(prod_cost)
+        total_available = sum(
+            (sum(pu.max_power[t] for t in 1:T) for pu in profiled_units),
+            init = 0.0,
+        )
+        total_produced = _total(production)
+        summary["Profiled: Total curtailment (MW)"] =
+            total_available - total_produced
+        if total_available > 0
+            summary["Profiled: Utilization (%)"] =
+                100.0 * total_produced / total_available
+        end
+
+        # Investment
+        invest_units = [pu for pu in profiled_units if pu.invest > 0.0]
+        if !isempty(invest_units)
+            summary["Profiled: Total investment cost (\$)"] = sum(
+                invest_status[pu.name] * pu.invest for pu in invest_units
+            )
+            summary["Profiled: Units invested"] = count(
+                pu -> invest_status[pu.name] > 0.5,
+                invest_units,
+            )
+        end
     end
 
     return
