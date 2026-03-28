@@ -15,11 +15,16 @@ function validate(
         branches = sc[:branches]
         flow_sol = solution[sc.name]["Branch: Base flow (MW)"]
         overflow_sol = solution[sc.name]["Branch: Overflow (MW)"]
+        invest_sol =
+            get(solution[sc.name], "Branch: Investment status", nothing)
 
         for l in branches, t in 1:instance.time
             flow = flow_sol[l.name][t]
             overflow = overflow_sol[l.name][t]
-            limit = l.normal_flow_limit[t]
+            invest =
+                invest_sol !== nothing && haskey(invest_sol, l.name) ?
+                invest_sol[l.name][t] : 1.0
+            limit = l.normal_flow_limit[t] * invest
 
             # Base flow limit: |flow| <= limit + overflow
             if abs(flow) > limit + overflow + tol
