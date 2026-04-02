@@ -83,19 +83,15 @@ function store_solution(
         end
 
         # Investment results
-        invest_branches = [b for b in branches if b.invest[1] > 0.0]
+        invest_branches = [b for b in branches if b.invest > 0.0]
         if !isempty(invest_branches)
             sol[sc.name]["Branch: Investment cost (\$)"] = OrderedDict(
-                branch.name => [
-                    (
-                        value(inner[:invest][branch.name, t]) -
-                        value(inner[:invest][branch.name, t-1])
-                    ) * branch.invest[t] for t in 1:T
-                ] for branch in invest_branches
+                branch.name =>
+                    value(inner[:invest][branch.name]) * branch.invest for
+                branch in invest_branches
             )
             sol[sc.name]["Branch: Investment status"] = OrderedDict(
-                branch.name =>
-                    [value(inner[:invest][branch.name, t]) for t in 1:T] for
+                branch.name => value(inner[:invest][branch.name]) for
                 branch in invest_branches
             )
         end

@@ -766,7 +766,7 @@ from DC-based LMPs due to losses and reactive power constraints.
 | `Thermal: Net revenue ($)`     | Net revenue after subtracting production, startup and shutdown costs from gross revenue. Only available if LMPs are computed.                        | $      |
 | `Thermal: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                      | $      |
 | `Thermal: Reactive power (MVAr)` | Reactive power output from each thermal generator. Only present when AC formulation is used.                                                       | MVAr   |
-| `Thermal: Investment status`   | Investment status for candidate thermal units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
+| `Thermal: Investment status`   | Investment status for candidate thermal units (1 if invested, 0 otherwise). Only included for units with positive investment cost. Value is a scalar, not a time series. | Binary |
 
 #### Example
 
@@ -832,8 +832,8 @@ from DC-based LMPs due to losses and reactive power constraints.
 | `Branch: Overflow (MW)`              | Flow limit slack. This is a single variable shared across base-case and contingency constraints; the solver sets it to the minimum value that satisfies all flow limit constraints simultaneously.     | MW      |
 | `Branch: Overflow penalty ($)`       | Penalty cost for overflow (overflow times flow limit penalty per time step).                                                                                                                          | $       |
 | `Branch: Base utilization (%)`       | Percentage of normal flow limit utilized under base-case conditions. DC: `|flow| / normal limit`. AC: `apparent power / normal limit`.                                                               | %       |
-| `Branch: Investment cost ($)`        | Incremental investment cost at each time period (cost of new circuits built at time t, not cumulative). Only included for branches with positive investment cost.                                      | $       |
-| `Branch: Investment status`          | Number of parallel circuits invested along each candidate branch corridor by this time step. Only included for branches with positive investment cost.                                                 | Integer |
+| `Branch: Investment cost ($)`        | Total investment cost for the branch (number of circuits times cost per circuit). Only included for branches with positive investment cost. Value is a scalar.                                         | $       |
+| `Branch: Investment status`          | Number of parallel circuits invested along each candidate branch corridor. Only included for branches with positive investment cost. Value is a scalar integer.                                        | Integer |
 
 #### DC output keys
 
@@ -885,10 +885,10 @@ from DC-based LMPs due to losses and reactive power constraints.
     }
   },
   "Branch: Investment cost ($)": {
-    "l3": [0.0, 3000000.0, 0.0, 3000000.0]
+    "l3": 3000000.0
   },
   "Branch: Investment status": {
-    "l3": [0.0, 1.0, 1.0, 2.0]
+    "l3": 2.0
   }
 }
 ```
@@ -1012,7 +1012,7 @@ from DC-based LMPs due to losses and reactive power constraints.
 | `Profiled: Net revenue ($)`     | Net revenue after subtracting production costs from gross revenue. Only available if LMPs are computed.                                               | $      |
 | `Profiled: Uplift payment ($)`  | Make-whole payment needed to cover negative net revenue (zero if net revenue is positive). Only available if LMPs are computed.                       | $      |
 | `Profiled: Reactive power (MVAr)` | Reactive power output from each profiled generator. Only present when AC formulation is used.                                                       | MVAr   |
-| `Profiled: Investment status`   | Investment status for candidate profiled units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
+| `Profiled: Investment status`   | Investment status for candidate profiled units (1 if invested, 0 otherwise). Only included for units with positive investment cost. Value is a scalar, not a time series. | Binary |
 
 #### Example
 
@@ -1061,7 +1061,7 @@ from DC-based LMPs due to losses and reactive power constraints.
 | `Storage: Discharging rate (MW)` | Power rate at which each storage unit is discharging.                                                                                                | MW     |
 | `Storage: Discharging cost ($)`  | Cost incurred for discharging each storage unit (rate times cost).                                                                                   | $      |
 | `Storage: Reactive power (MVAr)` | Reactive power output from each storage unit. Only present when AC formulation is used.                                                              | MVAr   |
-| `Storage: Investment status`     | Investment status for candidate storage units (1 if invested by this time step, 0 otherwise). Only included for units with positive investment cost. | Binary |
+| `Storage: Investment status`     | Investment status for candidate storage units (1 if invested, 0 otherwise). Only included for units with positive investment cost. Value is a scalar, not a time series. | Binary |
 
 #### Example
 
@@ -1127,8 +1127,8 @@ from DC-based LMPs due to losses and reactive power constraints.
 
 ### Notes
 
-- Investment status variables show the cumulative investment decision (whether
-  the unit/line is built by time `t`), not the incremental decision at time `t`.
+- Investment status variables show whether the unit/line is built (a scalar
+  value, not a time series).
 - Reserve variables use a nested structure where the outer object is indexed by
   reserve product name, and the inner object is indexed by generator name.
 - Components with zero investment cost do not appear in the investment status

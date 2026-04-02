@@ -49,8 +49,8 @@ function _store_thermal_solution!(
     sol["Thermal: Switch off"] =
         _timeseries(model, :switch_off, sc[:thermal], T)
     sol["Thermal: Investment status"] = OrderedDict(
-        g.name => [value(model[:invest][g.name, t]) for t in 1:T] for
-        g in sc[:thermal] if g.invest[1] > 0.0
+        g.name => value(model[:invest][g.name]) for
+        g in sc[:thermal] if g.invest > 0.0
     )
     sol["Thermal: Reactive power (MVAr)"] =
         _timeseries(model, :qg_thermal, sc[:thermal], T, sc = sc)

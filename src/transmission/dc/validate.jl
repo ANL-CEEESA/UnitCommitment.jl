@@ -23,7 +23,7 @@ function validate(
             overflow = overflow_sol[l.name][t]
             invest =
                 invest_sol !== nothing && haskey(invest_sol, l.name) ?
-                invest_sol[l.name][t] : 1.0
+                invest_sol[l.name] : 1.0
             limit = l.normal_flow_limit[t] * invest
 
             # Base flow limit: |flow| <= limit + overflow

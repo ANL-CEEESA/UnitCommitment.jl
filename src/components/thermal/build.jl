@@ -134,12 +134,6 @@ function _add_thermal_vars!(
                     startup[g.name, t, s] = @variable(model, binary = true)
                 end
             end
-
-            # Investment
-            if g.invest[1] > 0.0
-                invest[g.name, 0] = 0.0
-                invest[g.name, t] = @variable(model, binary = true)
-            end
         end
 
         # Second stage
@@ -186,6 +180,14 @@ function _add_thermal_vars!(
             end
         end
     end
+
+    # Investment variables (outside the time loop)
+    for g in instance.scenarios[1][:thermal]
+        if g.invest > 0.0
+            invest[g.name] = @variable(model, binary = true)
+        end
+    end
+
     return
 end
 
@@ -289,14 +291,12 @@ function _add_thermal_obj!(
 
     # Investment costs
     for g in instance.scenarios[1][:thermal]
-        g.invest[1] > 0 || continue
-        for t in 1:instance.time
-            add_to_expression!(
-                model[:obj],
-                invest[g.name, t] - invest[g.name, t-1],
-                g.invest[t] * instance.scenarios[1][:investment_cost_weight],
-            )
-        end
+        g.invest > 0 || continue
+        add_to_expression!(
+            model[:obj],
+            invest[g.name],
+            g.invest * instance.scenarios[1][:investment_cost_weight],
+        )
     end
 
     # Spinning reserve shortfall
@@ -497,21 +497,14 @@ function _add_thermal_constr_invest!(
     invest = model[:invest]
     is_on = model[:is_on]
     eq_invest_link = _init(model, :eq_invest_link)
-    eq_invest_nondec = _init(model, :eq_invest_nondec)
 
     for g in instance.scenarios[1][:thermal]
-        g.invest[1] > 0 || continue
+        g.invest > 0 || continue
 
         # A generator can only be committed if the investment has been made
         for t in 1:T
             eq_invest_link[g.name, t] =
-                @constraint(model, is_on[g.name, t] <= invest[g.name, t])
-        end
-
-        # Once a generator is invested in, the investment is irreversible
-        for t in 2:T
-            eq_invest_nondec[g.name, t] =
-                @constraint(model, invest[g.name, t-1] <= invest[g.name, t])
+                @constraint(model, is_on[g.name, t] <= invest[g.name])
         end
     end
     return

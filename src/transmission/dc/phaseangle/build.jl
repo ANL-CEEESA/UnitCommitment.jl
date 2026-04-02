@@ -15,7 +15,6 @@ function build_model(
     _add_dc_obj!(model, instance, ext)
     _add_dc_constr_flow!(model, instance, ext)
     _add_dc_constr_nodal_balance!(model, instance, ext)
-    _add_dc_constr_invest!(model, instance, ext)
     _add_dc_constr_angle_diff!(model, instance, ext)
     return
 end
@@ -65,16 +64,13 @@ function _add_dc_vars!(
     invest = _init(model, :invest)
 
     for branch in instance.scenarios[1][:branches]
-        branch.invest[1] > 0.0 || continue
-        invest[branch.name, 0] = 0.0
-        for t in 1:T
-            invest[branch.name, t] = @variable(
-                model,
-                lower_bound = 0,
-                upper_bound = branch.max_copy,
-                integer = true
-            )
-        end
+        branch.invest > 0.0 || continue
+        invest[branch.name] = @variable(
+            model,
+            lower_bound = 0,
+            upper_bound = branch.max_copy,
+            integer = true
+        )
     end
 
     # Phase angle variables
@@ -142,14 +138,14 @@ function _add_dc_constr_flow!(
                 theta[sc.name, branch.source.name, t] -
                 theta[sc.name, branch.target.name, t]
 
-            if branch.invest[1] > 0.0
+            if branch.invest > 0.0
                 # Investment branches
                 if branch.max_copy > 1
                     # Multiple parallel circuits: flow = invest * b * angle_diff
                     eq_dc_flow[sc.name, branch.name, t] = @constraint(
                         model,
                         flow[sc.name, branch.name, t] ==
-                        invest[branch.name, t] * b * angle_diff
+                        invest[branch.name] * b * angle_diff
                     )
                 else
                     # Single circuit with big-M formulation
@@ -158,14 +154,12 @@ function _add_dc_constr_flow!(
                     eq_dc_flow_bigm_ub[sc.name, branch.name, t] = @constraint(
                         model,
                         flow[sc.name, branch.name, t] <=
-                        b * angle_diff +
-                        ext.big_m * (1 - invest[branch.name, t])
+                        b * angle_diff + ext.big_m * (1 - invest[branch.name])
                     )
                     eq_dc_flow_bigm_lb[sc.name, branch.name, t] = @constraint(
                         model,
                         flow[sc.name, branch.name, t] >=
-                        b * angle_diff -
-                        ext.big_m * (1 - invest[branch.name, t])
+                        b * angle_diff - ext.big_m * (1 - invest[branch.name])
                     )
                 end
 
@@ -173,13 +167,13 @@ function _add_dc_constr_flow!(
                 eq_flow_limit_ub[sc.name, branch.name, t] = @constraint(
                     model,
                     flow[sc.name, branch.name, t] <=
-                    branch.normal_flow_limit[t] * invest[branch.name, t] +
+                    branch.normal_flow_limit[t] * invest[branch.name] +
                     overflow[sc.name, branch.name, t]
                 )
                 eq_flow_limit_lb[sc.name, branch.name, t] = @constraint(
                     model,
                     flow[sc.name, branch.name, t] >=
-                    -branch.normal_flow_limit[t] * invest[branch.name, t] -
+                    -branch.normal_flow_limit[t] * invest[branch.name] -
                     overflow[sc.name, branch.name, t]
                 )
             else
@@ -232,29 +226,6 @@ function _add_dc_constr_nodal_balance!(
                         flow[sc.name, lm.name, t] for
                         lm in branches if lm.source == b
                     )
-                )
-            end
-        end
-    end
-    return
-end
-
-function _add_dc_constr_invest!(
-    model::JuMP.Model,
-    instance::UnitCommitmentInstance,
-    ext::PhaseAngleTransmissionExt,
-)::Nothing
-    T = instance.time
-    invest = model[:invest]
-    eq_invest_nondec = _init(model, :eq_invest_nondec)
-
-    # Investment is irreversible
-    for branch in instance.scenarios[1][:branches]
-        if branch.invest[1] > 0.0
-            for t in 2:T
-                eq_invest_nondec[branch.name, t] = @constraint(
-                    model,
-                    invest[branch.name, t-1] <= invest[branch.name, t],
                 )
             end
         end

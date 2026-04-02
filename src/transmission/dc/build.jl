@@ -39,16 +39,12 @@ function _add_dc_obj!(
 
     # Investment cost
     for branch in instance.scenarios[1][:branches]
-        branch.invest[1] > 0.0 || continue
-        for t in 1:T
-            add_to_expression!(
-                model[:obj],
-                model[:invest][branch.name, t] -
-                model[:invest][branch.name, t-1],
-                branch.invest[t] *
-                instance.scenarios[1][:investment_cost_weight],
-            )
-        end
+        branch.invest > 0.0 || continue
+        add_to_expression!(
+            model[:obj],
+            model[:invest][branch.name],
+            branch.invest * instance.scenarios[1][:investment_cost_weight],
+        )
     end
     return
 end

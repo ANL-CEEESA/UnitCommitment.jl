@@ -23,7 +23,7 @@ Base.@kwdef mutable struct Branch
     flow_limit_penalty::Vector{Float64}
     angle_diff_min::Float64 = -Inf
     angle_diff_max::Float64 = Inf
-    invest::Vector{Float64} = [0.0]
+    invest::Float64 = 0.0
     max_copy::Int = 1
 end
 

@@ -20,7 +20,7 @@ Base.@kwdef mutable struct StorageUnit
     initial_level::Float64
     min_ending_level::Float64
     max_ending_level::Float64
-    invest::Vector{Float64}
+    invest::Float64
     qmin::Float64 = 0.0
     qmax::Float64 = 0.0
     apparent_power_limit::Float64 = Inf

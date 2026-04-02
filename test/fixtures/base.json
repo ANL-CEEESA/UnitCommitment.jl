@@ -38,7 +38,7 @@
       "Initial status (h)": -2,
       "Initial power (MW)": 0,
       "Reserve eligibility": ["r1", "r2"],
-      "Investment cost ($)": [5000, 6000, 7000, 8000],
+      "Investment cost ($)": 5000,
       "Type": "Thermal"
     },
     "g3": {
@@ -146,7 +146,7 @@
       "Cost ($/MW)": 30.0,
       "Minimum power (MW)": 5.0,
       "Maximum power (MW)": 80.0,
-      "Investment cost ($)": [1000, 2000, 3000, 4000]
+      "Investment cost ($)": 1000
     }
   },
   "Buses": {
@@ -326,7 +326,7 @@
       "Susceptance (S)": 10.0,
       "Normal flow limit (MW)": 100.0,
       "Flow limit penalty ($/MW)": 5000.0,
-      "Investment cost ($)": [1000, 2000, 3000, 4000],
+      "Investment cost ($)": 1000,
       "Max number of parallel circuits": 3
     },
     "l22": {
@@ -384,7 +384,7 @@
       "Charge cost ($/MW)": 3.0,
       "Discharge cost ($/MW)": 2.0,
       "Initial level (MWh)": 100.0,
-      "Investment cost ($)": [5000, 6000, 7000, 8000],
+      "Investment cost ($)": 5000,
       "Allow simultaneous charging and discharging": true
     }
   },

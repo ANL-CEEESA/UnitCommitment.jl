@@ -27,10 +27,10 @@ function validate(
                 bin(solution[sc.name]["Storage: Is charging"][su.name])
             is_discharging =
                 bin(solution[sc.name]["Storage: Is discharging"][su.name])
-            is_investable = su.invest[1] > 0.0
+            is_investable = su.invest > 0.0
             invest_status =
                 is_investable ?
-                bin(solution[sc.name]["Storage: Investment status"][su.name]) :
+                solution[sc.name]["Storage: Investment status"][su.name] > 0.5 :
                 nothing
             # time in hours
             time_step = sc[:time_step] / 60
@@ -38,7 +38,7 @@ function validate(
             for t in 1:instance.time
                 # Unit must store at least its minimum level
                 effective_min =
-                    is_investable ? su.min_level[t] * invest_status[t] :
+                    is_investable ? su.min_level[t] * invest_status :
                     su.min_level[t]
                 if storage_level[t] < effective_min - tol
                     @error @sprintf(
@@ -52,7 +52,7 @@ function validate(
                 end
                 # Unit must store at most its maximum level
                 effective_max =
-                    is_investable ? su.max_level[t] * invest_status[t] :
+                    is_investable ? su.max_level[t] * invest_status :
                     su.max_level[t]
                 if storage_level[t] > effective_max + tol
                     @error @sprintf(
@@ -212,22 +212,6 @@ function validate(
                         discharge_cost
                     )
                     err_count += 1
-                end
-            end
-
-            # Investment must be non-decreasing
-            if is_investable
-                for t in 2:instance.time
-                    if invest_status[t-1] > invest_status[t] + tol
-                        @error @sprintf(
-                            "Storage unit %s has decreasing investment status at time %d (%.2f > %.2f)",
-                            su.name,
-                            t,
-                            invest_status[t-1],
-                            invest_status[t]
-                        )
-                        err_count += 1
-                    end
                 end
             end
         end

@@ -17,10 +17,10 @@ function _check(
     end
     for sc in instance.scenarios
         for branch in sc[:branches]
-            if branch.invest[1] > 0.0
+            if branch.invest > 0.0
                 error(
                     "ShiftFactorsTransmissionExt does not support branch investment. " *
-                    "Branch '$(branch.name)' has investment cost $(branch.invest[1]). " *
+                    "Branch '$(branch.name)' has investment cost $(branch.invest). " *
                     "Use PhaseAngleTransmissionExt instead.",
                 )
             end

@@ -11,7 +11,6 @@ function slice!(
         l.normal_flow_limit = l.normal_flow_limit[range]
         l.emergency_flow_limit = l.emergency_flow_limit[range]
         l.flow_limit_penalty = l.flow_limit_penalty[range]
-        l.invest = l.invest[range]
     end
     for sh in sc[:shunts]
         sh.status = sh.status[range]

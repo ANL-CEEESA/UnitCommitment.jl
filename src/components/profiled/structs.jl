@@ -8,7 +8,7 @@ Base.@kwdef mutable struct ProfiledUnit
     min_power::Vector{Float64}
     max_power::Vector{Float64}
     cost::Vector{Float64}
-    invest::Vector{Float64}
+    invest::Float64
     qmin::Float64 = 0.0
     qmax::Float64 = 0.0
 end

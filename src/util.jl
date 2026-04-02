@@ -93,7 +93,7 @@ function _set_names!(dict::Dict)
             if dict[name][idx] isa AffExpr
                 continue
             end
-            idx_str = join(map(string, idx), ",")
+            idx_str = idx isa Tuple ? join(map(string, idx), ",") : string(idx)
             set_name(dict[name][idx], "$name[$idx_str]")
         end
     end

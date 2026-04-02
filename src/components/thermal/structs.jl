@@ -51,7 +51,7 @@ Base.@kwdef mutable struct ThermalUnit
     reserves::Vector{Reserve}
     non_spinning_capacity::Float64
     commitment_status::Vector{Union{Bool,Nothing}}
-    invest::Vector{Float64}
+    invest::Float64
     qmin::Float64 = 0.0
     qmax::Float64 = 0.0
     voltage_setpoint::Float64 = 1.0

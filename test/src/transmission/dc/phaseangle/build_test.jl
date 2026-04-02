@@ -33,18 +33,14 @@ using HiGHS, JuMP, UnitCommitment
     @test_continuous_var model[:overflow]["s1", "l22", 1] lb = 0
 
     # Investment variables
-    # # l1: no investment (variable should not exist for t=1)
-    @test ("l1", 1) ∉ keys(model[:invest])
+    # l1: no investment (variable should not exist)
+    @test "l1" ∉ keys(model[:invest])
 
     # l21: investment line with max_copy=3
-    @test model[:invest]["l21", 0] == 0.0
-    @test_integer_var model[:invest]["l21", 1] lb = 0 ub = 3
-    @test_integer_var model[:invest]["l21", 2] lb = 0 ub = 3
+    @test_integer_var model[:invest]["l21"] lb = 0 ub = 3
 
     # l22: investment line with max_copy=1
-    @test model[:invest]["l22", 0] == 0.0
-    @test_integer_var model[:invest]["l22", 1] lb = 0 ub = 1
-    @test_integer_var model[:invest]["l22", 2] lb = 0 ub = 1
+    @test_integer_var model[:invest]["l22"] lb = 0 ub = 1
 
     # Objective function
     # -------------------------------------------------------------------------
@@ -55,17 +51,11 @@ using HiGHS, JuMP, UnitCommitment
     @test_obj_coef model[:overflow]["s1", "l22", 1] 6000.0
 
     # Investment costs (with investment_cost_weight = 0.1)
-    # l21: costs = [1000, 2000, 3000, 4000]
-    @test_obj_coef model[:invest]["l21", 1] -100.0
-    @test_obj_coef model[:invest]["l21", 2] -100.0
-    @test_obj_coef model[:invest]["l21", 3] -100.0
-    @test_obj_coef model[:invest]["l21", 4] 400.0
+    # l21: cost=1000, weight=0.1 => coef=100
+    @test_obj_coef model[:invest]["l21"] 100.0
 
-    # l22: cost = 5000, same for all periods
-    @test_obj_coef model[:invest]["l22", 1] 0.0
-    @test_obj_coef model[:invest]["l22", 2] 0.0
-    @test_obj_coef model[:invest]["l22", 3] 0.0
-    @test_obj_coef model[:invest]["l22", 4] 500.0
+    # l22: cost=5000, weight=0.1 => coef=500
+    @test_obj_coef model[:invest]["l22"] 500.0
 
     # eq_dc_flow
     # -------------------------------------------------------------------------
@@ -75,13 +65,13 @@ using HiGHS, JuMP, UnitCommitment
     @test ("s1", "l1", 1) ∉ keys(model[:eq_dc_flow_bigm_ub])
 
     # l21: investment line with max_copy=3, susceptance = 10.0
-    @test_constr model[:eq_dc_flow]["s1", "l21", 1] "-1000 invest[l21,1]*theta[s1,b1,1] + 1000 invest[l21,1]*theta[s1,b3,1] + flow[s1,l21,1] = 0"
+    @test_constr model[:eq_dc_flow]["s1", "l21", 1] "-1000 invest[l21]*theta[s1,b1,1] + 1000 invest[l21]*theta[s1,b3,1] + flow[s1,l21,1] = 0"
     @test ("s1", "l21", 1) ∉ keys(model[:eq_dc_flow_bigm_ub])
 
     # # l22: investment line with max_copy=1, susceptance = 15.0, bigM = 1e6
     @test ("s1", "l22", 1) ∉ keys(model[:eq_dc_flow])
-    @test_constr model[:eq_dc_flow_bigm_ub]["s1", "l22", 1] "1000000 invest[l22,1] - 1500 theta[s1,b2,1] + 1500 theta[s1,b6,1] + flow[s1,l22,1] ≤ 1000000"
-    @test_constr model[:eq_dc_flow_bigm_lb]["s1", "l22", 1] "-1000000 invest[l22,1] - 1500 theta[s1,b2,1] + 1500 theta[s1,b6,1] + flow[s1,l22,1] ≥ -1000000"
+    @test_constr model[:eq_dc_flow_bigm_ub]["s1", "l22", 1] "1000000 invest[l22] - 1500 theta[s1,b2,1] + 1500 theta[s1,b6,1] + flow[s1,l22,1] ≤ 1000000"
+    @test_constr model[:eq_dc_flow_bigm_lb]["s1", "l22", 1] "-1000000 invest[l22] - 1500 theta[s1,b2,1] + 1500 theta[s1,b6,1] + flow[s1,l22,1] ≥ -1000000"
 
     # eq_flow_limit_ub and eq_flow_limit_lb
     # -------------------------------------------------------------------------
@@ -90,23 +80,12 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_flow_limit_lb]["s1", "l1", 1] "overflow[s1,l1,1] + flow[s1,l1,1] ≥ -300"
 
     # # l21: investment line with max_copy=3, normal_flow_limit = 100.0
-    @test_constr model[:eq_flow_limit_ub]["s1", "l21", 1] "-100 invest[l21,1] - overflow[s1,l21,1] + flow[s1,l21,1] ≤ 0"
-    @test_constr model[:eq_flow_limit_lb]["s1", "l21", 1] "100 invest[l21,1] + overflow[s1,l21,1] + flow[s1,l21,1] ≥ 0"
+    @test_constr model[:eq_flow_limit_ub]["s1", "l21", 1] "-100 invest[l21] - overflow[s1,l21,1] + flow[s1,l21,1] ≤ 0"
+    @test_constr model[:eq_flow_limit_lb]["s1", "l21", 1] "100 invest[l21] + overflow[s1,l21,1] + flow[s1,l21,1] ≥ 0"
 
     # l22: investment line with max_copy=1, normal_flow_limit = 150.0
-    @test_constr model[:eq_flow_limit_ub]["s1", "l22", 1] "-150 invest[l22,1] - overflow[s1,l22,1] + flow[s1,l22,1] ≤ 0"
-    @test_constr model[:eq_flow_limit_lb]["s1", "l22", 1] "150 invest[l22,1] + overflow[s1,l22,1] + flow[s1,l22,1] ≥ 0"
-
-    # eq_invest_nondec
-    # -------------------------------------------------------------------------
-    # l1: no investment, constraint should not exist
-    @test ("l1", 2) ∉ keys(model[:eq_invest_nondec])
-
-    # l21: investment line, enforced for t >= 2
-    @test ("l21", 1) ∉ keys(model[:eq_invest_nondec])
-    @test_constr model[:eq_invest_nondec]["l21", 2] "invest[l21,1] - invest[l21,2] ≤ 0"
-    @test_constr model[:eq_invest_nondec]["l21", 3] "invest[l21,2] - invest[l21,3] ≤ 0"
-    @test_constr model[:eq_invest_nondec]["l21", 4] "invest[l21,3] - invest[l21,4] ≤ 0"
+    @test_constr model[:eq_flow_limit_ub]["s1", "l22", 1] "-150 invest[l22] - overflow[s1,l22,1] + flow[s1,l22,1] ≤ 0"
+    @test_constr model[:eq_flow_limit_lb]["s1", "l22", 1] "150 invest[l22] + overflow[s1,l22,1] + flow[s1,l22,1] ≥ 0"
 
     # eq_nodal_balance
     # -------------------------------------------------------------------------

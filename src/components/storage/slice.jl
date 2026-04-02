@@ -21,7 +21,6 @@ function slice!(
         su.max_charge_rate = su.max_charge_rate[range]
         su.min_discharge_rate = su.min_discharge_rate[range]
         su.max_discharge_rate = su.max_discharge_rate[range]
-        su.invest = su.invest[range]
     end
     return
 end

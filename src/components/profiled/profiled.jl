@@ -30,11 +30,7 @@ function read_json(
                 ),
                 max_power = to_timeseries(dict["Maximum power (MW)"], T),
                 cost = to_timeseries(dict["Cost (\$/MW)"], T),
-                invest = to_timeseries(
-                    dict["Investment cost (\$)"] !== nothing ?
-                    dict["Investment cost (\$)"] : 0.0,
-                    T,
-                ),
+                invest = to_scalar(dict["Investment cost (\$)"], default = 0.0),
                 qmin = to_scalar(
                     dict["Reactive power min (MVAr)"],
                     default = 0.0,
@@ -94,11 +90,8 @@ function build_model(
 
     # Investment variables
     for pu in instance.scenarios[1][:profiled]
-        pu.invest[1] > 0.0 || continue
-        invest[pu.name, 0] = 0.0
-        for t in 1:T
-            invest[pu.name, t] = @variable(model, binary = true)
-        end
+        pu.invest > 0.0 || continue
+        invest[pu.name] = @variable(model, binary = true)
     end
 
     # Production costs
@@ -114,24 +107,12 @@ function build_model(
 
     # Investment costs
     for pu in instance.scenarios[1][:profiled]
-        pu.invest[1] > 0.0 || continue
-        for t in 1:T
-            add_to_expression!(
-                model[:obj],
-                invest[pu.name, t] - invest[pu.name, t-1],
-                pu.invest[t] * instance.scenarios[1][:investment_cost_weight],
-            )
-        end
-    end
-
-    # Unit is permanently built once invested
-    eq_invest_nondec = _init(model, :eq_invest_nondec)
-    for pu in instance.scenarios[1][:profiled]
-        pu.invest[1] > 0.0 || continue
-        for t in 2:T
-            eq_invest_nondec[pu.name, t] =
-                @constraint(model, invest[pu.name, t-1] <= invest[pu.name, t],)
-        end
+        pu.invest > 0.0 || continue
+        add_to_expression!(
+            model[:obj],
+            invest[pu.name],
+            pu.invest * instance.scenarios[1][:investment_cost_weight],
+        )
     end
 
     # Unit generation bounds are zero if not invested
@@ -139,17 +120,17 @@ function build_model(
     eq_invest_prod_lb = _init(model, :eq_invest_prod_lb)
     for sc in instance.scenarios
         for pu in sc[:profiled]
-            pu.invest[1] > 0.0 || continue
+            pu.invest > 0.0 || continue
             for t in 1:T
                 eq_invest_prod_ub[sc.name, pu.name, t] = @constraint(
                     model,
                     prod[sc.name, pu.name, t] <=
-                    pu.max_power[t] * invest[pu.name, t],
+                    pu.max_power[t] * invest[pu.name],
                 )
                 eq_invest_prod_lb[sc.name, pu.name, t] = @constraint(
                     model,
                     prod[sc.name, pu.name, t] >=
-                    pu.min_power[t] * invest[pu.name, t],
+                    pu.min_power[t] * invest[pu.name],
                 )
             end
         end
@@ -190,8 +171,8 @@ function store_solution(
         )
 
         sol[sc.name]["Profiled: Investment status"] = OrderedDict(
-            pu.name => [value(inner[:invest][pu.name, t]) for t in 1:T] for
-            pu in profiled_units if pu.invest[1] > 0.0
+            pu.name => value(inner[:invest][pu.name]) for
+            pu in profiled_units if pu.invest > 0.0
         )
 
         sol[sc.name]["Profiled: Reactive power (MVAr)"] =
@@ -260,7 +241,6 @@ function slice!(
         pu.max_power = pu.max_power[range]
         pu.min_power = pu.min_power[range]
         pu.cost = pu.cost[range]
-        pu.invest = pu.invest[range]
     end
     return
 end

@@ -33,7 +33,7 @@ function _add_storage_vars!(
         for t in 1:T
             storage_level[sc.name, su.name, t] = @variable(
                 model,
-                lower_bound = su.invest[1] > 0.0 ? 0.0 : su.min_level[t],
+                lower_bound = su.invest > 0.0 ? 0.0 : su.min_level[t],
                 upper_bound = su.max_level[t],
             )
             charge_rate[sc.name, su.name, t] = @variable(model)
@@ -58,11 +58,8 @@ function _add_storage_vars!(
 
     # Investment
     for su in instance.scenarios[1][:storage]
-        su.invest[1] > 0.0 || continue
-        invest_storage[su.name, 0] = 0.0
-        for t in 1:T
-            invest_storage[su.name, t] = @variable(model, binary = true)
-        end
+        su.invest > 0.0 || continue
+        invest_storage[su.name] = @variable(model, binary = true)
     end
     return
 end
@@ -128,14 +125,12 @@ function _add_storage_obj!(
 
     # Investment costs
     for su in instance.scenarios[1][:storage]
-        su.invest[1] > 0.0 || continue
-        for t in 1:T
-            add_to_expression!(
-                model[:obj],
-                invest_storage[su.name, t] - invest_storage[su.name, t-1],
-                su.invest[t] * instance.scenarios[1][:investment_cost_weight],
-            )
-        end
+        su.invest > 0.0 || continue
+        add_to_expression!(
+            model[:obj],
+            invest_storage[su.name],
+            su.invest * instance.scenarios[1][:investment_cost_weight],
+        )
     end
 
     return
@@ -235,34 +230,22 @@ function _add_storage_constr_invest!(
     storage_level = model[:storage_level]
     invest_storage = model[:invest_storage]
 
-    eq_invest_storage_nondec = _init(model, :eq_invest_storage_nondec)
     eq_invest_storage_level_ub = _init(model, :eq_invest_storage_level_ub)
     eq_invest_storage_level_lb = _init(model, :eq_invest_storage_level_lb)
 
-    # Investment is irreversible
-    for su in instance.scenarios[1][:storage]
-        su.invest[1] > 0.0 || continue
-        for t in 2:T
-            eq_invest_storage_nondec[su.name, t] = @constraint(
-                model,
-                invest_storage[su.name, t-1] <= invest_storage[su.name, t],
-            )
-        end
-    end
-
     # Storage level bounds depend on investment status
     for sc in instance.scenarios, su in sc[:storage]
-        su.invest[1] > 0.0 || continue
+        su.invest > 0.0 || continue
         for t in 1:T
             eq_invest_storage_level_ub[sc.name, su.name, t] = @constraint(
                 model,
                 storage_level[sc.name, su.name, t] <=
-                su.max_level[t] * invest_storage[su.name, t],
+                su.max_level[t] * invest_storage[su.name],
             )
             eq_invest_storage_level_lb[sc.name, su.name, t] = @constraint(
                 model,
                 storage_level[sc.name, su.name, t] >=
-                su.min_level[t] * invest_storage[su.name, t],
+                su.min_level[t] * invest_storage[su.name],
             )
         end
     end

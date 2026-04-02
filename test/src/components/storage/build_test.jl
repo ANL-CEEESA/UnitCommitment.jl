@@ -34,9 +34,8 @@ using HiGHS, JuMP, UnitCommitment
     @test_binary_var model[:is_charging]["s1", "su1", 1]
     @test_binary_var model[:is_discharging]["s1", "su1", 1]
 
-    @test_binary_var model[:invest_storage]["su2", 1]
-    @test_binary_var model[:invest_storage]["su2", 4]
-    @test ("su1", 1) ∉ keys(model[:invest_storage])
+    @test_binary_var model[:invest_storage]["su2"]
+    @test "su1" ∉ keys(model[:invest_storage])
 
     # Objective function
     # -------------------------------------------------------------------------
@@ -47,11 +46,8 @@ using HiGHS, JuMP, UnitCommitment
     @test_obj_coef model[:charge_rate]["s1", "su2", 1] 3.0
     @test_obj_coef model[:discharge_rate]["s1", "su2", 1] 2.0
 
-    # su2: invest costs [5000, 6000, 7000, 8000], weight=0.1
-    @test_obj_coef model[:invest_storage]["su2", 1] -100.0
-    @test_obj_coef model[:invest_storage]["su2", 2] -100.0
-    @test_obj_coef model[:invest_storage]["su2", 3] -100.0
-    @test_obj_coef model[:invest_storage]["su2", 4] 800.0
+    # su2: invest cost=5000, weight=0.1
+    @test_obj_coef model[:invest_storage]["su2"] 500.0
 
     # Constraints
     # -------------------------------------------------------------------------
@@ -75,18 +71,13 @@ using HiGHS, JuMP, UnitCommitment
     @test_constr model[:eq_ending_level]["s1", "su1"] "storage_level[s1,su1,4] ∈ [20, 80]"
 
     # Investment constraints
-    @test ("su1", 2) ∉ keys(model[:eq_invest_storage_nondec])
-    @test_constr model[:eq_invest_storage_nondec]["su2", 2] "invest_storage[su2,1] - invest_storage[su2,2] ≤ 0"
-    @test_constr model[:eq_invest_storage_nondec]["su2", 3] "invest_storage[su2,2] - invest_storage[su2,3] ≤ 0"
-    @test_constr model[:eq_invest_storage_nondec]["su2", 4] "invest_storage[su2,3] - invest_storage[su2,4] ≤ 0"
-
     @test ("s1", "su1", 1) ∉ keys(model[:eq_invest_storage_level_ub])
-    @test_constr model[:eq_invest_storage_level_ub]["s1", "su2", 1] "storage_level[s1,su2,1] - 200 invest_storage[su2,1] ≤ 0"
-    @test_constr model[:eq_invest_storage_level_ub]["s1", "su2", 4] "storage_level[s1,su2,4] - 200 invest_storage[su2,4] ≤ 0"
+    @test_constr model[:eq_invest_storage_level_ub]["s1", "su2", 1] "storage_level[s1,su2,1] - 200 invest_storage[su2] ≤ 0"
+    @test_constr model[:eq_invest_storage_level_ub]["s1", "su2", 4] "storage_level[s1,su2,4] - 200 invest_storage[su2] ≤ 0"
 
     @test ("s1", "su1", 1) ∉ keys(model[:eq_invest_storage_level_lb])
-    @test_constr model[:eq_invest_storage_level_lb]["s1", "su2", 1] "storage_level[s1,su2,1] - 20 invest_storage[su2,1] ≥ 0"
-    @test_constr model[:eq_invest_storage_level_lb]["s1", "su2", 4] "storage_level[s1,su2,4] - 20 invest_storage[su2,4] ≥ 0"
+    @test_constr model[:eq_invest_storage_level_lb]["s1", "su2", 1] "storage_level[s1,su2,1] - 20 invest_storage[su2] ≥ 0"
+    @test_constr model[:eq_invest_storage_level_lb]["s1", "su2", 4] "storage_level[s1,su2,4] - 20 invest_storage[su2] ≥ 0"
 
     # net_injection: su1 on b4, su2 on b5
     ni = model[:net_injection]

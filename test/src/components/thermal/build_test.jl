@@ -21,8 +21,8 @@ using HiGHS, JuMP, UnitCommitment
     @test_binary_var model[:switch_on]["g1", 1]
     @test_binary_var model[:switch_off]["g1", 1]
     @test_binary_var model[:startup]["g1", 1, 1]
-    @test ("g1", 1) ∉ keys(model[:invest])
-    @test_binary_var model[:invest]["g2", 1]
+    @test "g1" ∉ keys(model[:invest])
+    @test_binary_var model[:invest]["g2"]
     @test_continuous_var model[:prod_above]["s1", "g1", 1] lb = 0
     @test_continuous_var model[:segprod]["s1", "g1", 1, 1] lb = 0 ub = 10
     @test_continuous_var model[:segprod]["s1", "g1", 1, 2] lb = 0 ub = 20
@@ -59,10 +59,7 @@ using HiGHS, JuMP, UnitCommitment
     @test_obj_coef model[:switch_off]["g2", 1] 750.0
     @test_obj_coef model[:switch_off]["g3", 1] 0.0
 
-    @test_obj_coef model[:invest]["g2", 1] -100.0
-    @test_obj_coef model[:invest]["g2", 2] -100.0
-    @test_obj_coef model[:invest]["g2", 3] -100.0
-    @test_obj_coef model[:invest]["g2", 4] 800.0
+    @test_obj_coef model[:invest]["g2"] 500.0
     @test_obj_coef model[:reserve_shortfall]["s1", "r1", 1] 1000.0
     # eq_min_uptime
     # -------------------------------------------------------------------------
@@ -207,21 +204,10 @@ using HiGHS, JuMP, UnitCommitment
     @test ("g1", 1) ∉ keys(model[:eq_invest_link])
 
     # g2: positive investment cost
-    @test_constr model[:eq_invest_link]["g2", 1] "is_on[g2,1] - invest[g2,1] ≤ 0"
-    @test_constr model[:eq_invest_link]["g2", 2] "is_on[g2,2] - invest[g2,2] ≤ 0"
-    @test_constr model[:eq_invest_link]["g2", 3] "is_on[g2,3] - invest[g2,3] ≤ 0"
-    @test_constr model[:eq_invest_link]["g2", 4] "is_on[g2,4] - invest[g2,4] ≤ 0"
-
-    # eq_invest_nondec
-    # -------------------------------------------------------------------------
-    # g1: no investment cost, constraint should not exist
-    @test ("g1", 2) ∉ keys(model[:eq_invest_nondec])
-
-    # g2: positive investment cost, enforced for t >= 2
-    @test ("g2", 1) ∉ keys(model[:eq_invest_nondec])
-    @test_constr model[:eq_invest_nondec]["g2", 2] "invest[g2,1] - invest[g2,2] ≤ 0"
-    @test_constr model[:eq_invest_nondec]["g2", 3] "invest[g2,2] - invest[g2,3] ≤ 0"
-    @test_constr model[:eq_invest_nondec]["g2", 4] "invest[g2,3] - invest[g2,4] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 1] "is_on[g2,1] - invest[g2] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 2] "is_on[g2,2] - invest[g2] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 3] "is_on[g2,3] - invest[g2] ≤ 0"
+    @test_constr model[:eq_invest_link]["g2", 4] "is_on[g2,4] - invest[g2] ≤ 0"
 
     # eq_min_reserve
     # -------------------------------------------------------------------------

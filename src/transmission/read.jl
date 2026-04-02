@@ -63,10 +63,7 @@ function read_json(
                     dict["Angle difference max (rad)"],
                     default = Inf,
                 ),
-                invest = to_timeseries(
-                    to_scalar(dict["Investment cost (\$)"], default = 0.0),
-                    T,
-                ),
+                invest = to_scalar(dict["Investment cost (\$)"], default = 0.0),
                 max_copy = to_scalar(
                     dict["Max number of parallel circuits"],
                     default = 1,
