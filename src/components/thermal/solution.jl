@@ -40,8 +40,8 @@ function _store_thermal_summary!(sol::OrderedDict, sc, T::Int)
 
     # Peak capacity online
     cap_per_t = [
-        sum(is_on[g.name][t] * g.max_power[t] for g in thermal_units)
-        for t in 1:T
+        sum(is_on[g.name][t] * g.max_power[t] for g in thermal_units) for
+        t in 1:T
     ]
     summary["Thermal: Peak capacity online (MW)"] = maximum(cap_per_t)
 
@@ -62,13 +62,10 @@ function _store_thermal_summary!(sol::OrderedDict, sc, T::Int)
         invest_status = sol["Thermal: Investment status"]
         invest_units = [g for g in thermal_units if g.invest > 0.0]
         if !isempty(invest_units)
-            summary["Thermal: Total investment cost (\$)"] = sum(
-                invest_status[g.name] * g.invest for g in invest_units
-            )
-            summary["Thermal: Units invested"] = count(
-                g -> invest_status[g.name] > 0.5,
-                invest_units,
-            )
+            summary["Thermal: Total investment cost (\$)"] =
+                sum(invest_status[g.name] * g.invest for g in invest_units)
+            summary["Thermal: Units invested"] =
+                count(g -> invest_status[g.name] > 0.5, invest_units)
         end
     end
     return

@@ -136,8 +136,7 @@ function _update_solution(
         # Load-weighted average LMP
         if total_load > 0
             weighted_lmp = sum(
-                lmp_total[b.name][t] * b.load[t]
-                for b in sc[:bus] for t in 1:T
+                lmp_total[b.name][t] * b.load[t] for b in sc[:bus] for t in 1:T
             )
             summary["LMP: Average (\$/MWh)"] = weighted_lmp / total_load
         end
@@ -185,11 +184,7 @@ function _update_solution(
                 _total(sol[sc.name]["Virtual: Revenue (\$)"])
         end
 
-        # Round all floating-point LMP summary values
-        for (k, v) in summary
-            v isa AbstractFloat || continue
-            summary[k] = round(v, digits = 2)
-        end
+        _finalize_summary!(summary)
     end
     return
 end

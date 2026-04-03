@@ -36,10 +36,23 @@ function _store_solution!(model::UnitCommitmentModel)::Nothing
     return
 end
 
-_total(dict) = sum(sum(ts; init=0) for ts in values(dict); init=0)
-_per_t(dict, T) = [sum(ts[t] for ts in values(dict); init=0) for t in 1:T]
+_total(dict) = sum(sum(ts; init = 0) for ts in values(dict); init = 0)
+_per_t(dict, T) = [sum(ts[t] for ts in values(dict); init = 0) for t in 1:T]
 
-function _store_summary!(sol::AbstractDict, model::UnitCommitmentModel; ε=1e-4)::Nothing
+function _finalize_summary!(summary::OrderedDict)::Nothing
+    for (k, v) in summary
+        v isa AbstractFloat || continue
+        summary[k] = round(v, digits = 2)
+    end
+    sort!(summary)
+    return
+end
+
+function _store_summary!(
+    sol::AbstractDict,
+    model::UnitCommitmentModel;
+    ε = 1e-4,
+)::Nothing
     instance = model.instance
     T = instance.time
 
@@ -60,8 +73,7 @@ function _store_summary!(sol::AbstractDict, model::UnitCommitmentModel; ε=1e-4)
 
         # Solver
         inner = model.inner
-        summary["Solver: Objective value (\$)"] =
-            JuMP.objective_value(inner)
+        summary["Solver: Objective value (\$)"] = JuMP.objective_value(inner)
         summary["Solver: Has load curtailment?"] = total_curtail > ε
         summary["Solver: Termination status"] =
             string(JuMP.termination_status(inner))
@@ -98,18 +110,16 @@ function _store_summary!(sol::AbstractDict, model::UnitCommitmentModel; ε=1e-4)
         if haskey(s, "Reserve: Shortfall (MW)") && haskey(sc, :reserves)
             shortfall = s["Reserve: Shortfall (MW)"]
             summary["Total penalty: Reserve shortfall (\$)"] = sum(
-                sum(shortfall[r.name][t] * r.shortfall_penalty for t in 1:T)
-                for r in sc[:reserves]; init=0
+                sum(shortfall[r.name][t] * r.shortfall_penalty for t in 1:T) for r in sc[:reserves];
+                init = 0,
             )
-            summary["Reserve: Peak shortfall (MW)"] =
-                maximum(maximum(shortfall[r.name]) for r in sc[:reserves]; init=0)
+            summary["Reserve: Peak shortfall (MW)"] = maximum(
+                maximum(shortfall[r.name]) for r in sc[:reserves];
+                init = 0,
+            )
         end
 
-        # Round all floating-point summary values
-        for (k, v) in summary
-            v isa AbstractFloat || continue
-            summary[k] = round(v, digits = 2)
-        end
+        _finalize_summary!(summary)
     end
     return
 end

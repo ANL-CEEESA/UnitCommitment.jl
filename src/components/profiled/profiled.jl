@@ -199,13 +199,10 @@ function store_solution(
         # Investment
         invest_units = [pu for pu in profiled_units if pu.invest > 0.0]
         if !isempty(invest_units)
-            summary["Profiled: Total investment cost (\$)"] = sum(
-                invest_status[pu.name] * pu.invest for pu in invest_units
-            )
-            summary["Profiled: Units invested"] = count(
-                pu -> invest_status[pu.name] > 0.5,
-                invest_units,
-            )
+            summary["Profiled: Total investment cost (\$)"] =
+                sum(invest_status[pu.name] * pu.invest for pu in invest_units)
+            summary["Profiled: Units invested"] =
+                count(pu -> invest_status[pu.name] > 0.5, invest_units)
         end
     end
 

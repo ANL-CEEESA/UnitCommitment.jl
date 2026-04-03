@@ -17,7 +17,8 @@ function store_solution(
         isempty(interfaces) && continue
 
         flow_values = _compute_interface_flows(model, sc, T, transmission_ext)
-        overflow = _timeseries(inner, :interface_overflow, interfaces, T, sc = sc)
+        overflow =
+            _timeseries(inner, :interface_overflow, interfaces, T, sc = sc)
         overflow_penalty = OrderedDict(
             ifc.name => [
                 round(
@@ -34,10 +35,12 @@ function store_solution(
         )
         sol[sc.name]["Interface: Overflow (MW)"] = overflow
         sol[sc.name]["Interface: Overflow penalty (\$)"] = overflow_penalty
-        
+
         summary = sol[sc.name]["Summary"]
-        summary["Interface: Peak total overflow (MW)"] = maximum(_per_t(overflow, T))
-        summary["Total penalty: Interface overflow (\$)"] = _total(overflow_penalty)
+        summary["Interface: Peak total overflow (MW)"] =
+            maximum(_per_t(overflow, T))
+        summary["Total penalty: Interface overflow (\$)"] =
+            _total(overflow_penalty)
     end
     return nothing
 end

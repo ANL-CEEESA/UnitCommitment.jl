@@ -66,7 +66,8 @@ function store_solution(
     for sc in instance.scenarios
         demand = _timeseries(inner, :loads, sc[:psload], T, sc = sc)
         sol[sc.name]["Price-sensitive load: Demand served (MW)"] = demand
-        sol[sc.name]["Summary"]["Price-sensitive load: Total demand served (MW)"] = _total(demand)
+        sol[sc.name]["Summary"]["Price-sensitive load: Total demand served (MW)"] =
+            _total(demand)
     end
     return
 end

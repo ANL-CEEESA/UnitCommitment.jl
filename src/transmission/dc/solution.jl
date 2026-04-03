@@ -102,7 +102,7 @@ function store_solution(
     return
 end
 
-function _store_transmission_summary!(sol::OrderedDict, sc, T::Int; ε=1e-4)
+function _store_transmission_summary!(sol::OrderedDict, sc, T::Int; ε = 1e-4)
     summary = sol["Summary"]
 
     overflow = sol["Branch: Overflow (MW)"]
