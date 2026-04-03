@@ -1,6 +1,6 @@
 # Benchmark instances
 
-UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a [common data format](../guides/format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with `UnitCommitment.read_benchmark(name)`, as explained in the [tutorials](../tutorials/usage.md). Instance files can also be [directly downloaded from our website](https://axavier.org/UnitCommitment.jl/0.4/instances/).
+UnitCommitment.jl provides a large collection of benchmark instances collected from the literature and converted to a [common data format](../guides/input-format.md). In some cases, as indicated below, the original instances have been extended, with realistic parameters, using data-driven methods. If you use these instances in your research, we request that you cite UnitCommitment.jl, as well as the original sources, as listed below. Benchmark instances can be loaded with `UnitCommitment.read_benchmark(name)`, as explained in the [tutorials](../tutorials/usage.md). Instance files can also be [directly downloaded from our website](https://axavier.org/UnitCommitment.jl/0.4/instances/).
 
 !!! warning
 
@@ -266,7 +266,7 @@ Test cases used in [TeLuSa19]. These instances are similar to OR-LIB/UC, in the 
 
 ### Transmission and Expansion Planning Instances
 
-We curate a list of popular [MuSe21] transmission and expansion planning (TEP) instances used in academia paper. These TEP instances follow [UCJL format](format.md), with information on candidate branches and investment costs.
+We curate a list of popular [MuSe21] transmission and expansion planning (TEP) instances used in academia paper. These TEP instances follow [UCJL format](input-format.md), with information on candidate branches and investment costs.
 
 | Name                   | Buses | Generators | Lines | Generator Expension? | Transmission Expension? | Power Balance Penalty | References |
 | ---------------------- | ----- | ---------- | ----- | -------------------- | ----------------------- | --------------------- | ---------- |

@@ -43,7 +43,7 @@ UnitCommitment.write("solution.json", solution)
 
 # ## Solving a custom deterministic instance
 
-# In the previous example, we solved a benchmark instance provided by the package. To solve a custom instance, the first step is to create an input file describing the list of elements (generators, loads and transmission lines) in the network. See [Data Format](../guides/format.md) for a complete description of the data format UC.jl expects. To keep this tutorial self-contained, we will create the input JSON file using Julia; however, this step can also be done with a simple text editor. First, we define the contents of the file:
+# In the previous example, we solved a benchmark instance provided by the package. To solve a custom instance, the first step is to create an input file describing the list of elements (generators, loads and transmission lines) in the network. See [Data Format](../guides/input-format.md) for a complete description of the data format UC.jl expects. To keep this tutorial self-contained, we will create the input JSON file using Julia; however, this step can also be done with a simple text editor. First, we define the contents of the file:
 
 json_contents = """
 {
@@ -105,7 +105,7 @@ solution = UnitCommitment.solution(model)
 
 # In addition to deterministic test cases, UnitCommitment.jl can also solve two-stage stochastic instances of the problem. In this section, we demonstrate the most simple form, which builds a single (extensive form) model containing information for all scenarios. See [Decomposition](../tutorials/decomposition.md) for more advanced methods.
 
-# First, we need to create one JSON input file for each scenario. Parameters that are allowed to change across scenarios are marked as "uncertain" in the [JSON data format](../guides/format.md) page. It is also possible to specify the name and weight of each scenario, as shown below.
+# First, we need to create one JSON input file for each scenario. Parameters that are allowed to change across scenarios are marked as "uncertain" in the [JSON data format](../guides/input-format.md) page. It is also possible to specify the name and weight of each scenario, as shown below.
 
 # We start by creating `example_s1.json`, the first scenario file:
 

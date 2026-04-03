@@ -31,7 +31,8 @@ function make()
             ],
             "User guide" => [
                 "guides/problem.md",
-                "guides/format.md",
+                "guides/input-format.md",
+                "guides/output-format.md",
                 "guides/instances.md",
             ],
             "Experimental extensions" => [

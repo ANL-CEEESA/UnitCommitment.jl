@@ -3,7 +3,7 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 @testfunction summary_test begin
-    instance = UnitCommitment.read(path; kwargs...)
+    instance = UnitCommitment.read(fixture("case14/base.json"))
     model = UnitCommitment.build_model(instance, optimizer = test_optimizer())
     UnitCommitment.optimize!(model)
     sol = UnitCommitment.solution(model)
