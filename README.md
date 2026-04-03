@@ -62,24 +62,12 @@ Extensions are passed at read time to replace defaults or add new components:
 ```julia
 import UnitCommitment:
     ACTransmissionExt,
-    ACRectangular,
-    ThermalExt,
-    DamKucRajAta2016,
-    WanHob2016
+    ACRectangular
 
 # Use AC power flow instead of the default DC shift factors
 instance = UnitCommitment.read_benchmark(
     "matpower/case118/2017-02-01",
     extensions = [ACTransmissionExt(formulation = ACRectangular())],
-)
-
-# Customize thermal formulations and add flexiramp reserves
-instance = UnitCommitment.read(
-    "my_instance.json",
-    extensions = [
-        ThermalExt(ramping = DamKucRajAta2016.Ramping()),
-        WanHob2016.FlexirampExt(),
-    ],
 )
 ```
 
