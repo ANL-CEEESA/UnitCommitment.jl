@@ -29,13 +29,15 @@ function repair!(sc::UnitCommitmentScenario, ::ThermalExt)::Int
         end
 
         # Initial power must be at least min_power[1] when generator is on
-        if g.initial_status > 0 && g.initial_power < g.min_power[1]
-            prev_value = g.initial_power
-            new_value = g.min_power[1]
-            @warn "Generator $(g.name) has initial power lower than minimum power. " *
-                  "Changing initial power: $prev_value → $new_value"
-            g.initial_power = new_value
-            n_errors += 1
+        if g.initial_power !== nothing
+            if g.initial_status > 0 && g.initial_power < g.min_power[1]
+                prev_value = g.initial_power
+                new_value = g.min_power[1]
+                @warn "Generator $(g.name) has initial power lower than minimum power. " *
+                    "Changing initial power: $prev_value → $new_value"
+                g.initial_power = new_value
+                n_errors += 1
+            end
         end
 
         for t in 1:sc[:time]
