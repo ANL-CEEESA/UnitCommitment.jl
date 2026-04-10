@@ -34,6 +34,7 @@ function make()
                 "guides/input-format.md",
                 "guides/output-format.md",
                 "guides/instances.md",
+                "guides/backend.md",
             ],
             "Experimental extensions" => [
                 "guides/experimental/aelmp.md",
