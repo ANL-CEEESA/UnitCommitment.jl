@@ -1,7 +1,7 @@
 <h1 align="center">UnitCommitment.jl</h1>
 <p align="center">
   <a href="https://doi.org/10.5281/zenodo.4269874">
-    <img src="https://zenodo.org/badge/doi/10.5281/zenodo.4269874.svg" alt="DOI"></img>
+    <img src="https://img.shields.io/badge/DOI-10.5281/zenodo.4269874-blue.svg" alt="DOI"></img>
   </a>
   <a href="https://github.com/ANL-CEEESA/UnitCommitment.jl/releases/">
     <img src="https://img.shields.io/github/v/release/ANL-CEEESA/UnitCommitment.jl?include_prereleases&label=pre-release">
