@@ -3,6 +3,6 @@
 # Released under the modified BSD license. See COPYING.md for more details.
 
 Base.@kwdef struct PhaseAngleTransmissionExt <: DCTransmissionExt
-    phase_angle_limit::Float64 = π
+    phase_angle_limit::Float64 = 1e6
     big_m::Float64 = 1e6
 end

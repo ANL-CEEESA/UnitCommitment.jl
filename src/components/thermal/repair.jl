@@ -34,7 +34,7 @@ function repair!(sc::UnitCommitmentScenario, ::ThermalExt)::Int
                 prev_value = g.initial_power
                 new_value = g.min_power[1]
                 @warn "Generator $(g.name) has initial power lower than minimum power. " *
-                    "Changing initial power: $prev_value → $new_value"
+                      "Changing initial power: $prev_value → $new_value"
                 g.initial_power = new_value
                 n_errors += 1
             end

@@ -60,18 +60,18 @@ using HiGHS, JuMP, UnitCommitment
     # eq_dc_flow
     # -------------------------------------------------------------------------
 
-    # l1: existing line (no investment), susceptance = 29.497
-    @test_constr model[:eq_dc_flow]["s1", "l1", 1] "-2949.7 theta[s1,b1,1] + 2949.7 theta[s1,b2,1] + flow[s1,l1,1] = 0"
+    # l1: existing line (no investment), susceptance = 0.29497
+    @test_constr model[:eq_dc_flow]["s1", "l1", 1] "-29.497 theta[s1,b1,1] + 29.497 theta[s1,b2,1] + flow[s1,l1,1] = 0"
     @test ("s1", "l1", 1) ∉ keys(model[:eq_dc_flow_bigm_ub])
 
-    # l21: investment line with max_copy=3, susceptance = 10.0
-    @test_constr model[:eq_dc_flow]["s1", "l21", 1] "-1000 invest[l21]*theta[s1,b1,1] + 1000 invest[l21]*theta[s1,b3,1] + flow[s1,l21,1] = 0"
+    # l21: investment line with max_copy=3, susceptance = 0.1
+    @test_constr model[:eq_dc_flow]["s1", "l21", 1] "-10 invest[l21]*theta[s1,b1,1] + 10 invest[l21]*theta[s1,b3,1] + flow[s1,l21,1] = 0"
     @test ("s1", "l21", 1) ∉ keys(model[:eq_dc_flow_bigm_ub])
 
     # # l22: investment line with max_copy=1, susceptance = 15.0, bigM = 1e6
     @test ("s1", "l22", 1) ∉ keys(model[:eq_dc_flow])
-    @test_constr model[:eq_dc_flow_bigm_ub]["s1", "l22", 1] "1000000 invest[l22] - 1500 theta[s1,b2,1] + 1500 theta[s1,b6,1] + flow[s1,l22,1] ≤ 1000000"
-    @test_constr model[:eq_dc_flow_bigm_lb]["s1", "l22", 1] "-1000000 invest[l22] - 1500 theta[s1,b2,1] + 1500 theta[s1,b6,1] + flow[s1,l22,1] ≥ -1000000"
+    @test_constr model[:eq_dc_flow_bigm_ub]["s1", "l22", 1] "1000000 invest[l22] - 15 theta[s1,b2,1] + 15 theta[s1,b6,1] + flow[s1,l22,1] ≤ 1000000"
+    @test_constr model[:eq_dc_flow_bigm_lb]["s1", "l22", 1] "-1000000 invest[l22] - 15 theta[s1,b2,1] + 15 theta[s1,b6,1] + flow[s1,l22,1] ≥ -1000000"
 
     # eq_flow_limit_ub and eq_flow_limit_lb
     # -------------------------------------------------------------------------

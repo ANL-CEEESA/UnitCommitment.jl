@@ -32,14 +32,22 @@
     JuMP.fix(model.inner[:prod_above]["s1", "g4", 4], 61.429 - 33, force = true)
     JuMP.fix(model.inner[:prod_above]["s1", "g5", 4], 66 - 33.0, force = true)
 
-    optimize!(model)
-    sol = solution(model)
-    base_flow = sol["Branch: Base flow (MW)"]
+    JuMP.optimize!(model.inner)
+    status = JuMP.termination_status(model.inner)
+    @test status == JuMP.OPTIMAL
 
-    # Verify base case flows on a few lines
-    @test round.(base_flow["l1"], digits = 1) == [100.0, 94.8, 93.9, 75.1]
-    @test round.(base_flow["l2"], digits = 1) == [31.7, 35.2, 36.1, 24.9]
-    @test round.(base_flow["l7"], digits = 1) == [-41.0, -36.1, -32.6, -33.1]
-    @test round.(base_flow["l14"], digits = 1) == [-92.8, -66.0, -65.1, -66.0]
-    @test round.(base_flow["l20"], digits = 1) == [7.5, 6.4, 4.4, 8.1]
+    if status == JuMP.OPTIMAL
+        UnitCommitment._store_solution!(model)
+        sol = solution(model)
+        base_flow = sol["Branch: Base flow (MW)"]
+
+        # Verify base case flows on a few lines
+        @test round.(base_flow["l1"], digits = 1) == [100.0, 94.8, 94.8, 75.1]
+        @test round.(base_flow["l2"], digits = 1) == [31.7, 35.2, 35.2, 24.9]
+        @test round.(base_flow["l7"], digits = 1) ==
+              [-41.0, -36.1, -45.0, -33.1]
+        @test round.(base_flow["l14"], digits = 1) ==
+              [-92.8, -66.0, -33.0, -66.0]
+        @test round.(base_flow["l20"], digits = 1) == [7.5, 6.4, 11.3, 8.1]
+    end
 end

@@ -78,7 +78,7 @@ using UnitCommitment
     @test sc[:branches][1].name == "l1"
     @test sc[:branches][1].source.name == "b1"
     @test sc[:branches][1].target.name == "b2"
-    @test sc[:branches][1].susceptance ≈ 69.51042656398461
+    @test sc[:branches][1].susceptance ≈ 0.7194244604316548
     @test sc[:branches][1].normal_flow_limit == [175.0]
 
     # DC Phase Angle fixture (case 14) -----------------------------------------
@@ -91,7 +91,7 @@ using UnitCommitment
     @test sc[:branches][5].name == "l5"
     @test sc[:branches][5].source.name == "b2"
     @test sc[:branches][5].target.name == "b5"
-    @test sc[:branches][5].susceptance ≈ 10.037550333
+    @test sc[:branches][5].susceptance ≈ 0.10037550333530765
     @test sc[:branches][5].normal_flow_limit == [1e8 for t in 1:4]
     @test sc[:branches][5].emergency_flow_limit == [1e8 for t in 1:4]
     @test sc[:branches][5].flow_limit_penalty == [5e3 for t in 1:4]
@@ -101,7 +101,7 @@ using UnitCommitment
     @test sc[:branches][1].name == "l1"
     @test sc[:branches][1].source.name == "b1"
     @test sc[:branches][1].target.name == "b2"
-    @test sc[:branches][1].susceptance ≈ 29.496860773945
+    @test sc[:branches][1].susceptance ≈ 0.2949686077394506
     @test sc[:branches][1].normal_flow_limit == [300.0 for t in 1:4]
     @test sc[:branches][1].emergency_flow_limit == [400.0 for t in 1:4]
     @test sc[:branches][1].flow_limit_penalty == [1e3 for t in 1:4]
