@@ -536,14 +536,14 @@ signed weight coefficients and upper/lower flow limits.
 ## Reserves
 
 This section describes the hourly amount of reserves required. Reserves may be
-`"spinning"` (provided by online generators) or `"non-spinning"` (provided by
+`"Spinning"` (provided by online generators) or `"Non-spinning"` (provided by
 offline generators with fast-start capability). A reserve product may declare a
 `"Parent"` to form a cascading (nested) hierarchy, where contributions to a
 child reserve also count toward satisfying its parent.
 
 | Key                        | Description                                                                                                                                                             | Default  | Time series? | Uncertain? |
 | :------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | :----------: | :--------: |
-| `Type`                     | Type of reserve product. Must be `"spinning"` or `"non-spinning"`.                                                                                                      | Required |      No      |     No     |
+| `Type`                     | Type of reserve product. Must be `"Spinning"` or `"Non-spinning"`.                                                                                                      | Required |      No      |     No     |
 | `Amount (MW)`              | Amount of reserves required.                                                                                                                                            | Required |     Yes      |    Yes     |
 | `Shortfall penalty ($/MW)` | Penalty for shortage in meeting the reserve requirements (in $/MW). This is charged per time step. Negative value implies reserve constraints must always be satisfied. | `-1`     |     Yes      |    Yes     |
 | `Parent`                   | Name of parent reserve for cascading requirements. Contributions to this reserve also count toward satisfying the parent.                                               | `null`   |      No      |     No     |
@@ -554,19 +554,19 @@ child reserve also count toward satisfying its parent.
 {
   "Reserves": {
     "r1": {
-      "Type": "spinning",
+      "Type": "Spinning",
       "Amount (MW)": 400,
       "Shortfall penalty ($/MW)": 50,
       "Parent": "r2"
     },
     "r2": {
-      "Type": "non-spinning",
+      "Type": "Non-spinning",
       "Amount (MW)": 1500,
       "Shortfall penalty ($/MW)": 1500,
       "Parent": "r3"
     },
     "r3": {
-      "Type": "spinning",
+      "Type": "Spinning",
       "Amount (MW)": 2000,
       "Shortfall penalty ($/MW)": 1000
     }

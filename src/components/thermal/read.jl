@@ -43,6 +43,7 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
             if haskey(dict, "Parent") &&
                haskey(sc[:reserves_by_name], reserve_name)
                 parent_name = dict["Parent"]
+                parent_name === nothing && continue
                 haskey(sc[:reserves_by_name], parent_name) || error(
                     "Reserve $reserve_name declares parent $parent_name, " *
                     "but no reserve with that name exists",

@@ -90,6 +90,24 @@ function _migrate_to_v05(json)
         end
     end
 
+    # Normalize generator Type capitalization
+    if haskey(json, "Generators") && json["Generators"] !== nothing
+        for (gen_name, gen) in json["Generators"]
+            if gen["Type"] !== nothing
+                gen["Type"] = uppercasefirst(lowercase(gen["Type"]))
+            end
+        end
+    end
+
+    # Normalize reserve Type capitalization
+    if haskey(json, "Reserves") && json["Reserves"] !== nothing
+        for (reserve_name, reserve) in json["Reserves"]
+            if reserve["Type"] !== nothing
+                reserve["Type"] = uppercasefirst(lowercase(reserve["Type"]))
+            end
+        end
+    end
+
     # Rename "Affected lines" to "Affected branches" in contingencies
     if haskey(json, "Contingencies") && json["Contingencies"] !== nothing
         for (cont_name, cont) in json["Contingencies"]
