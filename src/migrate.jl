@@ -53,7 +53,7 @@ end
 function _migrate_to_v05(json)
     # Default Base MVA in parameters
     if json["Parameters"]["Base MVA"] === nothing
-        json["Parameters"]["Base MVA"] = 100
+        base_mva = json["Parameters"]["Base MVA"] = 100
     end
 
     # Rename "Transmission lines" to "Branches"
@@ -78,10 +78,14 @@ function _migrate_to_v05(json)
                 branch["Emergency flow limit (MW)"] = nothing
             end
 
-            # Rename susceptance key
+            # Convert susceptance (S) to resistance/reactance (p.u.)
             if branch["Susceptance (S)"] !== nothing
-                branch["Susceptance (p.u.)"] = branch["Susceptance (S)"]
-                branch["Susceptance (S)"] = nothing
+                b_s = branch["Susceptance (S)"]
+                b_s != 0.0 || error("Branch $branch_name has zero susceptance")
+                b_pu = b_s / base_mva
+                branch["Resistance (p.u.)"] = 0.0
+                branch["Reactance (p.u.)"] = 1.0 / b_pu
+                delete!(branch, "Susceptance (S)")
             end
         end
     end

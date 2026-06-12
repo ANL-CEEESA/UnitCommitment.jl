@@ -22,11 +22,7 @@ function read_json(
                 target = sc[:bus_by_name][dict["Target bus"]],
                 resistance = r,
                 reactance = x,
-                susceptance = if x != 0.0
-                    x / (r^2 + x^2)
-                else
-                    to_scalar(dict["Susceptance (p.u.)"])
-                end,
+                susceptance = x / (r^2 + x^2),
                 shunt_conductance = to_scalar(
                     dict["Shunt conductance (p.u.)"],
                     default = 0.0,
