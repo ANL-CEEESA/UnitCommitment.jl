@@ -26,7 +26,7 @@ using UnitCommitment
 
     # AC fixture ---------------------------------------------------------------
     instance = UnitCommitment.read(
-        fixture("ac_3bus.json"),
+        fixture("3bus/ac.json"),
         extensions = [UnitCommitment.ACTransmissionExt()],
     )
     modified = UnitCommitment.slice(instance, 1:1)

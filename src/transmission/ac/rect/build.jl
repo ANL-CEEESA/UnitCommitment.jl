@@ -46,14 +46,18 @@ function _add_ac_constr_voltage!(
     eq_voltage_ref = _init(model, :eq_voltage_ref)
 
     for sc in instance.scenarios, b in sc[:bus], t in 1:T
-        eq_voltage_mag_lb[sc.name, b.name, t] = @constraint(
-            model,
-            b.vmin^2 <= vr[sc.name, b.name, t]^2 + vi[sc.name, b.name, t]^2
-        )
-        eq_voltage_mag_ub[sc.name, b.name, t] = @constraint(
-            model,
-            vr[sc.name, b.name, t]^2 + vi[sc.name, b.name, t]^2 <= b.vmax^2
-        )
+        if isfinite(b.vmin)
+            eq_voltage_mag_lb[sc.name, b.name, t] = @constraint(
+                model,
+                b.vmin^2 <= vr[sc.name, b.name, t]^2 + vi[sc.name, b.name, t]^2
+            )
+        end
+        if isfinite(b.vmax)
+            eq_voltage_mag_ub[sc.name, b.name, t] = @constraint(
+                model,
+                vr[sc.name, b.name, t]^2 + vi[sc.name, b.name, t]^2 <= b.vmax^2
+            )
+        end
         if b.bus_type == "Slack"
             eq_voltage_ref[sc.name, b.name, t] =
                 @constraint(model, vi[sc.name, b.name, t] == 0)

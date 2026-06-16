@@ -11,8 +11,6 @@
       "Load (MW)": 0.0,
       "Minimum voltage (p.u.)": 0.9,
       "Maximum voltage (p.u.)": 1.1,
-      "Voltage magnitude (p.u.)": 1.07762,
-      "Voltage angle (rad)": 0.048935017968641414,
       "Bus type": "PV"
     },
     "b2": {
@@ -20,8 +18,6 @@
       "Load (MVAr)": 98.61,
       "Minimum voltage (p.u.)": 0.9,
       "Maximum voltage (p.u.)": 1.1,
-      "Voltage magnitude (p.u.)": 1.08407,
-      "Voltage angle (rad)": -0.012822061349776342,
       "Bus type": "PQ"
     },
     "b3": {
@@ -29,8 +25,6 @@
       "Load (MVAr)": 98.61,
       "Minimum voltage (p.u.)": 0.9,
       "Maximum voltage (p.u.)": 1.1,
-      "Voltage magnitude (p.u.)": 1.1,
-      "Voltage angle (rad)": -0.00976895688926266,
       "Bus type": "PV"
     },
     "b4": {
@@ -38,16 +32,12 @@
       "Load (MVAr)": 131.47,
       "Minimum voltage (p.u.)": 0.9,
       "Maximum voltage (p.u.)": 1.1,
-      "Voltage magnitude (p.u.)": 1.06414,
-      "Voltage angle (rad)": 0.0,
       "Bus type": "Slack"
     },
     "b10": {
       "Load (MW)": 0.0,
       "Minimum voltage (p.u.)": 0.9,
       "Maximum voltage (p.u.)": 1.1,
-      "Voltage magnitude (p.u.)": 1.06907,
-      "Voltage angle (rad)": 0.06266307973312801,
       "Bus type": "PV"
     }
   },
@@ -232,4 +222,3 @@
     }
   }
 }
-

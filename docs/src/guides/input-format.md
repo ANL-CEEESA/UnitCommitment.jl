@@ -71,10 +71,8 @@ This section describes the characteristics of each bus in the system.
 | :--------------------------- | :----------------------------------------------------------------------------------------------------------- | :------: | :----------: | :--------: |
 | `Load (MW)`                  | Fixed active load connected to the bus (in MW).                                                              | Required |     Yes      |    Yes     |
 | `Load (MVAr)`                | Fixed reactive load connected to the bus (in MVAr).                                                          |  `0.0`   |     Yes      |    Yes     |
-| `Minimum voltage (p.u.)`     | Lower bound on the voltage magnitude at this bus (in per unit).                                              |  `0.9`   |      No      |    Yes     |
-| `Maximum voltage (p.u.)`     | Upper bound on the voltage magnitude at this bus (in per unit).                                              |  `1.1`   |      No      |    Yes     |
-| `Voltage magnitude (p.u.)`   | Initial or operating-point voltage magnitude at this bus (in per unit).                                      |  `1.0`   |      No      |    Yes     |
-| `Voltage angle (rad)`        | Initial or operating-point voltage angle at this bus (in radians).                                           |  `0.0`   |      No      |    Yes     |
+| `Minimum voltage (p.u.)`     | Lower bound on the voltage magnitude at this bus (in per unit).                                              |  `-inf`  |      No      |    Yes     |
+| `Maximum voltage (p.u.)`     | Upper bound on the voltage magnitude at this bus (in per unit).                                              |  `+inf`  |      No      |    Yes     |
 | `Bus type`                   | Bus classification: `"PQ"` (load bus), `"PV"` (generator bus with voltage control), or `"Slack"` (reference). | `"PQ"`  |      No      |     No     |
 
 ## Example
@@ -85,9 +83,7 @@ This section describes the characteristics of each bus in the system.
     "b1": {
       "Load (MW)": 0.0,
       "Load (MVAr)": 0.0,
-      "Bus type": "Slack",
-      "Voltage magnitude (p.u.)": 1.0,
-      "Voltage angle (rad)": 0.0
+      "Bus type": "Slack"
     },
     "b2": {
       "Load (MW)": [26.01527, 24.46212, 23.29725, 22.90897],

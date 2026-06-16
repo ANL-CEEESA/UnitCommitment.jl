@@ -23,8 +23,6 @@
         "b3": {
             "Load (MW)": [30.0],
             "Load (MVAr)": [10.0],
-            "Minimum voltage (p.u.)": 0.95,
-            "Maximum voltage (p.u.)": 1.05,
             "Bus type": "PQ"
         }
     },

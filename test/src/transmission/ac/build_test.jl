@@ -8,7 +8,7 @@ using HiGHS, JuMP, UnitCommitment
     model =
         build_model(
             UnitCommitment.read(
-                fixture("ac_3bus.json"),
+                fixture("3bus/ac.json"),
                 extensions = [UnitCommitment.ACTransmissionExt()],
             ),
             optimizer = test_optimizer(),
@@ -20,10 +20,10 @@ using HiGHS, JuMP, UnitCommitment
     # All buses have vmin=0.95, vmax=1.05
     @test_continuous_var model[:vr]["s1", "b1", 1] lb = -1.05 ub = 1.05
     @test_continuous_var model[:vr]["s1", "b2", 1] lb = -1.05 ub = 1.05
-    @test_continuous_var model[:vr]["s1", "b3", 1] lb = -1.05 ub = 1.05
+    @test_continuous_var model[:vr]["s1", "b3", 1]
     @test_continuous_var model[:vi]["s1", "b1", 1] lb = -1.05 ub = 1.05
     @test_continuous_var model[:vi]["s1", "b2", 1] lb = -1.05 ub = 1.05
-    @test_continuous_var model[:vi]["s1", "b3", 1] lb = -1.05 ub = 1.05
+    @test_continuous_var model[:vi]["s1", "b3", 1]
 
     # Flow variables (pf, pt, qf, qt, overflow)
     # -------------------------------------------------------------------------
@@ -55,10 +55,8 @@ using HiGHS, JuMP, UnitCommitment
     # -------------------------------------------------------------------------
     @test_constr model[:eq_voltage_mag_lb]["s1", "b1", 1] "-vr[s1,b1,1]² - vi[s1,b1,1]² ≤ -0.902"
     @test_constr model[:eq_voltage_mag_lb]["s1", "b2", 1] "-vr[s1,b2,1]² - vi[s1,b2,1]² ≤ -0.902"
-    @test_constr model[:eq_voltage_mag_lb]["s1", "b3", 1] "-vr[s1,b3,1]² - vi[s1,b3,1]² ≤ -0.902"
     @test_constr model[:eq_voltage_mag_ub]["s1", "b1", 1] "vr[s1,b1,1]² + vi[s1,b1,1]² ≤ 1.102"
     @test_constr model[:eq_voltage_mag_ub]["s1", "b2", 1] "vr[s1,b2,1]² + vi[s1,b2,1]² ≤ 1.102"
-    @test_constr model[:eq_voltage_mag_ub]["s1", "b3", 1] "vr[s1,b3,1]² + vi[s1,b3,1]² ≤ 1.102"
 
     # Voltage reference constraint (slack bus b1 only)
     # -------------------------------------------------------------------------
@@ -117,7 +115,7 @@ end
     model =
         build_model(
             UnitCommitment.read(
-                fixture("ac_3bus.json"),
+                fixture("3bus/ac.json"),
                 extensions = [
                     UnitCommitment.ACTransmissionExt(
                         formulation = UnitCommitment.ACPolar(),
@@ -133,7 +131,7 @@ end
     # All buses have vmin=0.95, vmax=1.05
     @test_continuous_var model[:vm]["s1", "b1", 1] lb = 0.95 ub = 1.05
     @test_continuous_var model[:vm]["s1", "b2", 1] lb = 0.95 ub = 1.05
-    @test_continuous_var model[:vm]["s1", "b3", 1] lb = 0.95 ub = 1.05
+    @test_continuous_var model[:vm]["s1", "b3", 1]
     @test_continuous_var model[:va]["s1", "b1", 1]
     @test_continuous_var model[:va]["s1", "b2", 1]
     @test_continuous_var model[:va]["s1", "b3", 1]

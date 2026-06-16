@@ -328,8 +328,6 @@ function _build_ucjl_json(
         end
         bus_data["Minimum voltage (p.u.)"] = bus["vmin"]
         bus_data["Maximum voltage (p.u.)"] = bus["vmax"]
-        bus_data["Voltage magnitude (p.u.)"] = bus["vm"]
-        bus_data["Voltage angle (rad)"] = deg2rad(bus["va"])
         bus_data["Bus type"] = bus_type_map[bus["bus_type"]]
         buses["b$bus_id"] = bus_data
     end

@@ -7,7 +7,7 @@ using UnitCommitment
 @testfunction transmission_read_test begin
     # AC fixture ---------------------------------------------------------------
     instance = UnitCommitment.read(
-        fixture("ac_3bus.json"),
+        fixture("3bus/ac.json"),
         extensions = [UnitCommitment.ACTransmissionExt()],
     )
     sc = instance.scenarios[1]

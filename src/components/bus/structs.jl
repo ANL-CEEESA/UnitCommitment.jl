@@ -9,7 +9,5 @@ mutable struct Bus
     reactive_load::Vector{Float64}
     vmin::Float64
     vmax::Float64
-    vm::Float64
-    va::Float64
     bus_type::String
 end
