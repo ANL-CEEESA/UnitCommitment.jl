@@ -157,8 +157,8 @@
       "Shunt susceptance (p.u.)": 0.00712,
       "Normal flow limit (MVA)": 400.0,
       "Emergency flow limit (MVA)": 400.0,
-      "Angle difference min (rad)": -0.5235987755982988,
-      "Angle difference max (rad)": 0.5235987755982988
+      "Minimum angle difference (rad)": -0.5235987755982988,
+      "Maximum angle difference (rad)": 0.5235987755982988
     },
     "l2": {
       "Source bus": "b1",
@@ -168,8 +168,8 @@
       "Shunt susceptance (p.u.)": 0.00658,
       "Normal flow limit (MVA)": 426.0,
       "Emergency flow limit (MVA)": 426.0,
-      "Angle difference min (rad)": -0.5235987755982988,
-      "Angle difference max (rad)": 0.5235987755982988
+      "Minimum angle difference (rad)": -0.5235987755982988,
+      "Maximum angle difference (rad)": 0.5235987755982988
     },
     "l3": {
       "Source bus": "b1",
@@ -179,8 +179,8 @@
       "Shunt susceptance (p.u.)": 0.03126,
       "Normal flow limit (MVA)": 426.0,
       "Emergency flow limit (MVA)": 426.0,
-      "Angle difference min (rad)": -0.5235987755982988,
-      "Angle difference max (rad)": 0.5235987755982988
+      "Minimum angle difference (rad)": -0.5235987755982988,
+      "Maximum angle difference (rad)": 0.5235987755982988
     },
     "l4": {
       "Source bus": "b2",
@@ -190,8 +190,8 @@
       "Shunt susceptance (p.u.)": 0.01852,
       "Normal flow limit (MVA)": 426.0,
       "Emergency flow limit (MVA)": 426.0,
-      "Angle difference min (rad)": -0.5235987755982988,
-      "Angle difference max (rad)": 0.5235987755982988
+      "Minimum angle difference (rad)": -0.5235987755982988,
+      "Maximum angle difference (rad)": 0.5235987755982988
     },
     "l5": {
       "Source bus": "b3",
@@ -201,8 +201,8 @@
       "Shunt susceptance (p.u.)": 0.00674,
       "Normal flow limit (MVA)": 426.0,
       "Emergency flow limit (MVA)": 426.0,
-      "Angle difference min (rad)": -0.5235987755982988,
-      "Angle difference max (rad)": 0.5235987755982988
+      "Minimum angle difference (rad)": -0.5235987755982988,
+      "Maximum angle difference (rad)": 0.5235987755982988
     },
     "l6": {
       "Source bus": "b4",
@@ -212,8 +212,8 @@
       "Shunt susceptance (p.u.)": 0.00674,
       "Normal flow limit (MVA)": 240.0,
       "Emergency flow limit (MVA)": 240.0,
-      "Angle difference min (rad)": -0.5235987755982988,
-      "Angle difference max (rad)": 0.5235987755982988
+      "Minimum angle difference (rad)": -0.5235987755982988,
+      "Maximum angle difference (rad)": 0.5235987755982988
     }
   }
 }

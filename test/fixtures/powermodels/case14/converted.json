@@ -231,8 +231,8 @@
       "Reactance (p.u.)": 0.05917,
       "Resistance (p.u.)": 0.01938,
       "Shunt susceptance (p.u.)": 0.0528,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l2": {
       "Source bus": "b1",
@@ -240,8 +240,8 @@
       "Reactance (p.u.)": 0.22304,
       "Resistance (p.u.)": 0.05403,
       "Shunt susceptance (p.u.)": 0.0492,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l3": {
       "Source bus": "b2",
@@ -249,8 +249,8 @@
       "Reactance (p.u.)": 0.19797,
       "Resistance (p.u.)": 0.04699,
       "Shunt susceptance (p.u.)": 0.0438,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l4": {
       "Source bus": "b2",
@@ -258,8 +258,8 @@
       "Reactance (p.u.)": 0.17632,
       "Resistance (p.u.)": 0.05811,
       "Shunt susceptance (p.u.)": 0.034,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l5": {
       "Source bus": "b2",
@@ -267,8 +267,8 @@
       "Reactance (p.u.)": 0.17388,
       "Resistance (p.u.)": 0.05695,
       "Shunt susceptance (p.u.)": 0.0346,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l6": {
       "Source bus": "b3",
@@ -276,16 +276,16 @@
       "Reactance (p.u.)": 0.17103,
       "Resistance (p.u.)": 0.06701,
       "Shunt susceptance (p.u.)": 0.0128,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l7": {
       "Source bus": "b4",
       "Target bus": "b5",
       "Reactance (p.u.)": 0.04211,
       "Resistance (p.u.)": 0.01335,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l8": {
       "Source bus": "b4",
@@ -293,8 +293,8 @@
       "Reactance (p.u.)": 0.20912,
       "Tap ratio (p.u.)": 0.978,
       "Phase shift (rad)": 0.0,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l9": {
       "Source bus": "b4",
@@ -302,8 +302,8 @@
       "Reactance (p.u.)": 0.55618,
       "Tap ratio (p.u.)": 0.969,
       "Phase shift (rad)": 0.0,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l10": {
       "Source bus": "b5",
@@ -311,86 +311,86 @@
       "Reactance (p.u.)": 0.25202,
       "Tap ratio (p.u.)": 0.932,
       "Phase shift (rad)": 0.0,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l11": {
       "Source bus": "b6",
       "Target bus": "b11",
       "Reactance (p.u.)": 0.1989,
       "Resistance (p.u.)": 0.09498,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l12": {
       "Source bus": "b6",
       "Target bus": "b12",
       "Reactance (p.u.)": 0.25581,
       "Resistance (p.u.)": 0.12291,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l13": {
       "Source bus": "b6",
       "Target bus": "b13",
       "Reactance (p.u.)": 0.13027,
       "Resistance (p.u.)": 0.06615,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l14": {
       "Source bus": "b7",
       "Target bus": "b8",
       "Reactance (p.u.)": 0.17615,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l15": {
       "Source bus": "b7",
       "Target bus": "b9",
       "Reactance (p.u.)": 0.11001,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l16": {
       "Source bus": "b9",
       "Target bus": "b10",
       "Reactance (p.u.)": 0.0845,
       "Resistance (p.u.)": 0.03181,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l17": {
       "Source bus": "b9",
       "Target bus": "b14",
       "Reactance (p.u.)": 0.27038,
       "Resistance (p.u.)": 0.12711,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l18": {
       "Source bus": "b10",
       "Target bus": "b11",
       "Reactance (p.u.)": 0.19207,
       "Resistance (p.u.)": 0.08205,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l19": {
       "Source bus": "b12",
       "Target bus": "b13",
       "Reactance (p.u.)": 0.19988,
       "Resistance (p.u.)": 0.22092,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     },
     "l20": {
       "Source bus": "b13",
       "Target bus": "b14",
       "Reactance (p.u.)": 0.34802,
       "Resistance (p.u.)": 0.17093,
-      "Angle difference min (rad)": -1.0472,
-      "Angle difference max (rad)": 1.0472
+      "Minimum angle difference (rad)": -1.0472,
+      "Maximum angle difference (rad)": 1.0472
     }
   },
   "Shunt devices": {

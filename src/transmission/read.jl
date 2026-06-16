@@ -52,16 +52,16 @@ function read_json(
                     default = [5000.0 for t in 1:T],
                 ),
                 angle_diff_min = to_scalar(
-                    dict["Angle difference min (rad)"],
+                    dict["Minimum angle difference (rad)"],
                     default = -Inf,
                 ),
                 angle_diff_max = to_scalar(
-                    dict["Angle difference max (rad)"],
+                    dict["Maximum angle difference (rad)"],
                     default = Inf,
                 ),
                 invest = to_scalar(dict["Investment cost (\$)"], default = 0.0),
                 max_copy = to_scalar(
-                    dict["Max number of parallel circuits"],
+                    dict["Maximum parallel circuits"],
                     default = 1,
                 ),
             )

@@ -437,10 +437,10 @@ function _build_ucjl_json(
         angmin = deg2rad(branch["angmin"])
         angmax = deg2rad(branch["angmax"])
         if isfinite(angmin)
-            branch_data["Angle difference min (rad)"] = angmin
+            branch_data["Minimum angle difference (rad)"] = angmin
         end
         if isfinite(angmax)
-            branch_data["Angle difference max (rad)"] = angmax
+            branch_data["Maximum angle difference (rad)"] = angmax
         end
 
         if flow_limit_penalty < 0

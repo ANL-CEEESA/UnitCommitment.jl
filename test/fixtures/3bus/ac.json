@@ -90,8 +90,8 @@
             "Normal flow limit (MVA)": [150.0],
             "Emergency flow limit (MVA)": [200.0],
             "Flow limit penalty ($/MW)": [5000.0],
-            "Angle difference min (rad)": -0.5235987755982988,
-            "Angle difference max (rad)": 0.5235987755982988
+            "Minimum angle difference (rad)": -0.5235987755982988,
+            "Maximum angle difference (rad)": 0.5235987755982988
         },
         "l2": {
             "Source bus": "b1",
@@ -105,8 +105,8 @@
             "Normal flow limit (MVA)": [100.0],
             "Emergency flow limit (MVA)": [130.0],
             "Flow limit penalty ($/MW)": [5000.0],
-            "Angle difference min (rad)": -0.5235987755982988,
-            "Angle difference max (rad)": 0.5235987755982988
+            "Minimum angle difference (rad)": -0.5235987755982988,
+            "Maximum angle difference (rad)": 0.5235987755982988
         },
         "l3": {
             "Source bus": "b2",
@@ -120,8 +120,8 @@
             "Normal flow limit (MVA)": [120.0],
             "Emergency flow limit (MVA)": [160.0],
             "Flow limit penalty ($/MW)": [5000.0],
-            "Angle difference min (rad)": -0.5235987755982988,
-            "Angle difference max (rad)": 0.5235987755982988
+            "Minimum angle difference (rad)": -0.5235987755982988,
+            "Maximum angle difference (rad)": 0.5235987755982988
         }
     },
     "Shunt devices": {

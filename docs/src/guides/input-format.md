@@ -425,11 +425,11 @@ its topology and the impedance of each transmission line or transformer.
 | `Phase shift (rad)`                | Transformer phase-shift angle (in radians).                                                                                                                                                                                                |  `0.0`   |      No      |    Yes     |
 | `Normal flow limit (MVA)`          | Maximum apparent power (in MVA) allowed to flow through the branch when the system is in its regular, fully-operational state. For candidate lines, this represents the limit per invested circuit.                                        | `+inf`   |     Yes      |    Yes     |
 | `Emergency flow limit (MVA)`       | Maximum apparent power (in MVA) allowed to flow through the branch when the system is in degraded state (for example, after the failure of another transmission line). For candidate lines, this represents the limit per invested circuit. | `+inf`   |     Yes      |    Yes     |
-| `Angle difference min (rad)`       | Minimum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `-inf`   |      No      |    Yes     |
-| `Angle difference max (rad)`       | Maximum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `+inf`   |      No      |    Yes     |
+| `Minimum angle difference (rad)`   | Minimum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `-inf`   |      No      |    Yes     |
+| `Maximum angle difference (rad)`   | Maximum voltage-angle difference across the branch (in radians).                                                                                                                                                                           | `+inf`   |      No      |    Yes     |
 | `Flow limit penalty ($/MW)`        | Penalty for violating the flow limits of the transmission line (in $/MW). This is charged per time step. For example, if there is a thermal violation of 1 MW for three time steps, then three times this amount will be charged. Negative value implies flow limit constraints must always be satisfied (hard constraints). No overflow variables are created. | `5000.0` |     Yes      |    Yes     |
 | `Investment cost ($)`              | For candidate lines, the cost to build each parallel circuit along this corridor. For existing lines, this should be zero.                                                                                                                 |  `0.0`   |      No      |     No     |
-| `Max number of parallel circuits`  | For candidate lines, the maximum number of parallel circuits that can be built along this corridor. Unused for existing lines.                                                                                                             |   `1`    |      No      |     No     |
+| `Maximum parallel circuits` | For candidate lines, the maximum number of parallel circuits that can be built along this corridor. Unused for existing lines.                                                                                                             |   `1`    |      No      |     No     |
 
 ## Example
 
@@ -446,7 +446,7 @@ its topology and the impedance of each transmission line or transformer.
       "Emergency flow limit (MVA)": 500.0,
       "Flow limit penalty ($/MW)": 5000.0,
       "Investment cost ($)": 3000000.0,
-      "Max number of parallel circuits": 2
+      "Maximum parallel circuits": 2
     },
     "t1": {
       "Source bus": "b2",

@@ -327,7 +327,7 @@
       "Normal flow limit (MW)": 100.0,
       "Flow limit penalty ($/MW)": 5000.0,
       "Investment cost ($)": 1000,
-      "Max number of parallel circuits": 3
+      "Maximum parallel circuits": 3
     },
     "l22": {
       "Source bus": "b2",
@@ -336,7 +336,7 @@
       "Normal flow limit (MW)": 150.0,
       "Flow limit penalty ($/MW)": 6000.0,
       "Investment cost ($)": 5000,
-      "Max number of parallel circuits": 1
+      "Maximum parallel circuits": 1
     }
   },
   "Price-sensitive loads": {
