@@ -59,8 +59,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 40.0,
-      "Reactive power min (MVAr)": -30.0,
-      "Reactive power max (MVAr)": 30.0,
+      "Minimum reactive power (MVAr)": -30.0,
+      "Maximum reactive power (MVAr)": 30.0,
       "Must run?": [
         true
       ]
@@ -82,8 +82,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 170.0,
-      "Reactive power min (MVAr)": -127.49999999999999,
-      "Reactive power max (MVAr)": 127.49999999999999,
+      "Minimum reactive power (MVAr)": -127.49999999999999,
+      "Maximum reactive power (MVAr)": 127.49999999999999,
       "Must run?": [
         true
       ]
@@ -105,8 +105,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 324.498,
-      "Reactive power min (MVAr)": -390.0,
-      "Reactive power max (MVAr)": 390.0,
+      "Minimum reactive power (MVAr)": -390.0,
+      "Maximum reactive power (MVAr)": 390.0,
       "Must run?": [
         true
       ]
@@ -128,8 +128,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 0.0,
-      "Reactive power min (MVAr)": -150.0,
-      "Reactive power max (MVAr)": 150.0,
+      "Minimum reactive power (MVAr)": -150.0,
+      "Maximum reactive power (MVAr)": 150.0,
       "Must run?": [
         true
       ]
@@ -151,8 +151,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 470.694,
-      "Reactive power min (MVAr)": -450.0,
-      "Reactive power max (MVAr)": 450.0,
+      "Minimum reactive power (MVAr)": -450.0,
+      "Maximum reactive power (MVAr)": 450.0,
       "Must run?": [
         true
       ]
@@ -252,8 +252,8 @@
       "Charge efficiency": 0.8,
       "Discharge efficiency": 0.9,
       "Initial level (MWh)": 20.0,
-      "Reactive power min (MVAr)": -50.0,
-      "Reactive power max (MVAr)": 70.0,
+      "Minimum reactive power (MVAr)": -50.0,
+      "Maximum reactive power (MVAr)": 70.0,
       "Apparent power limit (MVA)": 100.0
     },
     "su2": {
@@ -266,8 +266,8 @@
       "Charge efficiency": 0.9,
       "Discharge efficiency": 0.8,
       "Initial level (MWh)": 30.0,
-      "Reactive power min (MVAr)": -50.0,
-      "Reactive power max (MVAr)": 70.0,
+      "Minimum reactive power (MVAr)": -50.0,
+      "Maximum reactive power (MVAr)": 70.0,
       "Apparent power limit (MVA)": 100.0
     }
   }

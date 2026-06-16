@@ -130,8 +130,8 @@ specified:
 | `Non-spinning reserve capacity (MW)`                         | Maximum reserve contribution when the generator is offline (in MW).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | `0.0`             |      No      |    Yes     |
 | `Commitment status`                                          | List of commitment status over the time horizon. At time `t`, if `true`, the generator must be committed at that time period; if `false`, the generator must not be committed at that time period. If `null` at time `t`, the generator's commitment status is then decided by the model. By default, the status is a list of `null` values.                                                                                                                                                                                                                                                                                                       | `null`            |     Yes      |    Yes     |
 | `Investment cost ($)`                                        | Cost to build a candidate generation unit. Should be zero for existing units.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `0.0`             |      No      |     No     |
-| `Reactive power min (MVAr)`                                  | Minimum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `-inf`            |      No      |    Yes     |
-| `Reactive power max (MVAr)`                                  | Maximum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `+inf`            |      No      |    Yes     |
+| `Minimum reactive power (MVAr)`                                  | Minimum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `0.0`             |      No      |    Yes     |
+| `Maximum reactive power (MVAr)`                                  | Maximum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `0.0`             |      No      |    Yes     |
 
 
 ## Profiled Units
@@ -144,8 +144,8 @@ specified:
 | `Minimum power (MW)`  | Minimum amount of power this generator may supply.                                |  `0.0`   |     Yes      |    Yes     |
 | `Maximum power (MW)`  | Maximum amount of power this generator may supply.                                | Required |     Yes      |    Yes     |
 | `Investment cost ($)`       | Cost to build a candidate generation unit. Should be zero for existing units.     |  `0.0`.  |      No      |     No     |
-| `Reactive power min (MVAr)` | Minimum reactive power output (in MVAr).                                          |  `0.0`   |      No      |    Yes     |
-| `Reactive power max (MVAr)` | Maximum reactive power output (in MVAr).                                          |  `0.0`   |      No      |    Yes     |
+| `Minimum reactive power (MVAr)` | Minimum reactive power output (in MVAr).                                          |  `0.0`   |      No      |    Yes     |
+| `Maximum reactive power (MVAr)` | Maximum reactive power output (in MVAr).                                          |  `0.0`   |      No      |    Yes     |
 
 ## Production costs and limits
 
@@ -207,8 +207,8 @@ output.
       "Initial power (MW)": 115,
       "Must run?": false,
       "Reserve eligibility": ["r1"],
-      "Reactive power min (MVAr)": -50.0,
-      "Reactive power max (MVAr)": 80.0
+      "Minimum reactive power (MVAr)": -50.0,
+      "Maximum reactive power (MVAr)": 80.0
     },
     "gen2": {
       "Bus": "b5",
@@ -227,8 +227,8 @@ output.
       "Maximum power (MW)": 120.0,
       "Cost ($/MW)": 100.0,
       "Investment cost ($)": 3000000.0,
-      "Reactive power min (MVAr)": 0.0,
-      "Reactive power max (MVAr)": 0.0
+      "Minimum reactive power (MVAr)": 0.0,
+      "Maximum reactive power (MVAr)": 0.0
     }
   }
 }
@@ -259,8 +259,8 @@ power while discharging.
 | `Last period minimum level (MWh)`             | Minimum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Minimum level (MWh)`. | `Minimum level (MWh)` |      No      |    Yes     |
 | `Last period maximum level (MWh)`             | Maximum of energy level this storage unit may contain in the last time step. By default, this value is the same as the last value of `Maximum level (MWh)`. | `Maximum level (MWh)` |      No      |    Yes     |
 | `Investment cost ($)`                         | Cost to build a candidate storage unit. Should be zero for existing units.                                                                                  |        `0.0`.         |      No      |     No     |
-| `Reactive power min (MVAr)`                   | Minimum reactive power output (in MVAr).                                                                                                                    |         `0.0`         |      No      |    Yes     |
-| `Reactive power max (MVAr)`                   | Maximum reactive power output (in MVAr).                                                                                                                    |         `0.0`         |      No      |    Yes     |
+| `Minimum reactive power (MVAr)`                   | Minimum reactive power output (in MVAr).                                                                                                                    |         `0.0`         |      No      |    Yes     |
+| `Maximum reactive power (MVAr)`                   | Maximum reactive power output (in MVAr).                                                                                                                    |         `0.0`         |      No      |    Yes     |
 | `Apparent power limit (MVA)`                  | Inverter or thermal apparent-power rating (in MVA).                                                                                                         |        `+inf`         |      No      |    Yes     |
 
 ## Example
@@ -275,8 +275,8 @@ power while discharging.
       "Discharge cost ($/MW)": 2.5,
       "Maximum charge rate (MW)": 10.0,
       "Maximum discharge rate (MW)": 8.0,
-      "Reactive power min (MVAr)": -5.0,
-      "Reactive power max (MVAr)": 5.0,
+      "Minimum reactive power (MVAr)": -5.0,
+      "Maximum reactive power (MVAr)": 5.0,
       "Apparent power limit (MVA)": 12.0
     },
     "su2": {

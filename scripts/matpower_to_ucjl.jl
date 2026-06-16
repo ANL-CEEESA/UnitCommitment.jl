@@ -381,8 +381,8 @@ function _build_ucjl_json(
         gen_data["Initial power (MW)"] = clamp(gen["pg"], pmin, pmax)
 
         # Reactive power limits
-        gen_data["Reactive power min (MVAr)"] = gen["qmin"]
-        gen_data["Reactive power max (MVAr)"] = gen["qmax"]
+        gen_data["Minimum reactive power (MVAr)"] = gen["qmin"]
+        gen_data["Maximum reactive power (MVAr)"] = gen["qmax"]
 
         gen_data["Must run?"] = [true]
 
@@ -488,10 +488,10 @@ function _build_ucjl_json(
                 "Initial level (MWh)" => st["energy"],
             )
             if haskey(st, "qmin")
-                st_data["Reactive power min (MVAr)"] = st["qmin"]
+                st_data["Minimum reactive power (MVAr)"] = st["qmin"]
             end
             if haskey(st, "qmax")
-                st_data["Reactive power max (MVAr)"] = st["qmax"]
+                st_data["Maximum reactive power (MVAr)"] = st["qmax"]
             end
             if haskey(st, "thermal_rating") && st["thermal_rating"] > 0
                 st_data["Apparent power limit (MVA)"] = st["thermal_rating"]

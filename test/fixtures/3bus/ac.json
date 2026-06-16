@@ -42,8 +42,8 @@
             "Minimum downtime (h)": 1,
             "Initial status (h)": 1,
             "Initial power (MW)": 60.0,
-            "Reactive power min (MVAr)": -40.0,
-            "Reactive power max (MVAr)": 50.0
+            "Minimum reactive power (MVAr)": -40.0,
+            "Maximum reactive power (MVAr)": 50.0
         },
         "p1": {
             "Bus": "b2",
@@ -51,8 +51,8 @@
             "Cost ($/MW)": 30.0,
             "Minimum power (MW)": [0.0],
             "Maximum power (MW)": [40.0],
-            "Reactive power min (MVAr)": -15.0,
-            "Reactive power max (MVAr)": 15.0
+            "Minimum reactive power (MVAr)": -15.0,
+            "Maximum reactive power (MVAr)": 15.0
         }
     },
     "Storage units": {
@@ -73,8 +73,8 @@
             "Last period minimum level (MWh)": 10.0,
             "Last period maximum level (MWh)": 100.0,
             "Allow simultaneous charging and discharging": false,
-            "Reactive power min (MVAr)": -10.0,
-            "Reactive power max (MVAr)": 10.0
+            "Minimum reactive power (MVAr)": -10.0,
+            "Maximum reactive power (MVAr)": 10.0
         }
     },
     "Branches": {

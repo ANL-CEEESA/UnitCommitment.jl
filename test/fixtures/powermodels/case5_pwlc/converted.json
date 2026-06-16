@@ -55,8 +55,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 40.0,
-      "Reactive power min (MVAr)": -30.0,
-      "Reactive power max (MVAr)": 30.0,
+      "Minimum reactive power (MVAr)": -30.0,
+      "Maximum reactive power (MVAr)": 30.0,
       "Must run?": [
         true
       ]
@@ -74,8 +74,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 170.0,
-      "Reactive power min (MVAr)": -127.49999999999999,
-      "Reactive power max (MVAr)": 127.49999999999999,
+      "Minimum reactive power (MVAr)": -127.49999999999999,
+      "Maximum reactive power (MVAr)": 127.49999999999999,
       "Must run?": [
         true
       ]
@@ -97,8 +97,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 324.0,
-      "Reactive power min (MVAr)": 0.0,
-      "Reactive power max (MVAr)": 0.0,
+      "Minimum reactive power (MVAr)": 0.0,
+      "Maximum reactive power (MVAr)": 0.0,
       "Must run?": [
         true
       ]
@@ -120,8 +120,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 50.0,
-      "Reactive power min (MVAr)": -150.0,
-      "Reactive power max (MVAr)": 150.0,
+      "Minimum reactive power (MVAr)": -150.0,
+      "Maximum reactive power (MVAr)": 150.0,
       "Must run?": [
         true
       ]
@@ -141,8 +141,8 @@
       ],
       "Initial status (h)": 24,
       "Initial power (MW)": 470.0,
-      "Reactive power min (MVAr)": -450.0,
-      "Reactive power max (MVAr)": 450.0,
+      "Minimum reactive power (MVAr)": -450.0,
+      "Maximum reactive power (MVAr)": 450.0,
       "Must run?": [
         true
       ]

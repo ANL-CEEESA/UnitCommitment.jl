@@ -194,11 +194,11 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                 commitment_status = commitment_status,
                 invest = to_scalar(dict["Investment cost (\$)"], default = 0.0),
                 qmin = to_scalar(
-                    dict["Reactive power min (MVAr)"],
+                    dict["Minimum reactive power (MVAr)"],
                     default = 0.0,
                 ),
                 qmax = to_scalar(
-                    dict["Reactive power max (MVAr)"],
+                    dict["Maximum reactive power (MVAr)"],
                     default = 0.0,
                 ),
             )
