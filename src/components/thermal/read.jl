@@ -201,10 +201,6 @@ function read_json(json::AbstractDict, sc::UnitCommitmentScenario, ::ThermalExt)
                     dict["Reactive power max (MVAr)"],
                     default = 0.0,
                 ),
-                voltage_setpoint = to_scalar(
-                    dict["Voltage set-point (p.u.)"],
-                    default = 1.0,
-                ),
             )
             for r in unit_reserves
                 push!(r.thermal_units, unit)

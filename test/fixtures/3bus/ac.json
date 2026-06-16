@@ -43,8 +43,7 @@
             "Initial status (h)": 1,
             "Initial power (MW)": 60.0,
             "Reactive power min (MVAr)": -40.0,
-            "Reactive power max (MVAr)": 50.0,
-            "Voltage set-point (p.u.)": 1.02
+            "Reactive power max (MVAr)": 50.0
         },
         "p1": {
             "Bus": "b2",

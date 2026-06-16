@@ -123,7 +123,6 @@
       "Initial power (MW)": 232.39999999999998,
       "Reactive power min (MVAr)": 0.0,
       "Reactive power max (MVAr)": 10.0,
-      "Voltage set-point (p.u.)": 1.06,
       "Must run?": [
         true
       ]
@@ -147,7 +146,6 @@
       "Initial power (MW)": 40.0,
       "Reactive power min (MVAr)": -40.0,
       "Reactive power max (MVAr)": 50.0,
-      "Voltage set-point (p.u.)": 1.045,
       "Must run?": [
         true
       ]
@@ -175,7 +173,6 @@
       "Initial power (MW)": 0.0,
       "Reactive power min (MVAr)": 0.0,
       "Reactive power max (MVAr)": 40.0,
-      "Voltage set-point (p.u.)": 1.01,
       "Must run?": [
         true
       ]
@@ -199,7 +196,6 @@
       "Initial power (MW)": 0.0,
       "Reactive power min (MVAr)": -6.0,
       "Reactive power max (MVAr)": 24.0,
-      "Voltage set-point (p.u.)": 1.07,
       "Must run?": [
         true
       ]
@@ -223,7 +219,6 @@
       "Initial power (MW)": 0.0,
       "Reactive power min (MVAr)": -6.0,
       "Reactive power max (MVAr)": 24.0,
-      "Voltage set-point (p.u.)": 1.09,
       "Must run?": [
         true
       ]

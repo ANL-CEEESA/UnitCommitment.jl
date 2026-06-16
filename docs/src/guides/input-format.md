@@ -132,7 +132,7 @@ specified:
 | `Investment cost ($)`                                        | Cost to build a candidate generation unit. Should be zero for existing units.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | `0.0`             |      No      |     No     |
 | `Reactive power min (MVAr)`                                  | Minimum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `-inf`            |      No      |    Yes     |
 | `Reactive power max (MVAr)`                                  | Maximum reactive power output (in MVAr).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `+inf`            |      No      |    Yes     |
-| `Voltage set-point (p.u.)`                                   | Target voltage magnitude at the generator bus (in per unit). Used when the generator participates in voltage regulation.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | `1.0`             |      No      |    Yes     |
+
 
 ## Profiled Units
 
@@ -208,8 +208,7 @@ output.
       "Must run?": false,
       "Reserve eligibility": ["r1"],
       "Reactive power min (MVAr)": -50.0,
-      "Reactive power max (MVAr)": 80.0,
-      "Voltage set-point (p.u.)": 1.02
+      "Reactive power max (MVAr)": 80.0
     },
     "gen2": {
       "Bus": "b5",

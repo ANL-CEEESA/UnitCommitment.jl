@@ -384,9 +384,6 @@ function _build_ucjl_json(
         gen_data["Reactive power min (MVAr)"] = gen["qmin"]
         gen_data["Reactive power max (MVAr)"] = gen["qmax"]
 
-        # Voltage setpoint
-        gen_data["Voltage set-point (p.u.)"] = gen["vg"]
-
         gen_data["Must run?"] = [true]
 
         generators["g$gen_id"] = gen_data

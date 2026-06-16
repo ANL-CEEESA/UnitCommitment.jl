@@ -54,7 +54,6 @@ Base.@kwdef mutable struct ThermalUnit
     invest::Float64
     qmin::Float64 = 0.0
     qmax::Float64 = 0.0
-    voltage_setpoint::Float64 = 1.0
 end
 
 Base.@kwdef struct ThermalExt <: UnitCommitmentExtension
