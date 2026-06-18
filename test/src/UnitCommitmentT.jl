@@ -68,6 +68,7 @@ include("transform/slice_test.jl")
 include("solution/summary_test.jl")
 include("usage_test.jl")
 include("backend/jobs_test.jl")
+include("backend/ext_test.jl")
 include("backend/server_test.jl")
 
 function runtests()

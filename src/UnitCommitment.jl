@@ -127,6 +127,7 @@ include("validate.jl")
 include("write.jl")
 
 include("backend/jobs.jl")
+include("backend/ext.jl")
 include("backend/server.jl")
 
 end

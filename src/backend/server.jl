@@ -123,7 +123,6 @@ function start_backend(
     host::String = "127.0.0.1",
     port::Int = 9000;
     optimizer,
-    extensions = nothing,
     method = nothing,
     jobs_dir::String = mktempdir(),
 )
@@ -137,9 +136,17 @@ function start_backend(
             open(log_filename, "w") do io
                 redirect_stdout(io) do
                     redirect_stderr(io) do
-                        if extensions !== nothing
-                            instance =
-                                UnitCommitment.read(input_filename; extensions)
+                        compressed = Base.read(input_filename)
+                        json = JSON.parse(
+                            String(transcode(GzipDecompressor, compressed)),
+                        )
+                        if haskey(json, "extensions")
+                            job_extensions =
+                                _parse_extensions(json["extensions"])
+                            instance = UnitCommitment.read(
+                                input_filename;
+                                extensions = job_extensions,
+                            )
                         else
                             instance = UnitCommitment.read(input_filename)
                         end

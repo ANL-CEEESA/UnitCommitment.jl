@@ -36,14 +36,37 @@ server = UnitCommitment.start_backend(
     "127.0.0.1",
     9000;
     optimizer = HiGHS.Optimizer,
-    extensions = [UnitCommitment.AELMP(optimizer = HiGHS.Optimizer)],
     method = UnitCommitment.XavQiuWanThi2019.Method(time_limit = 600.0),
 )
 ```
 
-When `extensions` or `method` is omitted (or set to `nothing`), the
-backend delegates to whatever defaults `UnitCommitment.read` and
-`UnitCommitment.optimize!` use internally.
+When `method` is omitted (or set to `nothing`), the backend delegates to
+whatever default `UnitCommitment.optimize!` uses internally.
+
+### Extensions
+
+Extensions can be configured per request by embedding an `"extensions"`
+array in the submitted instance JSON. Each element is an object with a
+`"type"` key (the extension's Julia type) and additional keys for
+constructor keyword arguments. Nested extensions follow the same
+pattern (recursive objects with their own `"type"` key). When omitted,
+`UnitCommitment.read` uses its built-in defaults.
+
+Example:
+
+```json
+{
+    "extensions": [
+        {
+            "type": "ThermalExt",
+            "pwl_costs": { "type": "KnuOstWat2018.PwlCosts" },
+            "ramping": { "type": "MorLatRam2013.Ramping" },
+            "slimits": { "type": "MorLatRam2013.StartupShutdownLimits" }
+        },
+        { "type": "ShiftFactorsTransmissionExt", "isf_cutoff": 0.075 }
+    ]
+}
+```
 
 ### Distributed workers
 
@@ -124,7 +147,6 @@ start_backend(
     host::String = "127.0.0.1",
     port::Int = 9000;
     optimizer,
-    extensions = nothing,
     method = nothing,
     jobs_dir::String = mktempdir(),
 ) -> ServerHandle
@@ -139,7 +161,6 @@ Start the HTTP backend server.
 | `host` | `String` | `"127.0.0.1"` | Address to bind |
 | `port` | `Int` | `9000` | Port to listen on |
 | `optimizer` | any JuMP optimizer | *(required)* | Optimizer passed to `build_model` |
-| `extensions` | `Vector` or `nothing` | `nothing` | Extensions passed to `read`; `nothing` uses the package default |
 | `method` | method or `nothing` | `nothing` | Solution method passed to `optimize!`; `nothing` uses the package default |
 | `jobs_dir` | `String` | `mktempdir()` | Directory for job artifacts (input, log, solution files) |
 
