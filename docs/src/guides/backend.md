@@ -12,19 +12,29 @@ UnitCommitment.jl includes an optional HTTP backend that exposes the solve pipel
 ## Usage
 
 ```julia
-using UnitCommitment, HiGHS
+using UnitCommitment, HiGHS, Ipopt, Juniper
 using JuMP
+
+ipopt = optimizer_with_attributes(Ipopt.Optimizer, "print_level" => 0)
+highs = optimizer_with_attributes(HiGHS.Optimizer, "mip_rel_gap" => 0.001)
+juniper = optimizer_with_attributes(
+    Juniper.Optimizer,
+    "nl_solver" => ipopt,
+    "mip_solver" => highs,
+)
 
 server = UnitCommitment.start_backend(
     "127.0.0.1",
     9000;
-    optimizer = optimizer_with_attributes(
-        HiGHS.Optimizer,
-        "mip_rel_gap" => 0.001,
-    ),
+    milp_optimizer = highs,
+    minlp_optimizer = juniper,
 )
 wait(server)  # blocks until Ctrl+C, then shuts down
 ```
+
+The backend automatically selects the appropriate optimizer for each job:
+`milp_optimizer` is used by default, and `minlp_optimizer` is used when
+the request includes `ACTransmissionExt`.
 
 ### Customizing the solve pipeline
 
@@ -35,7 +45,8 @@ reading instances and solving models. To override:
 server = UnitCommitment.start_backend(
     "127.0.0.1",
     9000;
-    optimizer = HiGHS.Optimizer,
+    milp_optimizer = HiGHS.Optimizer,
+    minlp_optimizer = juniper,
     method = UnitCommitment.XavQiuWanThi2019.Method(time_limit = 600.0),
 )
 ```
@@ -146,7 +157,8 @@ Poll the status and results of a previously submitted job.
 start_backend(
     host::String = "127.0.0.1",
     port::Int = 9000;
-    optimizer,
+    milp_optimizer,
+    minlp_optimizer,
     method = nothing,
     jobs_dir::String = mktempdir(),
 ) -> ServerHandle
@@ -160,7 +172,8 @@ Start the HTTP backend server.
 |---|---|---|---|
 | `host` | `String` | `"127.0.0.1"` | Address to bind |
 | `port` | `Int` | `9000` | Port to listen on |
-| `optimizer` | any JuMP optimizer | *(required)* | Optimizer passed to `build_model` |
+| `milp_optimizer` | any JuMP optimizer | *(required)* | Optimizer for MILP models (used by default) |
+| `minlp_optimizer` | any JuMP optimizer | *(required)* | Optimizer for MINLP models (used when `ACTransmissionExt` is active) |
 | `method` | method or `nothing` | `nothing` | Solution method passed to `optimize!`; `nothing` uses the package default |
 | `jobs_dir` | `String` | `mktempdir()` | Directory for job artifacts (input, log, solution files) |
 

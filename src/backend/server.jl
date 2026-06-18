@@ -122,7 +122,8 @@ end
 function start_backend(
     host::String = "127.0.0.1",
     port::Int = 9000;
-    optimizer,
+    milp_optimizer,
+    minlp_optimizer,
     method = nothing,
     jobs_dir::String = mktempdir(),
 )
@@ -150,6 +151,12 @@ function start_backend(
                         else
                             instance = UnitCommitment.read(input_filename)
                         end
+                        optimizer =
+                            if instance.extension_by_slot[:transmission] isa ACTransmissionExt
+                                minlp_optimizer
+                            else
+                                milp_optimizer
+                            end
                         model =
                             UnitCommitment.build_model(; instance, optimizer)
                         if method !== nothing

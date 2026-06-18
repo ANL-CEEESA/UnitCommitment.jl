@@ -12,7 +12,8 @@ using HTTP
     server = UnitCommitment.start_backend(
         host,
         port;
-        optimizer = HiGHS.Optimizer,
+        milp_optimizer = HiGHS.Optimizer,
+        minlp_optimizer = _minlp_optimizer(),
         jobs_dir = jobs_dir,
     )
     try
