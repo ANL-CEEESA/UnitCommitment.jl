@@ -18,7 +18,8 @@
             "type" => "ThermalExt",
             "pwl_costs" => Dict("type" => "KnuOstWat2018.PwlCosts"),
             "ramping" => Dict("type" => "MorLatRam2013.Ramping"),
-            "slimits" => Dict("type" => "MorLatRam2013.StartupShutdownLimits"),
+            "slimits" =>
+                Dict("type" => "MorLatRam2013.StartupShutdownLimits"),
         ),
     ])
     @test length(exts) == 1

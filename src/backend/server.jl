@@ -152,7 +152,8 @@ function start_backend(
                             instance = UnitCommitment.read(input_filename)
                         end
                         optimizer =
-                            if instance.extension_by_slot[:transmission] isa ACTransmissionExt
+                            if instance.extension_by_slot[:transmission] isa
+                               ACTransmissionExt
                                 minlp_optimizer
                             else
                                 milp_optimizer
